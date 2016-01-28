@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="annoweb">
+<head>
+    <meta charset="UTF-8">
+    <!-- build:css css/combined.css -->
+        <!-- bower:css -->
+        <link rel="stylesheet" href="../bower_components/angular-material/angular-material.css" />
+        <!-- endbower -->
+        <!-- inject:css -->
+        <!-- endinject -->
+    <!-- endbuild -->
+
+    <!-- build:js scripts/combined.js -->
+        <!-- bower:js -->
+        <script src="../bower_components/angular/angular.js"></script>
+        <script src="../bower_components/angular-animate/angular-animate.js"></script>
+        <script src="../bower_components/angular-aria/angular-aria.js"></script>
+        <script src="../bower_components/angular-messages/angular-messages.js"></script>
+        <script src="../bower_components/angular-material/angular-material.js"></script>
+        <!-- endbower -->
+        <!-- inject:js -->
+        <script src="../src/app.js"></script>
+        <!-- endinject -->
+    <!-- endbuild -->
+    <title>Annoweb</title>
+</head>
+<body ng-controller="mainController as ctrl">
+    <p>{{ctrl.test}}</p>
+</body>
+</html>

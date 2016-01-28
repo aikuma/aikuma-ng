@@ -1,0 +1,22 @@
+{
+  "name": "Annoweb",
+  "authors": [
+    "Mat Bettinson <mat@plothatching.com>"
+  ],
+  "description": "Prototype web annotation app",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.9",
+    "angular-material": "~1.0.3"
+  }
+}
