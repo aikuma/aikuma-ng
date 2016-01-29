@@ -1,0 +1,33 @@
+<!--  Description Tab's Content  -->
+   <md-content flex layout-padding>
+   <!-- This is displayed if we have regions to edit -->
+    <div ng-show="aeditCtrl.editable">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th ng-repeat="anno in aeditCtrl.alist">{{anno.type}} - {{anno.lang}}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="region in aeditCtrl.regionlist">
+                    <td>{{ region.start }}&ndash;{{ region.end }}</td>
+                    <td>{{ region.color }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- This is displayed if we have no regions to edit -->
+    <div ng-show="!aeditCtrl.editable">
+         <md-toolbar class="md-warn">
+         <div class="md-toolbar-tools">
+            <h2 class="md-flex">No annotations yet!</h2>
+         </div>
+        </md-toolbar>
+       <md-button class="md-raised" ng-click="aeditCtrl.addanno($event)">
+          <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+          New annotation
+       </md-button>
+   </div>
+ 
+   </md-content>

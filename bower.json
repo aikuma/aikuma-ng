@@ -17,6 +17,19 @@
   ],
   "dependencies": {
     "angular": "~1.4.9",
-    "angular-material": "~1.0.3"
+    "angular-material": "~1.0.3",
+    "papaparse": "~4.1.2",
+    "wavesurfer.js": "~1.0.51"
+  },
+  "overrides": {
+    "wavesurfer.js": {
+      "main": [
+        "../../build/wavesurfer.js",
+        "plugin/wavesurfer.elan.js",
+        "plugin/wavesurfer.microphone.js",
+        "plugin/wavesurfer.minimap.js",
+        "plugin/wavesurfer.regions.js",
+        "plugin/wavesurfer.timeline.js"]
+    }
   }
 }

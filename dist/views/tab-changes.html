@@ -1,0 +1,30 @@
+
+<md-content class="md-padding">
+   <div class="row">
+      <h4>27/01/2016</h4>
+      <p>Alpha 2. Reworked project to be handled with a build chain. Removed all left-over libraries, changed directory structure. Some things are ugly because they still depend on bootstrap css which I've removed. New readme.txt to describe project structure. Directory also has dependency source trees for node and bower. Perhaps I can move them to a parent directory?  Also found that wavesurfer's minimap starts to do auto scrolling weird stuff if I enable a flexible layout. The minimap already has other bugs, I think I'll fork it.
+      </p>
+
+      <h4>24/01/2016</h4>
+      <p>Implemented AnnowebService to handle communications between directives. The model is to call a method on the service to do something, like load a file. The service will broadcast to necessary components. It also holds
+         the common data such as regions and annotations. This provided the solution for how to initialise the app. The wavesurfer directive has a timeout function with 0-time. This is a reasonable way to decide the wavesurfer directive is ready, so we call an AnnowebService method and that handles telling the other components what to do, including the annotation display (shortly to be an editor!). Fixed a bug in the wavesurfer minimap plugin that would not correctly refresh on new file. A good day's work.    
+      </p>
+   </div>
+   <div class="row">
+      <h4>23/01/2016</h4>
+      <p>Dumped bootstrap. Annoweb will now use material design. This is surprisingly difficult but a) looks better and b) is particularly robust for changes in screen size. First major feature is a fully functional
+         menu bar. Not clear if this is better than left-side pull-in menu. Implemented mainly because the example code on Angular Material also showed off snazzy ways to register key shortcuts which seems to be highly desirable. 
+         A bit of hacking is required to make file dialog open (you need a hiden input field). The main controller will now handle menu inputs, intialization and so on. 
+      </p>
+   </div>
+   <div class="row">
+      <h4>22/01/2016</h4>
+      <p>It's time to deal with the structure properly, the main app logic should be stated in easy-to-read code which then instructs other modules to do what's required. First step is to transition to
+      best practice according to the AngularJS community style guide.</p>
+   </div>
+   <div class="row">
+      <h4>21/01/2016</h4>
+      <p>Investigated ui grid, decided I don't like it again and removed it (lol). Implemented bare-bones table-based annotation description. Discovered limitations in wavesurfer regions handling (not possible to iterate over data set). Impetus to move transcription data to a factory. Wavesurfer regions are now merely duplicates of annotation data for the purposes of visualisation only.</p>
+   </div>
+
+</md-content>

@@ -1,0 +1,170 @@
+  <md-toolbar class="md-menu-toolbar">
+    <md-content layout="row">
+      <md-toolbar-filler layout layout-align="center center">
+         <md-icon md-svg-icon="action:translate" style="width:60px;height:60px;"></md-icon>
+      </md-toolbar-filler>
+      <div>
+        <h2 class="md-toolbar-tools">Annoweb</h2>
+        <md-menu-bar>
+          <md-menu>
+            <button ng-click="$mdOpenMenu()">
+              File
+            </button>
+            <md-menu-content>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('share', $event)">
+                  Share...
+                </md-button>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item>
+                <md-menu>
+                  <md-button ng-click="$mdOpenMenu()">New</md-button>
+                  <md-menu-content>
+                    <md-menu-item><md-button ng-click="aWCtrl.sampleAction('New Document', $event)">Document</md-button></md-menu-item>
+                    <md-menu-item><md-button ng-click="aWCtrl.sampleAction('New Spreadsheet', $event)">Spreadsheet</md-button></md-menu-item>
+                    <md-menu-item><md-button ng-click="aWCtrl.sampleAction('New Presentation', $event)">Presentation</md-button></md-menu-item>
+                    <md-menu-item><md-button ng-click="aWCtrl.sampleAction('New Form', $event)">Form</md-button></md-menu-item>
+                    <md-menu-item><md-button ng-click="aWCtrl.sampleAction('New Drawing', $event)">Drawing</md-button></md-menu-item>
+                  </md-menu-content>
+                </md-menu>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('Open', $event)">
+                  Open...
+                  <span class="md-alt-text"> {{ 'M-O' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button disabled="disabled" ng-click="aWCtrl.sampleAction('Rename', $event)">
+                  Rename
+                </md-button>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('Print', $event)">
+                  Print
+                  <span class="md-alt-text">{{ 'M-P' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
+          <md-menu>
+            <button ng-click="$mdOpenMenu()">
+              Edit
+            </button>
+            <md-menu-content>
+              <md-menu-item class="md-indent">
+                <md-button ng-click="aWCtrl.sampleAction('undo', $event)">
+                   <i class="material-icons md-24">undo</i>  Undo
+                  <span class="md-alt-text">{{ 'M-Z' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item class="md-indent">
+                <md-button ng-click="aWCtrl.sampleAction('redo', $event)">
+                  <i class="material-icons md-24">redo</i>  Redo
+                  <span class="md-alt-text">{{ 'M-Y' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item class="md-indent">
+                <md-button ng-click="aWCtrl.sampleAction('cut', $event)">
+                  <i class="material-icons md-24">content_cut</i>  Cut
+                  <span class="md-alt-text">{{ 'M-X' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item class="md-indent">
+                <md-button ng-click="aWCtrl.sampleAction('copy', $event)">
+                   <i class="material-icons md-24">content_copy</i>  Copy
+                  <span class="md-alt-text">{{ 'M-C' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item class="md-indent">
+                <md-button ng-click="aWCtrl.sampleAction('paste', $event)">
+                   <i class="material-icons md-24">content_paste</i>  Paste
+                  <span class="md-alt-text">{{ 'M-P' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item class="md-indent">
+                <md-button ng-click="aWCtrl.sampleAction('Find and replace', $event)">
+                  Find and replace...
+                  <span class="md-alt-text">{{ 'M-S-H' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
+          <md-menu>
+            <button ng-click="$mdOpenMenu()">
+              View
+            </button>
+            <md-menu-content>
+              <md-menu-item type="checkbox" ng-model="aWCtrl.settings.printLayout">Print layout</md-menu-item>
+              <md-menu-item class="md-indent">
+                <md-menu>
+                  <md-button ng-click="$mdOpenMenu()">Mode</md-button>
+                  <md-menu-content width="3">
+                    <md-menu-item type="radio" ng-model="aWCtrl.settings.presentationMode" value="'presentation'">Presentation</md-menu-item>
+                    <md-menu-item type="radio" ng-model="aWCtrl.settings.presentationMode" value="'edit'">Edit</md-menu-item>
+                    <md-menu-item type="radio" ng-model="aWCtrl.settings.presentationMode" value="'modifiable'">Modifiable</md-menu-item>
+                  </md-menu-content>
+                </md-menu>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item type="checkbox" ng-model="aWCtrl.settings.showRuler">Show ruler</md-menu-item>
+              <md-menu-item type="checkbox" ng-model="aWCtrl.settings.showEquationToolbar">Show equation toolbar</md-menu-item>
+              <md-menu-item type="checkbox" ng-model="aWCtrl.settings.showSpellingSuggestions">Show spelling suggestions</md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item type="checkbox" ng-model="aWCtrl.settings.compactControls">Compact controls</md-menu-item>
+              <md-menu-item type="checkbox" ng-model="aWCtrl.settings.fullScreen">Full screen</md-menu-item>
+            </md-menu-content>
+          </md-menu>
+          <md-menu>
+            <button ng-click="$mdOpenMenu()">
+              Format
+            </button>
+            <md-menu-content>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('bold', $event)">
+                  Bold
+                  <span class="md-alt-text"> {{ 'M-B' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('italic', $event)">
+                  Italic
+                  <span class="md-alt-text">{{ 'M-I' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('underline', $event)">
+                  Underline
+                  <span class="md-alt-text">{{ 'M-U' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('strikethrough', $event)">
+                  Strikethrough
+                  <span class="md-alt-text">{{ 'A-S-5' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('superscript', $event)">
+                  Superscript
+                  <span class="md-alt-text">{{ 'M-.' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-item>
+                <md-button ng-click="aWCtrl.sampleAction('subscript', $event)">
+                  Subscript
+                  <span class="md-alt-text">{{ 'M-,' | keyboardShortcut }}</span>
+                </md-button>
+              </md-menu-item>
+              <md-menu-divider></md-menu-divider>
+              <md-menu-item><md-button ng-click="aWCtrl.toggleSetting('clearFormatting')">Clear Formatting</md-button></md-menu-item>
+            </md-menu-content>
+          </md-menu>
+        </md-menu-bar>
+      </div>
+    </md-content>
+  </md-toolbar>
