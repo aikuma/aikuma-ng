@@ -9,7 +9,7 @@ angular
          $mdDialog.show({
             controller: DialogController,
             controllerAs: 'ctrl',
-            templateUrl: 'views/dialog-newanno.html',
+            templateUrl: 'views/edit-diag-new.html',
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose:true
@@ -111,7 +111,7 @@ function DialogController($mdDialog, $timeout, $q, $log, AnnowebService) {
     }
     function selectedItemChange(item,idx) {
       $log.info('Item changed to ' + JSON.stringify(item));
-      if (item.id) self.choices[idx]['ISO'] = item.id;      
+      if (item.id) {self.choices[idx]['ISO'] = item.id;}
     }
      
     function loadAllx() {

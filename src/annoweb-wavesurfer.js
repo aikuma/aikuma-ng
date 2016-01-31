@@ -7,14 +7,14 @@
             function(randomColor, extractRegions) {
                 return {
                     restrict: 'E',
-                    templateUrl: 'views/waveform.html',
+                    templateUrl: 'views/edit-waveform.html',
                     controllerAs: 'wavesurf',
                     controller: function ($timeout, $scope, $element, $attrs, AnnowebService) {
                         var vm = this,
                             wsdefaults = {
                                 container: "#wave-form",
                                 normalize: true,
-                                scrollParent: true,
+                                scrollParent: true
                             };
                         /* default variables */
                         vm.paused = true;
@@ -96,7 +96,7 @@
                                 vm.wavesurfer.loadBlob(fileOrUrl);
                             }
 
-                        }
+                        };
 
                         /* If you use the zoom slider */
                         vm.zoomhandler = function() {
@@ -107,17 +107,17 @@
                             if (vm.zoomval > 50) vm.zoomval--; /* It seems to break if we try to zoom out tooo much, find out why */
                             console.log(vm.zoomval);
                             vm.wavesurfer.zoom(vm.zoomval);
-                        }
+                        };
                         vm.zoomIn = function() {
-                            if (vm.zoomval < 350) vm.zoomval++;
+                            if (vm.zoomval < 350) {vm.zoomval++;}
                             vm.wavesurfer.zoom(vm.zoomval);
-                        }
+                        };
 
                         vm.play = function (url) {
                             if (!vm.wavesurfer) {
                                 return;
-                            };
-                            vm.activeUrl = url
+                            }
+                            vm.activeUrl = url;
                             vm.wavesurfer.once('ready', function () {
                                 vm.wavesurfer.play();
                                 //$scope.$apply();
@@ -147,7 +147,7 @@
                                     tiers: tiersel
                                 });
 
-                                vm.elan.on('ready', function (data) {
+                                vm.elan.on('ready', function () {
                                     console.log('elan plugin reported ready');
                                     // $scope.wavesurfer.load('media/001z.mp3');
                                 });
@@ -163,7 +163,7 @@
                                     });
                                 });
                             }
-                        }
+                        };
 
                         /*
                          THIS CODE NEEDS TO BE RE-WRITTEN / REMOVED
@@ -227,7 +227,7 @@
                             vm.initwavesurfer();
                             AnnowebService.regionlist = [];
                             vm.loadnew(AnnowebService.filehandle);
-                        })
+                        });
                         /* take regions from extractRegions(), apply random color and add to wavesurfer */
                         $scope.$on('autoregion', function() {
                             var regionlist = [];
@@ -237,7 +237,7 @@
                                     var nr = vm.wavesurfer.addRegion(region);
                                     regionlist.push(nr);
                                 });
-                            }
+                            };
                             loadRegions(
                                 // extractRegions() is in annoweb-util module.
                                 extractRegions(
@@ -246,7 +246,7 @@
                                 )
                             );
                             AnnowebService.newregions(regionlist);
-                        })
+                        });
 
                         $timeout(function () {
                             AnnowebService.wavesurfer_ready();

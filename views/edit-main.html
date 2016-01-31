@@ -1,0 +1,44 @@
+<!-- Main template for the edit view. Three main sections: Menubar, a selection of horizontal tabs, and a footer -->
+
+<div layout="row">
+    <ng-menubar flex></ng-menubar>
+</div>
+
+<md-content flex>
+    <md-tabs md-dynamic-height md-selected="data.selectedIndex" style="max-height: 400px;overflow-y:auto;" md-align-tabs="{{data.bottom ? 'bottom' : 'top'}}">
+        <md-tab id="tab1">
+            <md-tab-label>Annotation</md-tab-label>
+            <md-tab-body>
+                <md-content>
+                    <ng-annotation></ng-annotation>
+                </md-content>
+            </md-tab-body>
+        </md-tab>
+        <md-tab id="tab2">
+            <md-tab-label>Metadata</md-tab-label>
+            <md-tab-body>
+                <md-content>
+                    <ng-metadata></ng-metadata>
+                </md-content>
+            </md-tab-body>
+        </md-tab>
+        <md-tab id="tab3">
+            <md-tab-label>Changes</md-tab-label>
+            <md-tab-body>
+                <md-content>
+                    <ng-changes></ng-changes>
+                </md-content>
+            </md-tab-body>
+        </md-tab>
+    </md-tabs>
+</md-content>
+
+
+<div layout="column" layout-align="space-between stretch" style="border-color:#f22">
+    <ng-tabs flex></ng-tabs>
+    <md-content style="background-color:#ddd">
+        <div layout="row" layout-align="space-between start">
+            <input flex id='fileinput' type='file' file-model='file' accept="audio/*" />
+        </div>
+    </md-content>
+</div>

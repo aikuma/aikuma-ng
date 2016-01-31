@@ -17,27 +17,13 @@
     <!-- endbuild -->
     <title>Annoweb</title>
 </head>
-<body ng-app="annoweb" ng-controller='annoWebController as aWCtrl' style="background-image: url('img/background.jpg');background-repeat: repeat-y;">
-<div layout="row">
-    <div flex></div>
-        <div layout-fill id="annowebframe" style="overflow-y:hidden;width:1000px;">
-            <div layout="row">
-                <ng-menubar flex></ng-menubar>
+<body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y;">
+    <div layout="row">
+        <div flex></div>
+            <div layout-fill id="annowebframe" style="overflow-y:hidden;width:1000px;">
+                <div ng-view></div>
             </div>
-            <div layout="row">
-                <!-- This Angular directive's attrs map to wavesurfer's options but requires underscores in front of capitalised letters -->
-                <ng-wavesurfer flex layout-fill url="media/tea.mp3" wave-color="#3f51b5" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-wavesurfer>
-            </div>
-            <div layout="column" layout-align="space-between stretch" style="border-color:#f22">
-                <ng-tabs flex></ng-tabs>
-                <md-content style="background-color:#ddd">
-                    <div layout="row" layout-align="space-between start">
-                        <input flex id='fileinput' type='file' file-model='file' accept="audio/*" />
-                    </div>
-                </md-content>
-            </div>
-        </div>
-    <div flex></div>
-</div>
+        <div flex></div>
+    </div>
 </body>
 </html>

@@ -1,4 +1,10 @@
 <!--  Description Tab's Content  -->
+
+<div layout="row">
+    <!-- This Angular directive's attrs map to wavesurfer's options but requires underscores in front of capitalised letters -->
+    <ng-wavesurfer flex layout-fill url="media/tea.mp3" wave-color="#3f51b5" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-wavesurfer>
+</div>
+
    <md-content flex layout-padding>
    <!-- This is displayed if we have regions to edit -->
     <div ng-show="aeditCtrl.editable">

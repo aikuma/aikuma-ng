@@ -1,0 +1,94 @@
+<md-toolbar class="md-menu-toolbar">
+    <md-content layout="row">
+        <md-toolbar-filler layout layout-align="center center">
+            <md-icon md-svg-icon="action:translate" style="width:60px;height:60px;"></md-icon>
+        </md-toolbar-filler>
+        <div>
+            <h2 class="md-toolbar-tools">Annoweb</h2>
+
+            <md-menu-bar>
+                <md-menu>
+                    <button ng-click="$mdOpenMenu()">
+                        File
+                    </button>
+                    <md-menu-content>
+                        <md-menu-item>
+                            <md-button ng-click="ctrl.sampleAction('share', $event)">
+                                Share...
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-divider></md-menu-divider>
+                        <md-menu-item>
+                            <md-button ng-click="ctrl.sampleAction('New', $event)">
+                                New
+                            </md-button>
+                          </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="ctrl.sampleAction('Open', $event)">
+                                Open...
+                                <span class="md-alt-text"> {{ 'M-O' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button disabled="disabled" ng-click="ctrl.sampleAction('Rename', $event)">
+                                Rename
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-divider></md-menu-divider>
+                        <md-menu-item>
+                            <md-button ng-click="ctrl.sampleAction('Print', $event)">
+                                Print
+                                <span class="md-alt-text">{{ 'M-P' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                <md-menu>
+                    <button ng-click="$mdOpenMenu()">
+                        Edit
+                    </button>
+                    <md-menu-content>
+                        <md-menu-item class="md-indent">
+                            <md-button ng-click="ctrl.sampleAction('undo', $event)">
+                                <md-icon md-svg-icon="content:undo"></md-icon> Undo
+                                <span class="md-alt-text">{{ 'M-Z' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item class="md-indent">
+                            <md-button ng-click="ctrl.sampleAction('redo', $event)">
+                                <md-icon md-svg-icon="content:redo"></md-icon>  Redo
+                                <span class="md-alt-text">{{ 'M-Y' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-divider></md-menu-divider>
+                        <md-menu-item class="md-indent">
+                            <md-button ng-click="ctrl.sampleAction('cut', $event)">
+                                <md-icon md-svg-icon="content:content_cut"></md-icon>  Cut
+                                <span class="md-alt-text">{{ 'M-X' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item class="md-indent">
+                            <md-button ng-click="ctrl.sampleAction('copy', $event)">
+                                <md-icon md-svg-icon="content:content_copy"></md-icon>  Copy
+                                <span class="md-alt-text">{{ 'M-C' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item class="md-indent">
+                            <md-button ng-click="ctrl.sampleAction('paste', $event)">
+                                <md-icon md-svg-icon="content:content_paste"></md-icon>  Paste
+                                <span class="md-alt-text">{{ 'M-P' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-divider></md-menu-divider>
+                        <md-menu-item class="md-indent">
+                            <md-button ng-click="ctrl.sampleAction('Find and replace', $event)">
+                                Find and replace...
+                                <span class="md-alt-text">{{ 'M-S-H' | keyboardShortcut }}</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </md-menu-bar>
+        </div>
+    </md-content>
+</md-toolbar>
