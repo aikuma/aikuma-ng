@@ -18,7 +18,7 @@
                 restrict: "E",
                 templateUrl: "views/edit-tab-annotate.html",
                 controller: annotationController,
-                controllerAs: 'aeditCtrl'
+                controllerAs: 'ctrl'
             };
         })
         .directive("ngMetadata", function() {
@@ -33,6 +33,12 @@
             return {
                 restrict: "E",
                 templateUrl: "views/edit-tab-changes.html"
+            };
+        })
+        .directive("ngEditHotkeys", function() {
+            return {
+                restrict: "E",
+                controller: editHotkeyController
             };
         });
 
@@ -70,26 +76,62 @@
         });
     }
 
-    function annotationController($scope, AnnowebService, AnnowebDialog) {
+    function annotationController($scope, AnnowebService, AnnowebDialog, hotkeys) {
         var vm = this;
-        $scope.$on('regions_loaded', function() {
-            console.log('annotation controller received msg.');
-            console.log(AnnowebService.regionlist);
-            vm.regionlist = AnnowebService.regionlist;
-            if (vm.regionlist.length) vm.editable = true;
-            $scope.$apply();
-        });
+        vm.cur = 0;
+        vm.selectedTime = 0;
+        vm.regions = [];
+        vm.active = {};
+        vm.repeat = false;
         vm.addanno = function(ev) {
             AnnowebDialog.newanno();
         };
-        $scope.$on('initannotations', function() {
+        $scope.$on('regionsloaded', function() {
+            vm.regions = AnnowebService.regions;
+            vm.annolist = AnnowebService.annotationlist;
             vm.editable = true;
-            vm.alist = AnnowebService.annotationlist;
         });
-        $scope.$on('initregions', function() {
-            vm.editable = true;
-            vm.regionlist = AnnowebService.regionlist;
+        vm.previous = function() {
+            if (vm.cur > 0) {vm.cur--;}
+            vm.selectedTime = vm.cur;
+            vm.regions[vm.cur].r.play();
+        };
+        vm.next = function() {
+            if (vm.cur < (vm.regions.length-1)) {vm.cur++;}
+            vm.selectedTime = vm.cur;
+            vm.regions[vm.cur].r.play();
+        };
+        $scope.$watch('ctrl.selectedTime', angular.bind(vm, function(timeIndex) {
+            vm.cur = timeIndex;
+            if (vm.regions.length) {vm.regions[vm.cur].r.play();}
+        }));
+        vm.dataEnter = function() {
+            console.log(vm.text);
+            vm.text = '';
+            vm.next();
+        };
+
+        vm.tstr = function(secs) {
+            var date = new Date(null);
+            date.setSeconds(secs);
+            // retrieve each value individually - returns h:m:s
+            if (date.getUTCHours() != 0) {
+                return date.getUTCHours() + ':' + date.getUTCMinutes() + ':' +  date.getUTCSeconds() + '.' + (secs % 1).toFixed(1)*10;
+            } else {
+                return date.getUTCMinutes() + ':' +  date.getUTCSeconds() + '.' + (secs % 1).toFixed(1)*10;
+            }
+
+        };
+        vm.toggleactive = function() {
+            vm.repeat = !vm.repeat;
+        };
+        $scope.$on('next', function() {
+            vm.next();
         });
+        $scope.$on('previous', function() {
+            vm.previous();
+        });
+
     }
 
     function MetadataController($scope, AnnowebService) {
@@ -143,6 +185,32 @@
             return '';
         };
         $scope.tags = ["Needs approval", "Unsolicited", "Narrative"];
+    }
+
+    /* This controller is called by a directive with ng-if watching the selected tab. The purpose of this is
+    to create the $scope when the annotation tab is selected and destroy it when the user navigates away. In this way
+    the hotkeys are accessible only when <ng-edit-hotkeys> is visible in the DOM, e.g. when the annotation tab is
+    selected. Note: We maintain wavesurfer on the DOM when other tags are selected. Rebuilding it would be slow.
+     */
+    function editHotkeyController ($rootScope, $scope, hotkeys, AnnowebService) {
+        console.log("edit keys run");
+        hotkeys.bindTo($scope)
+            .add({
+                combo: 'ctrl+space',
+                description: 'Toggle playback',
+                callback: function() {AnnowebService.wavesurfer.playPause();}
+            })
+            .add({
+                combo: 'ctrl+left',
+                description: 'Go to previous region',
+                callback: function() {$rootScope.$broadcast('previous');}
+            })
+            .add({
+                combo: 'ctrl+right',
+                description: 'Go to next region',
+                callback: function() {$rootScope.$broadcast('next');}
+        });
+
     }
 
 

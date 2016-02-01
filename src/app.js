@@ -9,7 +9,8 @@
             'annoweb-service',
             'annoweb-edit',
             'annoweb-view',
-            'file-model'
+            'file-model',
+            'cfp.hotkeys'
         ])
         .config(function($mdIconProvider) {
             $mdIconProvider
@@ -50,4 +51,6 @@
                 }).join(seperator);
             };
         });
+
+
 })();

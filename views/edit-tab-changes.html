@@ -1,6 +1,9 @@
 
 <md-content class="md-padding">
    <div class="row">
+      <h4>1/2/2016</h4>
+      <p>Alpha 4. Implemented first pass at the editing interface. Now full browser screen. Implemented a system for keystroke binding. First pass at behavior when hitting return, will pass to new region. Currently there's no way to create regions, they are just extracted automatically for now. The enable/disable sliders are intended to let the user temporarily disable a type of annotation so that they can streamline moving on to the next segment. Repeat icon inserted, intended to toggle region playback repeating - will probably become multi-modal, such as two-repeats or endlessly-repeat.
+      </p>
       <h4>31/01/2016</h4>
       <p> Alpha 3. Implemented ngRoute views. The edit view is the only one fleshed out and serves the edit-main.html. Now all edit view directives and their controllers are in annoweb-edit.js. Removed tab controller and placed mark up directly in the edit-main.html file. Removed placeholder tabs. Tabs relocated to the top of the page, waveform is only displayed in annotation tab. The net result is that the metadata tab will essentially be a full-screen sub-view.
          Menu bar trimmed to essentials. This may be replaced by a side nav but it will live in the same place for markup purposes. AnnowebService moved into annoweb-service.js. Now there is no general controller for the edit view, only controllers for directives. Removed all in-line controller definitions in favour of the best-practice named functions (at the bottom of annoweb-edit.js). View templates now have a systematic filename of view-type-name such as edit-tab-annotate which describes the annotation tab in the edit view.

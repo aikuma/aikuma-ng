@@ -82,7 +82,7 @@ function DialogController($mdDialog, $timeout, $q, $log, AnnowebService) {
                lang: choice.searchText,
                ISO: choice.ISO,
                type: choice.type
-            })
+            });
          }
       })
       var as_options = {};

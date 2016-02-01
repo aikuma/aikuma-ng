@@ -51,6 +51,7 @@
                                 progressColor: '#999',
                                 cursorColor: '#999'
                             });
+                            AnnowebService.wavesurfer = vm.wavesurfer;
                         };
 
                         vm.initwavesurfer();
@@ -216,10 +217,7 @@
                          */
                         $scope.$on('load_dummydata', function() {
                             console.log("initializing wavesurfer");
-                            vm.loadnew('media/001z.mp3');
-                            //$scope.loadannotation('media/001z.xml');
-                            //$scope.loadnew('media/elan-example1.wav');
-                            //$scope.loadannotation('media/elan-example1.xml');
+                            vm.loadnew('media/elan-example1.mp3');
                         });
                         $scope.$on('loadfile', function() {
                             vm.wavesurfer.clearRegions();
@@ -227,25 +225,6 @@
                             vm.initwavesurfer();
                             AnnowebService.regionlist = [];
                             vm.loadnew(AnnowebService.filehandle);
-                        });
-                        /* take regions from extractRegions(), apply random color and add to wavesurfer */
-                        $scope.$on('autoregion', function() {
-                            var regionlist = [];
-                            var loadRegions = function(regions) {
-                                regions.forEach(function (region) {
-                                    region.color = randomColor(0.1);
-                                    var nr = vm.wavesurfer.addRegion(region);
-                                    regionlist.push(nr);
-                                });
-                            };
-                            loadRegions(
-                                // extractRegions() is in annoweb-util module.
-                                extractRegions(
-                                    vm.wavesurfer.backend.getPeaks(512),
-                                    vm.wavesurfer.getDuration()
-                                )
-                            );
-                            AnnowebService.newregions(regionlist);
                         });
 
                         $timeout(function () {

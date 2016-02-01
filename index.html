@@ -5,6 +5,7 @@
     <!-- build:css css/combined.css -->
         <!-- bower:css -->
         <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
+        <link rel="stylesheet" href="bower_components/angular-hotkeys/build/hotkeys.css" />
         <!-- endbower -->
         <!-- inject:css -->
         <!-- endinject -->
@@ -25,10 +26,10 @@
         <script src="bower_components/wavesurfer.js/plugin/wavesurfer.regions.js"></script>
         <script src="bower_components/wavesurfer.js/plugin/wavesurfer.timeline.js"></script>
         <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="bower_components/angular-hotkeys/build/hotkeys.js"></script>
         <!-- endbower -->
         <!-- inject:js -->
         <script src="src/angular-file-model.js"></script>
-        <script src="src/annoweb-data.js"></script>
         <script src="src/annoweb-dialog.js"></script>
         <script src="src/annoweb-edit.js"></script>
         <script src="src/annoweb-service.js"></script>
@@ -40,13 +41,9 @@
     <!-- endbuild -->
     <title>Annoweb</title>
 </head>
-<body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y;">
-    <div layout="row">
-        <div flex></div>
-            <div layout-fill id="annowebframe" style="overflow-y:hidden;width:1000px;">
-                <div ng-view></div>
-            </div>
-        <div flex></div>
+<body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y" layout="column">
+    <div flex layout="column">
+        <div flex layout="column" ng-view></div>
     </div>
 </body>
 </html>

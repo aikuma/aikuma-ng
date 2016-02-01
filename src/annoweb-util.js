@@ -20,8 +20,9 @@
     awUtil.factory('extractRegions', function(){
         var extractRegions = function(peaks, duration) {
             // Silence params
-            var minValue = 0.0015;
-            var minSeconds = 0.25;
+            //var minValue = 0.0015;
+            var minValue = 0.05;
+            var minSeconds = 0.5;
 
             var length = peaks.length;
             var coef = duration / length;

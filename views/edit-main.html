@@ -5,11 +5,12 @@
 </div>
 
 <md-content flex>
-    <md-tabs md-dynamic-height md-selected="data.selectedIndex" style="max-height: 400px;overflow-y:auto;" md-align-tabs="{{data.bottom ? 'bottom' : 'top'}}">
+    <md-tabs md-dynamic-height md-selected="selectedIndex">
         <md-tab id="tab1">
             <md-tab-label>Annotation</md-tab-label>
             <md-tab-body>
                 <md-content>
+                    <ng-edit-hotkeys ng-if="selectedIndex==0"></ng-edit-hotkeys>
                     <ng-annotation></ng-annotation>
                 </md-content>
             </md-tab-body>
@@ -32,6 +33,7 @@
         </md-tab>
     </md-tabs>
 </md-content>
+
 
 
 <div layout="column" layout-align="space-between stretch" style="border-color:#f22">
