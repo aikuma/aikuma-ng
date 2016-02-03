@@ -2,48 +2,49 @@
 <html lang="en" ng-app="annoweb">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
     <!-- build:css css/combined.css -->
-        <!-- bower:css -->
-        <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
-        <link rel="stylesheet" href="bower_components/angular-hotkeys/build/hotkeys.css" />
-        <!-- endbower -->
-        <!-- inject:css -->
-        <!-- endinject -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
+    <link rel="stylesheet" href="bower_components/angular-hotkeys/build/hotkeys.css" />
+    <!-- endbower -->
+    <!-- inject:css -->
+    <!-- endinject -->
     <!-- endbuild -->
 
     <!-- build:js scripts/combined.js -->
-        <!-- bower:js -->
-        <script src="bower_components/angular/angular.js"></script>
-        <script src="bower_components/angular-animate/angular-animate.js"></script>
-        <script src="bower_components/angular-aria/angular-aria.js"></script>
-        <script src="bower_components/angular-messages/angular-messages.js"></script>
-        <script src="bower_components/angular-material/angular-material.js"></script>
-        <script src="bower_components/papaparse/papaparse.js"></script>
-        <script src="build/wavesurfer.js"></script>
-        <script src="bower_components/wavesurfer.js/plugin/wavesurfer.elan.js"></script>
-        <script src="bower_components/wavesurfer.js/plugin/wavesurfer.microphone.js"></script>
-        <script src="bower_components/wavesurfer.js/plugin/wavesurfer.minimap.js"></script>
-        <script src="bower_components/wavesurfer.js/plugin/wavesurfer.regions.js"></script>
-        <script src="bower_components/wavesurfer.js/plugin/wavesurfer.timeline.js"></script>
-        <script src="bower_components/angular-route/angular-route.js"></script>
-        <script src="bower_components/angular-hotkeys/build/hotkeys.js"></script>
-        <!-- endbower -->
-        <!-- inject:js -->
-        <script src="src/angular-file-model.js"></script>
-        <script src="src/annoweb-dialog.js"></script>
-        <script src="src/annoweb-edit.js"></script>
-        <script src="src/annoweb-service.js"></script>
-        <script src="src/annoweb-util.js"></script>
-        <script src="src/annoweb-view.js"></script>
-        <script src="src/annoweb-wavesurfer.js"></script>
-        <script src="src/app.js"></script>
-        <!-- endinject -->
+    <!-- bower:js -->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.js"></script>
+    <script src="bower_components/angular-material/angular-material.js"></script>
+    <script src="bower_components/papaparse/papaparse.js"></script>
+    <script src="build/wavesurfer.js"></script>
+    <script src="bower_components/wavesurfer.js/plugin/wavesurfer.elan.js"></script>
+    <script src="bower_components/wavesurfer.js/plugin/wavesurfer.microphone.js"></script>
+    <script src="bower_components/wavesurfer.js/plugin/wavesurfer.minimap.js"></script>
+    <script src="bower_components/wavesurfer.js/plugin/wavesurfer.regions.js"></script>
+    <script src="bower_components/wavesurfer.js/plugin/wavesurfer.timeline.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-hotkeys/build/hotkeys.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <!-- endbower -->
+    <!-- inject:js -->
+    <script src="src/angular-file-model.js"></script>
+    <script src="src/annoweb-dialog.js"></script>
+    <script src="src/annoweb-edit.js"></script>
+    <script src="src/annoweb-service.js"></script>
+    <script src="src/annoweb-util.js"></script>
+    <script src="src/annoweb-view.js"></script>
+    <script src="src/annoweb-wavesurfer.js"></script>
+    <script src="src/app.js"></script>
+    <!-- endinject -->
     <!-- endbuild -->
     <title>Annoweb</title>
 </head>
 <body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y" layout="column">
-    <div flex layout="column">
-        <div flex layout="column" ng-view></div>
-    </div>
+<div ng-view></div>
 </body>
 </html>
+

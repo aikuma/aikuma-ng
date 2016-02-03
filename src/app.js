@@ -12,7 +12,7 @@
             'file-model',
             'cfp.hotkeys'
         ])
-        .config(function($mdIconProvider) {
+        .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
                 .iconSet('social','img/icons/sets/social-icons.svg', 24)
                 .iconSet('content','img/icons/sets/content-icons.svg', 24)
@@ -20,7 +20,7 @@
                 .iconSet('nav','img/icons/sets/navigation-icons.svg', 24)
                 .iconSet('av','img/icons/sets/av-icons.svg', 24)
                 .defaultIconSet('img/icons/sets/core-icons.svg', 24);
-        })
+        }])
         /* Direct URLs to different template paths */
         .config( ['$routeProvider', function ($routeProvider) {
             $routeProvider
@@ -34,7 +34,7 @@
                     redirectTo: '/edit'
                 });
         }])
-        .filter('keyboardShortcut', function($window) {
+        .filter('keyboardShortcut', ['$window', function($window) {
             return function(str) {
                 if (!str) {return;}
                 var keys = str.split('-');
@@ -50,7 +50,7 @@
                     return last ? key : abbreviations[key];
                 }).join(seperator);
             };
-        });
+        }]);
 
 
 })();

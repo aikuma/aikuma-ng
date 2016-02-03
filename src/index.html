@@ -2,28 +2,24 @@
 <html lang="en" ng-app="annoweb">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
     <!-- build:css css/combined.css -->
-        <!-- bower:css -->
-        <!-- endbower -->
-        <!-- inject:css -->
-        <!-- endinject -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- inject:css -->
+    <!-- endinject -->
     <!-- endbuild -->
 
     <!-- build:js scripts/combined.js -->
-        <!-- bower:js -->
-        <!-- endbower -->
-        <!-- inject:js -->
-        <!-- endinject -->
+    <!-- bower:js -->
+    <!-- endbower -->
+    <!-- inject:js -->
+    <!-- endinject -->
     <!-- endbuild -->
     <title>Annoweb</title>
 </head>
-<body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y;">
-    <div layout="row">
-        <div flex></div>
-            <div layout-fill id="annowebframe" style="overflow-y:hidden;width:1000px;">
-                <div ng-view></div>
-            </div>
-        <div flex></div>
-    </div>
+<body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y" layout="column">
+<div ng-view></div>
 </body>
 </html>
+

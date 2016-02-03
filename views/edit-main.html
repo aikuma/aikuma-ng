@@ -1,46 +1,31 @@
 <!-- Main template for the edit view. Three main sections: Menubar, a selection of horizontal tabs, and a footer -->
 
-<div layout="row">
-    <ng-menubar flex></ng-menubar>
-</div>
+<ng-menubar flex></ng-menubar>
 
-<md-content flex>
-    <md-tabs md-dynamic-height md-selected="selectedIndex">
-        <md-tab id="tab1">
-            <md-tab-label>Annotation</md-tab-label>
-            <md-tab-body>
-                <md-content>
-                    <ng-edit-hotkeys ng-if="selectedIndex==0"></ng-edit-hotkeys>
-                    <ng-annotation></ng-annotation>
-                </md-content>
-            </md-tab-body>
-        </md-tab>
-        <md-tab id="tab2">
-            <md-tab-label>Metadata</md-tab-label>
-            <md-tab-body>
-                <md-content>
-                    <ng-metadata></ng-metadata>
-                </md-content>
-            </md-tab-body>
-        </md-tab>
-        <md-tab id="tab3">
-            <md-tab-label>Changes</md-tab-label>
-            <md-tab-body>
-                <md-content>
-                    <ng-changes></ng-changes>
-                </md-content>
-            </md-tab-body>
-        </md-tab>
-    </md-tabs>
+<md-tabs md-selected="selectedIndex">
+    <md-tab label="Annotation"></md-tab>
+    <md-tab label="Metadata"></md-tab>
+    <md-tab label="Changes"></md-tab>
+</md-tabs>
+
+<md-content flex layout="row" ng-if="selectedIndex==0">
+    <ng-edit-hotkeys></ng-edit-hotkeys>
+    <ng-annotation flex></ng-annotation>
 </md-content>
 
+<md-content layout="row" ng-if="selectedIndex==1">
+    <ng-metadata flex></ng-metadata>
+</md-content>
 
+<md-content layout="row" ng-if="selectedIndex==2">
+    <ng-changes flex></ng-changes>
+</md-content>
 
 <div layout="column" layout-align="space-between stretch" style="border-color:#f22">
-    <ng-tabs flex></ng-tabs>
     <md-content style="background-color:#ddd">
-        <div layout="row" layout-align="space-between start">
+        <div layout="row" layout-align="space-between" style="padding-right: 8px;">
             <input flex id='fileinput' type='file' file-model='file' accept="audio/*" />
+            <span class="md-body-2"><i>Annoweb Alpha 5</i></span>
         </div>
     </md-content>
 </div>

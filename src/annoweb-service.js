@@ -10,11 +10,15 @@
         * .newregions(regions)
         * .autoregions()
         * .
-        *
-        *
+        * regions = a list of region objects
+        * region object = { r: wavesurfer region object, start: <start>, end: <end>, anno: {annotation object} }
+        * annotation object = { '0': 'first annotation', '1': 'second annotation etc'}
+        *   note: keyed against the annotation list
+        * annotation list = a list of annotation desc objects
+        * annotation desc object = {'lang': <language name>, 'ISO': <optional language ISO code>, 'type': <type of annotation>}
         * */
 
-        .factory('AnnowebService', function ($rootScope, randomColor, extractRegions) {
+        .factory('AnnowebService', ['$rootScope', 'randomColor', 'extractRegions', function ($rootScope, randomColor, extractRegions) {
             var factory = {};
             factory.regions = [];
             factory.annotationlist = [];
@@ -95,5 +99,5 @@
 
 
             return factory;
-        });
+        }]);
 })();

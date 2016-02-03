@@ -1,20 +1,26 @@
-
-<md-content class="md-padding">
+   <div class="row">
+      <h4>3/2/2016</h4>
+      <p>Alpha 5. Made source files minification safe (related to angular), some code cleanup. Dist build now works. Reworded annotation interface, previous and next summary lines now display the annotation which is currently has focus. Simpler parent layout avoids weird content resizing issues. Many JSHint issues fixed. Temporarily dropped in roboto font fetched via the web (we need locally installed). </p>
+   </div>
    <div class="row">
       <h4>1/2/2016</h4>
       <p>Alpha 4. Implemented first pass at the editing interface. Now full browser screen. Implemented a system for keystroke binding. First pass at behavior when hitting return, will pass to new region. Currently there's no way to create regions, they are just extracted automatically for now. The enable/disable sliders are intended to let the user temporarily disable a type of annotation so that they can streamline moving on to the next segment. Repeat icon inserted, intended to toggle region playback repeating - will probably become multi-modal, such as two-repeats or endlessly-repeat.
       </p>
+   </div>
+   <div class="row">
       <h4>31/01/2016</h4>
       <p> Alpha 3. Implemented ngRoute views. The edit view is the only one fleshed out and serves the edit-main.html. Now all edit view directives and their controllers are in annoweb-edit.js. Removed tab controller and placed mark up directly in the edit-main.html file. Removed placeholder tabs. Tabs relocated to the top of the page, waveform is only displayed in annotation tab. The net result is that the metadata tab will essentially be a full-screen sub-view.
          Menu bar trimmed to essentials. This may be replaced by a side nav but it will live in the same place for markup purposes. AnnowebService moved into annoweb-service.js. Now there is no general controller for the edit view, only controllers for directives. Removed all in-line controller definitions in favour of the best-practice named functions (at the bottom of annoweb-edit.js). View templates now have a systematic filename of view-type-name such as edit-tab-annotate which describes the annotation tab in the edit view.
          </p>
       <p>Side note: I looked at UI Route which offers the ability to route states of the app and not just views. This looked promising but complex, so the simpler ngRoute was used for now. UI route may be a better long term solution, particularly for persisting application states across sessions.
       </p>
+   </div>
    <div class="row">
       <h4>27/01/2016</h4>
       <p>Alpha 2. Reworked project to be handled with a build chain. Removed all left-over libraries, changed directory structure. Some things are ugly because they still depend on bootstrap css which I've removed. New readme.txt to describe project structure. Directory also has dependency source trees for node and bower. Perhaps I can move them to a parent directory?  Also found that wavesurfer's minimap starts to do auto scrolling weird stuff if I enable a flexible layout. The minimap already has other bugs, I think I'll fork it.
       </p>
-
+   </div>
+   <div class="row">
       <h4>24/01/2016</h4>
       <p>Implemented AnnowebService to handle communications between directives. The model is to call a method on the service to do something, like load a file. The service will broadcast to necessary components. It also holds
          the common data such as regions and annotations. This provided the solution for how to initialise the app. The wavesurfer directive has a timeout function with 0-time. This is a reasonable way to decide the wavesurfer directive is ready, so we call an AnnowebService method and that handles telling the other components what to do, including the annotation display (shortly to be an editor!). Fixed a bug in the wavesurfer minimap plugin that would not correctly refresh on new file. A good day's work.    
@@ -24,7 +30,7 @@
       <h4>23/01/2016</h4>
       <p>Dumped bootstrap. Annoweb will now use material design. This is surprisingly difficult but a) looks better and b) is particularly robust for changes in screen size. First major feature is a fully functional
          menu bar. Not clear if this is better than left-side pull-in menu. Implemented mainly because the example code on Angular Material also showed off snazzy ways to register key shortcuts which seems to be highly desirable. 
-         A bit of hacking is required to make file dialog open (you need a hiden input field). The main controller will now handle menu inputs, intialization and so on. 
+         A bit of hacking is required to make file dialog open (you need a hiden input field). The main controller will now handle menu inputs, intialization and so on.</p>
       </p>
    </div>
    <div class="row">
@@ -36,5 +42,3 @@
       <h4>21/01/2016</h4>
       <p>Investigated ui grid, decided I don't like it again and removed it (lol). Implemented bare-bones table-based annotation description. Discovered limitations in wavesurfer regions handling (not possible to iterate over data set). Impetus to move transcription data to a factory. Wavesurfer regions are now merely duplicates of annotation data for the purposes of visualisation only.</p>
    </div>
-
-</md-content>

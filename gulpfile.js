@@ -58,6 +58,9 @@ gulp.task('deploy', ['cleandist'], function () {
     // copy images
     gulp.src('./img/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
+    // copy testing media folder
+    gulp.src('./media/**/*', {base: './'})
+        .pipe(gulp.dest('dist'));
     // copy chrome app files
     gulp.src('./chromeapp/**/*', {base: './chromeapp'})
         .pipe(gulp.dest('dist'));

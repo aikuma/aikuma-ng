@@ -42,9 +42,10 @@
             };
         });
 
-    /* Controller functions here to avoid in-line functions in the directives */
+    /* Controller functions here to avoid in-line functions in the directives
+    * Change to support minifiction */
 
-    function menuController($mdDialog, $scope, AnnowebService) {
+    var menuController = function($mdDialog, $scope, AnnowebService) {
         var vm = this;
         vm.settings = {
             printLayout: true,
@@ -53,7 +54,7 @@
             presentationMode: 'edit'
         };
         vm.sampleAction = function(name, ev) {
-            if (name === 'Open') vm.fileselect();
+            if (name === 'Open') {vm.fileselect();}
             else {
                 $mdDialog.show($mdDialog.alert()
                     .title(name)
@@ -74,16 +75,20 @@
         $scope.$watch('file', function (newVal) {
             if (newVal) { AnnowebService.loadfile(newVal); }
         });
-    }
+    };
+    menuController.$inject = ['$mdDialog', '$scope', 'AnnowebService'];
 
-    function annotationController($scope, AnnowebService, AnnowebDialog, hotkeys) {
+    var annotationController = function ($scope, AnnowebService, AnnowebDialog) {
         var vm = this;
         vm.cur = 0;
         vm.selectedTime = 0;
         vm.regions = [];
         vm.active = {};
         vm.repeat = false;
-        vm.addanno = function(ev) {
+        vm.previoustext = '';
+        vm.previoustype = '';
+        vm.curanno = 0;
+        vm.addanno = function() {
             AnnowebDialog.newanno();
         };
         $scope.$on('regionsloaded', function() {
@@ -122,9 +127,24 @@
             }
 
         };
-        vm.toggleactive = function() {
+        vm.togglerepeat = function() {
             vm.repeat = !vm.repeat;
         };
+        // Fetch a summary object based on relative position to the vm.cur cursor.
+        vm.getSummary = function(relpos) {
+            var sumpos = vm.cur + relpos;
+            if (sumpos >= 0 && sumpos < vm.regions.length-1) {
+                return {
+                    'type': makeNiceAnnoTypeStr(vm.curanno),
+                    'text': vm.regions[sumpos].anno[vm.curanno]
+                };
+            }
+        };
+
+        var makeNiceAnnoTypeStr = function(annoidx) {
+          return vm.annolist[annoidx].type + ' (' + vm.annolist[annoidx].lang + ')';
+        };
+
         $scope.$on('next', function() {
             vm.next();
         });
@@ -132,9 +152,10 @@
             vm.previous();
         });
 
-    }
+    };
+    annotationController.$inject = ['$scope', 'AnnowebService', 'AnnowebDialog', 'hotkeys'];
 
-    function MetadataController($scope, AnnowebService) {
+    var MetadataController = function ($scope) {
         $scope.today = function() {
             $scope.dt = new Date();
         };
@@ -185,15 +206,15 @@
             return '';
         };
         $scope.tags = ["Needs approval", "Unsolicited", "Narrative"];
-    }
+    };
+    MetadataController.$inject = ['$scope', 'AnnowebService', 'AnnowebDialog', 'hotkeys'];
 
     /* This controller is called by a directive with ng-if watching the selected tab. The purpose of this is
     to create the $scope when the annotation tab is selected and destroy it when the user navigates away. In this way
     the hotkeys are accessible only when <ng-edit-hotkeys> is visible in the DOM, e.g. when the annotation tab is
     selected. Note: We maintain wavesurfer on the DOM when other tags are selected. Rebuilding it would be slow.
      */
-    function editHotkeyController ($rootScope, $scope, hotkeys, AnnowebService) {
-        console.log("edit keys run");
+    var editHotkeyController = function ($rootScope, $scope, hotkeys, AnnowebService) {
         hotkeys.bindTo($scope)
             .add({
                 combo: 'ctrl+space',
@@ -211,7 +232,7 @@
                 callback: function() {$rootScope.$broadcast('next');}
         });
 
-    }
-
+    };
+    editHotkeyController.$inject = ['$rootScope', '$scope', 'hotkeys', 'AnnowebService'];
 
 })();
