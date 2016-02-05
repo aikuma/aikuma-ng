@@ -1,4 +1,4 @@
-This is a description of the files and directory structure of the Annoweb alpha 2 web app.
+This is a description of the files and directory structure of the Annoweb alpha 7 web app.
 
 Note: Code changes are described in the changes tab in the main view.
 

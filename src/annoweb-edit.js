@@ -10,15 +10,15 @@
                 restrict: "E",
                 templateUrl: "views/edit-menubar.html",
                 controller: menuController,
-                controllerAs: 'ctrl'
+                controllerAs: 'mbCtrl'
             };
         })
-        .directive("ngAnnotation", function() {
+        .directive('ngAnnoTab', function() {
             return {
                 restrict: "E",
                 templateUrl: "views/edit-tab-annotate.html",
-                controller: annotationController,
-                controllerAs: 'ctrl'
+                controller: annoTabController,
+                controllerAs: 'atCtrl'
             };
         })
         .directive("ngMetadata", function() {
@@ -35,15 +35,15 @@
                 templateUrl: "views/edit-tab-changes.html"
             };
         })
-        .directive("ngEditHotkeys", function() {
-            return {
-                restrict: "E",
-                controller: editHotkeyController
+        .directive('focusOn', function() {
+            return function(scope, elem, attr) {
+                scope.$on(attr.focusOn, function(e) {
+                    elem[0].focus();
+                });
             };
         });
 
-    /* Controller functions here to avoid in-line functions in the directives
-    * Change to support minifiction */
+    /* Controller functions here to avoid in-line functions in the directives */
 
     var menuController = function($mdDialog, $scope, AnnowebService) {
         var vm = this;
@@ -78,82 +78,23 @@
     };
     menuController.$inject = ['$mdDialog', '$scope', 'AnnowebService'];
 
-    var annotationController = function ($scope, AnnowebService, AnnowebDialog) {
+    var annoTabController = function ($scope, AnnowebService, AnnowebDialog) {
         var vm = this;
-        vm.cur = 0;
-        vm.selectedTime = 0;
-        vm.regions = [];
-        vm.active = {};
-        vm.repeat = false;
-        vm.previoustext = '';
-        vm.previoustype = '';
-        vm.curanno = 0;
-        vm.addanno = function() {
+        vm.editable = false;
+        vm.addanno = function () {
             AnnowebDialog.newanno();
         };
-        $scope.$on('regionsloaded', function() {
-            vm.regions = AnnowebService.regions;
-            vm.annolist = AnnowebService.annotationlist;
+        $scope.$on('regionsloaded', function () {
             vm.editable = true;
-        });
-        vm.previous = function() {
-            if (vm.cur > 0) {vm.cur--;}
-            vm.selectedTime = vm.cur;
-            vm.regions[vm.cur].r.play();
-        };
-        vm.next = function() {
-            if (vm.cur < (vm.regions.length-1)) {vm.cur++;}
-            vm.selectedTime = vm.cur;
-            vm.regions[vm.cur].r.play();
-        };
-        $scope.$watch('ctrl.selectedTime', angular.bind(vm, function(timeIndex) {
-            vm.cur = timeIndex;
-            if (vm.regions.length) {vm.regions[vm.cur].r.play();}
-        }));
-        vm.dataEnter = function() {
-            console.log(vm.text);
-            vm.text = '';
-            vm.next();
-        };
-
-        vm.tstr = function(secs) {
-            var date = new Date(null);
-            date.setSeconds(secs);
-            // retrieve each value individually - returns h:m:s
-            if (date.getUTCHours() != 0) {
-                return date.getUTCHours() + ':' + date.getUTCMinutes() + ':' +  date.getUTCSeconds() + '.' + (secs % 1).toFixed(1)*10;
+            vm.mode = null;
+            if (AnnowebService.annotationoptions.continuous) {
+                vm.mode = 'continuous';
             } else {
-                return date.getUTCMinutes() + ':' +  date.getUTCSeconds() + '.' + (secs % 1).toFixed(1)*10;
+                vm.mode = 'complex';
             }
-
-        };
-        vm.togglerepeat = function() {
-            vm.repeat = !vm.repeat;
-        };
-        // Fetch a summary object based on relative position to the vm.cur cursor.
-        vm.getSummary = function(relpos) {
-            var sumpos = vm.cur + relpos;
-            if (sumpos >= 0 && sumpos < vm.regions.length-1) {
-                return {
-                    'type': makeNiceAnnoTypeStr(vm.curanno),
-                    'text': vm.regions[sumpos].anno[vm.curanno]
-                };
-            }
-        };
-
-        var makeNiceAnnoTypeStr = function(annoidx) {
-          return vm.annolist[annoidx].type + ' (' + vm.annolist[annoidx].lang + ')';
-        };
-
-        $scope.$on('next', function() {
-            vm.next();
         });
-        $scope.$on('previous', function() {
-            vm.previous();
-        });
-
     };
-    annotationController.$inject = ['$scope', 'AnnowebService', 'AnnowebDialog', 'hotkeys'];
+    annoTabController.$inject = ['$scope', 'AnnowebService', 'AnnowebDialog'];
 
     var MetadataController = function ($scope) {
         $scope.today = function() {
@@ -209,30 +150,5 @@
     };
     MetadataController.$inject = ['$scope', 'AnnowebService', 'AnnowebDialog', 'hotkeys'];
 
-    /* This controller is called by a directive with ng-if watching the selected tab. The purpose of this is
-    to create the $scope when the annotation tab is selected and destroy it when the user navigates away. In this way
-    the hotkeys are accessible only when <ng-edit-hotkeys> is visible in the DOM, e.g. when the annotation tab is
-    selected. Note: We maintain wavesurfer on the DOM when other tags are selected. Rebuilding it would be slow.
-     */
-    var editHotkeyController = function ($rootScope, $scope, hotkeys, AnnowebService) {
-        hotkeys.bindTo($scope)
-            .add({
-                combo: 'ctrl+space',
-                description: 'Toggle playback',
-                callback: function() {AnnowebService.wavesurfer.playPause();}
-            })
-            .add({
-                combo: 'ctrl+left',
-                description: 'Go to previous region',
-                callback: function() {$rootScope.$broadcast('previous');}
-            })
-            .add({
-                combo: 'ctrl+right',
-                description: 'Go to next region',
-                callback: function() {$rootScope.$broadcast('next');}
-        });
-
-    };
-    editHotkeyController.$inject = ['$rootScope', '$scope', 'hotkeys', 'AnnowebService'];
 
 })();

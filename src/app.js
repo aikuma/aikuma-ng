@@ -9,6 +9,7 @@
             'annoweb-service',
             'annoweb-edit',
             'annoweb-view',
+            'annoweb-annotation',
             'file-model',
             'cfp.hotkeys'
         ])
@@ -51,6 +52,5 @@
                 }).join(seperator);
             };
         }]);
-
 
 })();

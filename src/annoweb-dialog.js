@@ -3,12 +3,12 @@
     /* This module defines a service for displaying dialogs */
     angular
         .module('annoweb-dialog', [])
-        .factory('AnnowebDialog', ['$mdDialog', 'AnnowebService', function ($mdDialog, AnnowebService) {
+        .factory('AnnowebDialog', ['$document', '$mdDialog', '$mdToast', 'AnnowebService', function ($document, $mdDialog, $mdToast, AnnowebService) {
             var factory = {};
             factory.newanno = function(ev) {
                 $mdDialog.show({
                         controller: DialogController,
-                        controllerAs: 'ctrl',
+                        controllerAs: 'dCtrl',
                         templateUrl: 'views/edit-diag-new.html',
                         parent: angular.element(document.body),
                         targetEvent: ev,
@@ -19,6 +19,27 @@
                     }, function() {
                         factory.status = 'You cancelled the dialog.';
                     });
+            };
+            factory.alert = function(alerttitle, alerttext) {
+                $mdDialog.show(
+                    $mdDialog.alert()
+                        .parent(angular.element(document.querySelector('#popupContainer')))
+                        .clickOutsideToClose(true)
+                        .title(alerttitle)
+                        .textContent(alerttext)
+                        .ariaLabel(alerttitle)
+                        .ok('Yeah OK')
+                    //.targetEvent(ev)
+                );
+            };
+            factory.toast = function(toasttext) {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .parent($document[0].querySelector('#popupContainer'))
+                        .hideDelay(3000)
+                        .position("top left")
+                        .textContent(toasttext)
+                );
             };
             return factory;
         }]);
@@ -39,6 +60,7 @@
                 name: 'Other'
             }
         ];
+        self.choices = [{type:'Annotation'}];
         self.hide = function() {
             $mdDialog.hide();
         };
@@ -50,19 +72,28 @@
         };
         // list of `language` value/display objects
         self.languages = loadAllx();
-        self.options = [
-            {
+        self.options = {
+            'autoregion': {
                 name: 'Auto segment (by silence)',
-                val: 'autoregion',
-                selected: true
+                selected: false,
+                disabled: true,
+                incompatible: 'continuous'
             },
-            {
-                name: 'Diarize (identify speakers) with entirely fictional algorithm',
-                val: 'diarize',
-                selected: false
+            'dummydata': {
+                name: 'Insert dummy data',
+                selected: false,
+                disabled: false,
+                incompatible: null
+            },
+            'continuous': {
+                name: 'Simple annotation',
+                selected: true,
+                disabled: false,
+                incompatible: 'autoregion'
             }
-        ];
-        self.choices = [{}];
+        };
+        self.optionlist = Object.keys(self.options);
+
         self.querySearch   = querySearch;
         self.selectedItemChange = selectedItemChange;
         self.invalid = true;
@@ -85,17 +116,45 @@
                 }
             });
             var as_options = {};
-            self.options.forEach(function(o){
-                as_options[o.val] = true;
+            self.optionlist.forEach(function(o) {
+                as_options[o] = self.options[o].selected;
             });
             AnnowebService.setAnnos(annos, as_options);
             $mdDialog.hide();
         };
 
-
         self.newLanguage = function(language) {
         };
 
+        self.optionToggle = function(item) {
+            if (self.options[item].disabled) {return;}
+            var newstate = !self.options[item].selected;
+            var incitem = self.options[item].incompatible;
+            if (newstate) {
+                if (incitem) {
+                    self.options[incitem].selected = false;
+                    self.options[incitem].disabled = true;
+                }
+            } else {
+                if (incitem) {
+                    self.options[incitem].disabled = false;
+                }
+            }
+            self.options[item].selected = newstate;
+        };
+
+        self.isDisabled = function(item) {
+            return self.options[item].disabled;
+        };
+
+        self.lastFilled = function() {
+            var lastitem = _.last(self.choices);
+            if (lastitem.searchText && lastitem.type) {
+                return true;
+            } else {
+                return false;
+            }
+        };
 
         // ******************************
         // Internal methods

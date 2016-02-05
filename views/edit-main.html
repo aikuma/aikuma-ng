@@ -8,9 +8,9 @@
     <md-tab label="Changes"></md-tab>
 </md-tabs>
 
-<md-content flex layout="row" ng-if="selectedIndex==0">
-    <ng-edit-hotkeys></ng-edit-hotkeys>
-    <ng-annotation flex></ng-annotation>
+<md-content ng-show="selectedIndex==0">
+    <!-- This Angular directive's attrs map to wavesurfer's options but requires underscores in front of capitalised letters -->
+    <ng-anno-tab flex></ng-anno-tab>
 </md-content>
 
 <md-content layout="row" ng-if="selectedIndex==1">
@@ -25,7 +25,7 @@
     <md-content style="background-color:#ddd">
         <div layout="row" layout-align="space-between" style="padding-right: 8px;">
             <input flex id='fileinput' type='file' file-model='file' accept="audio/*" />
-            <span class="md-body-2"><i>Annoweb Alpha 5</i></span>
+            <span class="md-body-2"><i>Annoweb Alpha 7</i></span>
         </div>
     </md-content>
 </div>

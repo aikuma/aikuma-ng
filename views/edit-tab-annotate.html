@@ -1,79 +1,17 @@
-<div layout="row">
-    <!-- This Angular directive's attrs map to wavesurfer's options but requires underscores in front of capitalised letters -->
-    <ng-wavesurfer flex layout-fill url="media/tea.mp3" wave-color="#3f51b5" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-wavesurfer>
+<ng-wavesurfer flex layout-fill url="media/tea.mp3" wave-color="#3f51b5" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-wavesurfer>
+
+<ng-simple-annotation ng-if="atCtrl.editable && atCtrl.mode === 'continuous'" flex layout="row"></ng-simple-annotation>
+
+<!-- This is displayed if we have no regions to edit -->
+<div ng-if="!atCtrl.editable">
+    <md-toolbar class="md-warn">
+        <div class="md-toolbar-tools">
+            <h2 class="md-flex">No annotations yet!</h2>
+        </div>
+    </md-toolbar>
+    <md-button class="md-raised" ng-click="atCtrl.addanno($event)">
+        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+        New annotation
+    </md-button>
 </div>
 
-<div flex layout-padding>
-    <!-- This is displayed if we have regions to edit -->
-    <md-whiteframe layout="column" class="md-inline-form md-whiteframe-3dp" ng-if="ctrl.editable">
-
-        <div layout="row">
-            <div flex="15" layout="column" layout-align="space-between">
-                <md-button ng-click="ctrl.previous()" ng-disabled="ctrl.cur==0"><md-icon md-svg-icon="nav:arrow_drop_up" style="width:42px;height:42px;"></md-icon></md-button>
-            </div>
-            <md-input-container ng-show="ctrl.cur > 0" flex="85"  class="md-block" style="height:16px">
-                <label>{{ ctrl.getSummary(-1).type }}</label>
-                <input disabled ng-model="ctrl.getSummary(-1).text"/>
-            </md-input-container>
-        </div>
-
-        <md-divider></md-divider>
-
-        <div flex layout="row">
-            <div flex="15" layout="column" layout-align="space-between">
-                <md-subheader>Start: {{ ctrl.tstr(ctrl.regions[ctrl.cur].start )}}</md-subheader>
-                <div><md-button ng-class="{'md-primary': ctrl.repeat}" ng-click="ctrl.togglerepeat()"><md-icon md-svg-icon="av:repeat" style="width:32px;height:32px;"></md-icon></md-button></div>
-                <md-subheader>End: {{ ctrl.tstr(ctrl.regions[ctrl.cur].end )}}</md-subheader>
-            </div>
-            <div flex="85" layout="column">
-                <div ng-repeat="anno in ctrl.annolist" layout="row">
-                    <md-input-container flex  class="md-block" style="height:20px">
-                        <label>{{anno.type}} ({{anno.lang}}):</label>
-                        <input ng-focus="ctrl.curanno=$index" ng-disabled="!ctrl.active[$index]" ng-model="ctrl.regions[ctrl.cur].anno[$index]" ng-keyup="$event.keyCode == 13 && ctrl.dataEnter($index)"/>
-                    </md-input-container>
-                    <md-switch ng-model="ctrl.active[$index]" aria-label="Enable" ng-true-value="1" ng-false-value="0" class="md-warn"></md-switch>
-                </div>
-            </div>
-        </div>
-
-        <md-divider></md-divider>
-
-        <div layout="row">
-            <div flex="15" layout="column" layout-align="space-between">
-                <md-button ng-click="ctrl.next()" ng-disabled="ctrl.cur==ctrl.regions.length-2"><md-icon md-svg-icon="nav:arrow_drop_down" style="width:42px;height:42px;"></md-icon></md-button>
-            </div>
-            <md-input-container ng-show="ctrl.cur < ctrl.regions.length-2" flex="85"  class="md-block" style="height:16px">
-                <label>{{ ctrl.getSummary(1).type }}</label>
-                <input disabled ng-model="ctrl.getSummary(1).text"/>
-            </md-input-container>
-        </div>
-
-
-        <div flex>
-                        <span>
-                            <md-button class="md-raised" ng-click="ctrl.previous()" ng-disabled="ctrl.cur==0"><md-icon md-svg-icon="av:skip_previous"></md-icon> Previous</md-button>
-                            <md-button class="md-raised" ng-click="ctrl.next()" ng-disabled="ctrl.cur==ctrl.regions.length-2"><md-icon md-svg-icon="av:skip_next"></md-icon>Next</md-button>
-                        </span>
-        </div>
-
-        <md-input-container>
-            <md-select ng-model="ctrl.selectedTime" aria-label="Select time">
-                <md-option ng-value="$index" ng-repeat="region in ctrl.regions">{{ ctrl.tstr(region.start) }} &mdash; {{ ctrl.tstr(region.end) }}</md-option>
-            </md-select>
-        </md-input-container>
-    </md-whiteframe>
-
-    <!-- This is displayed if we have no regions to edit -->
-    <div ng-if="!ctrl.editable">
-        <md-toolbar class="md-warn">
-            <div class="md-toolbar-tools">
-                <h2 class="md-flex">No annotations yet!</h2>
-            </div>
-        </md-toolbar>
-        <md-button class="md-raised" ng-click="ctrl.addanno($event)">
-            <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-            New annotation
-        </md-button>
-    </div>
-
-</div>

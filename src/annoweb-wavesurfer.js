@@ -56,7 +56,7 @@
                 progressColor: '#999',
                 cursorColor: '#999'
             });
-            AnnowebService.wavesurfer = vm.wavesurfer;
+            AnnowebService.registerWavesurfer(vm.wavesurfer);
         };
 
         vm.initwavesurfer();
@@ -72,7 +72,6 @@
         vm.wavesurfer.on('finish', function () {
             vm.paused = true;
             vm.wavesurfer.seekTo(0);
-            vm.$apply();
         });
 
         // move to a link
@@ -84,9 +83,6 @@
         /* "When audio is loaded, decoded and the waveform drawn." */
         vm.wavesurfer.on('ready', function () {
             console.log("wavesurfer reports ready");
-
-            /* Optionally run auto region extraction */
-            AnnowebService.regionlist = [];
             vm.playbackdisabled = false;
             AnnowebService.fileloaded();
             $scope.$apply();

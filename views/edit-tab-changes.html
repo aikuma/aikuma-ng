@@ -1,3 +1,21 @@
+<div class="row">
+   <h4>5/2/2016</h4>
+   <p>Alpha 7. Good lord, it looks almost usable! Fixed up the new annotation dialog. Add new button behavior, logic on the options with allowances for conflicting options. Implemented a directive to handle focus, now when annotation starts input is
+      focused, and we will now be able to control focus shifts. Fixed a few bugs in the annotation controller, wired up the region progress bar but I don't like it. How about a circular progress marker on the left?
+    Wired up the repeat button. Implemented an alert scheme in the AnnowebDialog service, both large dialogs and pop up toasts.
+      Added a couple of basic error checks such as trying to add a region without advancing play cursor. Added hotkey for viewing hotkey cheat sheet which works in the text input (the default ? is disabled in the text input). Tell the user this on start with a toast.
+      To do: Implement region split in the middle (currently only do split last).
+   </p>
+</div>
+
+   <div class="row">
+      <h4>4/2/2016</h4>
+      <p>Alpha 6. Added debug levels for loading file, dummy data (AnnowebService.debuglevel). Provision for at least two editing modes, simple continuous like Simple ELAN and a more complicated mode where the user has finer control over regions.
+         Changed annotation option system to allow for logic on user selects, e.g. disable continuous mode if the user is using autoregions. Moved hotkeys into annotation controller (annotation directive is now ng-if to the annotation tab, moving away from
+         this tab removes the entire element from the DOM and the hotkeys. This will have ramifications as it means the controller is being destroyed and re-created as well. Reorganised annotation into a separate module
+         and added a controller for the edit view with minimal responsibility to set 'editable' status and to offer a button for the new annotation dialog. edit-tab-annotation deleted, new edit-annotation-simple and annoweb-annotation.js module.
+      </p>
+   </div>
    <div class="row">
       <h4>3/2/2016</h4>
       <p>Alpha 5. Made source files minification safe (related to angular), some code cleanup. Dist build now works. Reworded annotation interface, previous and next summary lines now display the annotation which is currently has focus. Simpler parent layout avoids weird content resizing issues. Many JSHint issues fixed. Temporarily dropped in roboto font fetched via the web (we need locally installed). </p>
