@@ -27,6 +27,8 @@
             aw.annotationlist = [];
             aw.currentRegion = null;
             aw.currentTime = 0;
+            aw.color_sel = "rgba(63, 81, 181, 0.3)";
+            aw.color_unsel = "rgba(63, 81, 181, 0.1)";
             aw.loadfile = function(newfile) {
                 aw.filehandle = newfile;
                 $rootScope.$broadcast('loadfile');
@@ -51,12 +53,28 @@
                 });
                 aw.wavesurfer.on('region-in', function(reg) {
                     aw.currentRegion = reg;
+                    reg.update({color: aw.color_sel});
                     $rootScope.$broadcast('regionenter');
                 });
-                aw.wavesurfer.on('region-out', function() {
-                    aw.currentRegion = null;
+                aw.wavesurfer.on('region-out', function(reg) {
+                    reg.update({color: aw.color_unsel});
                     $rootScope.$broadcast('regionexit');
                 });
+                aw.wavesurfer.on('seek', function(seekfloat) {
+                    aw.seekspot = aw.wavesurfer.getDuration() * seekfloat;
+                });
+                // Behavior to move the currently selected region when you click on it
+                aw.wavesurfer.on('region-click', function(region) {
+                    if (aw.currentRegion.id == region.id) {
+                        $rootScope.$broadcast('sameregionclick');
+                    } else {
+                        aw.currentRegion.update({color: aw.color_unsel});
+                        aw.currentRegion = region;
+                        aw.currentRegion.update({color: aw.color_sel});
+                        $rootScope.$broadcast('regionclick');
+                    }
+                });
+
             };
             Papa.parse("extdata/iso-639-3_20160115.tab", {
                 header: true,
@@ -86,11 +104,10 @@
                         if (aw.annotationoptions.dummydata) {
                             blankanno = aw.dummyanno();
                         } else {
-                            for (var i = 0; i < annotations.length; i++) {
-                                blankanno[i] = '';
-                            }
+                            blankanno = aw.blankAnno();
                         }
                         aw.add_region(0, aw.wavesurfer.getDuration(), blankanno);
+                        aw.currentRegion = aw.get_regionByIndex(0);
                     }
                 }
                 $rootScope.$broadcast('regionsloaded');
@@ -99,13 +116,33 @@
             // Add a region; start, end, object with annotations
             aw.add_region = function(start_t, end_t, annotations) {
                 var reg = {
-                    color: randomColor(0.1),
+                    color: aw.annotationoptions.continuous ? aw.color_sel: randomColor(0.1),
                     start: start_t,
                     end: end_t,
                     data: annotations
                 };
                 var newregion = aw.wavesurfer.addRegion(reg);
+                aw.customStyle(newregion);
                 aw.regions.push(newregion.id);
+            };
+
+            aw.insert_region = function(start_t, end_t, position, annotations) {
+                var reg = {
+                    color: aw.annotationoptions.continuous ? aw.color_sel: randomColor(0.1),
+                    start: start_t,
+                    end: end_t,
+                    data: annotations
+                };
+                var newregion = aw.wavesurfer.addRegion(reg);
+                aw.customStyle(newregion);
+                aw.regions.splice(position, 0, newregion.id);
+            };
+
+            aw.customStyle = function(region) {
+                region.style(region.element, {
+                    boxSizing: 'border-box',
+                    borderRight: 'solid #3F51B5 1px'
+                });
             };
 
             aw.get_region = function(id) {
@@ -124,6 +161,14 @@
                 return danno;
             };
 
+            aw.blankAnno = function() {
+                var blankanno = {};
+                for (var i = 0; i < aw.annotationlist.length; i++) {
+                    blankanno[i] = '';
+                }
+                return blankanno;
+            };
+
             // annotation functions
             aw.splitLastRegion = function() {
                 aw.wavesurfer.pause();
@@ -131,11 +176,17 @@
                 var endt = aw.wavesurfer.getDuration();
                 var lastregion = aw.wavesurfer.regions.list[_.last(aw.regions)];
                 lastregion.update({end: curt});
-                var blankanno = {};
-                for (var i = 0; i < aw.annotationlist.length; i++) {
-                    blankanno[i] = '';
-                }
-                aw.add_region(curt, endt, blankanno);
+                aw.add_region(curt, endt, aw.blankAnno());
+            };
+
+            aw.splitCurrentRegion = function() {
+                var thispos = aw.regions.indexOf(aw.currentRegion.id);
+                aw.wavesurfer.pause();
+                var curt = aw.seekSpot;
+                var this_start = aw.currentRegion.start;
+                var this_end = aw.currentRegion.end;
+                aw.currentRegion.update({end: curt});
+                aw.insert_region(curt, this_end, thispos, aw.blankAnno());
             };
 
             aw.playPause = function () {

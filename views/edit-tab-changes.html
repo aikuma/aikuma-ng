@@ -1,4 +1,10 @@
 <div class="row">
+
+   <h4>9/2/2016</h4>
+   <p>Alpha 8. Further improvements to edit interface. Region colours are gone, now we just use one colour to indicate the current region. Styled the region boxes to show some borders. Mousing over will draw boxes around regions. Clicking on regions will move to the selected region. Implemented the return-key logic,
+      e.g. if there are further active annotations, move focus to the next one. Only create region on hitting enter on the last active annotation. Trimmed start/end times to one decimal place. Implemented split region, but the UI does strange things when you do it.
+   </p>
+   </div>
    <h4>5/2/2016</h4>
    <p>Alpha 7. Good lord, it looks almost usable! Fixed up the new annotation dialog. Add new button behavior, logic on the options with allowances for conflicting options. Implemented a directive to handle focus, now when annotation starts input is
       focused, and we will now be able to control focus shifts. Fixed a few bugs in the annotation controller, wired up the region progress bar but I don't like it. How about a circular progress marker on the left?
@@ -6,7 +12,7 @@
       Added a couple of basic error checks such as trying to add a region without advancing play cursor. Added hotkey for viewing hotkey cheat sheet which works in the text input (the default ? is disabled in the text input). Tell the user this on start with a toast.
       To do: Implement region split in the middle (currently only do split last).
    </p>
-</div>
+   </div>
 
    <div class="row">
       <h4>4/2/2016</h4>

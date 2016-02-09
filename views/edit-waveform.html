@@ -1,7 +1,7 @@
 <!-- This is the top row with a file selector and a region status display -->
 <md-content layout="row" layout-fill layout-align="end end" ng-cloak >
    <div flex="60">
-      S: {{wavesurf.region.start}} E: {{wavesurf.region.end}}
+      S: {{(wavesurf.region.start).toFixed(1)}} E: {{(wavesurf.region.end).toFixed(1)}}
    </div>
    <div flex="20">
       <div layout layout-align="end">

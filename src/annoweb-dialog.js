@@ -20,9 +20,9 @@
                         factory.status = 'You cancelled the dialog.';
                     });
             };
-            factory.alert = function(alerttitle, alerttext) {
+            factory.alert = function(alerttitle, alerttext, callbackfunc) {
                 $mdDialog.show(
-                    $mdDialog.alert()
+                    $mdDialog.alert({onRemoving: callbackfunc})
                         .parent(angular.element(document.querySelector('#popupContainer')))
                         .clickOutsideToClose(true)
                         .title(alerttitle)

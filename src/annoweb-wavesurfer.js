@@ -77,6 +77,16 @@
         // move to a link
         vm.wavesurfer.on('region-mouseenter', function(regionobj) {
             vm.region = regionobj;
+            regionobj.style(regionobj.element, {
+                border: '1px solid #3F51B5'
+            });
+            $scope.$apply();
+        });
+        vm.wavesurfer.on('region-mouseleave', function(regionobj) {
+            regionobj.style(regionobj.element, {
+                border: 'none',
+                borderRight: '2px solid #3F51B5'
+            });
             $scope.$apply();
         });
 
@@ -110,23 +120,6 @@
         vm.zoomIn = function() {
             if (vm.zoomval < 350) {vm.zoomval++;}
             vm.wavesurfer.zoom(vm.zoomval);
-        };
-
-        vm.play = function (url) {
-            if (!vm.wavesurfer) {
-                return;
-            }
-            vm.activeUrl = url;
-            vm.wavesurfer.once('ready', function () {
-                vm.wavesurfer.play();
-                //$scope.$apply();
-            });
-
-            vm.wavesurfer.load(vm.activeUrl);
-        };
-
-        vm.isPlaying = function (url) {
-            return url == vm.activeUrl;
         };
 
         /* This will load an annotation. It uses the ELAN plug-in for now but we need a generic load from data structure decoupled from
