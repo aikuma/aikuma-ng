@@ -85,8 +85,9 @@
         // Fetch a summary object based on relative position to the vm.cur cursor.
         vm.getSummary = function(relpos) {
             var sumpos = vm.cur + relpos;
-            if (sumpos >= 0 && sumpos < vm.length-1) {
+            if (sumpos >= 0 && sumpos < vm.regions.length-1) {
                 var reg = AnnowebService.get_regionByIndex(sumpos);
+                console.log('r',reg)
                 return {
                     'type': makeNiceAnnoTypeStr(vm.curanno),
                     'text': reg.data[vm.curanno]
@@ -123,6 +124,7 @@
             else {vm.isprevious=true;}
             if (vm.cur<vm.regions.length-1) {vm.isnext = true;}
             else {vm.isnext = false;}
+            $scope.$apply();
         };
 
         $scope.$on('regionenter', function() {

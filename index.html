@@ -2,7 +2,7 @@
 <html lang="en" ng-app="annoweb">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic"/>
     <!-- build:css css/combined.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
@@ -29,6 +29,8 @@
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-hotkeys/build/hotkeys.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-breadcrumb/release/angular-breadcrumb.js"></script>
     <!-- endbower -->
     <!-- inject:js -->
     <script src="src/angular-file-model.js"></script>
@@ -44,8 +46,38 @@
     <!-- endbuild -->
     <title>Annoweb</title>
 </head>
-<body ng-app="annoweb" style="background-image: url('img/background.jpg');background-repeat: repeat-y" layout="column">
-<div ng-view></div>
+<body ng-controller="menuCtrl" layout="row">
+    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+        <md-toolbar class="md-hue-2">
+            <div layout="row" class="md-toolbar-tools-bottom inset" layout-align="start end">
+                <div><md-icon md-svg-icon="action:translate" style="width:60px;height:60px;"></md-icon></div>
+                <div>nnoweb</div>
+            </div>
+        </md-toolbar>
+
+        <div ng-repeat="item in menu">
+             <md-button flex  ng-click="changeState(item.state)">
+                <md-icon class="inset" md-svg-icon="{{item.icon}}"></md-icon>
+                 <span flex> {{item.title}} </span>
+            </md-button>
+        </div>
+    </md-sidenav>
+
+    <div flex layout="column" >
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2><div ncy-breadcrumb></div></h2>
+            </div>
+        </md-toolbar>
+        <md-content flex class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
+            <md-whiteframe flex class="md-whiteframe-3dp" layout layout-align="center center">
+                <md-content class="md-padding" flex>
+                    <div ui-view></div>
+                </md-content>
+            </md-whiteframe>
+        </md-content>
+    </div>
+
 </body>
 </html>
 

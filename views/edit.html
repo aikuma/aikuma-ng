@@ -1,31 +1,15 @@
 <!-- Main template for the edit view. Three main sections: Menubar, a selection of horizontal tabs, and a footer -->
 
-<ng-menubar flex></ng-menubar>
-
-<md-tabs md-selected="selectedIndex">
-    <md-tab label="Annotation"></md-tab>
-    <md-tab label="Metadata"></md-tab>
-    <md-tab label="Changes"></md-tab>
-</md-tabs>
-
-<md-content ng-show="selectedIndex==0">
+<md-content>
     <!-- This Angular directive's attrs map to wavesurfer's options but requires underscores in front of capitalised letters -->
     <ng-anno-tab flex></ng-anno-tab>
-</md-content>
-
-<md-content layout="row" ng-if="selectedIndex==1">
-    <ng-metadata flex></ng-metadata>
-</md-content>
-
-<md-content layout="row" ng-if="selectedIndex==2">
-    <ng-changes flex></ng-changes>
 </md-content>
 
 <div layout="column" layout-align="space-between stretch" style="border-color:#f22">
     <md-content style="background-color:#ddd">
         <div layout="row" layout-align="space-between" style="padding-right: 8px;">
             <input flex id='fileinput' type='file' file-model='file' accept="audio/*" />
-            <span class="md-body-2"><i>Annoweb Alpha 8</i></span>
+            <span class="md-body-2"><i>Annoweb Alpha 9</i></span>
         </div>
     </md-content>
 </div>

@@ -6,18 +6,18 @@
     angular
         .module('annoweb-service', ['annoweb-util'])
         /* This is a factory service that is used for inter-controller communication and so on
-        *
-        * .setAnnos(annotations, options)
-        * .newregions(regions)
-        * .autoregions()
-        * .
-        * regions = a list of region objects
-        * region object = { r: wavesurfer region object, start: <start>, end: <end>, anno: {annotation object} }
-        * annotation object = { '0': 'first annotation', '1': 'second annotation etc'}
-        *   note: keyed against the annotation list
-        * annotation list = a list of annotation desc objects
-        * annotation desc object = {'lang': <language name>, 'ISO': <optional language ISO code>, 'type': <type of annotation>}
-        * */
+         *
+         * .setAnnos(annotations, options)
+         * .newregions(regions)
+         * .autoregions()
+         * .
+         * regions = a list of region objects
+         * region object = { r: wavesurfer region object, start: <start>, end: <end>, anno: {annotation object} }
+         * annotation object = { '0': 'first annotation', '1': 'second annotation etc'}
+         *   note: keyed against the annotation list
+         * annotation list = a list of annotation desc objects
+         * annotation desc object = {'lang': <language name>, 'ISO': <optional language ISO code>, 'type': <type of annotation>}
+         * */
 
         .factory('AnnowebService', ['$rootScope', 'randomColor', 'extractRegions', function ($rootScope, randomColor, extractRegions) {
             var aw = {};
@@ -38,7 +38,7 @@
                     aw.setAnnos([{'lang':'Cool language', 'type':'Annotation'}, {'lang': 'Boring language', 'type': 'Translation'}] ,{'continuous': true, 'dummydata': false, 'autoregion': false});
                 }
                 $rootScope.$broadcast('regions_loaded');
-              };
+            };
             // This is called after the wavesurfer directive has rendered (uses a timeout)
             aw.wavesurfer_ready = function() {
                 if (aw.debuglevel > 0) {
@@ -84,11 +84,11 @@
                 }
             });
             /* Set up new annotations
-            * Args: List of annotations objects, option object
-            * Results: Annotationlist set up. If autoregion then build region list, otherwise
-            * make one region of the entire recording. If dummydata option, poke random string into each annotation
-            * Finally, broadcast regions loaded event.
-            * */
+             * Args: List of annotations objects, option object
+             * Results: Annotationlist set up. If autoregion then build region list, otherwise
+             * make one region of the entire recording. If dummydata option, poke random string into each annotation
+             * Finally, broadcast regions loaded event.
+             * */
             aw.setAnnos = function(annotations, options) {
                 aw.annotationoptions = options;
                 aw.annotationlist = annotations;
