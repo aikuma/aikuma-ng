@@ -1,3 +1,25 @@
-<h3>Record stuff here!</h3>
+<h3>New Recording page</h3>
+
+<p><b>Purpose</b>: Users see this page when they want to record a new file. However the behavior is context sensitive depending on whether this is a brand new primary recording, or if it is a new file attached to a previous recording. </p>
+
+<p><b>Design influence</b>: Any recording app, Aikuma metadata wizard.</p>
+
+<p><b>Navigation</b>: They get here from the home/landing page by selecting new. Or from the landing page for their primary recording. Recording is a wizard that collects metadata and then returns to the project status page (or creates a new project status page).</p>
+
+<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
+
+    <h3>Mock-up</h3>
+
+        <A ui-sref="record">
+        <md-button class="md-raised">
+            <md-icon md-svg-icon="av:mic"></md-icon>
+            Begin recording
+        </md-button>
+    </a>
+</md-content>
+
+<p>Notes: Need terminology for a 'project', or all work that pertains to a single primary recording.
+</p>
+
 
 <p>Like maybe... <a ui-sref="metadata">Metadata</a>.</p>

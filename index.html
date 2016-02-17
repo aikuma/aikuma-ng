@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="bower_components/angular-hotkeys/build/hotkeys.css" />
     <!-- endbower -->
     <!-- inject:css -->
+    <link rel="stylesheet" href="src/animate.css">
+    <link rel="stylesheet" href="src/app.css">
+    <link rel="stylesheet" href="src/fonts.css">
     <!-- endinject -->
     <!-- endbuild -->
 
@@ -31,6 +34,8 @@
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-breadcrumb/release/angular-breadcrumb.js"></script>
+    <script src="bower_components/firebase/firebase.js"></script>
+    <script src="bower_components/angularfire/dist/angularfire.js"></script>
     <!-- endbower -->
     <!-- inject:js -->
     <script src="src/angular-file-model.js"></script>
@@ -40,43 +45,62 @@
     <script src="src/annoweb-service.js"></script>
     <script src="src/annoweb-util.js"></script>
     <script src="src/annoweb-view.js"></script>
+    <script src="src/annoweb-viewcontrollers.js"></script>
     <script src="src/annoweb-wavesurfer.js"></script>
     <script src="src/app.js"></script>
     <!-- endinject -->
     <!-- endbuild -->
     <title>Annoweb</title>
 </head>
-<body ng-controller="menuCtrl" layout="row">
-    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-        <md-toolbar class="md-hue-2">
-            <div layout="row" class="md-toolbar-tools-bottom inset" layout-align="start end">
-                <div><md-icon md-svg-icon="action:translate" style="width:60px;height:60px;"></md-icon></div>
-                <div>nnoweb</div>
-            </div>
-        </md-toolbar>
-
-        <div ng-repeat="item in menu">
-             <md-button flex  ng-click="changeState(item.state)">
-                <md-icon class="inset" md-svg-icon="{{item.icon}}"></md-icon>
-                 <span flex> {{item.title}} </span>
-            </md-button>
+<body ng-controller="navController as navCtrl" layout="row">
+<md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+    <md-toolbar class="md-hue-2">
+        <div layout="row" class="inset" layout-align="start end">
+            <div><md-icon md-svg-icon="action:translate" style="width:60px;height:60px;"></md-icon></div>
+            <div><span style="{font-weight: 700;}">nnoweb</span></div>
         </div>
-    </md-sidenav>
+        <div layout="row" class="inset" layout-align="start end">
+            <span class="md-subhead">Hello <i>{{navCtrl.username}}.</i></span>
+        </div>
+    </md-toolbar>
 
-    <div flex layout="column" >
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h2><div ncy-breadcrumb></div></h2>
-            </div>
-        </md-toolbar>
-        <md-content flex class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
-            <md-whiteframe flex class="md-whiteframe-3dp" layout layout-align="center center">
-                <md-content class="md-padding" flex>
-                    <div ui-view></div>
-                </md-content>
-            </md-whiteframe>
-        </md-content>
+    <div ng-if="!navCtrl.authData">
+        <md-button  flex ng-click="navCtrl.changeState('login')">
+            <md-icon class="inset animated infinite rubberBand" md-svg-icon="social:person_outline"></md-icon>
+            <span flex> Log In!</span>
+        </md-button>
     </div>
+    <div ng-if="navCtrl.authData">
+        <md-button flex ng-click="navCtrl.auth.$unauth()">
+            <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
+            <span flex> Log Out</span>
+        </md-button>
+    </div>
+    <div ng-repeat="item in navCtrl.menu">
+        <md-button flex ng-click="navCtrl.changeState(item.state)">
+            <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
+            <span flex> {{item.title}} </span>
+        </md-button>
+    </div>
+</md-sidenav>
+
+<div flex layout="column" >
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2><div ncy-breadcrumb></div></h2>
+        </div>
+    </md-toolbar>
+    <md-content flex class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
+        <md-whiteframe flex class="md-whiteframe-3dp" layout layout-align="center center">
+            <md-content class="md-padding" flex>
+                <div ui-view></div>
+                <div layout="row" layout-align="end" style="padding-right: 8px;">
+                    <span class="md-body-2"><i>Annoweb Alpha 10</i></span>
+                </div>
+            </md-content>
+        </md-whiteframe>
+    </md-content>
+</div>
 
 </body>
 </html>

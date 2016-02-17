@@ -1,5 +1,28 @@
-<H3>Getting started with Annoweb</H3>
+<h3>Help view</h3>
 
-<p>Load a file, annotate, and be happy.</p>
+<p><b>Purpose</b>: This is a help document. We mostly rely on context-sensitive help dialogs so here we only need to tell someone how to begin work. </p>
 
-<div ui-view></div>
+<p><b>Design influence</b>: ?</p>
+
+<p><b>Navigation</b>: From the left-hand nav. We could offer option to begin new at the end. </p>
+
+<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
+
+    <h3>Mock-up</h3>
+
+    <p>Using Aikuma is easy!
+    <ol>
+        <li>To start just select new project. Give your project a name and optionally fill in some details such as language and speakers but you can come back and edit these later.</li>
+        <li>Now you can can record right now, or you can import a recording you made earlier.</li>
+        <li>On the project screen you can decide what to do from here, e.g. make or import another recording such as a translation, or get to annotating the recording.</li>
+    </ol>
+
+    Shall we begin?
+
+    <A ui-sref="new">
+        <md-button class="md-raised">
+            <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+            Create new
+        </md-button>
+    </a>
+</md-content>

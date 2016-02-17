@@ -1,7 +1,28 @@
-<p>This is the landing page. Here we show previous activity.</p>
-<ul>
-    <li><A ui-sref="edit">Recording 1</A></li>
-    <li>Recording 2</li>
-    <li>Recording 3</li>
-</ul>
-<p>And 'start new'</p>
+<h3>Home/landing page</h3>
+
+<p><b>Purpose</b>: Users see this page when they first run the app. They will choose between working on a previous project, or they will begin a new project..</p>
+
+<p><b>Design influence</b>: Projects interstitial window that often appears when running an IDE or a other complex software tool.</p>
+
+<p><b>Navigation</b>: They get here from starting the app or pressing 'home' on the breadcrumb trail. They will go directly to the project status page.</p>
+
+<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
+
+    <h3>Mock-up</h3>
+
+    <p>List of previous files, most recent on top:</p>
+    <ul>
+        <li><A ui-sref="status">The Rotunda Talk</A>:  36 seconds, no children, no annotations.</li>
+        <li>Super special recording: 1 hour 36 minutes, 1 respeak, 1 translate, 2 annotations.</li>
+        <li>Another special recording: 10 minutes, 20 seconds, 1 translation, no annotations.</li>
+    </ul>
+    <A ui-sref="new">
+        <md-button class="md-raised">
+            <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+            Create new
+        </md-button>
+    </a>
+</md-content>
+
+<p>Notes: Need terminology for a 'project', or all work that pertains to a single primary recording.
+</p>

@@ -4,12 +4,14 @@
         .module('annoweb', [
             'ui.router',
             'ngMaterial',
+            'firebase',
             'annoweb-wavesurfer',
             'annoweb-dialog',
             'annoweb-service',
             'annoweb-edit',
             'annoweb-view',
             'annoweb-annotation',
+            'annoweb-viewcontrollers',
             'file-model',
             'cfp.hotkeys',
             'ncy-angular-breadcrumb'
@@ -22,9 +24,11 @@
                 .iconSet('nav','img/icons/sets/navigation-icons.svg', 24)
                 .iconSet('av','img/icons/sets/av-icons.svg', 24)
                 .iconSet('file','img/icons/sets/file-icons.svg', 24)
+                .iconSet('editor','img/icons/sets/editor-icons.svg', 24)
+                .iconSet('communication','img/icons/sets/communication-icons.svg', 24)
                 .defaultIconSet('img/icons/sets/core-icons.svg', 24);
         }])
-        .config(function ($mdThemingProvider) {
+        .config(['$mdThemingProvider', function ($mdThemingProvider) {
             $mdThemingProvider.theme('default')
                 .primaryPalette('light-blue', {
                     'default': '300'
@@ -32,8 +36,9 @@
                 .accentPalette('deep-orange', {
                     'default': '500'
                 });
-        })
-        .config(['$stateProvider', '$urlRouterProvider', '$logProvider',
+        }])
+        // Note that controllers are in annoweb-viewcontrollers.js
+        .config(['$stateProvider', '$urlRouterProvider',
             function ($stateProvider, $urlRouterProvider) {
                 $urlRouterProvider.otherwise("/home");
                 $stateProvider
@@ -52,6 +57,15 @@
                             label: 'Help'
                         }
                     })
+                    .state('login', {
+                        url: '/login',
+                        templateUrl: "views/login.html",
+                        controller: 'authController',
+                        ncyBreadcrumb: {
+                            parent: 'home',
+                            label: 'Log In'
+                        }
+                    })
                     .state('changes', {
                         url: '/changes',
                         templateUrl: "views/changes.html",
@@ -60,30 +74,119 @@
                             label: 'Changes'
                         }
                     })
-                    .state('record', {
-                        url: '/record',
-                        templateUrl: "views/record.html",
+                    .state('chat', {
+                        url: '/chat',
+                        templateUrl: "views/chat.html",
                         ncyBreadcrumb: {
                             parent: 'home',
-                            label: 'Record'
+                            label: 'Chat'
                         }
                     })
-                    .state('metadata', {
-                        url: '/metadata',
-                        templateUrl: "views/record.metadata.html",
+                    .state('new', {
+                        url: '/new',
+                        templateUrl: "views/new.html",
                         ncyBreadcrumb: {
-                            parent: 'record',
-                            label: 'Metadata'
+                            parent: 'home',
+                            label: 'New'
+                        }
+                    })
+                    .state('status', {
+                        url: '/{projectId}',
+                        templateUrl: "views/status.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'home',
+                            label: '{{projectId}}'
                         }
                     })
                     .state('edit', {
-                        url: '/edit',
+                        url: '/{projectId}/edit',
                         templateUrl: "views/edit.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Annotate'
+                        }
+                    })
+                    .state('comment', {
+                        url: '/{projectId}/comment',
+                        templateUrl: "views/comment.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Comment'
+                        }
+                    })
+                    .state('respeak', {
+                        url: '/{projectId}/respeak',
+                        templateUrl: "views/respeak.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Respeak'
+                        }
+                    })
+                    .state('translate', {
+                        url: '/{projectId}/translate',
+                        templateUrl: "views/translate.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Translate'
+                        }
+                    })
+                    .state('metadata', {
+                        url: '/{projectId}/metadata',
+                        templateUrl: "views/metadata.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Details'
+                        }
+                    })
+                    .state('export', {
+                        url: '/{projectId}/export',
+                        templateUrl: "views/export.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Export'
+                        }
+                    })
+                    .state('share', {
+                        url: '/{projectId}/share',
+                        templateUrl: "views/share.html",
+                        controller: ['$scope', function($scope) {
+                            $scope.projectId='The Rotunda Talk';
+                        }],
+                        ncyBreadcrumb: {
+                            parent: 'status',
+                            label: 'Share'
+                        }
+                    })
+                    .state('settings', {
+                        url: '/settings',
+                        templateUrl: "views/settings.html",
                         ncyBreadcrumb: {
                             parent: 'home',
-                            label: 'Edit'
+                            label: 'Settings'
                         }
                     });
+
 
             }])
         .filter('keyboardShortcut', ['$window', function($window) {
@@ -103,52 +206,10 @@
                 }).join(seperator);
             };
         }])
-        .config(function($breadcrumbProvider) {
+        .config(['$breadcrumbProvider', function($breadcrumbProvider) {
             $breadcrumbProvider.setOptions({
                 templateUrl: 'views/breadcrumb.html'
             });
-        })
-        .controller('menuCtrl', ['$scope', '$state', function($scope, $state) {
-            var vm = this;
-            $scope.menu = [
-                {
-                    link : '',
-                    title: 'Getting started',
-                    icon: 'action:help',
-                    state: 'help'
-                },
-                {
-                    link : '',
-                    title: 'Open File',
-                    icon: 'file:folder_open',
-                    state: 'open'
-                },
-                {
-                    link : '',
-                    title: 'Record',
-                    icon: 'av:mic',
-                    state: 'record'
-                },
-                {
-                    link : '',
-                    title: 'Share',
-                    icon: 'social:share',
-                    state: 'share'
-                },
-                {
-                    link : '',
-                    title: 'Settings',
-                    icon: 'action:settings'
-                },
-                {
-                    link : '',
-                    title: 'Changes',
-                    icon: 'action:change_history',
-                    state: 'changes'
-                }
-            ];
-            $scope.changeState = function(statename) {
-                $state.go(statename);
-            };
         }]);
+
 })();

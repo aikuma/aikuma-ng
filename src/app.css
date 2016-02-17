@@ -24,13 +24,6 @@ md-toolbar .md-button.md-default-theme {
     border-radius: 99%;
 }
 
-h2 {
-    font-weight: 400;
-}
-
-.md-toolbar-tools-bottom {
-    font-size: small;
-}
 .md-toolbar-tools-bottom :last-child {
     opacity: 0.8;
 }
@@ -42,11 +35,9 @@ md-toolbar:not(.md-hue-1),
 
 md-sidenav {
     fill: #737373;
-
 }
+
 md-sidenav ng-md-icon {
     position: relative;
     top: 5px;
 }
-
-

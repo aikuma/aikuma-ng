@@ -36,7 +36,7 @@
                 $mdToast.show(
                     $mdToast.simple()
                         .parent($document[0].querySelector('#popupContainer'))
-                        .hideDelay(3000)
+                        .hideDelay(2000)
                         .position("top left")
                         .textContent(toasttext)
                 );
