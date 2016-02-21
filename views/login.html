@@ -10,13 +10,14 @@
 
     <h3>Mock-up</h3>
 
-    <div ng-show="loginCtrl.authData">
-        <p>Hello, {{ loginCtrl.authData.facebook.displayName }}</p>
-        <button ng-click="loginCtrl.auth.$unauth()">Logout</button>
+    <div ng-show="loginCtrl.loginstatus.status=='connected'">
+        <p>Hello, {{ loginCtrl.apiMe.name }}</p>
+        <button ng-click="loginCtrl.logout()">Logout</button>
     </div>
-    <div ng-hide="loginCtrl.authData">
-        <p>You are currently anonymous. If you log-in then your work will be saved. You need an internet connection to log-in but you may work offline after that and your work will be saved when you next go onlinet.</p>
-        <button ng-click="loginCtrl.auth.$authWithOAuthPopup('facebook')">Login With Facebook</button>
+    <div ng-show="loginCtrl.loginstatus.status!='connected'">
+        <p>You are not logged in. If you log-in then your work will be saved. You need an internet connection to log-in but you may work offline after that and your work will be saved when you next go onlinet.</p>
+        <button ng-click="loginCtrl.login()">Login With Facebook</button>
     </div>
+    <p>{{loginCtrl.loginstatus.status}}</p>
 
 </md-content>

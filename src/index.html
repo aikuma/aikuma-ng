@@ -30,14 +30,14 @@
         </div>
     </md-toolbar>
 
-    <div ng-if="!navCtrl.authData">
-        <md-button  flex ng-click="navCtrl.changeState('login')">
+    <div ng-if="navCtrl.loginStatus.status!='connected'">
+        <md-button  flex ng-click="navCtrl.login()">
             <md-icon class="inset animated infinite rubberBand" md-svg-icon="social:person_outline"></md-icon>
             <span flex> Log In!</span>
         </md-button>
     </div>
-    <div ng-if="navCtrl.authData">
-        <md-button flex ng-click="navCtrl.auth.$unauth()">
+    <div ng-if="navCtrl.loginStatus.status=='connected'">
+        <md-button flex ng-click="navCtrl.logout()">
             <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
             <span flex> Log Out</span>
         </md-button>
@@ -61,7 +61,7 @@
             <md-content class="md-padding" flex>
                 <div ui-view></div>
                 <div layout="row" layout-align="end" style="padding-right: 8px;">
-                    <span class="md-body-2"><i>Annoweb Alpha 10</i></span>
+                    <span class="md-body-2"><i>Annoweb Alpha 11</i></span>
                 </div>
             </md-content>
         </md-whiteframe>

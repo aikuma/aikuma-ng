@@ -214,23 +214,6 @@
                 );
             };
             return aw;
-        }])
-
-    // Test Firebase service
-    .factory('FirebaseService', ['$rootScope', '$firebaseArray', function ($rootScope, $firebaseArray) {
-        var ref = new Firebase("https://blistering-heat-7074.firebaseio.com/chat");
-        return $firebaseArray(ref);
-    }])
-
-    .factory('Auth', ["$firebaseAuth",
-        function($firebaseAuth) {
-            var ref = new Firebase("https://blistering-heat-7074.firebaseio.com", "example3");
-            return $firebaseAuth(ref);
-        }
-    ])
-
-    .controller('authController', ['$scope', function($scope) {
-        $scope.val = "test";
-    }]);
+        }]);
 
 })();

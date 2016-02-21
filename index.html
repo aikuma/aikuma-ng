@@ -7,6 +7,7 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
     <link rel="stylesheet" href="bower_components/angular-hotkeys/build/hotkeys.css" />
+    <link rel="stylesheet" href="bower_components/angular-resizable/src/angular-resizable.css" />
     <!-- endbower -->
     <!-- inject:css -->
     <link rel="stylesheet" href="src/animate.css">
@@ -36,15 +37,17 @@
     <script src="bower_components/angular-breadcrumb/release/angular-breadcrumb.js"></script>
     <script src="bower_components/firebase/firebase.js"></script>
     <script src="bower_components/angularfire/dist/angularfire.js"></script>
+    <script src="bower_components/angular-resizable/src/angular-resizable.js"></script>
+    <script src="bower_components/angular-easyfb/build/angular-easyfb.js"></script>
     <!-- endbower -->
     <!-- inject:js -->
     <script src="src/angular-file-model.js"></script>
     <script src="src/annoweb-annotation.js"></script>
     <script src="src/annoweb-dialog.js"></script>
-    <script src="src/annoweb-edit.js"></script>
+    <script src="src/annoweb-newservice.js"></script>
     <script src="src/annoweb-service.js"></script>
+    <script src="src/annoweb-status.js"></script>
     <script src="src/annoweb-util.js"></script>
-    <script src="src/annoweb-view.js"></script>
     <script src="src/annoweb-viewcontrollers.js"></script>
     <script src="src/annoweb-wavesurfer.js"></script>
     <script src="src/app.js"></script>
@@ -64,14 +67,14 @@
         </div>
     </md-toolbar>
 
-    <div ng-if="!navCtrl.authData">
-        <md-button  flex ng-click="navCtrl.changeState('login')">
+    <div ng-if="navCtrl.loginStatus.status!='connected'">
+        <md-button  flex ng-click="navCtrl.login()">
             <md-icon class="inset animated infinite rubberBand" md-svg-icon="social:person_outline"></md-icon>
             <span flex> Log In!</span>
         </md-button>
     </div>
-    <div ng-if="navCtrl.authData">
-        <md-button flex ng-click="navCtrl.auth.$unauth()">
+    <div ng-if="navCtrl.loginStatus.status=='connected'">
+        <md-button flex ng-click="navCtrl.logout()">
             <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
             <span flex> Log Out</span>
         </md-button>

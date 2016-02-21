@@ -89,12 +89,19 @@
             function() {
                 return {
                     restrict: 'E',
-                    templateUrl: 'views/chat-directive.html',
+                    templateUrl: 'views/templates/chat-template.html',
                     controllerAs: 'chat',
                     controller: chatboxController
                 };
             }
-        ]);
+        ])
+        .directive('focusOn', function() {
+            return function(scope, elem, attr) {
+                scope.$on(attr.focusOn, function(e) {
+                    elem[0].focus();
+                });
+            };
+        });
 
     var chatboxController = function (FirebaseService, AnnowebDialog, Auth) {
         var vm = this;
@@ -124,6 +131,8 @@
 
     };
     chatboxController.$inject = ['FirebaseService', 'AnnowebDialog', 'Auth'];
+
+
 
 })();
 

@@ -4,18 +4,24 @@
         .module('annoweb', [
             'ui.router',
             'ngMaterial',
-            'firebase',
-            'annoweb-wavesurfer',
-            'annoweb-dialog',
-            'annoweb-service',
-            'annoweb-edit',
-            'annoweb-view',
-            'annoweb-annotation',
-            'annoweb-viewcontrollers',
-            'file-model',
-            'cfp.hotkeys',
-            'ncy-angular-breadcrumb'
+            'annoweb-wavesurfer',       // the wavesurfer directive
+            'annoweb-dialog',           // dialog and alert service
+            'annoweb-service',          // old AnnowebService - needs to be removed
+            'annoweb-status',           // directive and controller for the project/primary file status display
+            'annoweb-annotation',       // directive and controller for annotation UI
+            'annoweb-viewcontrollers',  // common controllers for view states (when we don't have separate files)
+            'file-model',               // deprecated: made it a bit easier to select a file
+            'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
+            'ncy-angular-breadcrumb',   // breadcrumb directive based on ui router
+            'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
+            'ezfb'                      // Easy Facebook library
         ])
+        .config(function (ezfbProvider) {
+            ezfbProvider.setLocale('en_US');
+            ezfbProvider.setInitParams({
+                appId: '1052796451458015'
+            });
+        })
         .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
                 .iconSet('social','img/icons/sets/social-icons.svg', 24)
@@ -40,6 +46,7 @@
         // Note that controllers are in annoweb-viewcontrollers.js
         .config(['$stateProvider', '$urlRouterProvider',
             function ($stateProvider, $urlRouterProvider) {
+                var projectId = 23784;
                 $urlRouterProvider.otherwise("/home");
                 $stateProvider
                     .state('home', {
@@ -91,7 +98,7 @@
                         }
                     })
                     .state('status', {
-                        url: '/{projectId}',
+                        url: '/status/:primaryID',
                         templateUrl: "views/status.html",
                         controller: ['$scope', function($scope) {
                             $scope.projectId='The Rotunda Talk';
@@ -101,9 +108,9 @@
                             label: '{{projectId}}'
                         }
                     })
-                    .state('edit', {
-                        url: '/{projectId}/edit',
-                        templateUrl: "views/edit.html",
+                    .state('annotate', {
+                        url: '/{projectId}/annotate',
+                        templateUrl: "views/annotate.html",
                         controller: ['$scope', function($scope) {
                             $scope.projectId='The Rotunda Talk';
                         }],
@@ -185,9 +192,15 @@
                             parent: 'home',
                             label: 'Settings'
                         }
+                    })
+                    .state('reportbug', {
+                        url: '/reportbug',
+                        templateUrl: "views/reportbug.html",
+                        ncyBreadcrumb: {
+                            parent: 'home',
+                            label: 'Report Bug'
+                        }
                     });
-
-
             }])
         .filter('keyboardShortcut', ['$window', function($window) {
             return function(str) {
@@ -208,7 +221,7 @@
         }])
         .config(['$breadcrumbProvider', function($breadcrumbProvider) {
             $breadcrumbProvider.setOptions({
-                templateUrl: 'views/breadcrumb.html'
+                templateUrl: 'views/templates/breadcrumbs.html' // this is an angular material-friendly breadcrumb template
             });
         }]);
 

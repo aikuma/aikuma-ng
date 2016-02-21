@@ -1,0 +1,21 @@
+    <md-content flex class="md-whiteframe-3dp md-padding">
+    This is the transcript box:
+    <md-list>
+        <md-list-item ng-repeat="r in tCtrl.regions">
+            <div flex layout="row">
+                <div>
+                    Start: {{tCtrl.ws.regions.list[r].start}}<br/>
+                    End: {{tCtrl.ws.regions.list[r].end}}
+                </div>
+                <div>
+                    <div ng-repeat="a in tCtrl.alist">
+                        <md-input-container>
+                            <label>{{ a.lang }}</label>
+                            <input disabled ng-model="tCtrl.ws.regions[r].data[a]"/>
+                        </md-input-container>
+                    </div>
+                </div>
+            </div>
+        </md-list-item>
+    </md-list>
+    </md-content>

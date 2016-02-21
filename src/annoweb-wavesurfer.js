@@ -7,7 +7,7 @@
             function(randomColor, extractRegions) {
                 return {
                     restrict: 'E',
-                    templateUrl: 'views/edit-waveform.html',
+                    templateUrl: 'views/templates/wavesurfer-template.html',
                     controllerAs: 'wavesurf',
                     controller: WavesurferController
                 };

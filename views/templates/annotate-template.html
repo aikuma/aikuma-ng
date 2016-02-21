@@ -1,0 +1,69 @@
+<div flex layout-padding id="popupContainer">
+    <!-- This is displayed if we have no regions to edit -->
+    <div ng-if="!aCtrl.editable">
+        <md-toolbar class="md-warn">
+            <div class="md-toolbar-tools">
+                <h2 class="md-flex">No annotations yet!</h2>
+            </div>
+        </md-toolbar>
+        <md-button class="md-raised" ng-click="aCtrl.addAnno()">
+            <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+            New annotation
+        </md-button>
+    </div>
+
+    <!-- This is displayed if we have regions to edit -->
+    <md-whiteframe ng-if="aCtrl.editable" layout="column" class="md-inline-form md-whiteframe-3dp">
+
+        <div layout="row">
+            <div flex="15" layout="column" layout-align="space-between">
+                <md-button aria-label="Previous" ng-click="aCtrl.movePos(-1)" ng-disabled="!aCtrl.isprevious"><md-icon md-svg-icon="nav:arrow_drop_up" style="width:42px;height:42px;"></md-icon></md-button>
+            </div>
+            <md-input-container ng-show="aCtrl.isprevious" flex="85"  class="md-block" style="height:16px">
+                <label>{{ aCtrl.getSummary(-1).type }}</label>
+                <input disabled ng-model="aCtrl.getSummary(-1).text"/>
+            </md-input-container>
+        </div>
+
+        <md-divider></md-divider>
+
+        <div flex layout="row">
+            <div flex="15" layout="column" layout-align="space-between">
+                <md-subheader>Start: {{ aCtrl.nstart }}</md-subheader>
+                <div><md-button ng-class="{'md-primary': aCtrl.repeat}" ng-click="aCtrl.togglerepeat()"><md-icon md-svg-icon="av:repeat" style="width:32px;height:32px;"></md-icon></md-button></div>
+                <md-subheader>End: {{ aCtrl.nend }}</md-subheader>
+            </div>
+            <div flex="85" layout="column" layout-align="space-between">
+                <div ng-repeat="anno in aCtrl.annolist" layout="row">
+                    <md-input-container flex  class="md-block" style="height:20px">
+                        <label>{{anno.type}} ({{anno.lang}}):</label>
+                        <input focus-on="{{'inputfocus'+$index}}" ng-disabled="!aCtrl.active[$index]" ng-model="aCtrl.thisregion.data[$index]" ng-keyup="$event.keyCode == 13 && aCtrl.dataEnter($index)"/>
+                    </md-input-container>
+                    <md-switch ng-model="aCtrl.active[$index]" aria-label="Enable" ng-true-value="1" ng-false-value="0" class="md-warn"></md-switch>
+                </div>
+                <md-progress-linear md-mode="determinate" value="{{aCtrl.progressValue}}"></md-progress-linear>
+            </div>
+        </div>
+
+        <md-divider></md-divider>
+
+        <div layout="row">
+            <div flex="15" layout="column" layout-align="space-between">
+                <md-button aria-label="Next" ng-click="aCtrl.movePos(1)" ng-disabled="!aCtrl.isnext"><md-icon md-svg-icon="nav:arrow_drop_down" style="width:42px;height:42px;"></md-icon></md-button>
+            </div>
+            <md-input-container ng-show="aCtrl.isnext" flex="85"  class="md-block" style="height:16px">
+                <label>{{ aCtrl.getSummary(1).type }}</label>
+                <input disabled ng-model="aCtrl.getSummary(1).text"/>
+            </md-input-container>
+        </div>
+
+        <div flex>
+            <span>
+                <md-button class="md-raised" aria-label="Previous" ng-click="aCtrl.movePos(-1)" ng-disabled="!aCtrl.isprevious"><md-icon md-svg-icon="av:skip_previous"></md-icon> Previous</md-button>
+                <md-button class="md-raised" aria-label="Next" ng-click="aCtrl.movePos(1)" ng-disabled="!aCtrl.isnext"><md-icon md-svg-icon="av:skip_next"></md-icon>Next</md-button>
+            </span>
+        </div>
+
+    </md-whiteframe>
+
+</div>

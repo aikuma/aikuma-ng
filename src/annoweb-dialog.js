@@ -3,16 +3,19 @@
     /* This module defines a service for displaying dialogs */
     angular
         .module('annoweb-dialog', [])
-        .factory('AnnowebDialog', ['$document', '$mdDialog', '$mdToast', 'AnnowebService', function ($document, $mdDialog, $mdToast, AnnowebService) {
+        .factory('AnnowebDialog', ['$document', '$mdDialog', '$mdToast', function ($document, $mdDialog, $mdToast) {
             var factory = {};
-            factory.newanno = function(ev) {
+            factory.newAnno = function(ev, fileId) {
                 $mdDialog.show({
-                        controller: DialogController,
+                        controller: newAnnotationController,
                         controllerAs: 'dCtrl',
-                        templateUrl: 'views/edit-diag-new.html',
+                        templateUrl: 'views/templates/dialog-newAnnotation.html',
                         parent: angular.element(document.body),
                         targetEvent: ev,
-                        clickOutsideToClose:true
+                        clickOutsideToClose:true,
+                        locals: {
+                            fileId: fileId
+                        }
                     })
                     .then(function(answer) {
                         factory.status = 'You said the information was "' + answer + '".';
@@ -44,8 +47,9 @@
             return factory;
         }]);
 
-    var DialogController = function ($mdDialog, $timeout, $q, $log, AnnowebService) {
+    var newAnnotationController = function ($mdDialog, $timeout, $q, $log, annoService, AnnowebService, fileId) {
         var self = this;
+        console.log('f', fileId);
         self.types = [
             {
                 name: 'Annotation'
@@ -119,7 +123,8 @@
             self.optionlist.forEach(function(o) {
                 as_options[o] = self.options[o].selected;
             });
-            AnnowebService.setAnnos(annos, as_options);
+            // AnnowebService.setAnnos(annos, as_options);
+            annoService.newAnnotations(fileId, annos, as_options);
             $mdDialog.hide();
         };
 
@@ -156,13 +161,6 @@
             }
         };
 
-        // ******************************
-        // Internal methods
-        // ******************************
-        /**
-         * Search for languages... use $timeout to simulate
-         * remote dataservice call.
-         */
         function querySearch (query) {
             return query ? self.languages.filter( createFilterFor(query) ) : self.languages;
         }
@@ -193,8 +191,8 @@
             };
         }
     };
-    DialogController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'AnnowebService'];
-
+    newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'annoService', 'AnnowebService', 'fileId'];
+    
 })();
 
 

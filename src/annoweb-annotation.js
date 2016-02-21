@@ -12,6 +12,22 @@
                 controller: simpleAnnotationController,
                 controllerAs: 'saCtrl'
             };
+        })
+        .directive("ngAnnotate", function() {
+            return {
+                restrict: "E",
+                templateUrl: "views/templates/annotate-template.html",
+                controller: annotationController,
+                controllerAs: 'aCtrl'
+            };
+        })
+        .directive("ngTranscript", function() {
+            return {
+                restrict: "E",
+                templateUrl: "views/templates/transcript-template.html",
+                controller: transcriptController,
+                controllerAs: 'tCtrl'
+            };
         });
 
     var simpleAnnotationController = function ($timeout, $scope, AnnowebDialog, AnnowebService, hotkeys) {
@@ -187,5 +203,63 @@
 
     };
     simpleAnnotationController.$inject = ['$timeout', '$scope', 'AnnowebDialog', 'AnnowebService', 'hotkeys'];
+
+    // The new annotation controller. Uses the new annoService instead of AnnowebService
+    var annotationController = function ($timeout, $scope, AnnowebDialog, annoService, hotkeys) {
+        var vm = this;
+        vm.cur = 0;
+        vm.annolist = [];
+        vm.regions = [];
+        vm.active = {0:1}; // mark the first annotation as active
+        vm.repeat = false;
+        vm.curanno = 0; // the active annotation type index
+        vm.isprevious = false;
+        vm.editable = false; // if false, template asks users to add annos
+        vm.fileId = 0; // we need to get this when starting the controller, it's used when calling back to us.
+
+        vm.addAnno = function (ev) {
+            annoService.newAnnotationDialog(ev, vm.fileId);
+        };
+        // If regions have been loaded then do this
+        $scope.$on('regionsloaded', function () {
+            vm.editable = true;
+            vm.mode = null;
+            if (AnnowebService.annotationoptions.continuous) {
+                vm.mode = 'continuous';
+            } else {
+                vm.mode = 'complex';
+            }
+            vm.annolist = AnnowebService.annotationlist;
+            vm.setRegion();
+        });
+
+        vm.setRegion = function() {
+            vm.thisregion = AnnowebService.currentRegion;
+            vm.regions = AnnowebService.regions;
+            vm.cur = vm.regions.indexOf(vm.thisregion.id);
+            vm.start = vm.thisregion.start;
+            vm.nstart = vm.tstr(vm.start);
+            vm.end = vm.thisregion.end;
+            vm.nend = vm.tstr(vm.end);
+            if (vm.cur==0) {vm.isprevious = false;}
+            else {vm.isprevious=true;}
+            if (vm.cur<vm.regions.length-1) {vm.isnext = true;}
+            else {vm.isnext = false;}
+            $scope.$apply();
+        };
+
+    };
+    annotationController.$inject = ['$timeout', '$scope', 'AnnowebDialog', 'annoService', 'hotkeys'];
+
+    var transcriptController = function ($scope, AnnowebService) {
+        var vm = this;
+
+        vm.regions = AnnowebService.regions;
+        vm.alist = AnnowebService.annotationlist;
+        vm.ws = AnnowebService.wavesurfer;
+        vm.cur = AnnowebService.currentanno;
+
+    };
+    transcriptController.$inject = ['$scope', 'AnnowebService'];
 
 })();
