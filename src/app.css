@@ -42,3 +42,39 @@ md-sidenav ng-md-icon {
     top: 5px;
 }
 
+.nav-header {
+    background: -moz-linear-gradient(299deg, rgba(87,190,255,1) 0%, rgba(20,56,255,1) 61%, rgba(20,56,255,1) 100%); /* ff3.6+ */
+    background: -webkit-gradient(linear, left top, right bottom, color-stop(0%, rgba(87,190,255,1)), color-stop(61%, rgba(20,56,255,1)), color-stop(100%, rgba(20,56,255,1))); /* safari4+,chrome */
+    background: -webkit-linear-gradient(299deg, rgba(87,190,255,1) 0%, rgba(20,56,255,1) 61%, rgba(20,56,255,1) 100%); /* safari5.1+,chrome10+ */
+    background: -o-linear-gradient(299deg, rgba(87,190,255,1) 0%, rgba(20,56,255,1) 61%, rgba(20,56,255,1) 100%); /* opera 11.10+ */
+    background: -ms-linear-gradient(299deg, rgba(87,190,255,1) 0%, rgba(20,56,255,1) 61%, rgba(20,56,255,1) 100%); /* ie10+ */
+    background: linear-gradient(151deg, rgba(87,190,255,1) 0%, rgba(20,56,255,1) 61%, rgba(20,56,255,1) 100%); /* w3c */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#57BEFF', endColorstr='#1438FF',GradientType=0 ); /* ie6-9 */
+}
+
+/* Center the doc tool icons at the top */
+.md-button.md-annoying {
+    min-height: 0;
+    height: auto;
+}
+
+.md-button.fullwidth {
+    border-radius: 0;
+    cursor: pointer;
+    display: block;
+    align-items: inherit;
+    line-height: 40px;
+    margin: 0;
+    max-height: 40px;
+    overflow: hidden;
+    padding: 0px 16px;
+    text-align: left;
+    text-decoration: none;
+    white-space: normal;
+    width: 100%;
+}
+
+md-sidenav {
+    min-width: 225px !important;
+    max-width: 225px !important;
+}

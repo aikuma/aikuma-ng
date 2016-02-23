@@ -24,6 +24,13 @@ ProjectDesc = {
     'Annotations': Annotations
 };
 
+var projectData = dataService.getProject(id);
+
+vm.SegMap = projectData.segmap;
+vm.Annotations = projectData.annotations;
+
+
+
 
 // AnnoDesc is a description of the annotations. An annotation optionally specifies a SegMap Id mapping to a segmentation
 // in the SegmMap object (below). SegId is optional, in which case the annotation can only contain one segment which is assumed

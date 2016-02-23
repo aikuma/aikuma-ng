@@ -7,9 +7,10 @@
             'annoweb-wavesurfer',       // the wavesurfer directive
             'annoweb-dialog',           // dialog and alert service
             'annoweb-service',          // old AnnowebService - needs to be removed
-            'annoweb-status',           // directive and controller for the project/primary file status display
+            'annoweb-newservice',       // new AnnowebService and mock data service
             'annoweb-annotation',       // directive and controller for annotation UI
             'annoweb-viewcontrollers',  // common controllers for view states (when we don't have separate files)
+            'annoweb-commondirectives', // common directives including the nav bar.
             'file-model',               // deprecated: made it a bit easier to select a file
             'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
             'ncy-angular-breadcrumb',   // breadcrumb directive based on ui router
@@ -30,6 +31,7 @@
                 .iconSet('nav','img/icons/sets/navigation-icons.svg', 24)
                 .iconSet('av','img/icons/sets/av-icons.svg', 24)
                 .iconSet('file','img/icons/sets/file-icons.svg', 24)
+                .iconSet('image','img/icons/sets/image-icons.svg', 24)
                 .iconSet('editor','img/icons/sets/editor-icons.svg', 24)
                 .iconSet('communication','img/icons/sets/communication-icons.svg', 24)
                 .defaultIconSet('img/icons/sets/core-icons.svg', 24);
@@ -54,7 +56,9 @@
                         templateUrl: "views/home.html",
                         ncyBreadcrumb: {
                             label: 'Home'
-                        }
+                        },
+                        controller: 'homeController',
+                        controllerAs: 'hCtrl'
                     })
                     .state('help', {
                         url: '/help',
@@ -81,14 +85,6 @@
                             label: 'Changes'
                         }
                     })
-                    .state('chat', {
-                        url: '/chat',
-                        templateUrl: "views/chat.html",
-                        ncyBreadcrumb: {
-                            parent: 'home',
-                            label: 'Chat'
-                        }
-                    })
                     .state('new', {
                         url: '/new',
                         templateUrl: "views/new.html",
@@ -98,11 +94,10 @@
                         }
                     })
                     .state('status', {
-                        url: '/status/:primaryID',
+                        url: '/status/:primaryId',
                         templateUrl: "views/status.html",
-                        controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
-                        }],
+                        controller: 'statusController',
+                        controllerAs: 'sCtrl',
                         ncyBreadcrumb: {
                             parent: 'home',
                             label: '{{projectId}}'
@@ -202,23 +197,6 @@
                         }
                     });
             }])
-        .filter('keyboardShortcut', ['$window', function($window) {
-            return function(str) {
-                if (!str) {return;}
-                var keys = str.split('-');
-                var isOSX = /Mac OS X/.test($window.navigator.userAgent);
-                var seperator = (!isOSX || keys.length > 2) ? '+' : '';
-                var abbreviations = {
-                    M: isOSX ? '⌘' : 'Ctrl',
-                    A: isOSX ? 'Option' : 'Alt',
-                    S: 'Shift'
-                };
-                return keys.map(function(key, index) {
-                    var last = index == keys.length - 1;
-                    return last ? key : abbreviations[key];
-                }).join(seperator);
-            };
-        }])
         .config(['$breadcrumbProvider', function($breadcrumbProvider) {
             $breadcrumbProvider.setOptions({
                 templateUrl: 'views/templates/breadcrumbs.html' // this is an angular material-friendly breadcrumb template

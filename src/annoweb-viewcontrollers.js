@@ -6,103 +6,6 @@
     angular
         .module('annoweb-viewcontrollers', [])
 
-        .controller('navController', ['$scope', '$state', 'ezfb', function($scope, $state, ezfb) {
-            var vm = this;
-            //vm.auth = dataService.auth;
-            vm.username = 'anonymous person';
-            vm.menu = [
-                {
-                    class : '',
-                    title: 'Getting started',
-                    icon: 'action:help',
-                    state: 'help'
-                },
-                {
-                    class : '',
-                    title: 'Open File',
-                    icon: 'file:folder_open',
-                    state: 'new'
-                },
-                {
-                    class : '',
-                    title: 'Record',
-                    icon: 'av:mic',
-                    state: 'new'
-                },
-                {
-                    class : '',
-                    title: 'Share',
-                    icon: 'social:share',
-                    state: 'share'
-                },
-                {
-                    class : '',
-                    title: 'Settings',
-                    icon: 'action:settings',
-                    state: 'settings'
-                },
-                {
-                    class : '',
-                    title: 'Changes',
-                    icon: 'action:change_history',
-                    state: 'changes'
-                },
-                {
-                    class : '',
-                    title: 'Chat',
-                    icon: 'communication:chat',
-                    state: 'chat'
-                },
-                {
-                    class : '',
-                    title: 'Bug Report',
-                    icon: 'action:bug_report',
-                    state: 'reportbug'
-                }
-            ];
-            vm.changeState = function(statename) {
-                $state.go(statename);
-            };
-
-            updateFB();
-
-            ezfb.Event.subscribe('auth.statusChange', function (statusRes) {
-                $scope.loginStatus = statusRes;
-                updateFB();
-
-            });
-
-            /**
-             * Update api('/me') result
-             */
-            function updateFB () {
-                ezfb.getLoginStatus()
-                    .then(function (res) {
-                        vm.loginStatus = res;
-                        return ezfb.api('/me');
-                    })
-                    .then(function (me) {
-                        vm.me = me;
-                        if (vm.loginStatus.status=='connected') {
-                            vm.username = vm.me.name;
-                        } else {
-                            vm.username = 'anonymous person';
-                        }
-                    });
-            }
-            vm.login = function () {
-                ezfb.login(null, {scope: 'email'});
-            };
-
-            vm.logout = function () {
-                ezfb.logout();
-            };
-
-        }])
-
-        .controller('authController', ['$scope', function($scope) {
-            $scope.val = "test";
-        }])
 
         .controller('loginController', ['$scope', 'authService', function($scope, authService) {
             var vm = this;
@@ -122,19 +25,47 @@
         }])
 
         // removed dataService, unclear what role Firebase will play
-        .controller('homeController', ['$scope', '$state', function($scope, $state) {
+        .controller('homeController', ['$scope', '$state', '$stateParams', 'ezfb', 'mockService', function($scope, $state, $stateParams, ezfb, mockService) {
             var vm = this;
             //
-            // Hard code the userId. It should be something like the Firebase auth service but we need to do it locally.
+            // Hard code the userId.
             //
-            vm.userId = 1;
+            ezfb.getLoginStatus()
+                .then(function (res) {
+                    if (res.status == 'connected') {
+                        vm.userid = res.authResponse.userID;
+                        vm.PrimaryList = mockService.getPrimaryList(vm.userid);
+                        vm.loggedin = true;
+                    } else {
+                        vm.loggedin = false;
+                    }
+                });
 
-            //vm.auth = dataService.auth;
-            //vm.profile = dataService.profile;
-            // any time auth status updates, add the user data to scope
-            //vm.auth.$onAuth(function(authData) {
-            //    vm.authData = authData;
-            //});
+            vm.goStatus = function(primaryIndex) {
+                $state.go('status',{primaryId:vm.PrimaryList[primaryIndex].id});
+            };
+            vm.addNew = function() {
+                $state.go('new');
+            };
+
+            ezfb.Event.subscribe('auth.statusChange', function (statusRes) {
+                if (statusRes.status == 'connected') {
+                    vm.loggedin = true;
+                    vm.userid = statusRes.authResponse.userID;
+                    vm.PrimaryList = mockService.getPrimaryList(vm.userid);
+                } else {
+                    vm.loggedin = false;
+                }
+            });
+
+        }])
+
+        .controller('statusController', ['$scope', '$state', '$stateParams', 'mockService', function($scope, $state, $stateParams, mockService) {
+            var vm = this;
+            var id = $stateParams.primaryId;
+
+            vm.projectData = mockService.getPrimaryDetails(id);
+            $scope.projectId = vm.projectData.name;
 
         }]);
 

@@ -1,29 +1,25 @@
-<h3>Home/landing page</h3>
+<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
 
-<p><b>Purpose</b>: Users see this page when they first run the app. They will choose between working on a previous project, or they will begin a new project..</p>
+    <md-list ng-if="hCtrl.loggedin">
+        <md-list-item class="md-3-line" ng-repeat="primary in hCtrl.PrimaryList" ng-click="hCtrl.goStatus($index)">
+            <md-icon disabled style="width:32px;height:32px;" md-svg-icon="image:image" class="md-avatar-icon" ></md-icon>
+            <div class="md-list-item-text" layout="column">
+                <h3>{{ primary.name }} </h3>
+                <h4>Last modified: <i>{{ primary.lastchanged }}</i></h4>
+                <p>{{ primary.details }}</p>
+            </div>
+        </md-list-item>
+    </md-list>
 
-<p><b>Design influence</b>: Projects interstitial window that often appears when running an IDE or a other complex software tool.</p>
-
-<p><b>Navigation</b>: They get here from starting the app or pressing 'home' on the breadcrumb trail. They will go directly to the project status page.</p>
-
-<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding" ng-controller="homeController as hCtrl">
-
-    <h3>Mock-up</h3>
-
-    <p>List of previous files, most recent on top:</p>
-    <ul>
-        <li><A ui-sref="status">The Rotunda Talk</A>:  36 seconds, no children, no annotations.</li>
-        <li>Super special recording: 1 hour 36 minutes, 1 respeak, 1 translate, 2 annotations.</li>
-        <li>Another special recording: 10 minutes, 20 seconds, 1 translation, no annotations.</li>
-    </ul>
-    <A ui-sref="new">
-        <md-button class="md-raised">
-            <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-            Create new
-        </md-button>
-    </a>
+    <div ng-if="!hCtrl.loggedin">
+        <h3>You are not logged in</h3>
+        <p>Please log in.</p>
+    </div>
 
 </md-content>
 
-<p>Notes: Need terminology for a 'project', or all work that pertains to a single primary recording.
-</p>
+<md-button class="md-raised" ng-click="hCtrl.addNew()">
+    <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+    Create new
+</md-button>
+
