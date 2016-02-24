@@ -15,6 +15,8 @@
             'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
             'ncy-angular-breadcrumb',   // breadcrumb directive based on ui router
             'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
+            'LocalForageModule',        // used by data service, angular version of local-forage
+            'annoweb-dataservice',
             'ezfb'                      // Easy Facebook library
         ])
         .config(function (ezfbProvider) {
@@ -200,6 +202,11 @@
         .config(['$breadcrumbProvider', function($breadcrumbProvider) {
             $breadcrumbProvider.setOptions({
                 templateUrl: 'views/templates/breadcrumbs.html' // this is an angular material-friendly breadcrumb template
+            });
+        }])
+        .config(['$localForageProvider', function($localForageProvider) {
+            $localForageProvider.config({
+               size: (100 * 1024 * 1024) 
             });
         }]);
 

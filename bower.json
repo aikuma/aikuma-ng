@@ -25,7 +25,9 @@
     "angular-ui-router": "~0.2.18",
     "angular-breadcrumb": "~0.4.1",
     "angular-resizable": "^1.2.0",
-    "angular-easyfb": "^1.4.1"
+    "angular-easyfb": "^1.4.1",
+    "localforage": "^1.4.0",
+    "angular-localforage": "^1.2.5"
   },
   "overrides": {
     "wavesurfer.js": {
