@@ -25,5 +25,9 @@
                 "wav"
             ]
         }
-    }
+    },
+    "permissions": [
+        "unlimitedStorage",
+        "fileSystem"
+    ]
 }
