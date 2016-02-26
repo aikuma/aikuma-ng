@@ -1,12 +1,12 @@
 <md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
 
     <md-list ng-if="hCtrl.loggedin">
-        <md-list-item class="md-3-line" ng-repeat="primary in hCtrl.PrimaryList" ng-click="hCtrl.goStatus($index)">
-            <md-icon disabled style="width:32px;height:32px;" md-svg-icon="image:image" class="md-avatar-icon" ></md-icon>
+        <md-list-item class="md-3-line" ng-repeat="session in hCtrl.sessionList" ng-click="hCtrl.goStatus($index)">
+                <div ng-style="{ 'background-image': 'url(' + session.image +')' }" class="roundedthumbnails"> </div>
             <div class="md-list-item-text" layout="column">
-                <h3>{{ primary.name }} </h3>
-                <h4>Last modified: <i>{{ primary.lastchanged }}</i></h4>
-                <p>{{ primary.details }}</p>
+                <h3>{{ session.name }} </h3>
+                <h4>Last modified: <i>{{ session.lastChanged }}</i></h4>
+                <p>{{ session.details }}</p>
             </div>
         </md-list-item>
     </md-list>
@@ -15,7 +15,6 @@
         <h3>You are not logged in</h3>
         <p>Please log in.</p>
     </div>
-
 </md-content>
 
 <md-button class="md-raised" ng-click="hCtrl.addNew()">

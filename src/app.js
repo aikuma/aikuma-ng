@@ -31,6 +31,7 @@
                 .iconSet('content','img/icons/sets/content-icons.svg', 24)
                 .iconSet('action','img/icons/sets/action-icons.svg', 24)
                 .iconSet('nav','img/icons/sets/navigation-icons.svg', 24)
+                .iconSet('maps','img/icons/sets/maps-icons.svg', 24)
                 .iconSet('av','img/icons/sets/av-icons.svg', 24)
                 .iconSet('file','img/icons/sets/file-icons.svg', 24)
                 .iconSet('image','img/icons/sets/image-icons.svg', 24)
@@ -50,7 +51,6 @@
         // Note that controllers are in annoweb-viewcontrollers.js
         .config(['$stateProvider', '$urlRouterProvider',
             function ($stateProvider, $urlRouterProvider) {
-                var projectId = 23784;
                 $urlRouterProvider.otherwise("/home");
                 $stateProvider
                     .state('home', {
@@ -96,20 +96,20 @@
                         }
                     })
                     .state('status', {
-                        url: '/status/:primaryId',
+                        url: '/session/:sessionId',
                         templateUrl: "views/status.html",
                         controller: 'statusController',
                         controllerAs: 'sCtrl',
                         ncyBreadcrumb: {
                             parent: 'home',
-                            label: '{{projectId}}'
+                            label: '{{sessionId}}'
                         }
                     })
                     .state('annotate', {
-                        url: '/{projectId}/annotate',
+                        url: '/annotate/:sessionId',
                         templateUrl: "views/annotate.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
@@ -117,10 +117,10 @@
                         }
                     })
                     .state('comment', {
-                        url: '/{projectId}/comment',
+                        url: '/{sessionId}/comment',
                         templateUrl: "views/comment.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
@@ -128,10 +128,10 @@
                         }
                     })
                     .state('respeak', {
-                        url: '/{projectId}/respeak',
+                        url: '/{sessionId}/respeak',
                         templateUrl: "views/respeak.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
@@ -139,10 +139,10 @@
                         }
                     })
                     .state('translate', {
-                        url: '/{projectId}/translate',
+                        url: '/{sessionId}/translate',
                         templateUrl: "views/translate.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
@@ -150,10 +150,10 @@
                         }
                     })
                     .state('metadata', {
-                        url: '/{projectId}/metadata',
+                        url: '/{sessionId}/metadata',
                         templateUrl: "views/metadata.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
@@ -161,10 +161,10 @@
                         }
                     })
                     .state('export', {
-                        url: '/{projectId}/export',
+                        url: '/{sessionId}/export',
                         templateUrl: "views/export.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
@@ -172,10 +172,10 @@
                         }
                     })
                     .state('share', {
-                        url: '/{projectId}/share',
+                        url: '/{sessionId}/share',
                         templateUrl: "views/share.html",
                         controller: ['$scope', function($scope) {
-                            $scope.projectId='The Rotunda Talk';
+                            $scope.sessionId='The Rotunda Talk';
                         }],
                         ncyBreadcrumb: {
                             parent: 'status',
