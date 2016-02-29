@@ -3,7 +3,7 @@
     
     angular
         .module('annoweb-dataservice', [])
-        .factory('AnnowebUtils', function() {
+        .factory('AnnowebUtils', [function() {
             var NUMBER = '0123456789';
             var LOWER_ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
             var UPPER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -24,7 +24,7 @@
                     return id;
                 }
             };
-        })
+        }])
         .factory('dataService', ['$localForage', 'AnnowebUtils', function($localForage, AnnowebUtils){
             // id, lastChanged is automatically created
             var USER_TYPE='user', ITEM_TYPE='item', SECONDARY_TYPE='secondary';

@@ -36,7 +36,7 @@ gulp.task('wavesurfer', function () {
 gulp.task('build', ['wavesurfer'], function () {
     // inject all of the js dependencies into the html
     var sources = gulp.src(['./src/**/*.js', './src/**/*.css'], {read: false, cwd: './'});
-    return gulp.src('./src/index.html', {cwd: './'})
+    return gulp.src('./src/window.html', {cwd: './'})
         .pipe(inject(sources, {relative: false, addRootSlash: false}))
         .pipe(wiredep({ignorePath: '../'}))
         .pipe(gulp.dest('./'));
@@ -61,12 +61,16 @@ gulp.task('deploy', ['cleandist'], function () {
     // copy testing media folder
     gulp.src('./media/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
-    // copy chrome app files
-    gulp.src('./chromeapp/**/*', {base: './chromeapp'})
+    gulp.src('./icons/**/*', {base: './'})
+        .pipe(gulp.dest('dist'));
+    gulp.src('./_locales/**/*', {base: './'})
+        .pipe(gulp.dest('dist'));
+    gulp.src(['background.js', 'manifest.json'])
         .pipe(gulp.dest('dist'));
     // build the final root html with a single minified js
     return gulp.src('./index.html')
         .pipe(rename('window.html'))
+        //.pipe(useref({'noconcat':true}))
         .pipe(useref())
         .pipe(gulpif('*.js', uglify().on('error', gutil.log)))
         .pipe(gulpif('*.css', minifyCss()))

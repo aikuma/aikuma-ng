@@ -17,14 +17,7 @@
             'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
             'LocalForageModule',        // used by data service, angular version of local-forage
             'annoweb-dataservice',
-            'ezfb'                      // Easy Facebook library
         ])
-        .config(function (ezfbProvider) {
-            ezfbProvider.setLocale('en_US');
-            ezfbProvider.setInitParams({
-                appId: '1052796451458015'
-            });
-        })
         .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
                 .iconSet('social','img/icons/sets/social-icons.svg', 24)
@@ -102,15 +95,12 @@
                         controllerAs: 'sCtrl',
                         ncyBreadcrumb: {
                             parent: 'home',
-                            label: '{{sessionId}}'
+                            label: '{{sessionName}}'
                         }
                     })
                     .state('annotate', {
                         url: '/annotate/:sessionId',
                         templateUrl: "views/annotate.html",
-                        controller: ['$scope', function($scope) {
-                            $scope.sessionId='The Rotunda Talk';
-                        }],
                         ncyBreadcrumb: {
                             parent: 'status',
                             label: 'Annotate'
@@ -203,6 +193,9 @@
             $breadcrumbProvider.setOptions({
                 templateUrl: 'views/templates/breadcrumbs.html' // this is an angular material-friendly breadcrumb template
             });
+        }])
+        .config(['$compileProvider', function($compileProvider) {
+            //$compileProvider.aHrefSanitizationWhitelist('/chrome/');
         }])
         .config(['$localForageProvider', function($localForageProvider) {
             $localForageProvider.config({

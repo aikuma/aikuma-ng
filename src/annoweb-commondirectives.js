@@ -30,9 +30,10 @@
             };
         });
 
-        var navController = function ($scope, $state, ezfb) {
+        var navController = function ($scope, $state, mockLoginService) {
             var vm = this;
             vm.username = 'anonymous person';
+            vm.getLoginStatus = mockLoginService.getLoginStatus;
             vm.menu = [
                 {
                     class : '',
@@ -81,42 +82,8 @@
                 $state.go(statename);
             };
 
-            updateFB();
-
-            ezfb.Event.subscribe('auth.statusChange', function (statusRes) {
-                $scope.loginStatus = statusRes;
-                updateFB();
-
-            });
-
-            /**
-             * Update api('/me') result
-             */
-            function updateFB () {
-                ezfb.getLoginStatus()
-                    .then(function (res) {
-                        vm.loginStatus = res;
-                        return ezfb.api('/me');
-                    })
-                    .then(function (me) {
-                        vm.me = me;
-                        if (vm.loginStatus.status=='connected') {
-                            vm.username = vm.me.name;
-                        } else {
-                            vm.username = 'anonymous person';
-                        }
-                    });
-            }
-            vm.login = function () {
-                ezfb.login(null, {scope: 'email'});
-            };
-
-            vm.logout = function () {
-                ezfb.logout();
-            };
-
         };
-    navController.$inject = ['$scope', '$state', 'ezfb'];
+    navController.$inject = ['$scope', '$state', 'mockLoginService'];
 
     var userSelectorController = function ($scope, $attrs, mockService) {
         var vm = this;

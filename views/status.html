@@ -22,8 +22,17 @@
         <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
 
         <md-card-actions layout="row" layout-align="end center">
-            <md-button>Action 1</md-button>
-            <md-button>Action 2</md-button>
+            <md-button ng-click="sCtrl.uploadNewImage()">
+                <md-icon md-svg-icon="file:file_upload"></md-icon>Upload
+            </md-button>
+            <md-button ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
+                <md-icon  md-svg-icon="av:skip_previous"></md-icon>
+            </md-button>
+            <div ng-if="!sCtrl.ImageCount"> - / - </div>
+            <div ng-if="sCtrl.ImageCount"> {{sCtrl.currentImageIdx}} / {{sCtrl.ImageCount}} </div>
+            <md-button ng-disabled="!sCtrl.hasNextImage()" ng-click="sCtrl.nextImage()">
+                <md-icon  md-svg-icon="av:skip_next" ></md-icon>
+            </md-button>
         </md-card-actions>
     </md-card>
 </div>

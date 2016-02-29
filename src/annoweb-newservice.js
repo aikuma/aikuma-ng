@@ -6,6 +6,27 @@
     angular
         .module('annoweb-newservice', [])
 
+
+        .factory('mockLoginService', [function () {
+            var ms = {};
+            ms.loginStatus = false;
+
+            ms.getLoginStatus = function() {
+                return ms.loginStatus;
+            };
+
+            ms.loginUser = function(userid) {
+                ms.loginStatus = true;
+                ms.loggedinUser = userid;
+            };
+            // just returns an id
+            ms.getLoggedinUser = function() {
+                return ms.loggedinUser;
+            };
+
+            return ms;
+        }])
+
         // We'll call this to get data. It's a stand-in for the local storage/sync service.
         .factory('mockService', [function () {
             // get the list of items for the 'home' state/view. We ignore userid for this.
@@ -15,6 +36,14 @@
             // Everything to user data
             //
             ms.data = {};
+
+            ms.getUsers = function(fn) {
+                fn([{
+                   'name': 'Mat Bettinson',
+                    'id': '1'
+                }]);
+            };
+
 
             ms.data.fileStore = {
                 '1': 'img/dummy_user.jpg',

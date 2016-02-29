@@ -6,66 +6,43 @@
     angular
         .module('annoweb-viewcontrollers', [])
 
-        .controller('loginController', ['$scope', 'authService', function($scope, authService) {
+        // removed dataService, unclear what role Firebase will play
+        .controller('homeController', ['$scope', '$state', '$stateParams', 'mockService', 'mockLoginService', function($scope, $state, $stateParams, mockService, mockLoginService) {
             var vm = this;
-            vm.loginstatus = authService.loginStatus;
-            vm.apiMe = authService.apiMe;
-            vm.login = function() {
-                authService.login();
+            vm.getLoginStatus = function () {
+                return mockLoginService.getLoginStatus();
             };
-            vm.logout = function() {
-                authService.logout();
-            };
-            $scope.$on('authchange', function() {
-                console.log('yep');
-                $scope.$apply();
+
+            vm.userList = mockService.getUsers(function(userList) {
+                mockLoginService.loginUser(userList[0].id);
+                vm.sessionList = mockService.getSessionList(mockLoginService.getLoggedinUser());
             });
 
-        }])
-
-        // removed dataService, unclear what role Firebase will play
-        .controller('homeController', ['$scope', '$state', '$stateParams', 'ezfb', 'mockService', function($scope, $state, $stateParams, ezfb, mockService) {
-            var vm = this;
             //
             // Hard code the userId.
             //
 
-            //vm.userData = mockService.getUserData(1);
-
-            ezfb.getLoginStatus()
-                .then(function (res) {
-                    if (res.status == 'connected') {
-                        vm.userid = res.authResponse.userID;
-                        vm.sessionList = mockService.getSessionList(vm.userid);
-                        vm.loggedin = true;
-                    } else {
-                        vm.loggedin = false;
-                    }
-                });
 
             vm.goStatus = function(sessionIndex) {
-                $state.go('status',{userId:vm.userid,sessionId:vm.sessionList[sessionIndex].id});
+                $state.go('status',
+                    {
+                        userId:mockLoginService.getLoggedinUser(),
+                        sessionId:vm.sessionList[sessionIndex].id
+                    });
             };
             vm.addNew = function() {
                 $state.go('new');
             };
-
-            ezfb.Event.subscribe('auth.statusChange', function (statusRes) {
-                if (statusRes.status == 'connected') {
-                    vm.loggedin = true;
-                    vm.userid = statusRes.authResponse.userID;
-                    vm.sessionList = mockService.getSessionList(vm.userId);
-                } else {
-                    vm.loggedin = false;
-                }
-            });
 
         }])
 
         .controller('statusController', ['$scope', '$state', '$stateParams', 'mockService', function($scope, $state, $stateParams, mockService) {
             var vm = this;
             vm.sessionId = $stateParams.sessionId;
+
             vm.userId = $stateParams.userId;
+
+            console.log('sp',$stateParams);
 
             vm.details = [
                 {
@@ -76,6 +53,44 @@
             ];
 
             vm.sessionData = mockService.getSessionData(vm.userId,vm.sessionId);
+            $scope.sessionName = vm.sessionData.name;
+            if (vm.sessionData.images.length) {
+                vm.ImageCount = vm.sessionData.images.length;
+                vm.currentImageIdx = 1;
+
+            } else {
+                vm.ImageCount = 0;
+            }
+
+            vm.nextImage = function() {
+                ++vm.currentImageIdx;
+            };
+
+            vm.prevImage = function() {
+                --vm.currentImageIdx;
+            };
+            vm.hasPreviousImage = function() {
+               return vm.currentImageIdx > 1;
+            };
+            vm.hasNextImage = function() {
+                return vm.currentImageIdx < vm.currentImageIdx;
+            };
+
+            vm.uploadNewImage = function() {
+                var accepts = [{
+                    mimeTypes: ['image/*'],
+                    extensions: ['jpg', 'gif', 'png']
+                }];
+                chrome.fileSystem.chooseEntry({type: 'openFile', accepts: accepts}, function(theEntry) {
+                    if (!theEntry) {
+                        vm.textContent = 'No file selected.';
+                        return;
+                    }
+                    // use local storage to retain access to this file
+                    chrome.storage.local.set({'chosenFile': chrome.fileSystem.retainEntry(theEntry)});
+
+                });
+            };
 
             vm.mockSegs = [
                 [

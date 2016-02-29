@@ -10,11 +10,11 @@
         </div>
     </header>
 
-        <md-button ng-if="navCtrl.loginStatus.status!='connected'" class="fullwidth" ng-click="navCtrl.login()" flex>
+        <md-button ng-if="!navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.login()" flex>
             <md-icon class="inset animated infinite rubberBand" md-svg-icon="social:person_outline"></md-icon>
             <span flex>Log In!</span>
         </md-button>
-        <md-button ng-if="navCtrl.loginStatus.status=='connected'" class="fullwidth" ng-click="navCtrl.logout()" flex>
+        <md-button ng-if="navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.logout()" flex>
             <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
             <span flex>Log Out</span>
         </md-button>

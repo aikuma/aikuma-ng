@@ -1,6 +1,6 @@
 <md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
 
-    <md-list ng-if="hCtrl.loggedin">
+    <md-list ng-if="hCtrl.getLoginStatus()">
         <md-list-item class="md-3-line" ng-repeat="session in hCtrl.sessionList" ng-click="hCtrl.goStatus($index)">
                 <div ng-style="{ 'background-image': 'url(' + session.image +')' }" class="roundedthumbnails"> </div>
             <div class="md-list-item-text" layout="column">
@@ -11,7 +11,7 @@
         </md-list-item>
     </md-list>
 
-    <div ng-if="!hCtrl.loggedin">
+    <div ng-if="!hCtrl.getLoginStatus()">
         <h3>You are not logged in</h3>
         <p>Please log in.</p>
     </div>

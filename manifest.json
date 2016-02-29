@@ -28,6 +28,6 @@
     },
     "permissions": [
         "unlimitedStorage",
-        "fileSystem"
+        {"fileSystem": ["write", "retainEntries", "directory"]}
     ]
 }
