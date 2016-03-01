@@ -63,26 +63,6 @@
             return ser;
         }])
 
-        .factory('mockLoginService', [function () {
-            var ms = {};
-            ms.loginStatus = false;
-
-            ms.getLoginStatus = function() {
-                return ms.loginStatus;
-            };
-
-            ms.loginUser = function(userid) {
-                ms.loginStatus = true;
-                ms.loggedinUser = userid;
-            };
-            // just returns an id
-            ms.getLoggedinUser = function() {
-                return ms.loggedinUser;
-            };
-
-            return ms;
-        }])
-
         // We'll call this to get data. It's a stand-in for the local storage/sync service.
         .factory('mockService', [function () {
             // get the list of items for the 'home' state/view. We ignore userid for this.

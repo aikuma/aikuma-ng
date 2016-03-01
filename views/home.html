@@ -4,13 +4,17 @@
     </div>
 </md-toolbar>
 <md-content class="md-padding">
+    <md-button ng-click="hCtrl.loadMockData()">
+        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+        Load mock-data
+    </md-button>
 
         <md-list ng-if="hCtrl.getLoginStatus()">
             <md-list-item class="md-3-line" ng-repeat="session in hCtrl.sessionList" ng-click="hCtrl.goStatus($index)">
-                    <div ng-style="{ 'background-image': 'url(' + session.image +')' }" class="roundedthumbnails"> </div>
+                    <div ng-style="{ 'background-image': 'url(' + hCtrl.currentUser.files[session.imageIds[0]].url +')' }" class="roundedthumbnails"> </div>
                 <div class="md-list-item-text" layout="column">
-                    <h3>{{ session.name }} </h3>
-                    <h4>Last modified: <i>{{ session.lastChanged }}</i></h4>
+                    <h3>{{ session.names[0] }} </h3>
+                    <h4>Last modified: <i>{{ session.lastModified | date:'yyyy-MM-dd HH:mm:ss Z' }}</i></h4>
                     <p>{{ session.details }}</p>
                 </div>
             </md-list-item>

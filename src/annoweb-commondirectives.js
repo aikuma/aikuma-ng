@@ -47,10 +47,10 @@
         };
         annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
 
-        var navController = function ($scope, $location, mockLoginService) {
+        var navController = function ($scope, $location, loginService) {
             var vm = this;
             vm.username = 'anonymous person';
-            vm.getLoginStatus = mockLoginService.getLoginStatus;
+            vm.getLoginStatus = loginService.getLoginStatus;
             vm.menu = [
                 {
                     class : '',
@@ -100,7 +100,7 @@
             };
 
         };
-    navController.$inject = ['$scope', '$location', 'mockLoginService'];
+    navController.$inject = ['$scope', '$location', 'loginService'];
 
     var userSelectorController = function ($scope, $attrs, mockService) {
         var vm = this;
