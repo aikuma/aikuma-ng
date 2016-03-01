@@ -14,8 +14,8 @@
             'file-model',               // deprecated: made it a bit easier to select a file
             'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
             'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
-            'LocalForageModule',        // used by data service, angular version of local-forage
-            'annoweb-dataservice',
+            'indexedDB',                // used by dataservice to store metadata
+            'annoweb-dataservice',      // data service dealing with metadata and files
         ])
         .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
@@ -39,11 +39,6 @@
                 .accentPalette('deep-orange', {
                     'default': '500'
                 });
-        }])
-        .config(['$localForageProvider', function($localForageProvider) {
-            $localForageProvider.config({
-                size: (100 * 1024 * 1024)
-            });
         }])
         // Note that controllers are in annoweb-viewcontrollers.js
         .config(['$routeProvider',
@@ -70,5 +65,23 @@
                     .otherwise({
                         redirectTo: '/'
                     });
-            }]);
+            }])
+        .config(['$compileProvider', function($compileProvider) {   
+                $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|filesystem|chrome-extension):/);
+        }])
+        .config(['$indexedDBProvider', function($indexedDBProvider) {
+            $indexedDBProvider
+            .connection('myIndexedDB')
+            .upgradeDatabase(1, function(event, db, tx){
+                var userStore = db.createObjectStore('user', {keyPath: '_ID'});
+                userStore.createIndex('name_idx', 'name');
+                
+                var itemStore = db.createObjectStore('session', {keyPath: '_ID'});
+                itemStore.createIndex('user_idx', 'userId');
+                
+                var secondaryStore = db.createObjectStore('secondary', {keyPath: '_ID'});
+                secondaryStore.createIndex('user_idx', 'userId');
+                secondaryStore.createIndex('item_idx', 'itemId');
+            });
+        }]);
 })();

@@ -23,9 +23,8 @@
     "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.6.0",
     "underscore": "~1.8.3",
     "angular-resizable": "^1.2.0",
-    "localforage": "^1.4.0",
-    "angular-localforage": "^1.2.5",
-    "angular-route": "bower-angular-route#^1.5.0"
+    "angular-route": "bower-angular-route#^1.5.0",
+    "angular-indexedDB": "angular-indexed-db#^1.1.3"
   },
   "overrides": {
     "wavesurfer.js": {

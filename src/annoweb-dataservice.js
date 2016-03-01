@@ -1,12 +1,14 @@
 (function() {
     'use strict';
+    var USER_TYPE='user', SESSION_TYPE='session', SECONDARY_TYPE='secondary';
+    var SPEAKER_ROLE = 'speakers';
     
     angular
         .module('annoweb-dataservice', [])
-        .factory('AnnowebUtils', [function() {
-            var NUMBER = '0123456789';
-            var LOWER_ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
-            var UPPER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        .factory('AnnowebUtils', function() {
+            var NUMBER = '0123456789',
+                LOWER_ALPHABET = 'abcdefghijklmnopqrstuvwxyz',
+                UPPER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
             return {
                 createRandomAlphabets: function(length) {
@@ -24,31 +26,85 @@
                     return id;
                 }
             };
+        })
+        .factory('loginService', ['dataService', function (dataService) {
+            var loginStatus = false;
+            var currentUserId;
+            
+            var service = {};
+
+            service.loginUser = function(userId) {
+                dataService.get(USER_TYPE, userId).then(function(userObj) {
+                    loginStatus = true;
+                    currentUserId = userObj.data._ID;
+                });
+            };
+            
+            service.getLoginStatus = function() {
+                return loginStatus;
+            };
+            
+            service.getLoggedinUserId = function() {
+                return currentUserId;
+            };
+
+            return service;
         }])
-        .factory('dataService', ['$localForage', 'AnnowebUtils', function($localForage, AnnowebUtils){
-            // id, lastChanged is automatically created
-            var USER_TYPE='user', ITEM_TYPE='item', SECONDARY_TYPE='secondary';
+        .factory('dataService', ['$indexedDB', 'AnnowebUtils', function($indexedDB, AnnowebUtils){
+            // id, lastModified is automatically created
             var dataModel = {
                 user: {
-                    name: true,
+                    _ID: true,
+                    names: true,    // array
                     email: true,
                     lastModified: true,
-                    items: false
+                    people: false,  // array
+                    tags: false,    // array
+                    files: false    // array
                 },
-                item: {
-                    name: true,
+                session: {
+                    _ID: true,
+                    names: true,    // array
+                    type: true,
+                    lastModified: true,
+                    source: true,
+                    details: false,
+                    roles: false,   // object of array
+                    tagIds: false,  // array
+                    imageIds: false,  // object of array
+                    
+                    userId: true
+                },
+                secondary: {
+                    _ID: true,
+                    names: true,    // array
                     type: true,
                     lastModified: true,
                     details: false,
-                    secondaries: false
+                    
+                    userId: true,
+                    sessionId: true
                 },
-                secondary: {
-                    name: true,
+                
+                // Embedded object model
+                person: {
+                    _ID: true,
+                    names: true,    // array
+                    email: false,
+                    imageFileId: false
+                },
+                tag: {
+                    _ID: true,
+                    name: true
+                },
+                file: {
+                    _ID: true,
+                    url: true,
                     type: true,
-                    lastModified: true,
-                    details: false
+                    description: false,
                 }
-            }
+            };
+            
             var validation = {
                 validateRequired: function(type, data) {
                     // Type check
@@ -71,112 +127,143 @@
                         return false;
                     else
                         return true;
+                },
+                validateType: function(type) {
+                    return ([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE].indexOf(type) != -1);
                 }
-            }
+            };
+            
+            var dataMethods = {
+                addUserMeta: function(metaKey) {
+                    return function(metaObj) {
+                        var id = this.data._ID + AnnowebUtils.createRandomNumbers(6);
+                        // If this metadata doesn't exist
+                        if(!this.data[metaKey])
+                            this.data[metaKey] = {};
+                        this.data[metaKey][id] = metaObj;
+                    };
+                },
+                save: function(type) {
+                    return function() {
+                        if(type === USER_TYPE) {
+                            service.setUser(this.data);
+                        } else if(type === SESSION_TYPE) {
+                            service.updateSession(this._ID, this.data);
+                        } else if(type === SECONDARY_TYPE) {
+                            service.updateSecondary(this._ID, this.data);
+                        }
+                    };
+                }
+            };
             
             var dbOps = {
-                set: function(type, id, data) {
-                    data.lastModified = new Date().toISOString();
+                set: function(type, id, data, store) {
+                    data['_ID'] = id;
+                    data.lastModified = Date.now();
                     if(!validation.validateRequired(type, data)) {
-                        throw 'Validation Error'
+                        throw 'Validation Error';
                     }
-                    
-                    return $localForage.setItem(id, data);
+                   
+                    return store.upsert(data);
                 },
-                remove: function(type, id) {
-                    return $localForage.removeItem(id);  
+                remove: function(type, id, store) {       
+                    return store.delete(id);
                 },
-                get: function(type, id) {
-                    return $localForage.getItem(id);
+                get: function(type, id, store) {
+                    return store.find(id);
                 }
-            }
-            
+            };
+               
             var service = {};
-            service.setUser = function(data, callback) {
+            service.setUser = function(data) {
                 var id = data.email;
                 
-                dbOps.set(USER_TYPE, id, data).then(callback);
-            }
-            // Danger: No transaction....
-            service.setItem = function(userId, data, callback) {
-                dbOps.get(null, userId).then(function(val) {
-                   if(!val)
-                       throw 'User(' + userId + ') does not exist';
-                    console.log(val.items);
-                    if(!val.items)
-                        val.items = [];
-                    
-                    var id = AnnowebUtils.createRandomAlphabets(8);
-                    val.items.push(id);
-                    dbOps.set(USER_TYPE, userId, val);
-                    dbOps.set(ITEM_TYPE, id, data).then(callback);
+                return $indexedDB.openStore(USER_TYPE, function(store) {
+                   return dbOps.set(USER_TYPE, id, data, store); 
                 });
-            }
-            // Danger: No transaction....
-            service.setSecondary = function(itemId, data, callback) {
-                dbOps.get(null, itemId).then(function(val) {
-                    if(!val)
-                        throw 'Item(' + itemId + ') does not exist';
-                    
-                    if(!val.secondaries)
-                        val.secondaries = [];
-                    
-                    var id = itemId + AnnowebUtils.createRandomNumbers(6);
-                    val.secondaries.push(id);
-                    dbOps.set(ITEM_TYPE, itemId, val);
-                    dbOps.set(SECONDARY_TYPE, id, data).then(callback);
+            };
+            
+            service.setSession = function(userId, data) {
+                var id = AnnowebUtils.createRandomAlphabets(8);
+                data['userId'] = userId;
+                data['type'] = SESSION_TYPE;
+                
+                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE], function(store0, store1) {
+                    return dbOps.get(null, userId, store0).then(function() {    // validation
+                        return dbOps.set(SESSION_TYPE, id, data, store1);  
+                    });
                 });
-            }
+            };
             
-            service.updateItem = function(itemId, data, callback) {
-                dbOps.get(null, itemId).then(function(val) {
-                    if(!val)
-                        throw 'Item(' + itemId + ') does not exist';
-                    
-                    dbOps.set(ITEM_TYPE, itemId, data).then(callback);
+            service.setSecondary = function(userId, sessionId, data) {
+                var id = sessionId + AnnowebUtils.createRandomNumbers(6);
+                data['userId'] = userId;
+                data['sessionId'] = sessionId;
+                
+                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                    return dbOps.get(null, userId, store0).then(function() {    // validation
+                        return dbOps.get(null, sessionId, store1);
+                    }).then(function() {
+                        return dbOps.set(SECONDARY_TYPE, id, data, store2);
+                    });
                 });
-            }
-            service.updateSecondary = function(id, data, callback) {
-                dbOps.get(null, id).then(function(val) {
-                    if(!val)
-                        throw 'Secondary(' + id + ') does not exist';
-                    dbOps.set(SECONDARY_TYPE, id, data).then(callback);
+            };
+            
+            service.updateSession = function(sessionId, data) {
+                return $indexedDB.openStore(SESSION_TYPE, function(store) {
+                    return dbOps.get(null, sessionId, store).then(function() {     // validation
+                      return dbOps.set(SESSION_TYPE, sessionId, data, store);  
+                    });
                 });
-            }
+            };
+            service.updateSecondary = function(secId, data) {
+                return $indexedDB.openStore(SECONDARY_TYPE, function(store) {
+                    return dbOps.get(null, secId, store).then(function() {      // validation
+                        return dbOps.set(SECONDARY_TYPE, secId, data, store);
+                    });
+                });
+            };
             
-            service.remove = function(id, callback) {
-                dbOps.remove(null, id).then(callback);
-            }
+            service.remove = function(type, id) {
+                return $indexedDB.openStore(type, function(store) {
+                   return dbOps.remove(null, id, store); 
+                });
+            };
             
-            service.get = function(id, callback) {
-                dbOps.get(null, id).then(callback);
-            }
-            
-            service.getItemList = function(userId, callback) {
-                dbOps.get(null, userId).then(function(val) {
-                    if(!val)
-                        throw 'ID(' + userId + ') does not exist';
+            service.get = function(type, id) {
+                return $indexedDB.openStore(type, function(store) {
+                    return dbOps.get(null, id, store);
+                }).then(function(data) {
+                    var wrapper = {data: data};
+                    if(type === USER_TYPE) {
+                        wrapper.addUserTag = dataMethods.addUserMeta('tags').bind(wrapper);
+                        wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
+                    } else if(type === SESSION_TYPE) {
+                        wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
+                    }
                     
-                    if(val.items) {        
-                        var len = val.items.length,
-                            idx = 0,
-                            objList = [];
-                        
-                        dbOps.get(null, val.items[idx]).then(function addToObjList(itemMeta) {
-                            objList.push(itemMeta);
-                            idx += 1;
-                            if(idx == len) {
-                                objList.sort(function(a, b) {
-                                    return new Date(b.lastModified) - new Date(a.lastModified);
-                                })
-                                callback(objList);
-                            }
-                            else
-                                dbOps.get(null, val.items[idx]).then(addToObjList);
+                    return wrapper;
+                });
+            };
+            
+            service.getUserList = function() {
+                return $indexedDB.openStore(USER_TYPE, function(store) {
+                    return store.getAll();
+                });
+            };
+            
+            service.getSessionList = function(userId) {
+                return $indexedDB.openStore(SESSION_TYPE, function(store) {
+                    return store.eachBy('user_idx', {beginKey: userId, endKey: userId});
+                }).then(function(sessionList) {
+                    if(sessionList) {
+                        sessionList.sort(function (a, b) {
+                            return new Date(b.lastModified) - new Date(a.lastModified);
                         });
                     }
-                })
-            }
+                    return sessionList;
+                });
+            };
             
             return service;
         }]);
