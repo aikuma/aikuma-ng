@@ -1,17 +1,4 @@
 <div flex layout-padding id="popupContainer">
-    <!-- This is displayed if we have no regions to edit -->
-    <div ng-if="!aCtrl.editable">
-        <md-toolbar class="md-warn">
-            <div class="md-toolbar-tools">
-                <h2 class="md-flex">No annotations yet!</h2>
-            </div>
-        </md-toolbar>
-        <md-button class="md-raised" ng-click="aCtrl.addAnno()">
-            <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-            New annotation
-        </md-button>
-    </div>
-
     <!-- This is displayed if we have regions to edit -->
     <md-whiteframe ng-if="aCtrl.editable" layout="column" class="md-inline-form md-whiteframe-3dp">
 

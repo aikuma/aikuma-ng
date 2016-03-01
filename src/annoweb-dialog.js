@@ -5,7 +5,7 @@
         .module('annoweb-dialog', [])
         .factory('AnnowebDialog', ['$document', '$mdDialog', '$mdToast', function ($document, $mdDialog, $mdToast) {
             var factory = {};
-            factory.newAnno = function(ev, fileId) {
+            factory.newAnno = function(ev, userId, sessionId) {
                 $mdDialog.show({
                         controller: newAnnotationController,
                         controllerAs: 'dCtrl',
@@ -13,14 +13,7 @@
                         parent: angular.element(document.body),
                         targetEvent: ev,
                         clickOutsideToClose:true,
-                        locals: {
-                            fileId: fileId
-                        }
-                    })
-                    .then(function(answer) {
-                        factory.status = 'You said the information was "' + answer + '".';
-                    }, function() {
-                        factory.status = 'You cancelled the dialog.';
+                        locals: {userId: userId, sessionId: sessionId}
                     });
             };
             factory.alert = function(alerttitle, alerttext, callbackfunc) {
@@ -47,9 +40,8 @@
             return factory;
         }]);
 
-    var newAnnotationController = function ($mdDialog, $timeout, $q, $log, annoService, AnnowebService, fileId) {
+    var newAnnotationController = function ($mdDialog, $timeout, $q, $log, userId, sessionId, annoService) {
         var self = this;
-        console.log('f', fileId);
         self.types = [
             {
                 name: 'Annotation'
@@ -123,8 +115,7 @@
             self.optionlist.forEach(function(o) {
                 as_options[o] = self.options[o].selected;
             });
-            // AnnowebService.setAnnos(annos, as_options);
-            annoService.newAnnotations(fileId, annos, as_options);
+            annoService.createAnnotations(userId, sessionId, annos, as_options);
             $mdDialog.hide();
         };
 
@@ -171,7 +162,7 @@
 
         function loadAllx() {
             var languages=[];
-            AnnowebService.languages.forEach( function(s) {
+            annoService.languages.forEach( function(s) {
                 languages.push({
                     value: s.Ref_Name.toLowerCase(),
                     display: s.Ref_Name,
@@ -191,7 +182,7 @@
             };
         }
     };
-    newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'annoService', 'AnnowebService', 'fileId'];
+    newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'userId', 'sessionId', 'annoService'];
     
 })();
 

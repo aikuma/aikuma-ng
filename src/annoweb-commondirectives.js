@@ -28,9 +28,26 @@
                 controller: tagSelectorController,
                 controllerAs: 'tsCtrl'
             };
+        })
+        .directive("ngAnnotationList", function() {
+            return {
+                restrict: "E",
+                templateUrl: "views/templates/annotationList.html",
+                controller: annotationListController,
+                controllerAs: 'alCtrl'
+            };
         });
 
-        var navController = function ($scope, $state, mockLoginService) {
+        var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
+            var vm = this;
+            vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
+            vm.newAnno = function () {
+                AnnowebDialog.newAnno($attrs.userId,$attrs.sessionId);
+            };
+        };
+        annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
+
+        var navController = function ($scope, $location, mockLoginService) {
             var vm = this;
             vm.username = 'anonymous person';
             vm.getLoginStatus = mockLoginService.getLoginStatus;
@@ -79,11 +96,11 @@
                 }
             ];
             vm.changeState = function(statename) {
-                $state.go(statename);
+                $location.path('/'+statename);
             };
 
         };
-    navController.$inject = ['$scope', '$state', 'mockLoginService'];
+    navController.$inject = ['$scope', '$location', 'mockLoginService'];
 
     var userSelectorController = function ($scope, $attrs, mockService) {
         var vm = this;

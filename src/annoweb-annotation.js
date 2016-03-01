@@ -217,9 +217,7 @@
         vm.editable = false; // if false, template asks users to add annos
         vm.fileId = 0; // we need to get this when starting the controller, it's used when calling back to us.
 
-        vm.addAnno = function (ev) {
-            annoService.newAnnotationDialog(ev, vm.fileId);
-        };
+
         // If regions have been loaded then do this
         $scope.$on('regionsloaded', function () {
             vm.editable = true;

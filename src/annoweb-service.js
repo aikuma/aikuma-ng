@@ -76,13 +76,7 @@
                 });
 
             };
-            Papa.parse("extdata/iso-639-3_20160115.tab", {
-                header: true,
-                download: true,
-                complete: function(results) {
-                    aw.languages = results.data;
-                }
-            });
+
             /* Set up new annotations
              * Args: List of annotations objects, option object
              * Results: Annotationlist set up. If autoregion then build region list, otherwise

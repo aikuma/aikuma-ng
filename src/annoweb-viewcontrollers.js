@@ -7,8 +7,9 @@
         .module('annoweb-viewcontrollers', [])
 
         // removed dataService, unclear what role Firebase will play
-        .controller('homeController', ['$scope', '$state', '$stateParams', 'mockService', 'mockLoginService', function($scope, $state, $stateParams, mockService, mockLoginService) {
+        .controller('homeController', ['$location', 'mockService', 'mockLoginService', function($location, mockService, mockLoginService) {
             var vm = this;
+
             vm.getLoginStatus = function () {
                 return mockLoginService.getLoginStatus();
             };
@@ -22,38 +23,21 @@
             // Hard code the userId.
             //
 
-
             vm.goStatus = function(sessionIndex) {
-                $state.go('status',
-                    {
-                        userId:mockLoginService.getLoggedinUser(),
-                        sessionId:vm.sessionList[sessionIndex].id
-                    });
+                $location.path('session/'+vm.sessionList[sessionIndex].id);
             };
             vm.addNew = function() {
-                $state.go('new');
+                $location.path('/new');
             };
 
         }])
 
-        .controller('statusController', ['$scope', '$state', '$stateParams', 'mockService', function($scope, $state, $stateParams, mockService) {
+        .controller('statusController', ['$location', '$routeParams', 'mockService', 'mockLoginService', 'AnnowebDialog', function($location, $routeParams, mockService, mockLoginService, AnnowebDialog) {
             var vm = this;
-            vm.sessionId = $stateParams.sessionId;
-
-            vm.userId = $stateParams.userId;
-
-            console.log('sp',$stateParams);
-
-            vm.details = [
-                {
-                    'name': 'Description',
-                    'icon': 'action:description',
-                    'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
-                }
-            ];
-
+            vm.sessionId = $routeParams.sessionId;
+            vm.userId = mockLoginService.getLoggedinUser();
             vm.sessionData = mockService.getSessionData(vm.userId,vm.sessionId);
-            $scope.sessionName = vm.sessionData.name;
+
             if (vm.sessionData.images.length) {
                 vm.ImageCount = vm.sessionData.images.length;
                 vm.currentImageIdx = 1;
@@ -91,28 +75,14 @@
 
                 });
             };
-
-            vm.mockSegs = [
-                [
-                    {
-                        'type': 'Transcription',
-                        'lang': 'English',
-                        'snippet': 'You go down to the rotunda...'
-                    },
-                    {
-                        'type': 'Translation',
-                        'lang': 'Chinese',
-                        'snippet': '你要往下面去...'
-                    }
-                ],
-                [
-                    {
-                        'type': 'Comment',
-                        'lang': 'English',
-                        'snippet': 'Boris is gesturing...'
-                    }
-                ]
+            vm.details = [
+                {
+                    'name': 'Description',
+                    'icon': 'action:description',
+                    'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                }
             ];
+
 
             vm.hasImage = function() {
                  if (vm.sessionData.images.length) {
@@ -126,10 +96,17 @@
             };
 
             vm.edit = function(index) {
-                $state.go('annotate', {sessionId:$stateParams.sessionId});
+                $location.path('/session/'+vm.sessionId+'/annotate'+'/'+index);
+            };
+
+            vm.addAnno = function (ev) {
+               var nd = AnnowebDialog.newAnno(ev);
+                console.log(nd);
             };
 
         }]);
+
+
 
 
 })();

@@ -6,6 +6,62 @@
     angular
         .module('annoweb-newservice', [])
 
+        .factory('annoService', [function () {
+            var ser = {};
+            Papa.parse("extdata/iso-639-3_20160115.tab", {
+                header: true,
+                download: true,
+                complete: function(results) {
+                    ser.languages = results.data;
+                }
+            });
+            ser.AnnoDesc = [
+                {
+                    'type': 'annotation',
+                    'langStr': 'English',
+                    'langISO': 'en',
+                    'SegId': 'seg1'
+                },
+                {
+                    'type': 'translation',
+                    'langStr': 'Chinese Mandarin',
+                    'langISO': 'cmn',
+                    'SegId': 'seg1'
+                }
+            ];
+
+            ser.SegMap = {
+                '1': [
+                    {
+                        'source': [0, 2000],
+                        'map': {}
+                    },
+                    {
+                        'source': [2000, 4000],
+                        'map': {}
+                    }
+                ]
+            };
+
+            ser.getAnnotations = function(userId, sessionId) {
+                return ser.AnnoDesc;
+            };
+
+            ser.createAnnotations = function(userId, sessionId, annotations, options) {
+                var newid = Math.max(Object.keys(ser.SegMap))+1;
+                ser.SegMap[newid] = [];
+                annotations.forEach(function(anno) {
+                    var newanno = {
+                        SegId: newid,
+                        type: anno.type,
+                        langStr: anno.lang,
+                        langISO: anno.ISO
+                    };
+                    ser.AnnoDesc.push(newanno);
+                });
+            };
+            return ser;
+        }])
 
         .factory('mockLoginService', [function () {
             var ms = {};
@@ -176,7 +232,6 @@
                         'image': imageLink
                     });
                 });
-                console.log(seshList);
                 return seshList;
             };
 
@@ -185,6 +240,11 @@
             ms.setSessionPersonRoles = function(userId, sessionId, role, newMembers) {
                 ms.data.session[sessionId].roles[role] = newMembers;
             };
+
+
+
+
+
 
             // utility function
 
@@ -200,6 +260,5 @@
             return ms;
 
         }]);
-
 
 })();

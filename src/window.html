@@ -22,15 +22,10 @@
 <ng-navbar layout="row"></ng-navbar>
 
 <div flex layout="column" >
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2><div ncy-breadcrumb></div></h2>
-        </div>
-    </md-toolbar>
     <md-content flex class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
         <md-whiteframe flex class="md-whiteframe-3dp" layout layout-align="center center">
-            <md-content class="md-padding" flex>
-                <div ui-view></div>
+            <md-content flex>
+                <div ng-view></div>
             </md-content>
         </md-whiteframe>
     </md-content>
