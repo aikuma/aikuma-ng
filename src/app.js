@@ -11,6 +11,7 @@
             'annoweb-annotation',       // directive and controller for annotation UI
             'annoweb-viewcontrollers',  // common controllers for view routes (when we don't have separate files)
             'annoweb-commondirectives', // common directives including the nav bar.
+            'annoweb-audio',            // respeaking and stuff
             'file-model',               // deprecated: made it a bit easier to select a file
             'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
             'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
@@ -52,6 +53,9 @@
                         templateUrl: 'views/status.html',
                         controller: 'statusController as sCtrl',
                     })
+                    .when('/session/:sessionId/respeak', {
+                        templateUrl: 'views/respeak.html',
+                    })
                     .when('/changes', {
                         templateUrl: 'views/changes.html',
                     })
@@ -66,9 +70,10 @@
                         redirectTo: '/'
                     });
             }])
-        .config(['$compileProvider', function($compileProvider) {   
+
+        /*.config(['$compileProvider', function($compileProvider) {
                 $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|filesystem|chrome-extension):/);
-        }])
+        }])*/
         .config(['$indexedDBProvider', function($indexedDBProvider) {
             $indexedDBProvider
             .connection('myIndexedDB')

@@ -7,27 +7,22 @@
         .module('annoweb-viewcontrollers', [])
 
         // removed dataService, unclear what role Firebase will play
-        .controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
+        //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
+        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', function($scope, $location, dataService, loginService) {
             var vm = this;
             
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
 
             vm.userList = dataService.getUserList().then(function(userList) {
-                console.log(userList);
                 vm.currentUser = userList[0];
-                
                 loginService.loginUser(vm.currentUser._ID);
                 dataService.getSessionList(vm.currentUser._ID).then(function(sessionList) {
                     vm.sessionList = sessionList;
                 });
             });
 
-            //
-            // Hard code the userId.
-            //
-
             vm.goStatus = function(sessionIndex) {
-                $location.path('session/'+vm.sessionList[sessionIndex].id);
+                $location.path('session/'+vm.sessionList[sessionIndex]._ID);
             };
             vm.addNew = function() {
                 $location.path('/new');
@@ -135,11 +130,12 @@
 
         }])
 
-        .controller('statusController', ['$location', '$routeParams', 'mockService', 'loginService', 'AnnowebDialog', function($location, $routeParams, mockService, loginService, AnnowebDialog) {
+        .controller('statusController', ['$location', '$routeParams', 'mockService', 'loginService', 'dataService', function($location, $routeParams, mockService, loginService, dataService) {
             var vm = this;
             vm.sessionId = $routeParams.sessionId;
             vm.userId = loginService.getLoggedinUserId();
-            vm.sessionData = mockService.getSessionData(vm.userId,vm.sessionId);
+
+            vm.sessionData = mockService.getSessionData(vm.userId,'1'); // hard coded session because we're not getting back '1' any more fro dataService
 
             if (vm.sessionData.images.length) {
                 vm.ImageCount = vm.sessionData.images.length;
@@ -202,14 +198,11 @@
                 $location.path('/session/'+vm.sessionId+'/annotate'+'/'+index);
             };
 
-            vm.addAnno = function (ev) {
-               var nd = AnnowebDialog.newAnno(ev);
-                console.log(nd);
+            vm.respeak = function() {
+                $location.path('/session/'+vm.sessionId+'/respeak');
             };
 
         }]);
-
-
 
 
 })();

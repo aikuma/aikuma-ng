@@ -41,6 +41,11 @@
                 </md-card>
             </md-content>
 
+            <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
+                <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+                Add respeaking
+            </md-button>
+
             <md-button aria-label="Add details" >
                 <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
                 Add details
@@ -68,19 +73,6 @@
         </md-card>
     </div>
 
-
-
-    <md-chips ng-if="sCtrl.speakers_readonly" class="md-contact-chips" ng-model="sCtrl.userchips" readonly="true">
-        <md-chip-template >
-            <div class="md-contact-avatar">
-                <img style="height: 32px;border-radius: 16px;" ng-src="http://lorempixel.com/50/50/people?{{$index}}"/>
-            </div>
-            <div style="display: inline-block;height: 32px;margin-left: 8px;">
-                <strong>{{$chip}}</strong>
-            </div>
-        </md-chip-template>
-    </md-chips>
-    <md-divider></md-divider>
 
 
     <p class="md-title">Annotations</p>

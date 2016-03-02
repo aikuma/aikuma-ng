@@ -12,7 +12,7 @@
                         templateUrl: 'views/templates/dialog-newAnnotation.html',
                         parent: angular.element(document.body),
                         targetEvent: ev,
-                        clickOutsideToClose:true,
+                        clickOutsideToClose: true,
                         locals: {userId: userId, sessionId: sessionId}
                     });
             };
