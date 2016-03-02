@@ -2,3 +2,13 @@
     <div id="respeakPlayback"></div>
     <div id="respeakRecord"></div>
 </div>
+<md-button aria-label="Record" ng-click="rCtrl.microphone()" >
+    <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+    Toggle microphone
+</md-button>
+<md-button aria-label="Record" ng-click="rCtrl.record()" >
+    <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+    Toggle record
+</md-button>
+<h2>Recordings</h2>
+<ul id="recordingslist"></ul>

@@ -202,6 +202,10 @@
                 $location.path('/session/'+vm.sessionId+'/respeak');
             };
 
+
+
+
+
         }]);
 
 
