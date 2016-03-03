@@ -1,14 +1,22 @@
 <div flex layout="column">
-    <div id="respeakPlayback"></div>
-    <div id="respeakRecord"></div>
+    <div ng-class="playbackClass" class="respeakwavesurfer" id="respeakPlayback"></div>
+    <div ng-class="recordClass" class="respeakwavesurfer" id="respeakRecord"></div>
 </div>
-<md-button aria-label="Record" ng-click="rCtrl.microphone()" >
-    <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-    Toggle microphone
+
+<md-button class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
+    <md-icon md-svg-icon="action:restore"></md-icon>
+    Reset
 </md-button>
-<md-button aria-label="Record" ng-click="rCtrl.record()" >
-    <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-    Toggle record
+<md-button class="md-raised" aria-label="Save" ng-click="rCtrl.save()" >
+    <md-icon md-svg-icon="content:save"></md-icon>
+    Save
 </md-button>
-<h2>Recordings</h2>
-<ul id="recordingslist"></ul>
+
+<div ng-if="rCtrl.hasrecording()">
+    <audio controls ng-src="{{recording}}">
+    </audio>
+</div>
+
+<pre pretty-json="segments" />
+
+

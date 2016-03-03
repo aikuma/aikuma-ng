@@ -116,3 +116,29 @@ md-sidenav {
     background-size:cover;
 }
 
+.respeakwavesurfer {
+    border-radius: 25px;
+}
+
+.activespeaker {
+    border: 3px solid #4fc3f7;
+}
+
+.inactivespeaker {
+    border: 3px solid #d0d0d0;
+}
+
+.activerecord  {
+    border: 3px solid #e06060;
+    animation: activerecord 0.75s step-end infinite;
+}
+
+@keyframes activerecord {
+    from, to {
+        border-color: #4fc3f7;
+    }
+    50% {
+        border-color: #e06060;
+    }
+}
+

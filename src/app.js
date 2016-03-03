@@ -12,11 +12,13 @@
             'annoweb-viewcontrollers',  // common controllers for view routes (when we don't have separate files)
             'annoweb-commondirectives', // common directives including the nav bar.
             'annoweb-audio',            // respeaking and stuff
+            'annoweb-audioService',     // resampling and audio format conversion
             'file-model',               // deprecated: made it a bit easier to select a file
             'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
             'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
             'indexedDB',                // used by dataservice to store metadata
             'annoweb-dataservice',      // data service dealing with metadata and files
+            'ngPrettyJson'              // for debugging
         ])
         .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
