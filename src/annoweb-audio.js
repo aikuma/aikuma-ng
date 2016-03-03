@@ -16,6 +16,7 @@
     var respeakController = function ($scope, $window, $attrs, audioService,$sce) {
         var rec;
         var vm = this;
+
         $scope.recording = '';
         vm.sessionData = {};
         vm.context = new AudioContext();
@@ -72,17 +73,6 @@
             rec.getBuffer(function(buf){
                 audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
                     var url = thinggy.getFile();
-/*                  var li = document.createElement('li');
-                    var au = document.createElement('audio');
-                    var hf = document.createElement('a');
-                    au.controls = true;
-                    au.src = url;
-                    hf.href = url;
-                    hf.download = new Date().toISOString() + '.wav';
-                    hf.innerHTML = hf.download;
-                    li.appendChild(au);
-                    li.appendChild(hf);
-                    recordingslist.appendChild(li);*/
                     $scope.recording=$sce.trustAsResourceUrl(url);
                 });
             });
@@ -165,6 +155,7 @@
             vm.playrecturn = 'play';
             $scope.playbackClass = 'activespeaker';
             $scope.recordClass = 'inactivespeaker';
+            $scope.recording = '';
         };
 
         vm.lastRec = 0;

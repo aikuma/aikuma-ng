@@ -61,6 +61,8 @@ gulp.task('deploy', ['cleandist'], function () {
     // copy testing media folder
     gulp.src('./media/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
+    gulp.src('./fonts/**/*', {base: './'})
+        .pipe(gulp.dest('dist'));
     gulp.src('./icons/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
     gulp.src('./_locales/**/*', {base: './'})
@@ -68,12 +70,11 @@ gulp.task('deploy', ['cleandist'], function () {
     gulp.src(['background.js', 'manifest.json'])
         .pipe(gulp.dest('dist'));
     // build the final root html with a single minified js
-    return gulp.src('./index.html')
-        .pipe(rename('window.html'))
-        //.pipe(useref({'noconcat':true}))
-        .pipe(useref())
+    return gulp.src('./window.html')
+        .pipe(useref({'noconcat':true}))
+        //.pipe(useref())
         .pipe(gulpif('*.js', uglify().on('error', gutil.log)))
-        .pipe(gulpif('*.css', minifyCss()))
+        //.pipe(gulpif('*.css', minifyCss()))
         .pipe(gulp.dest('dist'));
 });
 
