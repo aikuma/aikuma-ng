@@ -16,10 +16,11 @@
     var respeakController = function ($scope, $window, $attrs, audioService,$sce) {
         var rec;
         var vm = this;
+        var doublemode = false;
 
         $scope.recording = '';
         vm.sessionData = {};
-        vm.context = new AudioContext();
+        if (doublemode) {vm.context = new AudioContext();}
 
         vm.sessionData.name = 'The Rotunda Conversation';
         vm.sessionData.id = '1';
@@ -50,7 +51,11 @@
         });
         microphone.on('deviceReady', function() {
             console.info('Device ready!');
-            microphone.pause();
+            if (doublemode) {
+                microphone.pause();
+            } else {
+                rec = new Recorder(microphone.mediaStreamSource,{numChannels: 1});
+            }
         });
         microphone.on('deviceError', function(code) {
             console.warn('Device error: ' + code);
@@ -58,16 +63,18 @@
 
         microphone.start();
 
-        // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
-        // plugin disconnects the node, we'll end up with an empty file!
-        navigator.mediaDevices.getUserMedia( {video: false,audio: true})
-            .then(function(mediastream) {
-                vm.streamsource=  vm.context.createMediaStreamSource(mediastream);
-                rec = new Recorder(vm.streamsource,{numChannels: 1});
-            })
-            .catch(function(feh) {
-                console.log('audio spaz',feh);
-            });
+        if (doublemode) {
+            // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
+            // plugin disconnects the node, we'll end up with an empty file!
+            navigator.mediaDevices.getUserMedia({video: false, audio: true})
+                .then(function (mediastream) {
+                    vm.streamsource = vm.context.createMediaStreamSource(mediastream);
+                    rec = new Recorder(vm.streamsource, {numChannels: 1});
+                })
+                .catch(function (feh) {
+                    console.log('audio spaz', feh);
+                });
+        }
 
         function createDownsampledLink(targetSampleRate) {
             rec.getBuffer(function(buf){
@@ -79,7 +86,7 @@
         }
 
         vm.hasrecording = function() {
-            return !($scope.recording == '');
+            return $scope.recording !== '';
         };
 
         vm.playrecturn = 'play';
@@ -106,7 +113,7 @@
                 });
                 //createDownsampledLink(22050);
                 //rec.clear();
-                microphone.pause();
+                if (doublemode) {microphone.pause()};
                 vm.wsRecord.empty();
                 vm.playrecturn = 'play';
                 $scope.playbackClass = 'activespeaker';
