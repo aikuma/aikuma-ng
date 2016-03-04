@@ -142,3 +142,10 @@ md-sidenav {
     }
 }
 
+.md-button.nowplaying {
+    background-color: #50a050;
+}
+
+.md-button.nowrecording  {
+    background-color: #c06060;
+}

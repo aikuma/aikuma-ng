@@ -69,7 +69,7 @@
                         controller: 'statusController as sCtrl'
                     })
                     .otherwise({
-                        redirectTo: '/session/1/respeak'
+                        redirectTo: '/'
                     });
             }])
 

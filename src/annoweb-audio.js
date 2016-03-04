@@ -13,27 +13,45 @@
                 controllerAs: 'rCtrl'
             };
         });
-    var respeakController = function ($scope, $window, $attrs, audioService,$sce) {
+    var respeakController = function ($scope, $window, $attrs, audioService,dataService, $sce) {
         var rec;
         var vm = this;
-        var doublemode = false;
+
+        var doublemode = true;
+        vm.isplaying = false;
+        vm.isrecording = false;
 
         $scope.recording = '';
-        vm.sessionData = {};
+        /*dataService.get("session", $attrs.sessionId).then(function(sd) {
+            vm.sessionData = sd.data;
+            console.log(vm.sessionData);
+        });*/
+
         if (doublemode) {vm.context = new AudioContext();}
 
-        vm.sessionData.name = 'The Rotunda Conversation';
-        vm.sessionData.id = '1';
-
-        $scope.segments = [];
+        vm.segments = [];
 
         vm.wsPlayback = Object.create(WaveSurfer);
         vm.wsPlayback.init({
             container: "#respeakPlayback",
             normalize: true,
-            hideScrollbar: true,
-            scrollParent: false
+            hideScrollbar: false,
+            scrollParent: true
         });
+        /* Initialize the time line */
+        vm.timeline = Object.create(vm.wsPlayback.Timeline);
+        vm.timeline.init({
+            wavesurfer: vm.wsPlayback,
+            container: "#respeak-timeline"
+        });
+        /* Minimap plugin */
+        vm.wsPlayback.initMinimap({
+            height: 40,
+            waveColor: '#555',
+            progressColor: '#999',
+            cursorColor: '#999'
+        });
+
         vm.wsPlayback.load('media/elan-example1.mp3');
 
         vm.wsRecord = Object.create(WaveSurfer);
@@ -90,30 +108,29 @@
         };
 
         vm.playrecturn = 'play';
+        vm.begunrecording = false;
         $scope.playbackClass = 'activespeaker';
         $scope.recordClass = 'inactivespeaker';
 
         function spaceup () {
+            // if already playing... then stop and switch to record mode
             if (vm.wsPlayback.isPlaying() && vm.playrecturn == 'play') {
                 vm.playrecturn = 'record';
                 microphone.play();
-
                 $scope.playbackClass = 'inactivespeaker';
                 $scope.recordClass = 'activespeaker';
-                $scope.$apply();
                 vm.wsPlayback.playPause();
+                vm.isplaying=false;
+                $scope.$apply();
                 return;
             }
+            // if not playing then we were recording, so go to play mode
             if (!vm.wsPlayback.isPlaying() && vm.playrecturn == 'record' ) {
                 console.log('stopping record');
                 rec.stop();
-                rec.getBuffer(function(buf){
-                    var reclength = buf[0].length;
-                    makeSegment(reclength);
-                });
-                //createDownsampledLink(22050);
-                //rec.clear();
-                if (doublemode) {microphone.pause()};
+                vm.isrecording = false;
+
+                if (doublemode) {microphone.pause();}
                 vm.wsRecord.empty();
                 vm.playrecturn = 'play';
                 $scope.playbackClass = 'activespeaker';
@@ -123,16 +140,31 @@
         }
 
         function spacedown () {
+            // if we weren't playing already ...
             if (!vm.wsPlayback.isPlaying()) {
                 if (vm.playrecturn === 'play') {
+
+                    // if we have previously recorded a buffer, then make a segment now
+                    if (vm.begunrecording) {
+                        rec.getBuffer(function (buf) {
+                            var reclength = buf[0].length;
+                            makeSegment(reclength);
+                        });
+                    }
+
                     vm.wsPlayback.playPause();
+                    vm.isplaying=true;
+                    $scope.$apply();
                     return;
                 }
                 if (vm.playrecturn === 'record') {
+                    vm.begunrecording = true;
                     $scope.recordClass = 'activerecord';
                     $scope.$apply();
+                    vm.isrecording=true;
                     console.log('starting record');
                     rec.record();
+                    $scope.$apply();
                 }
             }
         }
@@ -145,7 +177,7 @@
             "keys"              : 'space',
             "on_keydown"        :spacedown,
             "on_keyup"          :spaceup,
-            "prevent_repeat"    :true,
+            "prevent_repeat"    :true
         });
 
         vm.save = function() {
@@ -171,7 +203,7 @@
             var rectime = Math.floor(recordpoint / (microphone.micContext.sampleRate/1000));
             console.log('rt',rectime);
             var playtime = Math.floor(vm.wsPlayback.getCurrentTime()*1000);
-            $scope.segments.push({
+            vm.segments.push({
                 'source': [vm.lastPlay, playtime],
                 'respeak': [vm.lastRec, rectime]
             });
@@ -180,7 +212,14 @@
             $scope.$apply();
         }
 
+        $scope.$on('$destroy', function() {
+            listener.destroy();
+            vm.wsPlayback.destroy();
+            vm.wsPlayback.destroy();
+            rec.clear();
+        });
+
     };
-    respeakController.$inject = ['$scope', '$window', '$attrs', 'audioService', '$sce'];
+    respeakController.$inject = ['$scope', '$window', '$attrs', 'audioService', 'dataService', '$sce'];
 
 })();
