@@ -1,6 +1,6 @@
 <md-toolbar>
     <div class="md-toolbar-tools">
-        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp {{sCtrl.sessionData.name}}</span>
+        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp {{sCtrl.sessionData.names[0]}}</span>
     </div>
 </md-toolbar>
 <md-content class="md-padding">
@@ -17,10 +17,10 @@
             </div>
 
             <p class="md-title">Speakers</p>
-            <ng-user-selector role="speakers" user-id="1" session-id="1"></ng-user-selector>
-
+            <ng-user-selector role="speakerIds" user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-user-selector>
+ 
             <p class="md-title">Tags</p>
-            <ng-tag-selector user-id="1" session-id="1"></ng-tag-selector>
+            <ng-tag-selector user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-tag-selector>
 
             <p class="md-title">Details</p>
 
