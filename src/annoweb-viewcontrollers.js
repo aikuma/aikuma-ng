@@ -87,6 +87,7 @@
                             'duration': '30'
                         },
                         imageIds: ['2'],
+                        creatorId: 'foo@gmail.com'
                     },
                     '2': {
                         names: ["A recording that doesn't actually exist"],
@@ -99,6 +100,7 @@
                             'duration': '395'
                         },
                         imageIds: ['2'],
+                        creatorId: 'foo@gmail.com'
                     },
                     '3': {
                         names: ["Another fictional dummy data recording"],
@@ -111,6 +113,7 @@
                             'duration': '2210'
                         },
                         imageIds: ['2'],
+                        creatorId: 'foo@gmail.com'
                     }
                 };
 
@@ -130,21 +133,27 @@
 
         }])
 
-        .controller('statusController', ['$location', '$routeParams', 'mockService', 'loginService', 'dataService', function($location, $routeParams, mockService, loginService, dataService) {
+        .controller('statusController', ['$location', '$routeParams', 'loginService', 'dataService', function($location, $routeParams, loginService, dataService) {
             var vm = this;
-            vm.sessionId = $routeParams.sessionId;
+            
             vm.userId = loginService.getLoggedinUserId();
-
-            vm.sessionData = mockService.getSessionData(vm.userId,'1'); // hard coded session because we're not getting back '1' any more fro dataService
-
-            if (vm.sessionData.images.length) {
-                vm.ImageCount = vm.sessionData.images.length;
-                vm.currentImageIdx = 1;
-
-            } else {
-                vm.ImageCount = 0;
-            }
-
+            vm.sessionId = $routeParams.sessionId;
+            
+            dataService.get('user', vm.userId).then(function(userObj) {
+                vm.userData = userObj.data;
+            });
+            
+            dataService.get('session', vm.sessionId).then(function(sessionObj){
+                vm.sessionData = sessionObj.data;
+                
+                if (vm.sessionData.imageIds) {
+                    vm.ImageCount = vm.sessionData.imageIds.length;
+                    vm.currentImageIdx = 1;
+                } else {
+                    vm.ImageCount = 0;
+                }
+            });
+            
             vm.nextImage = function() {
                 ++vm.currentImageIdx;
             };
@@ -156,9 +165,10 @@
                return vm.currentImageIdx > 1;
             };
             vm.hasNextImage = function() {
-                return vm.currentImageIdx < vm.currentImageIdx;
+                return vm.currentImageIdx < vm.ImageCount;
             };
 
+            // TODO: file-service
             vm.uploadNewImage = function() {
                 var accepts = [{
                     mimeTypes: ['image/*'],
@@ -174,6 +184,7 @@
 
                 });
             };
+            
             vm.details = [
                 {
                     'name': 'Description',
@@ -184,14 +195,20 @@
 
 
             vm.hasImage = function() {
-                 if (vm.sessionData.images.length) {
+                if(vm.sessionData && vm.sessionData.imageIds && vm.sessionData.imageIds.length > 0) {
                      return true;
                 } else {
                      return false;
-                 }
+                }
             };
-            vm.getImage = function() {
-                return mockService.getFileURL(vm.userId,vm.sessionData.images[0].fileId);
+            
+            // TODO: file-service for filesystem url
+            vm.getImage = function() {  
+                if(vm.userData) {
+                    return vm.userData.files[ vm.sessionData.imageIds[0] ].url;
+                } else {
+                    return null;
+                }
             };
 
             vm.edit = function(index) {
@@ -202,11 +219,6 @@
                 $location.path('/session/'+vm.sessionId+'/respeak');
             };
 
-
-
-
-
         }]);
-
 
 })();

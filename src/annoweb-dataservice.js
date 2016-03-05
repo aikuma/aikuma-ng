@@ -29,15 +29,32 @@
         })
         .factory('loginService', ['dataService', function (dataService) {
             var loginStatus = false;
-            var currentUserId;
+            var currentUserData;
+            
+            if(window.sessionStorage && window.sessionStorage.currentUserData) {
+                loginStatus = true;
+                currentUserData = JSON.parse(window.sessionStorage.currentUserData);
+                console.log(currentUserData);
+            }
             
             var service = {};
 
             service.loginUser = function(userId) {
                 dataService.get(USER_TYPE, userId).then(function(userObj) {
                     loginStatus = true;
-                    currentUserId = userObj.data._ID;
+                    currentUserData = userObj.data;
+                    if(window.sessionStorage) {
+                        window.sessionStorage.currentUserData = JSON.stringify(currentUserData);
+                    }
                 });
+            };
+            
+            service.logout = function() {
+                loginStatus = false;
+                currentUserData = null;
+                if(window.sessionStorage) {
+                    window.sessionStorage.removeItem('currentUserData');
+                }
             };
             
             service.getLoginStatus = function() {
@@ -45,7 +62,7 @@
             };
             
             service.getLoggedinUserId = function() {
-                return currentUserId;
+                return currentUserData._ID;
             };
 
             return service;
@@ -68,18 +85,20 @@
                     type: true,
                     lastModified: true,
                     source: true,
+                    creatorId: true,
                     details: false,
                     roles: false,   // object of array
                     tagIds: false,  // array
                     imageIds: false,  // object of array
                     
-                    userId: true
+                    userId: true,
                 },
                 secondary: {
                     _ID: true,
                     names: true,    // array
                     type: true,
                     lastModified: true,
+                    creatorId: true,
                     details: false,
                     
                     userId: true,
@@ -141,6 +160,8 @@
                         if(!this.data[metaKey])
                             this.data[metaKey] = {};
                         this.data[metaKey][id] = metaObj;
+                        
+                        return id;
                     };
                 },
                 save: function(type) {
@@ -148,9 +169,9 @@
                         if(type === USER_TYPE) {
                             service.setUser(this.data);
                         } else if(type === SESSION_TYPE) {
-                            service.updateSession(this._ID, this.data);
+                            service.updateSession(this.data._ID, this.data);
                         } else if(type === SECONDARY_TYPE) {
-                            service.updateSecondary(this._ID, this.data);
+                            service.updateSecondary(this.data._ID, this.data);
                         }
                     };
                 }
@@ -184,7 +205,7 @@
             };
             
             service.setSession = function(userId, data) {
-                var id = AnnowebUtils.createRandomAlphabets(8);
+                var id = AnnowebUtils.createRandomAlphabets(12);
                 data['userId'] = userId;
                 data['type'] = SESSION_TYPE;
                 
@@ -266,6 +287,237 @@
             };
             
             return service;
+        }])
+        .factory('fileService', ['$q', 'AnnowebUtils', 'dataService', function($q, AnnowebUtils, dataService) {
+            window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+            window.resolveLocalFileSystemURL = window.resolveLocalFileSystemURL || window.webkitResolveLocalFileSystemURL;
+
+            var rootFs = $q.defer();
+            var currentUserId;
+            var userWorkingFolder;
+            var validation = {
+                validateUserId: function(userId) {
+                    var userIdValidationDefer = $q.defer();
+
+                    if(currentUserId === userId) {
+                        userIdValidationDefer.resolve();
+                    } else {
+                        dataService.get(USER_TYPE, userId).then(function() {
+                            currentUserId = userId;
+                            if(userWorkingFolder) {
+                                userIdValidationDefer.resolve();    
+                            } else {
+                                service.createFolder(userId).then(function() {
+                                    userWorkingFolder = true;
+                                    userIdValidationDefer.resolve();
+                                }).catch(function(err) {
+                                    userIdValidationDefer.reject(err);
+                                });
+                            }
+
+                        }).catch(function(err) {
+                            userIdValidationDefer.reject(err);
+                        });
+                    }
+
+                    return userIdValidationDefer.promise;
+                }
+            };
+
+            var onInitFs = function (fs) {
+                console.log('Opened file system: ' + fs.name);
+                rootFs.resolve(fs);
+            };
+
+            var onErrorFs = function(e) {
+                var msg = '';
+
+                switch (e.code) {
+                    case FileError.QUOTA_EXCEEDED_ERR:
+                        msg = 'QUOTA_EXCEEDED_ERR';
+                        break;
+                    case FileError.NOT_FOUND_ERR:
+                        msg = 'NOT_FOUND_ERR';
+                        break;
+                    case FileError.SECURITY_ERR:
+                        msg = 'SECURITY_ERR';
+                        break;
+                    case FileError.INVALID_MODIFICATION_ERR:
+                        msg = 'INVALID_MODIFICATION_ERR';
+                        break;
+                    case FileError.INVALID_STATE_ERR:
+                        msg = 'INVALID_STATE_ERR';
+                        break;
+                    default:
+                        msg = 'Unknown Error';
+                        break;
+                }
+                rootFs.reject('Error: ' + msg);
+            };
+
+            navigator.webkitPersistentStorage.requestQuota(100*1024*1024, function(bytes) {
+                window.requestFileSystem(window.PERSISTENT, bytes, onInitFs, onErrorFs);
+            }, function(err) {
+                rootFs.reject('Error: ' + err);
+            });
+
+            var service = {};
+            service.getFileEntryFromName = function(userId, fileName, options) {
+                var fileDefer = $q.defer();
+                var filePath = userId + '/' + fileName;
+                var fileOption = options || {create: false};
+
+                rootFs.promise.then(function(fs) {
+                    fs.root.getFile(filePath, options, function(fileEntry) {
+                        fileDefer.resolve(fileEntry);
+                    }, function(err) {
+                        fileDefer.reject(err);
+                    });
+                }).catch(function(err) {
+                    fileDefer.reject(err);
+                });
+
+                return fileDefer.promise;
+            };
+
+            service.getFileFromName = function(userId, fileName) {
+                var fileDefer = $q.defer();
+
+                service.getFileEntryFromName(userId, fileName).then(function(fileEntry) {
+                    fileEntry.file(function(file) {
+                        fileDefer.resolve(file);
+                    }, function(err) {
+                        fileDefer.reject(err);
+                    });
+                }).catch(function(err) {
+                    fileDefer.reject(err);
+                });
+
+                return fileDefer.promise;
+            };
+
+            service.getFileEntry = function(url) {
+                var fileDefer = $q.defer();
+
+                window.resolveLocalFileSystemURL(url, function(fileEntry) {
+                    fileDefer.resolve(fileEntry);
+                }, function(err) {
+                    fileDefer.reject(err);
+                });
+
+                return fileDefer.promise;
+            };
+
+            service.getFile = function(url) {
+                var fileDefer = $q.defer();
+
+                service.getFileEntry(url).then(function(fileEntry) {
+                    fileEntry.file(function(file) {
+                        fileDefer.resolve(file);
+                    }, function(err) {
+                        fileDefer.reject(err);
+                    });
+                }).catch(function(err) {
+                    fileDefer.reject(err);
+                });
+
+                return fileDefer.promise;
+            };
+
+            service.createFolder = function(userId) {
+                var folderDefer = $q.defer();
+
+                validation.validateUserId(userId).then(function() {
+                    rootFs.promise.then(function(fs) {
+                        fs.root.getDirectory(userId, {create: true}, function(dirEntry) {
+                            folderDefer.resolve(dirEntry);
+                        }, function(err) {
+                            folderDefer.reject(err);
+                        }) ; 
+                    }).catch(function(err) {
+                        folderDefer.reject(err);
+                    });
+                }).catch(function(err) {
+                    folderDefer.reject(err);
+                });
+
+                return folderDefer.promise;
+            };
+            
+            service.writeFile = function(url, file) {
+                var fileDefer = $q.defer();
+                service.getFileEntry(url).then(function(fileEntry) {
+                    fileEntry.createWriter(function(fileWriter) {
+                        fileWriter.onwriteend = function() {					
+                            fileDefer.resolve(fileEntry.toURL());
+                        };
+
+                        fileWriter.onerror = function(err) {
+                            fileDefer.reject(err);
+                        };
+
+                        fileWriter.write(file);
+                    }, function(err) {
+                        fileDefer.reject(err);
+                    });
+                }).catch(function(err) {
+                    fileDefer.reject(err);
+                });
+                
+                return fileDefer.promise;
+            };
+            
+            service.createFile = function(userId, file) {
+                var fileDefer = $q.defer();
+
+                if(!file.name) {
+                    file.name = AnnowebUtils.createRandomAlphabets(20);
+                }
+                
+                validation.validateUserId(userId).then(function() {
+                    service.getFileEntryFromName(userId, file.name, {create: true}).then(function(fileEntry) {
+                        fileEntry.createWriter(function(fileWriter) {	
+                            fileWriter.onwriteend = function() {					
+                                fileDefer.resolve(fileEntry.toURL());
+                            };
+
+                            fileWriter.onerror = function(err) {
+                                fileDefer.reject(err);
+                            };
+
+                            fileWriter.write(file);
+
+                        }, function(err) {
+                            fileDefer.reject(err);
+                        });
+                    }).catch(function(err) {
+                        fileDefer.reject(err);
+                    });
+                }).catch(function(err) {
+                    fileDefer.reject(err);
+                });
+
+                return fileDefer.promise;
+            };
+
+            service.deleteFile = function(url) {
+                var fileDefer = $q.defer();
+
+                window.resolveLocalFileSystemURL(url, function(fileEntry) {
+                    fileEntry.remove(function() {
+                        fileDefer.resolve("deleted");
+                    }, function(err) {
+                        fileDefer.reject(err);
+                    });
+                }, function(err) {
+                    fileDefer.reject(err);
+                });
+
+                return fileDefer.promise;    
+            };
+
+            return service;
+
         }]);
     
 })();

@@ -13,7 +13,8 @@
                 controllerAs: 'rCtrl'
             };
         });
-    var respeakController = function ($scope, $window, $attrs, audioService,dataService, $sce) {
+
+    var respeakController = function ($scope, $window, $attrs, loginService, audioService, dataService, fileService, $sce) {
         var rec;
         var vm = this;
 
@@ -22,6 +23,7 @@
         vm.isrecording = false;
 
         $scope.recording = '';
+        // vm.sessionData is never used. this controller is used in the directive ngRespeak not in respeak.html
         /*dataService.get("session", $attrs.sessionId).then(function(sd) {
             vm.sessionData = sd.data;
             console.log(vm.sessionData);
@@ -97,8 +99,13 @@
         function createDownsampledLink(targetSampleRate) {
             rec.getBuffer(function(buf){
                 audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
-                    var url = thinggy.getFile();
-                    $scope.recording=$sce.trustAsResourceUrl(url);
+                    //var url = thinggy.getFile();
+                    //$scope.recording=$sce.trustAsResourceUrl(url);
+                    
+                    var blob = thinggy.getFile();
+                    fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
+                        $scope.recording=$sce.trustAsResourceUrl(url);
+                    });
                 });
             });
         }
@@ -220,6 +227,6 @@
         });
 
     };
-    respeakController.$inject = ['$scope', '$window', '$attrs', 'audioService', 'dataService', '$sce'];
+    respeakController.$inject = ['$scope', '$window', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
 })();

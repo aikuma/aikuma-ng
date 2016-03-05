@@ -36,7 +36,8 @@
                                 var blob = new Blob([encodeWAV(audioData.channelData[0],resampeledBuffer.numberOfChannels,resampeledBuffer.sampleRate)], {
                                     type: "audio/wav"
                                 });
-                                return URL.createObjectURL(blob);
+                                return blob;
+                                //return URL.createObjectURL(blob);
                             }
                         });
                     }
