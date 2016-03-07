@@ -2,13 +2,14 @@
 
     <header class="nav-header">
 
-            <div layout="row" class="inset" layout-align="start end">
-            <div><A HREF="#/"><md-icon md-svg-icon="action:translate" style="width:64px;height:64px;color: black;"></md-icon></A></div>
-            <div><span style="color: black;">nnoweb</span></div>
-        </div>
-        <div layout="row" class="inset" layout-align="start end">
-            <span style="color: black;" class="md-subhead">Hello <i>{{navCtrl.username}}.</i></span>
-        </div>
+            <div layout="column" layout-align="center center">
+
+<!--            <div><A HREF="#/"><md-icon md-svg-icon="action:translate" style="width:64px;height:64px;color: black;"></md-icon></A></div>
+            <div><span style="color: black;">nnoweb</span></div>-->
+
+            <img flex width="200" height="200" src="img/worldvoices.svg"/>
+            <span flex class="md-subtitle inset" style="color:black">Logged in as <i>{{navCtrl.username}}.</i></span>
+          </div>
 
     </header>
 

@@ -10,7 +10,8 @@
         //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
         .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', function($scope, $location, dataService, loginService) {
             var vm = this;
-            
+            vm.username = 'Unknown user';
+
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
 
             vm.userList = dataService.getUserList().then(function(userList) {
@@ -19,6 +20,11 @@
                 dataService.getSessionList(vm.currentUser._ID).then(function(sessionList) {
                     vm.sessionList = sessionList;
                 });
+                dataService.get('user', vm.currentUser._ID).then(function(userObj) {
+                        console.log(userObj);
+                        vm.username = userObj.data.names[0];
+                    }
+                );
             });
 
             vm.goStatus = function(sessionIndex) {
@@ -219,6 +225,12 @@
                 $location.path('/session/'+vm.sessionId+'/respeak');
             };
 
+        }])
+        // This is a skeletal view controller just for populating the breadcrumbs.
+        .controller('respeakController', ['dataService', '$routeParams', function(dataService, $routeParams) {
+            var vm = this;
+            dataService.get('session', $routeParams.sessionId).then(function(sessionObj){
+                vm.sessionData = sessionObj.data;
+            });
         }]);
-
 })();

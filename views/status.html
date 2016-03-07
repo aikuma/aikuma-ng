@@ -23,34 +23,12 @@
             <ng-tag-selector user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-tag-selector>
 
             <p class="md-title">Details</p>
-
-            <md-content md-scroll-x layout="row">
-                <md-card style="min-width:250px" layout-align="space-between" ng-repeat="detail in sCtrl.details">
-                    <md-card-content>
-                    <span class="headtext">
-                    <md-icon disabled style="width:40px;height:40px;padding-right:8px;" md-svg-icon="{{detail.icon}}"></md-icon>
-                    {{detail.name}}
-                    </span>
-                        <p class="md-body-1">{{detail.data}}</p>
-                    </md-card-content>
-                    <md-card-actions layout="row" layout-align="end end">
-                        <md-button aria-label="Edit" class="md-icon-button">
-                            <md-icon style="width:28px;height:28px;padding-right:8px;" md-svg-icon="nav:menu"></md-icon>
-                        </md-button>
-                    </md-card-actions>
-                </md-card>
-            </md-content>
+            <ng-metadata session-id="{{sCtrl.sessionId}}"></ng-metadata>
 
             <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
                 <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
                 Add respeaking
             </md-button>
-
-            <md-button aria-label="Add details" >
-                <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-                Add details
-            </md-button>
-            <md-divider></md-divider>
 
         </div>
         <md-card>

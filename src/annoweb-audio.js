@@ -9,12 +9,12 @@
             return {
                 restrict: "E",
                 templateUrl: "views/templates/respeak-template.html",
-                controller: respeakController,
+                controller: respeakDirectiveController,
                 controllerAs: 'rCtrl'
             };
         });
 
-    var respeakController = function ($scope, $window, $attrs, loginService, audioService, dataService, fileService, $sce) {
+    var respeakDirectiveController = function ($scope, $window, $attrs, loginService, audioService, dataService, fileService, $sce) {
         var rec;
         var vm = this;
 
@@ -227,6 +227,6 @@
         });
 
     };
-    respeakController.$inject = ['$scope', '$window', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    respeakDirectiveController.$inject = ['$scope', '$window', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
 })();

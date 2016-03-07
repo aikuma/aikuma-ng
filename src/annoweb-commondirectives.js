@@ -45,7 +45,16 @@
                 controller: annotationListController,
                 controllerAs: 'alCtrl'
             };
+        })
+        .directive("ngMetadata", function() {
+            return {
+                restrict: "E",
+                templateUrl: "views/templates/metadata-template.html",
+                controller: metadataController,
+                controllerAs: 'mCtrl'
+            };
         });
+
 
         var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
             var vm = this;
@@ -60,8 +69,9 @@
 
         var navController = function ($scope, $location, loginService) {
             var vm = this;
-            vm.username = 'anonymous person';
+            vm.username = 'anonymous';
             vm.getLoginStatus = loginService.getLoginStatus;
+
             vm.menu = [
                 {
                     class : '',
@@ -218,7 +228,7 @@
                 sessionObj.save();
             });
             
-            
+            // Sangyeop: should this really be nested inside this 'then'?
             vm.transformChip = function(chip) {
                 // If it is an object, it's already a known chip
                 if (angular.isObject(chip)) {
@@ -234,7 +244,6 @@
                 };
             };
         });
-        
 
         vm.placeholder = "Add tags";
         vm.secondaryPlaceholder = "Add more";
@@ -264,5 +273,18 @@
 
     };
     tagSelectorController.$inject = ['$scope', 'loginService', 'dataService'];
+
+    var metadataController = function ($scope, loginService, dataService, AnnowebDialog) {
+        var vm = this;
+        dataService.get('session', $scope.sessionId).then(function(sessionObj){
+            vm.sessionData = sessionObj.data;
+        });
+
+        vm.addMetadata = function(ev) {
+            AnnowebDialog.newMetdata();
+        };
+
+    };
+    metadataController.$inject = ['$scope', 'loginService', 'dataService', 'AnnowebDialog'];
 
 })();

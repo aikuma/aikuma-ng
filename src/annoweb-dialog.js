@@ -16,6 +16,17 @@
                         locals: {userId: userId, sessionId: sessionId}
                     });
             };
+            factory.newMetadata = function(ev, userId, sessionId) {
+                $mdDialog.show({
+                    controller: newMetaDialogController,
+                    controllerAs: 'mdCtrl',
+                    templateUrl: 'views/templates/dialog-newMeta.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    locals: {userId: userId, sessionId: sessionId}
+                });
+            };
             factory.alert = function(alerttitle, alerttext, callbackfunc) {
                 $mdDialog.show(
                     $mdDialog.alert({onRemoving: callbackfunc})
@@ -183,6 +194,51 @@
         }
     };
     newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'userId', 'sessionId', 'annoService'];
+
+    var newMetaDialogController = function ($mdDialog, userId, sessionId, annoService) {
+        var vm = this;
+        var defaultMeta = [
+            {
+                name: 'Description',
+                icon: 'action:description',
+                type: 'text'
+            },
+            {
+                name: 'Location',
+                icon: 'action:description',
+                type: 'text'
+            },
+            {
+                name: 'Discourse type',
+                icon: 'action:description',
+                type: 'text'
+            },
+            {
+                name: 'Description',
+                icon: 'action:description',
+                type: 'text'
+            },
+            {
+                name: 'Description',
+                icon: 'action:description',
+                type: 'text'
+            },
+            {
+                name: 'Description',
+                icon: 'action:description',
+                type: 'text'
+            },
+            {
+                name: 'Description',
+                icon: 'action:description',
+                type: 'text'
+            },
+        ]
+
+
+
+    };
+    newAnnotationController.$inject = ['$mdDialog', 'userId', 'sessionId', 'annoService'];
     
 })();
 

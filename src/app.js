@@ -57,6 +57,7 @@
                     })
                     .when('/session/:sessionId/respeak', {
                         templateUrl: 'views/respeak.html',
+                        controller: 'respeakController as rsCtrl',
                     })
                     .when('/changes', {
                         templateUrl: 'views/changes.html',
