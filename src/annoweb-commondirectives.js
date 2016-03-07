@@ -64,6 +64,7 @@
 
             };
 
+
         };
         annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
 
@@ -283,6 +284,21 @@
         vm.addMetadata = function(ev) {
             AnnowebDialog.newMetdata();
         };
+
+        vm.defaultdisplay = ['Description','Location']
+
+        vm.details = [
+            {
+                'name': 'Description',
+                'icon': 'action:description',
+                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+            },
+            {
+                'name': 'Location',
+                'icon': 'communication:location_on',
+                'data': ''
+            }
+        ];
 
     };
     metadataController.$inject = ['$scope', 'loginService', 'dataService', 'AnnowebDialog'];

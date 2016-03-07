@@ -7,30 +7,41 @@
 
     <div flex layout="row" layout="space-between">
         <div flex>
-            <div layout="row">
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:today"></md-icon>14th July 2015.</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:location_on"></md-icon>MPI, Nijmegen, Holland.</span>
+            <div layout="row" layout-align="start center">
+                <span class="md-body-2"><md-datepicker ng-model="sCtrl.myDate" md-placeholder="Enter date"></md-datepicker></span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:location_on"></md-icon>
+                    {{sCtrl.location}}</span>
+
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>36 seconds.</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>English.</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>2 annotations (1 transcription, 1 translation).</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
 
-            <p class="md-title">Speakers</p>
-            <ng-user-selector role="speakerIds" user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-user-selector>
- 
-            <p class="md-title">Tags</p>
-            <ng-tag-selector user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-tag-selector>
-
-            <p class="md-title">Details</p>
-            <ng-metadata session-id="{{sCtrl.sessionId}}"></ng-metadata>
+            <section class="inset">
+                <div layout="row">
+                    <div ng-repeat="type in sCtrl.olactypes">
+                        <img width="32" height="32" ng-click="sCtrl.clickOlac(type)" ng-class="{'imageunderlined': sCtrl.olac === type}" ng-src="img/icons/discourse-type-icons/32px/{{sCtrl.olac === type ? 'clicked' : 'unclick'}}/{{type}}.png" style="padding-left:8px;padding-right:8px;"/>
+                        <md-tooltip md-direction="below">
+                            {{type}}
+                        </md-tooltip>
+                    </div>
+                </div>
+            </section>
 
             <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
                 <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
                 Add respeaking
             </md-button>
 
+            <ng-user-selector role="speakerIds" user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-user-selector>
+ 
+            <ng-tag-selector user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-tag-selector>
+
+            <ng-metadata session-id="{{sCtrl.sessionId}}"></ng-metadata>
+
         </div>
+
         <md-card>
             <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" style="width:160px;height:160px;"></md-icon>
             <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
@@ -49,11 +60,9 @@
                 </md-button>
             </md-card-actions>
         </md-card>
+
     </div>
 
-
-
-    <p class="md-title">Annotations</p>
     <ng-annotation-list user-id="1" session-id="1"></ng-annotation-list>
 
 </md-content>

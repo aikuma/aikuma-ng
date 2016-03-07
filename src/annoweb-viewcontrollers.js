@@ -20,11 +20,10 @@
                 dataService.getSessionList(vm.currentUser._ID).then(function(sessionList) {
                     vm.sessionList = sessionList;
                 });
-                dataService.get('user', vm.currentUser._ID).then(function(userObj) {
-                        console.log(userObj);
+/*                dataService.get('user', vm.currentUser._ID).then(function(userObj) {
                         vm.username = userObj.data.names[0];
                     }
-                );
+                );*/
             });
 
             vm.goStatus = function(sessionIndex) {
@@ -141,13 +140,16 @@
 
         .controller('statusController', ['$location', '$routeParams', 'loginService', 'dataService', function($location, $routeParams, loginService, dataService) {
             var vm = this;
-            
+            vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
+            vm.olac = 'drama';
+            vm.location = 'MPI, Netherlands.';
+
             vm.userId = loginService.getLoggedinUserId();
             vm.sessionId = $routeParams.sessionId;
             
-            dataService.get('user', vm.userId).then(function(userObj) {
+            /*dataService.get('user', vm.userId).then(function(userObj) {
                 vm.userData = userObj.data;
-            });
+            });*/
             
             dataService.get('session', vm.sessionId).then(function(sessionObj){
                 vm.sessionData = sessionObj.data;
@@ -190,15 +192,6 @@
 
                 });
             };
-            
-            vm.details = [
-                {
-                    'name': 'Description',
-                    'icon': 'action:description',
-                    'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
-                }
-            ];
-
 
             vm.hasImage = function() {
                 if(vm.sessionData && vm.sessionData.imageIds && vm.sessionData.imageIds.length > 0) {
@@ -223,6 +216,10 @@
 
             vm.respeak = function() {
                 $location.path('/session/'+vm.sessionId+'/respeak');
+            };
+
+            vm.clickOlac = function(clickwhat) {
+                vm.olac = clickwhat;
             };
 
         }])

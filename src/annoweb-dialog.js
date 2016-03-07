@@ -197,6 +197,7 @@
 
     var newMetaDialogController = function ($mdDialog, userId, sessionId, annoService) {
         var vm = this;
+
         var defaultMeta = [
             {
                 name: 'Description',
@@ -207,34 +208,8 @@
                 name: 'Location',
                 icon: 'action:description',
                 type: 'text'
-            },
-            {
-                name: 'Discourse type',
-                icon: 'action:description',
-                type: 'text'
-            },
-            {
-                name: 'Description',
-                icon: 'action:description',
-                type: 'text'
-            },
-            {
-                name: 'Description',
-                icon: 'action:description',
-                type: 'text'
-            },
-            {
-                name: 'Description',
-                icon: 'action:description',
-                type: 'text'
-            },
-            {
-                name: 'Description',
-                icon: 'action:description',
-                type: 'text'
-            },
-        ]
-
+            }
+        ];
 
 
     };
