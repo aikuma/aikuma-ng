@@ -34,7 +34,7 @@
             if(window.sessionStorage && window.sessionStorage.currentUserData) {
                 loginStatus = true;
                 currentUserData = JSON.parse(window.sessionStorage.currentUserData);
-                console.log(currentUserData);
+                console.log('loginService: ' + currentUserData);
             }
             
             var service = {};
@@ -67,7 +67,7 @@
 
             return service;
         }])
-        .factory('dataService', ['$indexedDB', 'AnnowebUtils', function($indexedDB, AnnowebUtils){
+        .factory('dataService', ['$q', '$indexedDB', 'AnnowebUtils', function($q, $indexedDB, AnnowebUtils){
             // id, lastModified is automatically created
             var dataModel = {
                 user: {
@@ -116,6 +116,12 @@
                     _ID: true,
                     name: true
                 },
+                source: {
+                    recordFileId: true,
+                    langIds: true,
+                    created: true,
+                    duration: true
+                },
                 file: {
                     _ID: true,
                     url: true,
@@ -155,7 +161,7 @@
             var dataMethods = {
                 addUserMeta: function(metaKey) {
                     return function(metaObj) {
-                        var id = this.data._ID + AnnowebUtils.createRandomNumbers(6);
+                        var id = this.data._ID + AnnowebUtils.createRandomNumbers(12);
                         // If this metadata doesn't exist
                         if(!this.data[metaKey])
                             this.data[metaKey] = {};
@@ -167,11 +173,11 @@
                 save: function(type) {
                     return function() {
                         if(type === USER_TYPE) {
-                            service.setUser(this.data);
+                            return service.setUser(this.data);
                         } else if(type === SESSION_TYPE) {
-                            service.updateSession(this.data._ID, this.data);
+                            return service.updateSession(this.data._ID, this.data);
                         } else if(type === SECONDARY_TYPE) {
-                            service.updateSecondary(this.data._ID, this.data);
+                            return service.updateSecondary(this.data._ID, this.data);
                         }
                     };
                 }
@@ -184,7 +190,6 @@
                     if(!validation.validateRequired(type, data)) {
                         throw 'Validation Error';
                     }
-                   
                     return store.upsert(data);
                 },
                 remove: function(type, id, store) {       
@@ -251,20 +256,35 @@
                 });
             };
             
+            var cachedWrappers = {};
             service.get = function(type, id) {
-                return $indexedDB.openStore(type, function(store) {
-                    return dbOps.get(null, id, store);
-                }).then(function(data) {
-                    var wrapper = {data: data};
-                    if(type === USER_TYPE) {
-                        wrapper.addUserTag = dataMethods.addUserMeta('tags').bind(wrapper);
-                        wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
-                    } else if(type === SESSION_TYPE) {
-                        wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
-                    }
-                    
-                    return wrapper;
-                });
+                var dataDefer = $q.defer();
+                
+                var cacheKey = type + id;
+                if(cacheKey in cachedWrappers) {
+                    dataDefer.resolve(cachedWrappers[cacheKey]);
+                } else {
+                    $indexedDB.openStore(type, function(store) {
+                        return dbOps.get(null, id, store);
+                    }).then(function(data) {
+                        var wrapper = {data: data};
+                        if(type === USER_TYPE) {
+                            wrapper.addUserTag = dataMethods.addUserMeta('tags').bind(wrapper);
+                            wrapper.addUserFile = dataMethods.addUserMeta('files').bind(wrapper);
+                            wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
+                        } else if(type === SESSION_TYPE) {
+                            wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
+                        }
+
+                        if(!cachedWrappers[cacheKey])
+                            cachedWrappers[cacheKey] = wrapper;
+                        dataDefer.resolve(cachedWrappers[cacheKey]);
+                    }).catch(function(err) {
+                       dataDefer.reject(err); 
+                    });
+                }
+                
+                return dataDefer.promise;
             };
             
             service.getUserList = function() {
@@ -472,6 +492,9 @@
 
                 if(!file.name) {
                     file.name = AnnowebUtils.createRandomAlphabets(20);
+                    if(file.type === 'audio/wav') {
+                        file.name += '.wav';
+                    }
                 }
                 
                 validation.validateUserId(userId).then(function() {
@@ -516,6 +539,25 @@
                 return fileDefer.promise;    
             };
 
+            
+            // Language
+            var langDefer = $q.defer();
+            
+            Papa.parse("extdata/iso-639-3_20160115.tab", {
+                header: true,
+                download: true,
+                error: function(err, file, inputElem, reason) {
+                    langDefer.reject(err, ': ', reason);
+                },
+                complete: function(results) {
+                    langDefer.resolve(results.data);
+                }
+            });
+            
+            service.getLanguages = function() {
+                return langDefer.promise;
+            }
+            
             return service;
 
         }]);
