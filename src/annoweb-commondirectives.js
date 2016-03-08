@@ -49,6 +49,10 @@
         .directive("ngMetadata", function() {
             return {
                 restrict: "E",
+                scope: {
+                    userId: '@',
+                    sessionId: '@'
+                },
                 templateUrl: "views/templates/metadata-template.html",
                 controller: metadataController,
                 controllerAs: 'mCtrl'
@@ -140,8 +144,12 @@
         
             // load the requested session from the service and get the current users
             return dataService.get('session', $scope.sessionId);
+            
         }).then(function(sessionObj) {
-            var selectedIds = sessionObj.data.roles[$scope.role];
+            var selectedIds = [];
+            if(sessionObj.data.roles) {
+                selectedIds = sessionObj.data.roles[$scope.role];
+            }
             
             // onload populate the chips selector with existing (based on ids)
             $scope.selectedPeople = _.map(selectedIds, function(id) {
@@ -151,6 +159,8 @@
             // ordinary watch and ng-change don't work.
             $scope.$watchCollection('selectedPeople', function() {
                 var idList = _.pluck($scope.selectedPeople, 'id');
+                if(!sessionObj.data.roles)
+                    sessionObj.data.roles = {};
                 sessionObj.data.roles[$scope.role] = idList;
                 sessionObj.save();
             });
@@ -285,7 +295,7 @@
             AnnowebDialog.newMetdata();
         };
 
-        vm.defaultdisplay = ['Description','Location']
+        vm.defaultdisplay = ['Description','Location'];
 
         vm.details = [
             {

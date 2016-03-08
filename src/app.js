@@ -51,6 +51,10 @@
                         templateUrl: 'views/home.html',
                         controller: 'homeController as hCtrl',
                     })
+                    .when('/new', {
+                        templateUrl: 'views/new.html',
+                        controller: 'newSessionController as nCtrl'
+                    })
                     .when('/session/:sessionId', {
                         templateUrl: 'views/status.html',
                         controller: 'statusController as sCtrl',

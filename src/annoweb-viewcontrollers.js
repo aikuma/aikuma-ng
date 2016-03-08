@@ -10,7 +10,8 @@
         //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
         .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', function($scope, $location, dataService, loginService) {
             var vm = this;
-            vm.username = 'Unknown user';
+            var currentUserName = 'Unknown user';
+            vm.username = function() { return currentUserName; };
 
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
 
@@ -20,10 +21,9 @@
                 dataService.getSessionList(vm.currentUser._ID).then(function(sessionList) {
                     vm.sessionList = sessionList;
                 });
-/*                dataService.get('user', vm.currentUser._ID).then(function(userObj) {
-                        vm.username = userObj.data.names[0];
-                    }
-                );*/
+                dataService.get('user', vm.currentUser._ID).then(function(userObj) {
+                    currentUserName = userObj.data.names[0];       
+                });
             });
 
             vm.goStatus = function(sessionIndex) {
@@ -137,6 +137,12 @@
             };
 
         }])
+    
+        .controller('newSessionController', ['$location', 'loginService', 'dataService', function($location, loginService, dataService) {
+            // For now, new.html is just a container of ngRecord directive
+            var vm = this;
+            
+        }])
 
         .controller('statusController', ['$location', '$routeParams', 'loginService', 'dataService', function($location, $routeParams, loginService, dataService) {
             var vm = this;
@@ -147,9 +153,9 @@
             vm.userId = loginService.getLoggedinUserId();
             vm.sessionId = $routeParams.sessionId;
             
-            /*dataService.get('user', vm.userId).then(function(userObj) {
+            dataService.get('user', vm.userId).then(function(userObj) {
                 vm.userData = userObj.data;
-            });*/
+            });
             
             dataService.get('session', vm.sessionId).then(function(sessionObj){
                 vm.sessionData = sessionObj.data;

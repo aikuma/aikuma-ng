@@ -1,33 +1,10 @@
-<h3>New Recording/project view</h3>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp New</span>
+    </div>
+</md-toolbar>
+<md-content class="md-padding" md-scroll-y>
 
-<p><b>Purpose</b>: Users see this view when they want to record a new file. The view is based on two steps: 1. Record basic metadata. 2. Select source (or record new)</p>
+    <ng-record source-id="1"></ng-record>
 
-<p><b>Design influence</b>: ?</p>
-
-<p><b>Navigation</b>: They get here from the home/landing page by selecting new. The user will then end up on the primary recording status page. </p>
-
-<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
-
-    <h3>Dummy data</h3>
-
-    <p>Basic metadata input: Name, language. Tag selector.</p>
-    <A ui-sref="record">
-        <md-button class="md-raised">
-            <md-icon md-svg-icon="action:record_voice_over"></md-icon>
-            Begin recording
-        </md-button>
-    </a>
-    or
-    <A ui-sref="open">
-        <md-button class="md-raised">
-            <md-icon md-svg-icon="file:folder_open"></md-icon>
-            Import file
-        </md-button>
-    </a>
-
-    <p>
-        Having done this we end up <A ui-sref="status">here.</A>
-    </p>
 </md-content>
-
-<p>Notes: This page offers a jump off for two different activities but returns to the same view. The side-nav options jump directly to these activities.</p>
