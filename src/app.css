@@ -149,8 +149,16 @@ md-sidenav {
 .md-button.nowrecording  {
     background-color: #c06060;
 }
+.md-button.nowrecording:hover {
+    background-color: #c06060;
+}
 
 .imageunderlined {
     border-bottom: 3px solid #4fc3f7;
     padding-bottom: 2px;
+
 }
+.md-button span.buttontext {
+    margin-right:6px;
+}
+

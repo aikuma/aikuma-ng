@@ -72,11 +72,11 @@
         };
         annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
 
-        var navController = function ($scope, $location, loginService) {
+        var navController = function (config, $scope, $location, loginService) {
             var vm = this;
             vm.username = 'anonymous';
             vm.getLoginStatus = loginService.getLoginStatus;
-
+            vm.versionString = config.appName+' '+config.appVersion;
             vm.menu = [
                 {
                     class : '',
@@ -126,7 +126,7 @@
             };
 
         };
-    navController.$inject = ['$scope', '$location', 'loginService'];
+    navController.$inject = ['config', '$scope', '$location', 'loginService'];
 
     var userSelectorController = function ($scope, loginService, dataService) {
         var vm = this;

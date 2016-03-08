@@ -21,17 +21,14 @@
                 controllerAs: 'rCtrl'
             };
         });
-    
-    var newRecordDirectiveController = function ($scope, $location, $window, loginService, audioService, dataService, fileService, $sce) {
+
+    //
+    // RECORD DIRECTIVE
+    //
+    var newRecordDirectiveController = function (config, $scope, $location, $window, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         var rec;
-
-        var doublemode = true;
-
-        $scope.recording = '';
-
-        if (doublemode) {vm.context = new AudioContext();}
-
+        vm.context = new AudioContext();
         vm.wsRecord = Object.create(WaveSurfer);
         vm.wsRecord.init({
             container: "#respeakRecord",
@@ -39,7 +36,6 @@
             scrollParent: true,
             cursorWidth: 0
         });
-
         // Init Microphone plugin
         var microphone = Object.create(WaveSurfer.Microphone);
         microphone.init({
@@ -47,14 +43,10 @@
         });
         microphone.on('deviceReady', function() {
             console.info('Device ready!');
-            if (doublemode) {
-                microphone.play();
-                $scope.$apply(function() {
-                    $scope.recordClass = 'activespeaker';
-                });
-            } else {
-                rec = new Recorder(microphone.mediaStreamSource,{numChannels: 1});
-            }
+            microphone.play();
+            $scope.$apply(function() {
+                $scope.recordClass = 'activespeaker';
+            });
         });
         microphone.on('deviceError', function(code) {
             console.warn('Device error: ' + code);
@@ -62,28 +54,24 @@
 
         microphone.start();
 
-        if (doublemode) {
-            // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
-            // plugin disconnects the node, we'll end up with an empty file!
-            navigator.mediaDevices.getUserMedia({video: false, audio: true})
-                .then(function (mediastream) {
-                    vm.streamsource = vm.context.createMediaStreamSource(mediastream);
-                    rec = new Recorder(vm.streamsource, {numChannels: 1});
-                })
-                .catch(function (feh) {
-                    console.log('audio spaz', feh);
-                });
-        }
+
+        // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
+        // plugin disconnects the node, we'll end up with an empty file!
+        navigator.mediaDevices.getUserMedia({video: false, audio: true})
+            .then(function (mediastream) {
+                vm.streamsource = vm.context.createMediaStreamSource(mediastream);
+                rec = new Recorder(vm.streamsource, {numChannels: 1});
+            })
+            .catch(function (feh) {
+                console.log('audio spaz', feh);
+            });
+
 
         function createDownsampledLink(targetSampleRate) {
             rec.getBuffer(function(buf){
                 vm.recordDurMsec = Math.floor(buf[0].length / (microphone.micContext.sampleRate/1000));
                 console.log('rt', vm.recordDurMsec);
-                
                 audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
-                    //var url = thinggy.getFile();
-                    //$scope.recording=$sce.trustAsResourceUrl(url);
-                    
                     var blob = thinggy.getFile();
                     fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
                         vm.recordUrl = url;
@@ -93,47 +81,54 @@
             });
         }
 
-        vm.hasrecording = function() {
-            return $scope.recording !== '';
+
+        function playbackAudio(inputbuffer) {
+            var newSource = vm.context.createBufferSource();
+            var newBuffer = vm.context.createBuffer( 1, inputbuffer[0].length, vm.context.sampleRate );
+            newBuffer.getChannelData(0).set(inputbuffer[0]);
+            newSource.buffer = newBuffer;
+            newSource.connect( vm.context.destination );
+            newSource.onended = function() {
+                $scope.$apply(function() {
+                    $scope.playbackClass = '';
+                });
+            };
+            newSource.start(0);
+            vm.reviewPlayback = true;
+            $scope.$apply(function() {
+                $scope.playbackClass = 'nowplaying';
+            });
+        }
+
+        vm.play = function() {
+            rec.getBuffer(function(buffer) {
+                playbackAudio(buffer);
+            });
         };
 
-        
-        vm.isrecording = false;
+        vm.isrecording = false; // used for applying classes to buttons
         $scope.recordClass = 'inactivespeaker'; // becomes activespeaker when user permits microphone
 
-        function spacedown () {
+        vm.toggleRecord = function () {
             if(!vm.recordUrl) {
                 if (!vm.isrecording) {
                     console.log('starting record');
                     rec.record();
-
                     $scope.recordClass = 'activerecord';
                     vm.isrecording=true;
-                    $scope.$apply();
                 } else {
                     console.log('stopping record');
                     rec.stop();
+                    vm.hasrecdata = true; // used for review/play button status
                     vm.wsRecord.empty();
-
                     $scope.recordClass = 'activespeaker';
                     vm.isrecording = false;
-                    $scope.$apply();
                 }
                 return false;
             } else {
                 return true;
             }
-        }
-
-        // We must use this because the underlying library (mousetrap) used by angular-hotkeys does
-        // not provide any way to handle keys that are held down, e.g. ignoring repeated events.
-        //
-        var listener = new $window.keypress.Listener();
-        listener.register_combo({
-            "keys"              : 'space',
-            "on_keydown"        :spacedown,
-            "prevent_repeat"    :true
-        });
+        };
 
         vm.check = function() {
             // Disable/Clean microphone/recorder
@@ -142,22 +137,24 @@
             if(vm.isRecording) {
                 rec.stop();
                 vm.wsRecord.empty();
-                
                 vm.isrecording = false;
                 $scope.$apply();
             }
             
             // File created and url is stored
-            createDownsampledLink(22050);
-            //createDownsampledLink(48000);
+            createDownsampledLink(config.sampleRate);
         };
-        
+
+        // This might not work right. Errors observed on querying length of unset variables.
         vm.isMetaEmpty = function() {
-            return vm.recordUrl === '' || vm.selectedLanguages.length === 0 || vm.selectedTitles.length === 0;
+            return !vm.hasrecdata || vm.selectedLanguages.length === 0 || vm.selectedTitles.length === 0;
         };
         
         vm.save = function() {
+            // moved into the save, no need to downsample just for playback
+            createDownsampledLink(config.sampleRate);
             var fileObjId;
+            // This should all be in the data service. Too much logic here.
             dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
                 // Add fileObj to user metadata
                 var fileObj = {
@@ -191,12 +188,12 @@
         vm.reset = function() {
             rec.stop();
             rec.clear();
+            vm.hasrecdata = false;
             $scope.recordClass = 'inactivespeaker';
             $scope.recording = '';
         };
 
         $scope.$on('$destroy', function() {
-            listener.destroy();
             if(rec)
                 rec.clear();
         });
@@ -207,11 +204,13 @@
                 fileService.deleteFile(vm.recordUrl);
         };
         
-        /////////////////////////////// 
+        ///////////////////////////////
+        $scope.recording = '';
+        vm.hasrecdata = false; // used for review/play button status
         vm.isCompleted = false;
         vm.recordUrl = '';
         vm.recordDurMsec = 0;
-        
+
         vm.selectedTitles = [];
         vm.selectedLanguages = [];
         vm.langFilterOn = true;
@@ -244,13 +243,16 @@
         });
 
     };
-    newRecordDirectiveController.$inject = ['$scope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    newRecordDirectiveController.$inject = ['config', '$scope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
-    var respeakDirectiveController = function ($scope, $window, $attrs, loginService, audioService, dataService, fileService, $sce) {
+
+    //
+    // RESPEAK DIRECTIVE
+    //
+    var respeakDirectiveController = function (config, $scope, $window, $attrs, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         var rec;
 
-        var doublemode = true;
         vm.isplaying = false;
         vm.isrecording = false;
 
@@ -261,7 +263,7 @@
             console.log(vm.sessionData);
         });*/
 
-        if (doublemode) {vm.context = new AudioContext();}
+        vm.context = new AudioContext();
 
         vm.segments = [];
         
@@ -303,11 +305,7 @@
         });
         microphone.on('deviceReady', function() {
             console.info('Device ready!');
-            if (doublemode) {
-                microphone.pause();
-            } else {
-                rec = new Recorder(microphone.mediaStreamSource,{numChannels: 1});
-            }
+            microphone.pause();
         });
         microphone.on('deviceError', function(code) {
             console.warn('Device error: ' + code);
@@ -315,18 +313,17 @@
 
         microphone.start();
 
-        if (doublemode) {
-            // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
-            // plugin disconnects the node, we'll end up with an empty file!
-            navigator.mediaDevices.getUserMedia({video: false, audio: true})
-                .then(function (mediastream) {
-                    vm.streamsource = vm.context.createMediaStreamSource(mediastream);
-                    rec = new Recorder(vm.streamsource, {numChannels: 1});
-                })
-                .catch(function (feh) {
-                    console.log('audio spaz', feh);
-                });
-        }
+        // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
+        // plugin disconnects the node, we'll end up with an empty file!
+        navigator.mediaDevices.getUserMedia({video: false, audio: true})
+            .then(function (mediastream) {
+                vm.streamsource = vm.context.createMediaStreamSource(mediastream);
+                rec = new Recorder(vm.streamsource, {numChannels: 1});
+            })
+            .catch(function (feh) {
+                console.log('audio spaz', feh);
+            });
+
 
         function createDownsampledLink(targetSampleRate) {
             rec.getBuffer(function(buf){
@@ -369,7 +366,7 @@
                 rec.stop();
                 vm.isrecording = false;
 
-                if (doublemode) {microphone.pause();}
+                microphone.pause();
                 vm.wsRecord.empty();
                 vm.playrecturn = 'play';
                 $scope.playbackClass = 'activespeaker';
@@ -420,8 +417,7 @@
         });
 
         vm.save = function() {
-            createDownsampledLink(22050);
-            //createDownsampledLink(48000);
+            createDownsampledLink(config.sampleRate);
         };
 
         vm.reset = function() {
@@ -461,6 +457,6 @@
         });
 
     };
-    respeakDirectiveController.$inject = ['$scope', '$window', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    respeakDirectiveController.$inject = ['config', '$scope', '$window', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
 })();

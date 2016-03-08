@@ -4,7 +4,6 @@
                   placeholder="{{nrCtrl.titlePlaceholder}}"
                   secondary-placeholder="{{nrCtrl.titleSecPlaceholder}}">
         </md-chips>
-        
         <md-contact-chips ng-model="nrCtrl.selectedLanguages"
                           md-contacts="nrCtrl.langQuerySearch($query)"
                           md-contact-name="name"
@@ -15,30 +14,22 @@
                           placeholder="{{nrCtrl.langPlaceholder}}"
                           secondary-placeholder="{{nrCtrl.langSecPlaceholder}}">
         </md-contact-chips>
-        
-        <md-button ng-disabled="nrCtrl.recordUrl" class="md-raised ng-class:{'nowrecording': nrCtrl.isrecording}" aria-label="Save" ng-click="nrCtrl.check()" >
+        <md-button ng-disabled="nrCtrl.recordUrl" class="md-raised ng-class:{'nowrecording': nrCtrl.isrecording}" aria-label="Save" ng-click="nrCtrl.toggleRecord()" >
             <md-icon md-svg-icon="av:mic"></md-icon>
             <span flex>Record</span>
         </md-button>
-        
-        <div ng-if="nrCtrl.hasrecording()">
-            <audio controls ng-src="{{recording}}">
-            </audio>
-        </div>
     </div>
     <div flex="50" ng-class="recordClass" class="respeakwavesurfer" id="respeakRecord"></div>
 </div>
-
-<md-button class="md-raised" aria-label="Reset" ng-click="nrCtrl.reset()" >
-    <md-icon md-svg-icon="action:restore"></md-icon>
-    Reset
+<md-button ng-disabled="!nrCtrl.hasrecdata" class="md-raised" ng-class="playbackClass" aria-label="Check" ng-click="nrCtrl.play()" >
+    <md-icon md-svg-icon="av:play_arrow"></md-icon>
+    <span class="buttontext">Review</span>
 </md-button>
-
-<md-button class="md-raised" aria-label="Check" ng-click="nrCtrl.check()" >
-    <md-icon md-svg-icon="content:save"></md-icon>
-    Check
+<md-button class="md-raised" aria-label="Reset" ng-click="nrCtrl.reset()" >
+    <md-icon md-svg-icon="action:delete"></md-icon>
+    <span class="buttontext">Clear</span>
 </md-button>
 <md-button ng-disabled="nrCtrl.isMetaEmpty()" class="md-raised" aria-label="Save" ng-click="nrCtrl.save()" >
     <md-icon md-svg-icon="content:save"></md-icon>
-    Save
+    <span class="buttontext">Save</span>
 </md-button>

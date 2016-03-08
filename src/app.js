@@ -20,6 +20,11 @@
             'annoweb-dataservice',      // data service dealing with metadata and files
             'ngPrettyJson'              // for debugging
         ])
+        .constant('config', {
+            appName: 'Annoweb',
+            appVersion: 'alpha 17',
+            sampleRate: 16000
+            })
         .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
                 .iconSet('social','img/icons/sets/social-icons.svg', 24)
