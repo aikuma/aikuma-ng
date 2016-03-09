@@ -10,8 +10,7 @@
         //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
         .controller('homeController', ['$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function($timeout, $scope, $location, dataService, loginService, $route) {
             var vm = this;
-            var currentUserName = 'Unknown user';
-            vm.username = function() { return currentUserName; };
+            vm.currentUserName = 'Unknown user';
 
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
 
@@ -22,7 +21,7 @@
                     vm.sessionList = sessionList;
                 });
                 dataService.get('user', vm.currentUser._ID).then(function(userObj) {
-                    currentUserName = userObj.data.names[0];       
+                    vm.currentUserName = userObj.data.names[0];
                 });
             });
 
@@ -158,7 +157,7 @@
             
         }])
 
-        .controller('statusController', ['$timeout','$scope','$location', '$routeParams', 'loginService', 'dataService', 'AnnowebDialog', function($timeout,$scope,$location, $routeParams, loginService, dataService, AnnowebDialog) {
+        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'dataService', 'AnnowebDialog', function($location, $scope, $routeParams, loginService, fileService, dataService, AnnowebDialog) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
             vm.olac = 'drama';
@@ -169,32 +168,22 @@
             
             dataService.get('user', vm.userId).then(function(userObj) {
                 vm.userData = userObj.data;
-            }).then(function() {
-                dataService.get('session', vm.sessionId).then(function (sessionObj) {
-                    vm.sessionData = sessionObj.data;
-                    if (vm.sessionData.imageIds) {
-                        vm.ImageCount = vm.sessionData.imageIds.length;
-                        vm.currentImageIdx = 1;
-                    } else {
-                        vm.ImageCount = 0;
-                    }
-                    console.log('broadcasting');
-                    // This is the sort of extreme lengths we need to go to just to get a url for session source...
-                    if ('recordFileId' in vm.sessionData.source) {
-                        // this is necessary because otherwise we get a race condition on whether the directive has
-                        // loaded.
-                        $timeout(function() {
-                            $scope.$broadcast('loadPlayer', {
-                                url: vm.userData.files[vm.sessionData.source.recordFileId].url
-                            });
-                        }, 0);
-                    } else {
-                        AnnowebDialog.toast('Aint no audio file for this session!');
-                    }
-                });
+                return dataService.get('session', vm.sessionId);
+            }).then(function(sessionObj) {
+                vm.sessionData = sessionObj.data;
+                if (vm.sessionData.imageIds) {
+                    vm.ImageCount = vm.sessionData.imageIds.length;
+                    vm.currentImageIdx = 1;
+                } else {
+                    vm.ImageCount = 0;
+                }
+
+                if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
+                    vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
+                } else {
+                    AnnowebDialog.toast('Aint no audio file for this session!');
+                }
             });
-
-
 
             vm.nextImage = function() {
                 ++vm.currentImageIdx;
@@ -210,22 +199,37 @@
                 return vm.currentImageIdx < vm.ImageCount;
             };
 
-            // TODO: file-service
-            vm.uploadNewImage = function() {
-                var accepts = [{
-                    mimeTypes: ['image/*'],
-                    extensions: ['jpg', 'gif', 'png']
-                }];
-                chrome.fileSystem.chooseEntry({type: 'openFile', accepts: accepts}, function(theEntry) {
-                    if (!theEntry) {
-                        vm.textContent = 'No file selected.';
-                        return;
-                    }
-                    // use local storage to retain access to this file
-                    chrome.storage.local.set({'chosenFile': chrome.fileSystem.retainEntry(theEntry)});
-
-                });
-            };
+            // When Image is imported
+            $scope.$watch('imageFile', function (file) {
+                if (file && file.type.match('^image/')) { 
+                    var imageUrl, fileObjId;
+                    fileService.createFile(loginService.getLoggedinUserId(), file).then(function(url) {
+                        imageUrl = url;
+                        return dataService.get('user', loginService.getLoggedinUserId());
+                    }).then(function(userObj) {
+                        var fileObj = {
+                            url: imageUrl,
+                            type: file.type
+                        };
+                        
+                        fileObjId = userObj.addUserFile(fileObj);
+                        return userObj.save();
+                    }).then(function() {
+                        return dataService.get('session', vm.sessionId);
+                    }).then(function(sessionObj) {
+                        if(!sessionObj.data.imageIds)
+                            sessionObj.data.imageIds = [];
+                        sessionObj.data.imageIds.push(fileObjId);
+                        return sessionObj.save();
+                    }).then(function() {
+                        vm.ImageCount = vm.sessionData.imageIds.length;
+                        vm.currentImageIdx = 1;
+                    }).catch(function(err) {
+                        if(imageUrl)
+                            fileService.deleteFile(imageUrl);
+                    });
+                }
+            });
 
             vm.hasImage = function() {
                 if(vm.sessionData && vm.sessionData.imageIds && vm.sessionData.imageIds.length > 0) {
@@ -235,10 +239,9 @@
                 }
             };
             
-            // TODO: file-service for filesystem url
             vm.getImage = function() {  
                 if(vm.userData) {
-                    return vm.userData.files[ vm.sessionData.imageIds[0] ].url;
+                    return vm.userData.files[ vm.sessionData.imageIds[ vm.currentImageIdx-1 ] ].url;
                 } else {
                     return null;
                 }

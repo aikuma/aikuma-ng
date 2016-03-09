@@ -62,8 +62,7 @@
             return {
                 restrict: "E",
                 scope: {
-                    source: '@',
-                    foo: '@'
+                    source: '@'
                 },
                 templateUrl: "views/templates/player-template.html",
                 controller: playerController,
@@ -83,7 +82,7 @@
         };
         annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
 
-        var navController = function (config, $scope, $location, loginService) {
+        var navController = function (config, $scope, $location, loginService, fileService) {
             var vm = this;
             vm.username = 'anonymous';
             vm.getLoginStatus = loginService.getLoginStatus;
@@ -99,7 +98,7 @@
                     class : '',
                     title: 'Open File',
                     icon: 'file:folder_open',
-                    state: 'new'
+                    state: 'import'
                 },
                 {
                     class : '',
@@ -133,11 +132,20 @@
                 }
             ];
             vm.changeState = function(statename) {
-                $location.path('/'+statename);
+                if(statename !== 'import') {
+                    $location.path('/'+statename);
+                }
             };
+            // When 'Open File' is pressed
+            $scope.$watch('file', function (file) {
+                if (file && file.type.match('^audio/')) { 
+                    fileService.setTempObject(file);
+                    $location.path('/new');
+                }
+            });
 
         };
-    navController.$inject = ['config', '$scope', '$location', 'loginService'];
+    navController.$inject = ['config', '$scope', '$location', 'loginService', 'fileService'];
 
     var userSelectorController = function ($scope, loginService, dataService) {
         var vm = this;
@@ -392,14 +400,13 @@
         $scope.$on('$destroy', function() {
             vm.wsPlayback.destroy();
         });
-
-        // listen for the event in the relevant $scope
-        $scope.$on('loadPlayer', function (event, data) {
-            console.log('lp',data); // 'Data to send'
-            if (data.url != '') {
-                vm.wsPlayback.load(data.url);
+        
+        $scope.$watch('source', function(url) {
+            if(url) {
+                vm.wsPlayback.load(url);
             }
         });
+        
     };
     playerController.$inject = ['$scope', '$attrs'];
 })();

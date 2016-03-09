@@ -5,7 +5,7 @@
 </md-toolbar>
 <md-content class="md-padding">
 
-    <p class="md-title inset">Welcome back <i>{{hCtrl.username()}}.</i></p>
+    <p class="md-title inset">Welcome back <i>{{hCtrl.currentUserName}}.</i></p>
 
         <md-list ng-if="hCtrl.getLoginStatus()">
             <md-list-item class="md-3-line" ng-repeat="session in hCtrl.sessionList" ng-click="hCtrl.goStatus($index)">

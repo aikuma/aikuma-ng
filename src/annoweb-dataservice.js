@@ -34,7 +34,7 @@
             if(window.sessionStorage && window.sessionStorage.currentUserData) {
                 loginStatus = true;
                 currentUserData = JSON.parse(window.sessionStorage.currentUserData);
-                console.log('loginService: ' + currentUserData);
+                console.log('loginService: ' + currentUserData.email);
             }
             
             var service = {};
@@ -561,6 +561,11 @@
             service.getLanguages = function() {
                 return langDefer.promise;
             };
+            
+            // Temporary storage
+            var tempObj;
+            service.setTempObject = function(obj) { tempObj = obj; };
+            service.getTempObject = function() { return tempObj; };
             
             return service;
 

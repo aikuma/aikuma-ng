@@ -29,7 +29,8 @@
         var vm = this;
         var rec;
 
-        vm.context = new AudioContext();
+        vm.externalRecord = fileService.getTempObject();
+        
         vm.wsRecord = Object.create(WaveSurfer);
         vm.wsRecord.init({
             container: "#respeakRecord",
@@ -37,49 +38,66 @@
             scrollParent: true,
             cursorWidth: 0
         });
-        // Init Microphone plugin
-        var microphone = Object.create(WaveSurfer.Microphone);
-        microphone.init({
-            wavesurfer: vm.wsRecord
-        });
-        microphone.on('deviceReady', function() {
-            console.info('Device ready!');
-            microphone.play();
-            $scope.$apply(function() {
-                $scope.recordClass = 'activespeaker';
+        
+        if(vm.externalRecord) {
+            vm.wsRecord.on('ready', function() {
+                vm.recordDurMsec = Math.floor(vm.wsRecord.getDuration() * 1000);
+                vm.hasrecdata = true;
             });
-        });
-        microphone.on('deviceError', function(code) {
-            console.warn('Device error: ' + code);
-        });
-
-        microphone.start();
-
-
-        // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
-        // plugin disconnects the node, we'll end up with an empty file!
-        navigator.mediaDevices.getUserMedia({video: false, audio: true})
-            .then(function (mediastream) {
-                vm.streamsource = vm.context.createMediaStreamSource(mediastream);
-                rec = new Recorder(vm.streamsource, {numChannels: 1});
-            })
-            .catch(function (feh) {
-                console.log('audio spaz', feh);
+            vm.wsRecord.loadBlob(vm.externalRecord);
+        } else {
+            vm.context = new AudioContext();
+            
+            // Init Microphone plugin
+            var microphone = Object.create(WaveSurfer.Microphone);
+            microphone.init({
+                wavesurfer: vm.wsRecord
             });
-
-
-        function createDownsampledLink(targetSampleRate, callback) {
-            rec.getBuffer(function(buf){
-                vm.recordDurMsec = Math.floor(buf[0].length / (microphone.micContext.sampleRate/1000));
-                console.log('rt', vm.recordDurMsec);
-                audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
-                    var blob = thinggy.getFile();
-                    fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
-                        callback(url);
-                        $scope.recording=$sce.trustAsResourceUrl(url);
-                    });
+            microphone.on('deviceReady', function() {
+                console.info('Device ready!');
+                microphone.play();
+                $scope.$apply(function() {
+                    $scope.recordClass = 'activespeaker';
                 });
             });
+            microphone.on('deviceError', function(code) {
+                console.warn('Device error: ' + code);
+            });
+
+            microphone.start();
+
+
+            // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
+            // plugin disconnects the node, we'll end up with an empty file!
+            navigator.mediaDevices.getUserMedia({video: false, audio: true})
+                .then(function (mediastream) {
+                    vm.streamsource = vm.context.createMediaStreamSource(mediastream);
+                    rec = new Recorder(vm.streamsource, {numChannels: 1});
+                })
+                .catch(function (feh) {
+                    console.log('audio spaz', feh);
+                });
+
+        }
+
+        function createDownsampledLink(targetSampleRate, callback) {
+            if(vm.externalRecord) {
+                fileService.createFile(loginService.getLoggedinUserId(), vm.externalRecord).then(function(url) {
+                    callback(url);
+                });
+            } else {
+                rec.getBuffer(function(buf){
+                    vm.recordDurMsec = Math.floor(buf[0].length / (microphone.micContext.sampleRate/1000));
+                    console.log('rt', vm.recordDurMsec);
+                    audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
+                        var blob = thinggy.getFile();
+                        fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
+                            callback(url);
+                            $scope.recording=$sce.trustAsResourceUrl(url);
+                        });
+                    });
+                });
+            }
         }
 
 
@@ -158,7 +176,7 @@
                     // Add fileObj to user metadata
                     var fileObj = {
                         url: recordUrl,
-                        type: 'audio/wav'
+                        type: vm.recordType
                     };
 
                     fileObjId = userObj.addUserFile(fileObj);
@@ -187,8 +205,10 @@
         };
 
         vm.reset = function() {
-            rec.stop();
-            rec.clear();
+            if(rec) {
+                rec.stop();
+                rec.clear();   
+            }
             vm.hasrecdata = false;
             $scope.recordClass = 'inactivespeaker';
             $scope.recording = '';
@@ -211,7 +231,8 @@
         vm.isCompleted = false;
         var recordUrl = '';
         vm.recordDurMsec = 0;
-
+        vm.recordType = (vm.externalRecord && vm.externalRecord.type) || 'audio/wav';
+        
         vm.selectedTitles = [];
         vm.selectedLanguages = [];
         vm.langFilterOn = true;
