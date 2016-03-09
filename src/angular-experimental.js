@@ -48,7 +48,10 @@
         vm.selectedItem = null;
         vm.searchText = null;
 
-        vm.add = function() {console.log('add');};
+        vm.add = function() {
+            console.log('add');
+            updateSession();
+        };
         vm.rem = function() {console.log('remove');};
         vm.sel = function() {console.log('select');};
 
@@ -123,16 +126,21 @@
                 vm.selectedIds.push(pid);
                 // refresh the entire list of people
                 vm.allPeople = loadPeople(vm.userData.data.people);
+                vm.selectedPeople = _.map(vm.selectedIds, function(id) {
+                    return makePersonObj(vm.userData.data.people,id);
+                });
             }, function() {
                 console.log('cancelled');
             });
         };
         // gets shit from selected people
         function updateSession() {
-            var idList = _.pluck($scope.selectedPeople, 'id');
-            if(!vm.sessionData.data.roles)
+            var idList = _.pluck(vm.selectedPeople, 'id');
+            if(!vm.sessionData.data.roles) {
                 vm.sessionData.data.roles = {};
+            }
             vm.sessionData.data.roles[$scope.role] = idList;
+            console.log(vm.sessionData.data.roles[$scope.role]);
             vm.sessionData.save();
         }
     };
@@ -152,7 +160,7 @@
                 $scope.names.push('');
             }
         };
-        $scope.answer = function(answer) {
+        $scope.answer = function() {
             $scope.names = $scope.names.filter(function(n){ return n != ''; });
             $mdDialog.hide($scope.names);
         };

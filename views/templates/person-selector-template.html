@@ -9,8 +9,15 @@
             md-search-text="psCtrl.searchText"
             md-items="item in psCtrl.personQuerySearch(psCtrl.searchText)"
             md-item-text="item.pname"
-            placeholder="Search for a person">
-        <span md-highlight-text="psCtrl.searchText">{{item.pname}} :: {{item.type}}</span>
+            placeholder="Add speakers"
+            secondary-placeholder="Add new">
+        <div class="md-contact-suggestion">
+            <img ng-src="{{item.image}}"/>
+              <span class="md-contact-name" md-highlight-text="psCtrl.searchText" md-highlight-flags="i">
+                {{item.pname}}
+              </span>
+        </div>
+
     </md-autocomplete>
     <md-chip-template>
         <div class="md-contact-avatar">
