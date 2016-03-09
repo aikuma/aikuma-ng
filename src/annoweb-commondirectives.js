@@ -337,7 +337,13 @@
 
         vm.options = angular.extend(wsdefaults, $attrs);
         vm.wsPlayback.init(vm.options);
-
+        /* Minimap plugin */
+        vm.wsPlayback.initMinimap({
+            height: 30,
+            waveColor: '#555',
+            progressColor: '#999',
+            cursorColor: '#999'
+        });
         /* Initialize the time line */
         vm.timeline = Object.create(vm.wsPlayback.Timeline);
         vm.timeline.init({
@@ -345,13 +351,7 @@
             normalize: false,
             container: "#session-timeline"
         });
-        /* Minimap plugin */
-        vm.wsPlayback.initMinimap({
-            height: 40,
-            waveColor: '#555',
-            progressColor: '#999',
-            cursorColor: '#999'
-        });
+
 
         vm.wsPlayback.on('play', function () {
             vm.isplaying = true;
@@ -365,6 +365,24 @@
             }
         });
 
+        // Only add minimap when we need it. The thing is, we need to know this before we call load,
+        // so this will only work if we pass in the duration first.
+/*        vm.wsPlayback.on('ready', function () {
+            var width = vm.wsPlayback.drawer.container.clientWidth;
+            var duration = vm.wsPlayback.getDuration();
+            if ((duration*vm.options.minPxPerSec) > width) {
+                /!* Minimap plugin *!/
+                vm.wsPlayback.initMinimap({
+                    height: 30,
+                    waveColor: '#555',
+                    progressColor: '#999',
+                    cursorColor: '#999'
+                });
+            }
+        });*/
+
+
+
         vm.wsPlayback.on('finish', function () {
             vm.isplaying = false;
             vm.wsPlayback.seekTo(0);
@@ -377,12 +395,11 @@
 
         // listen for the event in the relevant $scope
         $scope.$on('loadPlayer', function (event, data) {
-            console.log(data); // 'Data to send'
+            console.log('lp',data); // 'Data to send'
             if (data.url != '') {
                 vm.wsPlayback.load(data.url);
             }
         });
     };
     playerController.$inject = ['$scope', '$attrs'];
-
 })();

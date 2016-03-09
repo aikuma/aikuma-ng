@@ -1,0 +1,23 @@
+<md-chips ng-model="psCtrl.selectedPeople" md-autocomplete-snap class="md-contact-chips" id="personSelector"
+          md-transform-chip="psCtrl.transformChip($chip)"
+          md-require-match="psCtrl.autocompleteDemoRequireMatch"
+          md-on-add="psCtrl.add()"
+          md-on-remove="psCtrl.rem()"
+          md-on-select="psCtrl.sel()">
+    <md-autocomplete
+            md-selected-item="psCtrl.selectedItem"
+            md-search-text="psCtrl.searchText"
+            md-items="item in psCtrl.personQuerySearch(psCtrl.searchText)"
+            md-item-text="item.pname"
+            placeholder="Search for a person">
+        <span md-highlight-text="psCtrl.searchText">{{item.pname}} :: {{item.type}}</span>
+    </md-autocomplete>
+    <md-chip-template>
+        <div class="md-contact-avatar">
+            <img src="{{$chip.image}}"/>
+        </div>
+        <div class="md-contact-name">
+          {{$chip.pname}}
+        </div>
+    </md-chip-template>
+</md-chips>

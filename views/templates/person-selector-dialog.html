@@ -1,0 +1,31 @@
+<md-dialog aria-label="Add new person"  ng-cloak>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Add new person</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon md-svg-src="nav:close" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" layout="column" layout-align="start start">
+                <md-input-container ng-repeat="name in names track by $index" class="md-block" style="height:14px">
+                <label>Name</label>
+                <input type="text" ng-model="names[$index]" ng-change="process()"/>
+               </md-input-container>
+           </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="answer('not useful')">
+                Cancel
+            </md-button>
+            <md-button type="submit" ng-click="answer('useful')" style="margin-right:20px;">
+                OK
+            </md-button>
+        </md-dialog-actions>
+    </form>
+
+</md-dialog>

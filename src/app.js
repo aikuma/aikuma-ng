@@ -7,6 +7,7 @@
             'annoweb-wavesurfer',       // the wavesurfer directive
             'annoweb-dialog',           // dialog and alert service
              //'annoweb-service',          // old AnnowebService - needs to be removed
+            'annoweb-experimental',     // Directives being tested before replacing old versions
             'annoweb-newservice',       // new AnnowebService and mock data service
             'annoweb-annotation',       // directive and controller for annotation UI
             'annoweb-viewcontrollers',  // common controllers for view routes (when we don't have separate files)

@@ -8,7 +8,7 @@
 
         // removed dataService, unclear what role Firebase will play
         //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
-        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', '$route', function($scope, $location, dataService, loginService, $route) {
+        .controller('homeController', ['$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function($timeout, $scope, $location, dataService, loginService, $route) {
             var vm = this;
             var currentUserName = 'Unknown user';
             vm.username = function() { return currentUserName; };
@@ -33,7 +33,6 @@
                 $location.path('/new');
             };
             vm.wipeData = function() {
-                console.log('yep');
                 window.indexedDB.deleteDatabase('myIndexedDB');
                 $timeout(function() {
                     $route.reload();
@@ -145,7 +144,9 @@
                         console.error('ERR: ' + err);
                     });
                 }
-
+                $timeout(function() {
+                    $route.reload();
+                }, 1000);
 
             };
 
@@ -157,7 +158,7 @@
             
         }])
 
-        .controller('statusController', ['$scope','$location', '$routeParams', 'loginService', 'dataService', function($scope,$location, $routeParams, loginService, dataService) {
+        .controller('statusController', ['$timeout','$scope','$location', '$routeParams', 'loginService', 'dataService', 'AnnowebDialog', function($timeout,$scope,$location, $routeParams, loginService, dataService, AnnowebDialog) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
             vm.olac = 'drama';
@@ -177,12 +178,23 @@
                     } else {
                         vm.ImageCount = 0;
                     }
+                    console.log('broadcasting');
                     // This is the sort of extreme lengths we need to go to just to get a url for session source...
-                    $scope.$broadcast('loadPlayer', {
-                        url: vm.userData.files[vm.sessionData.source.recordingFileId].url
-                    });
+                    if ('recordFileId' in vm.sessionData.source) {
+                        // this is necessary because otherwise we get a race condition on whether the directive has
+                        // loaded.
+                        $timeout(function() {
+                            $scope.$broadcast('loadPlayer', {
+                                url: vm.userData.files[vm.sessionData.source.recordFileId].url
+                            });
+                        }, 0);
+                    } else {
+                        AnnowebDialog.toast('Aint no audio file for this session!');
+                    }
                 });
             });
+
+
 
             vm.nextImage = function() {
                 ++vm.currentImageIdx;

@@ -273,6 +273,7 @@
                         var wrapper = {data: data};
                         if(type === USER_TYPE) {
                             wrapper.addUserTag = dataMethods.addUserMeta('tags').bind(wrapper);
+                            wrapper.addUserPerson = dataMethods.addUserMeta('people').bind(wrapper);
                             wrapper.addUserFile = dataMethods.addUserMeta('files').bind(wrapper);
                             wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
                         } else if(type === SESSION_TYPE) {
