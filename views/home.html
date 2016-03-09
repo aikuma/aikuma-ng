@@ -29,10 +29,17 @@
             <p>Please log in.</p>
         </div>
 
+    <p></p>
+
     <md-content class="md-whiteframe-3dp">
-    <md-button ng-click="hCtrl.loadMockData()">
+    <md-button class="md-raised" ng-click="hCtrl.loadMockData()">
         <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
         Load mock-data
+    </md-button>
+
+    <md-button class="md-raised" ng-click="hCtrl.wipeData()">
+        <md-icon md-svg-icon="action:delete"></md-icon>
+        Wipe all data
     </md-button>
     </md-content>
 

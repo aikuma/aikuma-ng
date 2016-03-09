@@ -57,8 +57,19 @@
                 controller: metadataController,
                 controllerAs: 'mCtrl'
             };
+        })
+        .directive("ngPlayer", function() {
+            return {
+                restrict: "E",
+                scope: {
+                    source: '@',
+                    foo: '@'
+                },
+                templateUrl: "views/templates/player-template.html",
+                controller: playerController,
+                controllerAs: 'pCtrl'
+            };
         });
-
 
         var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
             var vm = this;
@@ -312,5 +323,66 @@
 
     };
     metadataController.$inject = ['$scope', 'loginService', 'dataService', 'AnnowebDialog'];
+
+    var playerController = function ($scope, $attrs) {
+        var vm = this;
+        vm.wsPlayback = Object.create(WaveSurfer);
+
+        var wsdefaults = {
+            container: "#sessionPlayer",
+            normalize: true,
+            hideScrollbar: false,
+            scrollParent: true
+        };
+
+        vm.options = angular.extend(wsdefaults, $attrs);
+        vm.wsPlayback.init(vm.options);
+
+        /* Initialize the time line */
+        vm.timeline = Object.create(vm.wsPlayback.Timeline);
+        vm.timeline.init({
+            wavesurfer: vm.wsPlayback,
+            normalize: false,
+            container: "#session-timeline"
+        });
+        /* Minimap plugin */
+        vm.wsPlayback.initMinimap({
+            height: 40,
+            waveColor: '#555',
+            progressColor: '#999',
+            cursorColor: '#999'
+        });
+
+        vm.wsPlayback.on('play', function () {
+            vm.isplaying = true;
+        });
+
+        vm.wsPlayback.on('pause', function () {
+            if (vm.wsPlayback.isPlaying()) {
+                    vm.isplaying = true;
+            } else {
+                    vm.isplaying = false;
+            }
+        });
+
+        vm.wsPlayback.on('finish', function () {
+            vm.isplaying = false;
+            vm.wsPlayback.seekTo(0);
+            $scope.$apply();
+        });
+
+        $scope.$on('$destroy', function() {
+            vm.wsPlayback.destroy();
+        });
+
+        // listen for the event in the relevant $scope
+        $scope.$on('loadPlayer', function (event, data) {
+            console.log(data); // 'Data to send'
+            if (data.url != '') {
+                vm.wsPlayback.load(data.url);
+            }
+        });
+    };
+    playerController.$inject = ['$scope', '$attrs'];
 
 })();

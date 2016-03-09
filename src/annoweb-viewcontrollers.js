@@ -8,7 +8,7 @@
 
         // removed dataService, unclear what role Firebase will play
         //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
-        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', function($scope, $location, dataService, loginService) {
+        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', '$route', function($scope, $location, dataService, loginService, $route) {
             var vm = this;
             var currentUserName = 'Unknown user';
             vm.username = function() { return currentUserName; };
@@ -31,6 +31,13 @@
             };
             vm.addNew = function() {
                 $location.path('/new');
+            };
+            vm.wipeData = function() {
+                console.log('yep');
+                window.indexedDB.deleteDatabase('myIndexedDB');
+                $timeout(function() {
+                    $route.reload();
+                }, 1000);
             };
            
             vm.loadMockData = function() {
@@ -134,6 +141,8 @@
                         console.error('ERR: ' + err);
                     });
                 }
+
+
             };
 
         }])
@@ -144,7 +153,7 @@
             
         }])
 
-        .controller('statusController', ['$location', '$routeParams', 'loginService', 'dataService', function($location, $routeParams, loginService, dataService) {
+        .controller('statusController', ['$scope','$location', '$routeParams', 'loginService', 'dataService', function($scope,$location, $routeParams, loginService, dataService) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
             vm.olac = 'drama';
@@ -155,19 +164,22 @@
             
             dataService.get('user', vm.userId).then(function(userObj) {
                 vm.userData = userObj.data;
+            }).then(function() {
+                dataService.get('session', vm.sessionId).then(function (sessionObj) {
+                    vm.sessionData = sessionObj.data;
+                    if (vm.sessionData.imageIds) {
+                        vm.ImageCount = vm.sessionData.imageIds.length;
+                        vm.currentImageIdx = 1;
+                    } else {
+                        vm.ImageCount = 0;
+                    }
+                    // This is the sort of extreme lengths we need to go to just to get a url for session source...
+                    $scope.$broadcast('loadPlayer', {
+                        url: vm.userData.files[vm.sessionData.source.recordingFileId].url
+                    });
+                });
             });
-            
-            dataService.get('session', vm.sessionId).then(function(sessionObj){
-                vm.sessionData = sessionObj.data;
-                
-                if (vm.sessionData.imageIds) {
-                    vm.ImageCount = vm.sessionData.imageIds.length;
-                    vm.currentImageIdx = 1;
-                } else {
-                    vm.ImageCount = 0;
-                }
-            });
-            
+
             vm.nextImage = function() {
                 ++vm.currentImageIdx;
             };

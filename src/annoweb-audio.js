@@ -28,6 +28,7 @@
     var newRecordDirectiveController = function (config, $scope, $location, $window, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         var rec;
+
         vm.context = new AudioContext();
         vm.wsRecord = Object.create(WaveSurfer);
         vm.wsRecord.init({
@@ -67,14 +68,14 @@
             });
 
 
-        function createDownsampledLink(targetSampleRate) {
+        function createDownsampledLink(targetSampleRate, callback) {
             rec.getBuffer(function(buf){
                 vm.recordDurMsec = Math.floor(buf[0].length / (microphone.micContext.sampleRate/1000));
                 console.log('rt', vm.recordDurMsec);
                 audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
                     var blob = thinggy.getFile();
                     fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
-                        vm.recordUrl = url;
+                        callback(url);
                         $scope.recording=$sce.trustAsResourceUrl(url);
                     });
                 });
@@ -110,23 +111,18 @@
         $scope.recordClass = 'inactivespeaker'; // becomes activespeaker when user permits microphone
 
         vm.toggleRecord = function () {
-            if(!vm.recordUrl) {
-                if (!vm.isrecording) {
-                    console.log('starting record');
-                    rec.record();
-                    $scope.recordClass = 'activerecord';
-                    vm.isrecording=true;
-                } else {
-                    console.log('stopping record');
-                    rec.stop();
-                    vm.hasrecdata = true; // used for review/play button status
-                    vm.wsRecord.empty();
-                    $scope.recordClass = 'activespeaker';
-                    vm.isrecording = false;
-                }
-                return false;
+            if (!vm.isrecording) {
+                console.log('starting record');
+                rec.record();
+                $scope.recordClass = 'activerecord';
+                vm.isrecording=true;
             } else {
-                return true;
+                console.log('stopping record');
+                rec.stop();
+                vm.hasrecdata = true; // used for review/play button status
+                vm.wsRecord.empty();
+                $scope.recordClass = 'activespeaker';
+                vm.isrecording = false;
             }
         };
 
@@ -152,37 +148,42 @@
         
         vm.save = function() {
             // moved into the save, no need to downsample just for playback
-            createDownsampledLink(config.sampleRate);
-            var fileObjId;
-            // This should all be in the data service. Too much logic here.
-            dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
-                // Add fileObj to user metadata
-                var fileObj = {
-                    url: vm.recordUrl,
-                    type: 'audio/wav'
-                };
-                
-                fileObjId = userObj.addUserFile(fileObj);
-                return userObj.save();
-            }).then(function() {
-                // Create new session metadata
-                var sessionData = {};
-                sessionData.names = vm.selectedTitles;
-                sessionData.creatorId = loginService.getLoggedinUserId();
-                sessionData.source = {
-                    recordingFileId: fileObjId,
-                    created: Date.now(),
-                    duration: vm.recordDurMsec,
-                    langIds: vm.selectedLanguages.map(function(lang) { return lang.id; })
-                };
-                
-                return dataService.setSession(loginService.getLoggedinUserId(), sessionData);
-            }).then(function(sessionId) {
-                // Recording file and session metadata are both created
-                vm.isCompleted = true;
-                
-                $location.path('session/'+sessionId);
-            });
+            createDownsampledLink(config.sampleRate, saveDownsampled);
+
+            function saveDownsampled(url) {
+                var fileObjId;
+                recordUrl = url;
+                // This should all be in the data service. Too much logic here.
+                dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
+                    // Add fileObj to user metadata
+                    var fileObj = {
+                        url: recordUrl,
+                        type: 'audio/wav'
+                    };
+
+                    fileObjId = userObj.addUserFile(fileObj);
+                    return userObj.save();
+                }).then(function() {
+                    // Create new session metadata
+                    var sessionData = {};
+                    sessionData.names = vm.selectedTitles;
+                    sessionData.creatorId = loginService.getLoggedinUserId();
+                    sessionData.source = {
+                        recordingFileId: fileObjId,
+                        created: Date.now(),
+                        duration: vm.recordDurMsec,
+                        langIds: vm.selectedLanguages.map(function(lang) { return lang.id; })
+                    };
+
+                    return dataService.setSession(loginService.getLoggedinUserId(), sessionData);
+                }).then(function(sessionId) {
+                    // Recording file and session metadata are both created
+                    vm.isCompleted = true;
+
+                    $location.path('session/'+sessionId);
+                });
+            }
+
         };
 
         vm.reset = function() {
@@ -200,15 +201,15 @@
         
         $window.onbeforeunload = function() {
             // When a file is created but metadata is not
-            if(vm.recordUrl && !vm.isCompleted)
-                fileService.deleteFile(vm.recordUrl);
+            if(recordUrl && !vm.isCompleted)
+                fileService.deleteFile(recordUrl);
         };
         
         ///////////////////////////////
         $scope.recording = '';
         vm.hasrecdata = false; // used for review/play button status
         vm.isCompleted = false;
-        vm.recordUrl = '';
+        var recordUrl = '';
         vm.recordDurMsec = 0;
 
         vm.selectedTitles = [];
