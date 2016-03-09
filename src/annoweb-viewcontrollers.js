@@ -82,6 +82,10 @@
                             url: 'img/test_small.jpg',
                             type: 'image/jpeg',
                             description: 'A picture that has nothing to do with the recording.',
+                        },
+                        3: {
+                            url: 'media/elan-example1.mp3',
+                            type: 'audio/wav'
                         }
                     }
                 };
@@ -96,7 +100,7 @@
                         },
                         tagIds: ['1', '3'],
                         source: {
-                            'duration': '30'
+                            recordFileId: '3'
                         },
                         imageIds: ['2'],
                         creatorId: 'foo@gmail.com'
@@ -109,7 +113,7 @@
                         },
                         tagIds: ['1', '3']     ,
                         source: {
-                            'duration': '395'
+                            recordFileId: '3'
                         },
                         imageIds: ['2'],
                         creatorId: 'foo@gmail.com'
@@ -122,7 +126,7 @@
                         },
                         tagIds: ['1', '3'],
                         source: {
-                            'duration': '2210'
+                            recordFileId: '3'
                         },
                         imageIds: ['2'],
                         creatorId: 'foo@gmail.com'

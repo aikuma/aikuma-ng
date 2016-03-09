@@ -146,7 +146,7 @@
                         if(keyIdx != -1)
                             keys.splice(keyIdx, 1);
                         else if(model[prop])
-                            return prop + ' is a required field for the dateModel: ' + type;
+                            return prop + ' is a required field for the dataModel: ' + type;
                     }
                     
                     if(keys.length > 0)
