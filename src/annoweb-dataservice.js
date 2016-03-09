@@ -133,8 +133,9 @@
             var validation = {
                 validateRequired: function(type, data) {
                     // Type check
-                    if(Object.keys(dataModel).indexOf(type) == -1)
-                        return false;
+                    if(Object.keys(dataModel).indexOf(type) == -1) {
+                        return 'The dataModel(' + type +') does not exist in the models: ' + Object.keys(dataModel);
+                    }
                     
                     // Key check
                     var model = dataModel[type];
@@ -145,13 +146,13 @@
                         if(keyIdx != -1)
                             keys.splice(keyIdx, 1);
                         else if(model[prop])
-                            return false;
+                            return prop + ' is a required field for the dateModel: ' + type;
                     }
                     
                     if(keys.length > 0)
-                        return false;
+                        return keys + ' are not the possible fields for the dataModel: ' + type;
                     else
-                        return true;
+                        return '';
                 },
                 validateType: function(type) {
                     return ([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE].indexOf(type) != -1);
@@ -187,8 +188,10 @@
                 set: function(type, id, data, store) {
                     data['_ID'] = id;
                     data.lastModified = Date.now();
-                    if(!validation.validateRequired(type, data)) {
-                        throw 'Validation Error';
+                    
+                    var msg = validation.validateRequired(type, data);
+                    if(msg) {
+                        throw 'Validation Error: ' + msg;
                     }
                     return store.upsert(data);
                 },
@@ -556,7 +559,7 @@
             
             service.getLanguages = function() {
                 return langDefer.promise;
-            }
+            };
             
             return service;
 
