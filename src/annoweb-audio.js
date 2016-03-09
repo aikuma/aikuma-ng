@@ -170,7 +170,7 @@
                 sessionData.names = vm.selectedTitles;
                 sessionData.creatorId = loginService.getLoggedinUserId();
                 sessionData.source = {
-                    recordingFileId: fileObjId,
+                    recordFileId: fileObjId,
                     created: Date.now(),
                     duration: vm.recordDurMsec,
                     langIds: vm.selectedLanguages.map(function(lang) { return lang.id; })
