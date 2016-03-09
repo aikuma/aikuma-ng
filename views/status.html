@@ -29,7 +29,7 @@
                 </div>
             </section>
 
-            <ng-player wave-color="#4FC3F7" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-player>
+            <ng-player source="{{sCtrl.audioSourceUrl}}" wave-color="#4FC3F7" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-player>
 
             <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
                 <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
@@ -42,9 +42,9 @@
             <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
 
             <md-card-actions layout="row" layout-align="end center">
-                <md-button aria-label="Upload new image" ng-click="sCtrl.uploadNewImage()">
+                <label class="md-button" aria-label="Upload new image" for="image-input">
                     <md-icon md-svg-icon="file:file_upload"></md-icon>Upload
-                </md-button>
+                </label>
                 <md-button aria-label="Previous image" ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
                     <md-icon  md-svg-icon="av:skip_previous"></md-icon>
                 </md-button>
@@ -66,5 +66,8 @@
     <p></p>
 
     <ng-annotation-list user-id="1" session-id="1"></ng-annotation-list>
+    
+    
+    <input id="image-input" type="file" file-model="imageFile" accept="image/*" style="display:none;" >
 
 </md-content>
