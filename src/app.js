@@ -44,6 +44,12 @@
                     toolfontsize: '14',
                     toolshort: '简体',
                     name:'CHINESE_SIMP'
+                },
+                {
+                    code: 'ko',
+                    toolfontsize: '14',
+                    toolshort: '한글',
+                    name: 'KOREAN'
                 }]
             })
         .config(['$translateProvider', function ($translateProvider) {

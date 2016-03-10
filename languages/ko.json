@@ -1,0 +1,22 @@
+{
+  "ENGLISH": "영어",
+  "CHINESE_TRAD": "중국어 번체",
+  "CHINESE_SIMP": "중국어 간체",
+  "TEST": "테스트!",
+  "LANGUAGE": "언어",
+  "HOME": "홈",
+  "WELCOME": "환영합니다",
+  "NAV_LOGAS": "로그인: ",
+  "NAV_LOGIN": "로그인!",
+  "NAV_LOGOUT": "로그아웃",
+  "NAV_HELP": "시작하기",
+  "NAV_OPENF": "파일 가져오기",
+  "NAV_RECORD": "새로 녹음하기",
+  "NAV_SHARE": "공유하기",
+  "NAV_SETTINGS": "설정",
+  "NAV_CHANGES": "변경기록",
+  "NAV_BUGREP": "버그 리포트",
+  "ANONYMOUS": "익명",
+  "HOME_ADDNEW": "새로운 세션 만들기",
+  "HOME_LASTMODIFIED": "마지막 수정날짜"
+}
