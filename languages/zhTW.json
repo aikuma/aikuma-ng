@@ -1,0 +1,22 @@
+{
+  "ENGLISH": "英文",
+  "CHINESE_TRAD": "繁體中文",
+  "CHINESE_SIMP": "簡體中文",
+  "TEST": "這是個試驗!",
+  "LANGUAGE": "語言",
+  "HOME": "主頁",
+  "WELCOME": "歡迎回來",
+  "NAV_LOGAS": "登錄為",
+  "NAV_LOGIN": "登錄!",
+  "NAV_LOGOUT": "登出",
+  "NAV_HELP": "入門解釋",
+  "NAV_OPENF": "打開文件",
+  "NAV_RECORD": "新紀錄",
+  "NAV_SHARE": "分享",
+  "NAV_SETTINGS": "設置面板",
+  "NAV_CHANGES": "版本更改筆記",
+  "NAV_BUGREP": "報告錯誤",
+  "ANONYMOUS": "匿名人士",
+  "HOME_ADDNEW": "添加一个新的项目",
+  "HOME_LASTMODIFIED": "上一次更改"
+}

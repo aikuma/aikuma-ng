@@ -1,0 +1,22 @@
+{
+  "ENGLISH": "英文",
+  "CHINESE_TRAD": "繁体中文",
+  "CHINESE_SIMP": "简体中文",
+  "TEST": "这是一个试验!",
+  "LANGUAGE": "语言",
+  "HOME": "主頁",
+  "WELCOME": "欢迎回来",
+  "NAV_LOGAS": "登录为",
+  "NAV_LOGIN": "登录!",
+  "NAV_LOGOUT": "登出",
+  "NAV_HELP": "入门解释",
+  "NAV_OPENF": "打开文件",
+  "NAV_RECORD": "新纪录",
+  "NAV_SHARE": "分享",
+  "NAV_SETTINGS": "设置面板",
+  "NAV_CHANGES": "版本更改笔记",
+  "NAV_BUGREP": "报告错误",
+  "ANONYMOUS": "匿名人士",
+  "HOME_ADDNEW": "添加一個新的項目",
+  "HOME_LASTMODIFIED": "上一次更改"
+}

@@ -1,41 +1,26 @@
 <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-
     <header class="nav-header">
-
-            <div layout="column" layout-align="center center">
-
-<!--            <div><A HREF="#/"><md-icon md-svg-icon="action:translate" style="width:64px;height:64px;color: black;"></md-icon></A></div>
-            <div><span style="color: black;">nnoweb</span></div>-->
+        <div layout="column" layout-align="center center">
 
             <img flex width="200" height="200" src="img/worldvoices.svg"/>
-            <span flex class="md-subtitle inset" style="color:black">Logged in as <i>{{navCtrl.username}}.</i></span>
-          </div>
-
+            <span flex class="md-subtitle inset" style="color:black">{{"NAV_LOGAS" | translate}} <i>{{navCtrl.username}}</i>.</span>
+        </div>
     </header>
-
-        <md-button ng-if="!navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.login()">
-            <md-icon class="inset animated infinite rubberBand" md-svg-icon="social:person_outline"></md-icon>
-            <span flex>Log In!</span>
-        </md-button>
-        <md-button ng-if="navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.logout()">
-            <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
-            <span flex>Log Out</span>
-        </md-button>
-        <!--
-        <md-button ng-repeat="item in navCtrl.menu" class="fullwidth" ng-click="navCtrl.changeState(item.state)">
-            <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
-            <span flex>{{item.title}}</span>
-        </md-button>-->
-        <label ng-repeat="item in navCtrl.menu" class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
-            <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
-            <span flex>{{item.title}}</span>
-        </label>
-
+    <md-button ng-if="!navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.login()">
+        <md-icon class="inset animated infinite rubberBand" md-svg-icon="social:person_outline"></md-icon>
+        <span flex>{{'NAV_LOGIN' | translate}}</span>
+    </md-button>
+    <md-button ng-if="navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.logout()">
+        <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
+        <span flex>{{'NAV_LOGOUT' | translate}}</span>
+    </md-button>
+    <label ng-repeat="item in navCtrl.menu" class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
+        <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
+        <span flex>{{item.title | translate}}</span>
+    </label>
     <div style="position: absolute;bottom: 10px;padding-left: 10px;">
         <span class="md-caption"><i>{{navCtrl.versionString}}</i></span>
     </div>
-    
     <input id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >
-
 </md-sidenav>
 

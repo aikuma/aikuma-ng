@@ -6,11 +6,10 @@
     angular
         .module('annoweb-viewcontrollers', [])
 
-        // removed dataService, unclear what role Firebase will play
-        //.controller('homeController', ['$location', 'dataService', 'loginService', function($location, dataService, loginService) {
-        .controller('homeController', ['$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function($timeout, $scope, $location, dataService, loginService, $route) {
+        .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
             var vm = this;
             vm.currentUserName = 'Unknown user';
+            vm.foo = false;
 
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
 
@@ -37,7 +36,7 @@
                     $route.reload();
                 }, 1000);
             };
-           
+
             vm.loadMockData = function() {
                 var mockUserData = {
                     names: ['Mat Bettinson', '茂修'],

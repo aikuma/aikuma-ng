@@ -68,7 +68,29 @@
                 controller: playerController,
                 controllerAs: 'pCtrl'
             };
+        })
+        .directive("ngTopbar", function() {
+            return {
+                restrict: "E",
+                scope: {
+                    source: '@'
+                },
+                templateUrl: "views/templates/toolbar-template.html",
+                controller: topbarController,
+                controllerAs: 'tbCtrl'
+            };
         });
+
+        var topbarController = function ($scope, $translate, config) {
+            var vm = this;
+            vm.languages = config.languages;
+            vm.open = false;
+            vm.changeLang = function(lang) {
+                console.log('changing to',lang);
+                $translate.use(lang);
+            };
+        };
+        topbarController.$inject = ['$scope', '$translate', 'config'];
 
         var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
             var vm = this;
@@ -90,43 +112,43 @@
             vm.menu = [
                 {
                     class : '',
-                    title: 'Getting started',
+                    title: 'NAV_HELP',
                     icon: 'action:help',
                     state: 'help'
                 },
                 {
                     class : '',
-                    title: 'Open File',
+                    title: 'NAV_OPENF',
                     icon: 'file:folder_open',
                     state: 'import'
                 },
                 {
                     class : '',
-                    title: 'Record',
+                    title: 'NAV_RECORD',
                     icon: 'av:mic',
                     state: 'new'
                 },
                 {
                     class : '',
-                    title: 'Share',
+                    title: 'NAV_SHARE',
                     icon: 'social:share',
                     state: 'share'
                 },
                 {
                     class : '',
-                    title: 'Settings',
+                    title: 'NAV_SETTINGS',
                     icon: 'action:settings',
                     state: 'settings'
                 },
                 {
                     class : '',
-                    title: 'Changes',
+                    title: 'NAV_CHANGES',
                     icon: 'action:change_history',
                     state: 'changes'
                 },
                 {
                     class : '',
-                    title: 'Bug Report',
+                    title: 'NAV_BUGREP',
                     icon: 'action:bug_report',
                     state: 'reportbug'
                 }

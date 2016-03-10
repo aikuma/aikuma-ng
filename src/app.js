@@ -6,7 +6,8 @@
             'ngMaterial',
             'annoweb-wavesurfer',       // the wavesurfer directive
             'annoweb-dialog',           // dialog and alert service
-             //'annoweb-service',          // old AnnowebService - needs to be removed
+             //'annoweb-service',       // old AnnowebService - needs to be removed (it should be removed when the files are removed)
+            'pascalprecht.translate',   // localization
             'annoweb-experimental',     // Directives being tested before replacing old versions
             'annoweb-newservice',       // new AnnowebService and mock data service
             'annoweb-annotation',       // directive and controller for annotation UI
@@ -24,8 +25,36 @@
         .constant('config', {
             appName: 'Annoweb',
             appVersion: 'alpha 17',
-            sampleRate: 16000
+            sampleRate: 16000,
+            languages: [
+                {
+                    code:'en',
+                    toolfontsize: '18',
+                    toolshort: 'EN',
+                    name:'ENGLISH'
+                },
+                {
+                    code:'zhTW',
+                    toolfontsize: '14',
+                    toolshort: '繁體',
+                    name:'CHINESE_TRAD'
+                },
+                {
+                    code:'zhCN',
+                    toolfontsize: '14',
+                    toolshort: '简体',
+                    name:'CHINESE_SIMP'
+                }]
             })
+        .config(['$translateProvider', function ($translateProvider) {
+            // add translation table
+            $translateProvider.useStaticFilesLoader({
+                prefix: 'languages/',
+                suffix: '.json'
+            });
+            $translateProvider.preferredLanguage('en');
+            $translateProvider.useSanitizeValueStrategy('escaped');
+        }])
         .config(['$mdIconProvider', function($mdIconProvider) {
             $mdIconProvider
                 .iconSet('social','img/icons/sets/social-icons.svg', 24)

@@ -1,0 +1,23 @@
+{
+  "ENGLISH": "English",
+  "CHINESE_TRAD": "Traditional Chinese",
+  "CHINESE_SIMP": "Simplified Chinese",
+  "TEST": "This is a test!",
+  "LANGUAGE": "Language",
+  "HOME": "Home",
+  "WELCOME": "Welcome back",
+  "NAV_LOGAS": "Logged in as",
+  "NAV_LOGIN": "Log in!",
+  "NAV_LOGOUT": "Log out",
+  "NAV_HELP": "Getting started",
+  "NAV_OPENF": "Open file",
+  "NAV_RECORD": "Record New",
+  "NAV_SHARE": "Share",
+  "NAV_SETTINGS": "Settings",
+  "NAV_CHANGES": "Changes",
+  "NAV_BUGREP": "Report Bug",
+  "ANONYMOUS": "Anonymous",
+  "HOME_ADDNEW": "Add new session",
+  "HOME_LASTMODIFIED": "Last modified"
+}
+
