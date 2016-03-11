@@ -1,23 +1,17 @@
-<md-toolbar>
-    <div class="md-toolbar-tools">
-        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp {{sCtrl.sessionData.names[0]}}</span>
-    </div>
-</md-toolbar>
-<md-content class="md-padding">
+<ng-topbar session="{{sCtrl.sessionData.names[0]}}"></ng-topbar>
 
+<md-content class="md-padding">
     <div flex layout="row" layout="space-between">
         <div flex>
             <div layout="row" layout-align="start center">
                 <span class="md-body-2"><md-datepicker ng-model="sCtrl.myDate" md-placeholder="Enter date"></md-datepicker></span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:location_on"></md-icon>
                     {{sCtrl.location}}</span>
-
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>36 seconds.</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>English.</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>2 annotations (1 transcription, 1 translation).</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
-
             <section class="inset">
                 <div layout="row">
                     <div ng-repeat="type in sCtrl.olactypes">
@@ -28,9 +22,7 @@
                     </div>
                 </div>
             </section>
-
             <ng-player source="{{sCtrl.audioSourceUrl}}" wave-color="#4FC3F7" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-player>
-
             <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
                 <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
                 Add respeaking

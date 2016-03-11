@@ -18,6 +18,15 @@
   "NAV_BUGREP": "Report Bug",
   "ANONYMOUS": "Anonymous",
   "HOME_ADDNEW": "Add new session",
-  "HOME_LASTMODIFIED": "Last modified"
+  "HOME_LASTMODIFIED": "Last modified",
+  "PROFILE_EDIT": "Edit Profile",
+  "BUTTON_OK": "OK",
+  "BUTTON_CANCEL": "Cancel",
+  "ACTIVITY_RESPEAK": "Respeak",
+  "ACTIVITY_TRANSLATE": "Translate",
+  "ACTIVITY_CHANGES": "Changes",
+  "ACTIVITY_ANNOTATE": "Annotate",
+  "ACTIVITY_HELP": "Help",
+  "ACTIVITY_RECORD": "Record New"
 }
 

@@ -18,5 +18,14 @@
   "NAV_BUGREP": "报告错误",
   "ANONYMOUS": "匿名人士",
   "HOME_ADDNEW": "添加一個新的項目",
-  "HOME_LASTMODIFIED": "上一次更改"
+  "HOME_LASTMODIFIED": "上一次更改",
+  "PROFILE_EDIT": "Edit Profile",
+  "BUTTON_OK": "OK",
+  "BUTTON_CANCEL": "Cancel",
+  "ACTIVITY_RESPEAK": "Respeak",
+  "ACTIVITY_TRANSLATE": "Translate",
+  "ACTIVITY_CHANGES": "Changes",
+  "ACTIVITY_ANNOTATE": "Annotate",
+  "ACTIVITY_HELP": "Help",
+  "ACTIVITY_RECORD": "Record New"
 }

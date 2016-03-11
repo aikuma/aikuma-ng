@@ -48,8 +48,25 @@
                         .textContent(toasttext)
                 );
             };
+            factory.profile = function(ev) {
+                $mdDialog.show({
+                    controller: profileController,
+                    controllerAs: 'pdCtrl',
+                    templateUrl: 'views/templates/dialog-profile.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true
+                });
+             };
             return factory;
         }]);
+
+    var profileController = function($mdDialog, dataService) {
+        var vm = this;
+        vm.close = function() {$mdDialog.hide();};
+
+    };
+    profileController.$inject = ['$mdDialog', 'dataService'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, userId, sessionId, annoService) {
         var self = this;

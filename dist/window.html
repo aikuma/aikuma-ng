@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="src/app.css">
     <link rel="stylesheet" href="src/fonts.css">
     <!-- endinject -->
-
     <!-- bower:js -->
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-animate/angular-animate.js"></script>
@@ -35,8 +34,11 @@
     <script src="bower_components/Keypress/keypress-2.1.3.min.js"></script>
     <script src="bower_components/ng-prettyjson/src/ng-prettyjson.js"></script>
     <script src="bower_components/ng-prettyjson/src/ng-prettyjson-tmpl.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.js"></script>
+    <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
     <!-- endbower -->
     <!-- inject:js -->
+    <script src="src/angular-experimental.js"></script>
     <script src="src/angular-file-model.js"></script>
     <script src="src/annoweb-annotation.js"></script>
     <script src="src/annoweb-audio.js"></script>
@@ -55,9 +57,7 @@
     <title>Annoweb</title>
 </head>
 <body layout="row">
-
 <ng-navbar layout="row"></ng-navbar>
-
 <div flex layout="column" >
     <md-content flex class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
         <md-whiteframe flex class="md-whiteframe-3dp" layout layout-align="center center">
@@ -67,7 +67,5 @@
         </md-whiteframe>
     </md-content>
 </div>
-
 </body>
 </html>
-

@@ -73,7 +73,9 @@
             return {
                 restrict: "E",
                 scope: {
-                    source: '@'
+                    session: '@',
+                    sessionId: '@',
+                    activity: '@'
                 },
                 templateUrl: "views/templates/toolbar-template.html",
                 controller: topbarController,
@@ -81,23 +83,24 @@
             };
         });
 
-        var topbarController = function ($scope, $translate, config) {
+        var topbarController = function ($scope, $translate, config, AnnowebDialog) {
             var vm = this;
             vm.languages = config.languages;
             vm.open = false;
             vm.changeLang = function(lang) {
-                console.log('changing to',lang);
                 $translate.use(lang);
             };
+            vm.openProfile = function(ev) {
+                AnnowebDialog.profile();
+            };
         };
-        topbarController.$inject = ['$scope', '$translate', 'config'];
+        topbarController.$inject = ['$scope', '$translate', 'config', 'AnnowebDialog'];
 
         var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
             var vm = this;
             vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
             vm.addAnno = function (ev) {
                 AnnowebDialog.newAnno(ev, $attrs.userId,$attrs.sessionId);
-
             };
 
 
@@ -106,6 +109,7 @@
 
         var navController = function (config, $scope, $location, loginService, fileService) {
             var vm = this;
+            vm.languages = config.languages;
             vm.username = 'anonymous';
             vm.getLoginStatus = loginService.getLoginStatus;
             vm.versionString = config.appName+' '+config.appVersion;

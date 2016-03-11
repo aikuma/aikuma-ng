@@ -23,7 +23,7 @@
             'ngPrettyJson'              // for debugging
         ])
         .constant('config', {
-            appName: 'Annoweb',
+            appName: 'Aikuma-ng',
             appVersion: 'alpha 17',
             sampleRate: 16000,
             languages: [
@@ -47,7 +47,7 @@
                 },
                 {
                     code: 'ko',
-                    toolfontsize: '14',
+                    toolfontsize: '16',
                     toolshort: '한글',
                     name: 'KOREAN'
                 }]

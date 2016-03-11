@@ -63,6 +63,8 @@ gulp.task('deploy', ['cleandist'], function () {
         .pipe(gulp.dest('dist'));
     gulp.src('./fonts/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
+    gulp.src('./languages/**/*', {base: './'})
+        .pipe(gulp.dest('dist'));
     gulp.src('./icons/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
     gulp.src('./_locales/**/*', {base: './'})

@@ -1,9 +1,11 @@
-<md-toolbar>
-    <div class="md-toolbar-tools">
-        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp Changes</span>
-    </div>
-</md-toolbar>
+<ng-topbar activity="{{'ACTIVITY_CHANGES' | translate}}"></ng-topbar>
+
 <md-content class="md-padding">
+<div class="row">
+    <h4 class='md-title'>11/3/2016</h4>
+    <p class="md-body-1">Alpha 18. Renamed to Aikuma(ng). Top bar directive reused across all views. Placeholder dialog for user profile editor added to toolbar.
+    </p>
+</div>
 <div class="row">
     <h4 class='md-title'>9/3/2016</h4>
     <p class="md-body-1">Alpha 17. Minimalist redesign of status page. OLAC discourse added. Metadata directive added (not finished). Aikuma logo. Merged Sanga's new session features. Added global configuration for app name and sample rate (set to 16000). Removed keyboard shortcuts from new recording. Rework of recorder based on review, clear and save choices. Review just plays directly instead of embedding audio. Added wavesurfer display to the session view. Fixed bugs with passing audio back from 'new'. New person selector directive that allows for adding unknown people, also fixes bugs with md-contact-chips.

@@ -1,10 +1,9 @@
-<md-toolbar>
-    <div class="md-toolbar-tools">
-        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp <A HREF="#/session/{{rsCtrl.sessionData._ID}}">{{rsCtrl.sessionData.names[0]}}</A> &nbsp;&gt;&nbsp Respeak</span>
-    </div>
-</md-toolbar>
+<ng-topbar session="{{rsCtrl.sessionData.names[0]}}" session-id="{{rsCtrl.sessionData._ID}}" activity="ACTIVITY_RESPEAK"></ng-topbar>
+
 <md-content class="md-padding" md-scroll-y>
 
     <ng-respeak source-id="1"></ng-respeak>
 
 </md-content>
+
+{{rsCtrl.sessionData._ID}}

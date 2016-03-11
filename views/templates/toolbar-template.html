@@ -1,19 +1,28 @@
 <md-toolbar>
-    <div class="md-toolbar-tools" layout="row" layout-align="start center">
-        <span class="md-headline">{{'HOME' | translate}}</span>
+    <div class="md-toolbar-tools" layout="row" layout-align="start center" style="position:absolute">
+        <span ng-if="!session && !activity" class="md-headline">{{'HOME' | translate}}</span>
+        <span ng-if="session || activity" class="md-headline"><A HREF="#/">{{'HOME' | translate}}&nbsp;&gt;&nbsp</A></span>
+        <span ng-if="session && !sessionId" class="md-headline">{{session}}</span>
+        <span ng-if="session && sessionId" class="md-headline"><A HREF="#/session/{{sessionId}}">{{session}}</A>&nbsp;&gt;&nbsp</span>
+        <span ng-if="activity" class="md-headline"> {{activity | translate}}</span>
 
-        <md-fab-speed-dial md-direction="down" class="md-scale md-fab-top-right" md-open="tbCtrl.open"
-                           ng-mouseenter="tbCtrl.open=true" ng-mouseleave="tbCtrl.open=false">
-            <md-fab-trigger>
-                <md-icon md-svg-icon="action:language"></md-icon>
-            </md-fab-trigger>
-            <md-fab-actions>
-                <md-button ng-repeat="lang in tbCtrl.languages" aria-label="{{lang.name | translate}}" class="md-fab md-raised md-mini" ng-click="tbCtrl.changeLang(lang.code)">
-                    <span class="md-title" style="font-size:{{lang.toolfontsize}}px;font-weight: 700;">{{lang.toolshort}}</span>
-                </md-button>
-             </md-fab-actions>
-        </md-fab-speed-dial>
+            <md-fab-speed-dial md-direction="down" md-open="tbCtrl.open" class="md-scale toolbar-speeddial"
+                               ng-mouseenter="tbCtrl.open=true" ng-mouseleave="tbCtrl.open=false">
+                <md-fab-trigger>
+                    <md-icon class="md-toolbar-avatar" md-svg-icon="action:language"></md-icon>
+                </md-fab-trigger>
+                <md-fab-actions>
+                    <md-button ng-repeat="lang in tbCtrl.languages" aria-label="{{lang.name | translate}}" class="md-fab md-raised md-mini" ng-click="tbCtrl.changeLang(lang.code)">
+                        <span class="md-title" style="font-size:{{lang.toolfontsize}}px;font-weight: 700;">{{lang.toolshort}}</span>
+                    </md-button>
+                 </md-fab-actions>
+            </md-fab-speed-dial>
+
+        <md-button md-no-ink md-no-focus-style class="toolbar-profile" ng-click="tbCtrl.openProfile()">
+        <md-icon class="md-toolbar-avatar" md-svg-icon="social:person" ></md-icon>
+        </md-button>
 
     </div>
 </md-toolbar>
+
 

@@ -1,0 +1,20 @@
+<md-dialog>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{"PROFILE_EDIT" | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="pdCtrl.close()">
+                    <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content style="max-width:800px;max-height:810px;min-width:700px;min-height:300px;">
+            <p>Do stuff here</p>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="">{{"BUTTON_OK" | translate}}</md-button>
+            <md-button ng-click="" style="margin-right:20px;">{{"BUTTON_CANCEL" | translate}}</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

@@ -169,3 +169,29 @@ md-sidenav {
     background-repeat: no-repeat no-repeat;
     pointer-events: none;
 }
+
+.md-toolbar-avatar {
+    border-radius: 50%;
+    padding: 0px;
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    fill: #757575;
+}
+
+.toolbar-speeddial {
+    top: 13px;
+    right: 20px;
+    bottom: auto;
+    left: auto;
+    position: absolute;
+}
+
+.toolbar-profile {
+    top: 13px;
+    right: 80px;
+    bottom: auto;
+    left: auto;
+    position: absolute;
+}
+
