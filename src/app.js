@@ -24,7 +24,7 @@
         ])
         .constant('config', {
             appName: 'Aikuma-ng',
-            appVersion: 'alpha 17',
+            appVersion: 'alpha 18',
             sampleRate: 16000,
             languages: [
                 {

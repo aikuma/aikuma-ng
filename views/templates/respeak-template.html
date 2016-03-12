@@ -4,18 +4,19 @@
 </div>
 
 <div layout="row">
-    <div layout="column" flex="50" >
-        <md-button ng-disabled="rCtrl.segments.length == 0 || rCtrl.playrecturn!=='play' || rCtrl.isplaying" class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
-            <md-icon md-svg-icon="av:replay"></md-icon>
+    <div layout=row" flex="50" >
+
+        <md-button flex ng-disabled="rCtrl.playrecturn!=='play'" class="md-raised ng-class:{'nowplaying': rCtrl.isplaying }" aria-label="Play" ng-click="rCtrl.save()" >
+            <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
+            <span flex>Play</span>
+        </md-button>
+        <md-button flex ng-disabled="rCtrl.segments.length == 0 || rCtrl.playrecturn!=='play' || rCtrl.isplaying" class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
+            <md-icon md-svg-icon="av:replay" style="width:50px;height:50px"></md-icon>
             <span flex>Redo</span>
         </md-button>
 
-        <md-button ng-disabled="rCtrl.playrecturn!=='play'" class="md-raised ng-class:{'nowplaying': rCtrl.isplaying }" aria-label="Play" ng-click="rCtrl.save()" >
-            <md-icon md-svg-icon="av:play_arrow"></md-icon>
-            <span flex>Play</span>
-        </md-button>
-        <md-button ng-disabled="rCtrl.playrecturn!=='record'" class="md-raised ng-class:{'nowrecording': rCtrl.isrecording}" aria-label="Save" ng-click="rCtrl.save()" >
-            <md-icon md-svg-icon="av:mic"></md-icon>
+        <md-button flex ng-disabled="rCtrl.playrecturn!=='record'" class="md-raised ng-class:{'nowrecording': rCtrl.isrecording}" aria-label="Save" ng-click="rCtrl.save()" >
+            <md-icon md-svg-icon="av:mic" style="width:50px;height:50px"></md-icon>
             <span flex>Record</span>
         </md-button>
 

@@ -81,7 +81,22 @@
                 controller: topbarController,
                 controllerAs: 'tbCtrl'
             };
-        });
+        })
+        // This is bound to the <body> element to pass key events to the keyService. Intended for low-level handling so
+        // we can detect keys held-down (which angular hotkeys doesn't do) and left/right shift/ctrl which no key library does!
+        .directive('keyFocus', ['keyService', function(keyService){
+            return {
+                restrict: 'A',
+                link: function(scope, element, attr){
+                    element.bind('keydown', function(event) {
+                        if (!event.repeat) {keyService.handleKey(event);} // ignore repeated keys
+                    });
+                    element.bind('keyup', function(event) {
+                        keyService.handleKey(event);
+                    });
+                }
+            };
+        }]);
 
         var topbarController = function ($scope, $translate, config, AnnowebDialog) {
             var vm = this;

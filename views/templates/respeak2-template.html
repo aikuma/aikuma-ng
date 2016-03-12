@@ -1,0 +1,41 @@
+<div flex layout="column">
+    <div id="respeak-timeline" style="height:20px" layout-fill></div>
+    <div id="respeakPlayback"></div>
+</div>
+
+<div layout="row">
+
+    <div layout=row" flex="50" >
+        <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown='rCtrl.playDown()' ng-mouseup="rCtrl.playUp()">
+            <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
+            <span flex>{{"PLAY" | translate}}</span>
+        </md-button>
+        <md-button flex ng-disabled="rCtrl.regionList.length == 0" class="md-raised" aria-label="Reset" ng-click="rCtrl.redo()" >
+            <md-icon md-svg-icon="av:replay" style="width:50px;height:50px"></md-icon>
+            <span flex>{{"REDO" | translate}}</span>
+        </md-button>
+        <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'nowrecording': rCtrl.isRecording}" aria-label="Record" ng-mousedown='rCtrl.playDown()' ng-mouseup="rCtrl.playUp()" >
+            <md-icon md-svg-icon="av:mic" style="width:50px;height:50px"></md-icon>
+            <span flex>{{"RECORD" | translate}}</span>
+        </md-button>
+
+        <div ng-if="rCtrl.hasrecording()">
+            <audio controls ng-src="{{recording}}">
+            </audio>
+        </div>
+    </div>
+    <div flex="50" id="respeakRecord" class="respeakwavesurfer" ng-class="rCtrl.recordClass" style="position:relative">
+        <span class="centertextbox md-headline">{{rCtrl.helpText}}</span>
+    </div>
+
+</div>
+
+<md-button class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
+    <md-icon md-svg-icon="action:restore"></md-icon>
+    {{"RESET" | translate}}
+</md-button>
+
+<md-button class="md-raised" aria-label="Save" ng-click="rCtrl.save()" >
+    <md-icon md-svg-icon="content:save"></md-icon>
+    {{"SAVE" | translate}}
+</md-button>

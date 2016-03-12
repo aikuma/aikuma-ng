@@ -27,5 +27,10 @@
   "ACTIVITY_CHANGES": "Changes",
   "ACTIVITY_ANNOTATE": "Annotate",
   "ACTIVITY_HELP": "Help",
-  "ACTIVITY_RECORD": "Record New"
+  "ACTIVITY_RECORD": "Record New",
+  "PLAY": "",
+  "RECORD": "Record",
+  "REDO": "Redo",
+  "SAVE": "Save",
+  "RESET": "Reset"
 }

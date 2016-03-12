@@ -195,3 +195,12 @@ md-sidenav {
     position: absolute;
 }
 
+.centertextbox {
+    text-align: center;
+    margin: 0;
+    position: absolute;               /* 2 */
+    top: 50%;                         /* 3 */
+    transform: translate(0, -50%);
+    width:100%;
+}
+

@@ -5,7 +5,34 @@
     'use strict';
     angular
         .module('annoweb-newservice', [])
+        .factory('keyService', [function () {
+            var ser = {};
+            var subscribers = [];
+            ser.regKey= function(keypress,keypresstype, callback) {
+                subscribers.push({'keypress':keypress,'keypresstype':keypresstype, 'callback': callback});
+            };
+            ser.clearKey = function(keypress, keypresstype) {
+                var max = subscribers ? subscribers.length : 0;
+                for (var i = 0; i < max; i += 1) {
+                    if (subscribers[i].keypress == keypress && subscribers[i].keypresstype == keypresstype) {
+                        subscribers.splice(i, 1);
+                        break;
+                    }
+                }
+            };
+            ser.handleKey = function(ev) {
+                subscribers.forEach(function(sub){
+                    if (ev.type == sub.keypresstype && ev.keyCode == sub.keypress) {
+                        sub.callback(ev);
+                    }
+                });
+            };
+            ser.clearAll = function() {
+                subscribers = [];
+            };
 
+            return ser;
+        }])
         .factory('annoService', [function () {
             var ser = {};
             Papa.parse("extdata/iso-639-3_20160115.tab", {
