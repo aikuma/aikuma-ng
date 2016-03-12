@@ -6,7 +6,7 @@
 <div layout="row">
 
     <div layout=row" flex="50" >
-        <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown='rCtrl.playDown()' ng-mouseup="rCtrl.playUp()">
+        <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
             <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
             <span flex>{{"PLAY" | translate}}</span>
         </md-button>
@@ -14,7 +14,7 @@
             <md-icon md-svg-icon="av:replay" style="width:50px;height:50px"></md-icon>
             <span flex>{{"REDO" | translate}}</span>
         </md-button>
-        <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'nowrecording': rCtrl.isRecording}" aria-label="Record" ng-mousedown='rCtrl.playDown()' ng-mouseup="rCtrl.playUp()" >
+        <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'nowrecording': rCtrl.isRecording}" aria-label="Record" ng-mousedown="rCtrl.recDown()" ng-mouseup="rCtrl.recUp()" >
             <md-icon md-svg-icon="av:mic" style="width:50px;height:50px"></md-icon>
             <span flex>{{"RECORD" | translate}}</span>
         </md-button>
@@ -30,6 +30,19 @@
 
 </div>
 
+<md-content layout-padding>
+    <md-grid-list
+            md-cols-gt-md="12" md-cols="1" md-cols-md="1"
+            md-row-height-gt-md="1:1" md-row-height="1:1"
+            md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
+        <md-grid-tile ng-repeat="region in rCtrl.regionList">
+            <md-button class="md-raised" ng-click="rCtrl.playRegion($index)" >
+                {{$index+1}}
+            </md-button>
+        </md-grid-tile>
+    </md-grid-list>
+</md-content>
+
 <md-button class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
     <md-icon md-svg-icon="action:restore"></md-icon>
     {{"RESET" | translate}}
@@ -39,3 +52,6 @@
     <md-icon md-svg-icon="content:save"></md-icon>
     {{"SAVE" | translate}}
 </md-button>
+
+
+
