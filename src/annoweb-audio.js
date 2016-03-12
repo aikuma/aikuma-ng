@@ -8,6 +8,9 @@
         .directive('ngRecord', function() {
             return {
                 restrict: 'E',
+                scope: {
+                    userObj: '='
+                },
                 templateUrl: 'views/templates/record-template.html',
                 controller: newRecordDirectiveController,
                 controllerAs: 'nrCtrl'
@@ -24,6 +27,11 @@
         .directive("ngRespeak2", function() {
             return {
                 restrict: "E",
+                scope: {
+                    userObj: '=',
+                    sessionObj: '=',
+                    source: "@"
+                },
                 templateUrl: "views/templates/respeak2-template.html",
                 controller: respeak2DirectiveController,
                 controllerAs: 'rCtrl'
@@ -178,19 +186,14 @@
             createDownsampledLink(config.sampleRate, saveDownsampled);
 
             function saveDownsampled(url) {
-                var fileObjId;
                 recordUrl = url;
                 // This should all be in the data service. Too much logic here.
-                dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
-                    // Add fileObj to user metadata
-                    var fileObj = {
-                        url: recordUrl,
-                        type: vm.recordType
-                    };
-
-                    fileObjId = userObj.addUserFile(fileObj);
-                    return userObj.save();
-                }).then(function() {
+                var fileObj = {
+                    url: recordUrl,
+                    type: vm.recordType
+                };
+                var fileObjId = $scope.userObj.addUserFile(fileObj);
+                $scope.userObj.save().then(function() {
                     // Create new session metadata
                     var sessionData = {};
                     sessionData.names = vm.selectedTitles;
@@ -209,6 +212,7 @@
 
                     $location.path('session/'+sessionId);
                 });
+                    
             }
 
         };
@@ -550,7 +554,7 @@
             progressColor: '#999',
             cursorColor: '#999'
         });
-        wsPlayback.load('media/elan-example1.mp3');
+        wsPlayback.load($scope.source);
         // Register key bindings after wavesurfer is ready to play
         wsPlayback.on('ready', function() {
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys

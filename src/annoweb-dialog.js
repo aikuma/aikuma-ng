@@ -55,18 +55,36 @@
                     templateUrl: 'views/templates/dialog-profile.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
-                    clickOutsideToClose: true
+                    clickOutsideToClose: true,
+                    resolve: {
+                        userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                            return dataService.get('user', loginService.getLoggedinUserId());
+                        }]
+                    }
                 });
              };
             return factory;
         }]);
 
-    var profileController = function($mdDialog, dataService) {
+    var profileController = function($mdDialog, $scope, userObj) {
         var vm = this;
-        vm.close = function() {$mdDialog.hide();};
-
+        vm.namePlaceholder = 'Add names';
+        vm.nameSecPlaceholder = 'Add more';
+        vm.emailPlaceholder = 'Email';
+        
+        vm.userNames = userObj.data.names.slice();
+        vm.userEmail = userObj.data.email; 
+        
+        vm.save = function() {
+            userObj.data.names = vm.userNames;
+            userObj.data.email = vm.userEmail;
+            userObj.save();
+            $mdDialog.hide();
+        };
+        
+        vm.close = function() {$mdDialog.cancel();};
     };
-    profileController.$inject = ['$mdDialog', 'dataService'];
+    profileController.$inject = ['$mdDialog', '$scope', 'userObj'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, userId, sessionId, annoService) {
         var self = this;

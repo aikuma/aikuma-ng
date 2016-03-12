@@ -1,5 +1,5 @@
-<md-dialog>
-    <form>
+<md-dialog  style="max-width:800px;max-height:810px;min-width:700px;min-height:300px;">
+    <form name="userForm">
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <h2>{{"PROFILE_EDIT" | translate}}</h2>
@@ -9,12 +9,25 @@
                 </md-button>
             </div>
         </md-toolbar>
-        <md-dialog-content style="max-width:800px;max-height:810px;min-width:700px;min-height:300px;">
-            <p>Do stuff here</p>
+        <md-dialog-content>
+            <md-chips ng-model="pdCtrl.userNames"
+                      placeholder="{{pdCtrl.namePlaceholder}}"
+                      secondary-placeholder="{{pdCtrl.nameSecPlaceholder}}">
+            </md-chips>
+            <md-input-container md-no-float class="md-block">
+                <input name="email" ng-model="pdCtrl.userEmail" required 
+                       placeholder="{{pdCtrl.emailPlaceholder}}"
+                       minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                <div ng-messages="userForm.email.$error" role="alert">
+                    <div ng-show="userForm.email.$invalid">
+                        Your email must be between 10 and 100 characters long and look like an e-mail address.
+                    </div>
+                </div>
+            </md-input-container>
         </md-dialog-content>
         <md-dialog-actions layout="row">
-            <md-button ng-click="">{{"BUTTON_OK" | translate}}</md-button>
-            <md-button ng-click="" style="margin-right:20px;">{{"BUTTON_CANCEL" | translate}}</md-button>
+            <md-button ng-disabled="userForm.email.$invalid || pdCtrl.userNames.length == 0" ng-click="pdCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>
+            <md-button ng-click="pdCtrl.close()" style="margin-right:20px;">{{"BUTTON_CANCEL" | translate}}</md-button>
         </md-dialog-actions>
     </form>
 </md-dialog>

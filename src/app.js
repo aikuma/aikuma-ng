@@ -94,25 +94,73 @@
                     })
                     .when('/new', {
                         templateUrl: 'views/new.html',
-                        controller: 'newSessionController as nCtrl'
+                        controller: 'newSessionController as nCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if(userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }]
+                        }
                     })
                     .when('/session/:sessionId', {
                         templateUrl: 'views/status.html',
                         controller: 'statusController as sCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if(userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }],
+                            sessionObj: ['$route', 'dataService', function($route, dataService) {
+                                var sessionId = $route.current.params.sessionId;
+                                return dataService.get('session', sessionId);
+                            }]
+                        }
                     })
                     .when('/session/:sessionId/respeak', {
                         templateUrl: 'views/respeak.html',
                         controller: 'respeakController as rsCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if(userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }],
+                            sessionObj: ['$route', 'dataService', function($route, dataService) {
+                                var sessionId = $route.current.params.sessionId;
+                                return dataService.get('session', sessionId);
+                            }]
+                        }
+                    })
+                    .when('/session/:sessionId/annotate/:annoId', {
+                        templateUrl: 'views/annotate.html',
+                        controller: 'statusController as sCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if(userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }],
+                            sessionObj: ['$route', 'dataService', function($route, dataService) {
+                                var sessionId = $route.current.params.sessionId;
+                                return dataService.get('session', sessionId);
+                            }]
+                        }
                     })
                     .when('/changes', {
                         templateUrl: 'views/changes.html',
                     })
                     .when('/help', {
                         templateUrl: 'views/help.html'
-                    })
-                    .when('/session/:sessionId/annotate/:annoId', {
-                        templateUrl: 'views/annotate.html',
-                        controller: 'statusController as sCtrl'
                     })
                     .otherwise({
                         redirectTo: '/'
@@ -135,6 +183,21 @@
                 var secondaryStore = db.createObjectStore('secondary', {keyPath: '_ID'});
                 secondaryStore.createIndex('user_idx', 'userId');
                 secondaryStore.createIndex('item_idx', 'itemId');
+            });
+        }])
+        .run(['$rootScope', '$location', function($rootScope, $location) {
+            $rootScope.$on('$routeChangeStart', function(ev, dest) {
+                if(dest.authorize) {
+                    dest.resolve = dest.resolve || {};
+                    dest.resolve.auth = ['loginService', function(loginService) {
+                        if(loginService.getLoginStatus()) {
+                            return true;
+                        } else {
+                            $location.path('/');
+                            throw 'Authorization Error';
+                        }
+                    }];
+                }
             });
         }]);
 })();
