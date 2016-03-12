@@ -19,7 +19,7 @@
             </md-fab-speed-dial>
 
         <md-button md-no-ink md-no-focus-style aria-label="open profile" class="toolbar-profile" ng-click="tbCtrl.openProfile()">
-        <md-icon class="md-toolbar-avatar" md-svg-icon="social:person" ></md-icon>
+            <md-icon ng-if="tbCtrl.getLoginStatus()" class="md-toolbar-avatar" md-svg-icon="social:person" ></md-icon>
         </md-button>
 
     </div>

@@ -38,7 +38,7 @@
             }
             
             var service = {};
-
+            
             service.loginUser = function(userId) {
                 dataService.get(USER_TYPE, userId).then(function(userObj) {
                     loginStatus = true;
@@ -62,7 +62,10 @@
             };
             
             service.getLoggedinUserId = function() {
-                return currentUserData._ID;
+                if(currentUserData)
+                    return currentUserData._ID;
+                else
+                    return null;
             };
 
             return service;
@@ -90,6 +93,7 @@
                     roles: false,   // object of array
                     tagIds: false,  // array
                     imageIds: false,  // object of array
+                    segments: false,  // object of array
                     
                     userId: true,
                 },
@@ -98,7 +102,9 @@
                     names: true,    // array
                     type: true,
                     lastModified: true,
+                    source: true,
                     creatorId: true,
+                    segment: true,
                     details: false,
                     
                     userId: true,
@@ -121,6 +127,10 @@
                     langIds: true,
                     created: true,
                     duration: true
+                },
+                segment: {
+                    sourceSegId: true,
+                    segArray: true
                 },
                 file: {
                     _ID: true,
@@ -174,7 +184,7 @@
                 save: function(type) {
                     return function() {
                         if(type === USER_TYPE) {
-                            return service.setUser(this.data);
+                            return service.updateUser(this.data._ID, this.data);
                         } else if(type === SESSION_TYPE) {
                             return service.updateSession(this.data._ID, this.data);
                         } else if(type === SECONDARY_TYPE) {
@@ -205,7 +215,8 @@
                
             var service = {};
             service.setUser = function(data) {
-                var id = data.email;
+                //var id = data.email;
+                var id = AnnowebUtils.createRandomAlphabets(12);
                 
                 return $indexedDB.openStore(USER_TYPE, function(store) {
                    return dbOps.set(USER_TYPE, id, data, store); 
@@ -237,6 +248,14 @@
                     });
                 });
             };
+            
+            service.updateUser = function(userId, data) {
+                return $indexedDB.openStore(USER_TYPE, function(store) {
+                    return dbOps.get(null, userId, store).then(function() {     // validation
+                        return dbOps.set(USER_TYPE, userId, data, store);
+                    });
+                });
+            }
             
             service.updateSession = function(sessionId, data) {
                 return $indexedDB.openStore(SESSION_TYPE, function(store) {

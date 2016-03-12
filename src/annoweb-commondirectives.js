@@ -17,8 +17,8 @@
             return {
                 restrict: "E",
                 scope: {
-                    userId: '@',
-                    sessionId: '@',
+                    userObj: '=',
+                    sessionObj: '=',
                     role: '@'
                 },
                 templateUrl: "views/templates/user-selector-template.html",
@@ -30,8 +30,8 @@
             return {
                 restrict: "E",
                 scope: {
-                    userId: '@',
-                    sessionId: '@'
+                    userObj: '=',
+                    sessionObj: '='
                 },
                 templateUrl: "views/templates/tag-selector-template.html",
                 controller: tagSelectorController,
@@ -98,10 +98,11 @@
             };
         }]);
 
-        var topbarController = function ($scope, $translate, config, AnnowebDialog) {
+        var topbarController = function ($scope, $translate, config, loginService, AnnowebDialog) {
             var vm = this;
             vm.languages = config.languages;
             vm.open = false;
+            vm.getLoginStatus = loginService.getLoginStatus;
             vm.changeLang = function(lang) {
                 $translate.use(lang);
             };
@@ -109,7 +110,7 @@
                 AnnowebDialog.profile();
             };
         };
-        topbarController.$inject = ['$scope', '$translate', 'config', 'AnnowebDialog'];
+        topbarController.$inject = ['$scope', '$translate', 'config', 'loginService', 'AnnowebDialog'];
 
         var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
             var vm = this;
@@ -128,6 +129,15 @@
             vm.username = 'anonymous';
             vm.getLoginStatus = loginService.getLoginStatus;
             vm.versionString = config.appName+' '+config.appVersion;
+            
+            vm.login = function() {
+                
+            };
+            
+            vm.logout = function() {
+                loginService.logout();
+            };
+            
             vm.menu = [
                 {
                     class : '',
@@ -192,38 +202,33 @@
         var vm = this;
         
         // load all user data from the service and create an array of contacts needed for md-contact-chips
-        var userdata;
-        dataService.get('user', $scope.userId).then(function(userObj) {
-            userdata = userObj.data;
-            vm.allPeople = loadPeople(userdata.people);
-            vm.personQuerySearch = function(query) {
-                var results = query ?
-                    vm.allPeople.filter(createFilterForPerson(query)) : [];
-                return results;
-            };
-        
-            // load the requested session from the service and get the current users
-            return dataService.get('session', $scope.sessionId);
-            
-        }).then(function(sessionObj) {
-            var selectedIds = [];
-            if(sessionObj.data.roles) {
-                selectedIds = sessionObj.data.roles[$scope.role];
-            }
-            
-            // onload populate the chips selector with existing (based on ids)
-            $scope.selectedPeople = _.map(selectedIds, function(id) {
-                return makePersonObj(userdata.people,id);
-            });
-            
-            // ordinary watch and ng-change don't work.
-            $scope.$watchCollection('selectedPeople', function() {
-                var idList = _.pluck($scope.selectedPeople, 'id');
-                if(!sessionObj.data.roles)
-                    sessionObj.data.roles = {};
-                sessionObj.data.roles[$scope.role] = idList;
-                sessionObj.save();
-            });
+        var userdata = $scope.userObj.data;
+        vm.allPeople = loadPeople(userdata.people);
+        vm.personQuerySearch = function(query) {
+            var results = query ?
+                vm.allPeople.filter(createFilterForPerson(query)) : [];
+            return results;
+        };
+
+        // load the requested session from the service and get the current users
+        var sessionObj = $scope.sessionObj,
+            selectedIds = [];
+        if(sessionObj.data.roles) {
+            selectedIds = sessionObj.data.roles[$scope.role];
+        }
+
+        // onload populate the chips selector with existing (based on ids)
+        $scope.selectedPeople = _.map(selectedIds, function(id) {
+            return makePersonObj(userdata.people,id);
+        });
+
+        // ordinary watch and ng-change don't work.
+        $scope.$watchCollection('selectedPeople', function() {
+            var idList = _.pluck($scope.selectedPeople, 'id');
+            if(!sessionObj.data.roles)
+                sessionObj.data.roles = {};
+            sessionObj.data.roles[$scope.role] = idList;
+            sessionObj.save();
         });
         
 
@@ -272,49 +277,44 @@
         var vm = this;
         
         // load all user data from the service and create an array of contacts needed
-        var userObject;
-        dataService.get('user', $scope.userId).then(function(userObj) {
-            userObject = userObj;
-            vm.allTags = loadTags(userObject.data.tags);
-            vm.tagQuerySearch = function(query) {
-                var results = query ?
-                    vm.allTags.filter(createFilterForTag(query)) : [];
-                return results;
-            };
-            
-            // load the requested session from the service and get the currenttags
-            return dataService.get('session', $scope.sessionId);
-        }).then(function(sessionObj) {
-            var selectedTagIds = sessionObj.data.tagIds;
-            
-            // onload populate the chips selector with existing (based on ids)
-            $scope.selectedTags = _.map(selectedTagIds, function(id) {
-                return makeTagObj(userObject.data.tags, id);
-            });
-
-            // ordinary watch and ng-change don't work.
-            $scope.$watchCollection('selectedTags', function() {
-                var idList = _.pluck($scope.selectedTags, 'id');
-                sessionObj.data.tagIds = idList;
-                sessionObj.save();
-            });
-            
-            // Sangyeop: should this really be nested inside this 'then'?
-            vm.transformChip = function(chip) {
-                // If it is an object, it's already a known chip
-                if (angular.isObject(chip)) {
-                    return chip;
-                }
-                // Otherwise, create a new one - first add a new tag to the user pool
-                var tid = userObject.addUserTag(angular.lowercase(chip));
-                userObject.save();
-                
-                return {
-                    id: tid,
-                    name: angular.lowercase(chip)
-                };
-            };
+        var userObject = $scope.userObj;
+        vm.allTags = loadTags(userObject.data.tags);
+        vm.tagQuerySearch = function(query) {
+            var results = query ?
+                vm.allTags.filter(createFilterForTag(query)) : [];
+            return results;
+        };
+        
+        // load the requested session from the service and get the currenttags
+        var sessionObj = $scope.sessionObj,
+            selectedTagIds = sessionObj.data.tagIds;
+        // onload populate the chips selector with existing (based on ids)
+        $scope.selectedTags = _.map(selectedTagIds, function(id) {
+            return makeTagObj(userObject.data.tags, id);
         });
+
+        // ordinary watch and ng-change don't work.
+        $scope.$watchCollection('selectedTags', function() {
+            var idList = _.pluck($scope.selectedTags, 'id');
+            sessionObj.data.tagIds = idList;
+            sessionObj.save();
+        });
+
+        vm.transformChip = function(chip) {
+            // If it is an object, it's already a known chip
+            if (angular.isObject(chip)) {
+                return chip;
+            }
+            // Otherwise, create a new one - first add a new tag to the user pool
+            var tid = userObject.addUserTag(angular.lowercase(chip));
+            userObject.save();
+
+            return {
+                id: tid,
+                name: angular.lowercase(chip)
+            };
+        };
+        
 
         vm.placeholder = "Add tags";
         vm.secondaryPlaceholder = "Add more";

@@ -8,22 +8,45 @@
 
         .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
             var vm = this;
-            vm.currentUserName = 'Unknown user';
-            vm.foo = false;
-
+            
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
+            
+            $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
+                if(isLoggedin) {
+                    dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
+                        vm.currentUser = userObj.data;
+                        vm.currentUserName = function() { return userObj.data.names[0]; };
 
-            vm.userList = dataService.getUserList().then(function(userList) {
-                vm.currentUser = userList[0];
-                loginService.loginUser(vm.currentUser._ID);
-                dataService.getSessionList(vm.currentUser._ID).then(function(sessionList) {
-                    vm.sessionList = sessionList;
-                });
-                dataService.get('user', vm.currentUser._ID).then(function(userObj) {
-                    vm.currentUserName = userObj.data.names[0];
-                });
+                        return dataService.getSessionList(vm.currentUser._ID);
+                    }).then(function(sessionList) {
+                        vm.sessionList = sessionList;
+                    });
+                } else {
+                    vm.currentUserName = function() { return 'Unknown user'; };
+
+                    dataService.getUserList().then(function(userList) {
+                        vm.userList = userList;
+                    });
+                }
             });
-
+            
+            vm.login = function(userIndex) {
+                loginService.loginUser(vm.userList[userIndex]._ID);
+            };
+            
+            vm.createNewUser = function() {
+                var mockUserData = {
+                    names: ['Anonymous'],
+                    email: 'foo@gmail.com'
+                };
+                
+                dataService.setUser(mockUserData).then(function(data) {
+                    return dataService.getUserList();
+                }).then(function(userList){
+                    vm.userList = userList;
+                });
+            };
+            
             vm.goStatus = function(sessionIndex) {
                 $location.path('session/'+vm.sessionList[sessionIndex]._ID);
             };
@@ -129,19 +152,23 @@
                         creatorId: 'foo@gmail.com'
                     }
                 };
-
-                dataService.setUser(mockUserData).then(function(data) {
-                    console.log('SUCCESS: ' + data);
+                
+                dataService.setUser(mockUserData).then(function(ids) {
+                    return ids[0];
+                }).then(function(userId){
+                    console.log('SUCCESS: ' + userId);
+                    for(var i in mockSessionData) {
+                        console.log(mockSessionData[i]);
+                        dataService.setSession(userId, mockSessionData[i]).then(function(data) {
+                            console.log('SUCCESS' + data);
+                        }).catch(function(err) {
+                            console.error('ERR: ' + err);
+                        });
+                    }
                 }).catch(function(err) {
-                    console.error('ERR: ' + err);
+                    console.error('ERR: ' + err);    
                 });
-                for(var i in mockSessionData) {
-                    dataService.setSession(mockUserData.email, mockSessionData[i]).then(function(data) {
-                        console.log('SUCCESS' + data);
-                    }).catch(function(err) {
-                        console.error('ERR: ' + err);
-                    });
-                }
+
                 $timeout(function() {
                     $route.reload();
                 }, 1000);
@@ -150,39 +177,40 @@
 
         }])
     
-        .controller('newSessionController', ['$location', 'loginService', 'dataService', function($location, loginService, dataService) {
+        .controller('newSessionController', ['$location', 'loginService', 'userObj', function($location, loginService, userObj) {
             // For now, new.html is just a container of ngRecord directive
             var vm = this;
             
+            vm.userObj = userObj;
         }])
 
-        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'dataService', 'AnnowebDialog', function($location, $scope, $routeParams, loginService, fileService, dataService, AnnowebDialog) {
+        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', function($location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
             vm.olac = 'drama';
             vm.location = 'MPI, Netherlands.';
 
+            // For directives in status.html
             vm.userId = loginService.getLoggedinUserId();
             vm.sessionId = $routeParams.sessionId;
+            vm.userObj = userObj;
+            vm.sessionObj = sessionObj;
             
-            dataService.get('user', vm.userId).then(function(userObj) {
-                vm.userData = userObj.data;
-                return dataService.get('session', vm.sessionId);
-            }).then(function(sessionObj) {
-                vm.sessionData = sessionObj.data;
-                if (vm.sessionData.imageIds) {
-                    vm.ImageCount = vm.sessionData.imageIds.length;
-                    vm.currentImageIdx = 1;
-                } else {
-                    vm.ImageCount = 0;
-                }
+            vm.userData = userObj.data;
+            vm.sessionData = sessionObj.data;
+            
+            if (vm.sessionData.imageIds) {
+                vm.ImageCount = vm.sessionData.imageIds.length;
+                vm.currentImageIdx = 1;
+            } else {
+                vm.ImageCount = 0;
+            }
 
-                if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
-                    vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
-                } else {
-                    AnnowebDialog.toast('Aint no audio file for this session!');
-                }
-            });
+            if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
+                vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
+            } else {
+                AnnowebDialog.toast('Aint no audio file for this session!');
+            }
 
             vm.nextImage = function() {
                 ++vm.currentImageIdx;
@@ -201,11 +229,8 @@
             // When Image is imported
             $scope.$watch('imageFile', function (file) {
                 if (file && file.type.match('^image/')) { 
-                    var imageUrl, fileObjId;
-                    fileService.createFile(loginService.getLoggedinUserId(), file).then(function(url) {
-                        imageUrl = url;
-                        return dataService.get('user', loginService.getLoggedinUserId());
-                    }).then(function(userObj) {
+                    var fileObjId;
+                    fileService.createFile(loginService.getLoggedinUserId(), file).then(function(imageUrl) {
                         var fileObj = {
                             url: imageUrl,
                             type: file.type
@@ -214,8 +239,6 @@
                         fileObjId = userObj.addUserFile(fileObj);
                         return userObj.save();
                     }).then(function() {
-                        return dataService.get('session', vm.sessionId);
-                    }).then(function(sessionObj) {
                         if(!sessionObj.data.imageIds)
                             sessionObj.data.imageIds = [];
                         sessionObj.data.imageIds.push(fileObjId);
@@ -260,10 +283,13 @@
 
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.
-        .controller('respeakController', ['dataService', '$routeParams', function(dataService, $routeParams) {
+        .controller('respeakController', ['userObj', 'sessionObj', function(userObj, sessionObj) {
             var vm = this;
-            dataService.get('session', $routeParams.sessionId).then(function(sessionObj){
-                vm.sessionData = sessionObj.data;
-            });
+            vm.userData = userObj.data;
+            vm.sessionData = sessionObj.data;
+        
+            if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
+                vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
+            }
         }]);
 })();
