@@ -12,11 +12,9 @@
                 var newBuffer = audiocontext.createBuffer( 1, audioBuffer[0].length, audiocontext.sampleRate );
                 newBuffer.getChannelData(0).set(audioBuffer[0]);
                 var numFrames_ = audioBuffer[0].length * targetSampleRate / audiocontext.sampleRate;
-
                 var offlineContext_ = new OfflineAudioContext(1, numFrames_, targetSampleRate);
                 var bufferSource_ = offlineContext_.createBufferSource();
                 bufferSource_.buffer = newBuffer;
-
                 offlineContext_.oncomplete = function(event) {
                     var resampeledBuffer = event.renderedBuffer;
                     console.log('Done Rendering');
@@ -42,8 +40,7 @@
                         });
                     }
                 };
-
-                console.log('Starting Offline Rendering');
+                //console.log('Starting Offline Rendering');
                 bufferSource_.connect(offlineContext_.destination);
                 bufferSource_.start(0);
                 offlineContext_.startRendering();
@@ -59,24 +56,6 @@
                     type: "audio/wav"
                 });
                 return blob;
-            };
-
-            // Feed in one wav file and a segMap and function will return an array of arrays of audio data
-            // corresponding to each segment
-            service.audioRegionsFromFile = function(fileUrl, segMap){
-                var request = new XMLHttpRequest();
-                request.open( 'GET', fileUrl, true );
-                request.responseType = 'arraybuffer';
-                request.onload = function() {
-                    var audioData = [];
-                    segMap.forEach(function(seg){
-                        var [seg_s, seg_e] = seg.child_samp;                // ES6 gets more Python-like
-                        var dataSeg = request.response.getChannelData(0);
-                        audioData.push(dataSeg.slice(seg_e,seg_s));
-                    });
-                    return audioData;
-                };
-                request.send();
             };
 
             function floatTo16BitPCM(output, offset, input) {
@@ -96,7 +75,6 @@
                 var buffer = new ArrayBuffer(44 + samples.length * 2);
                 console.log(samples.length);
                 var view = new DataView(buffer);
-
                 /* RIFF identifier */
                 writeString(view, 0, 'RIFF');
                 /* RIFF chunk length */
@@ -123,9 +101,7 @@
                 writeString(view, 36, 'data');
                 /* data chunk length */
                 view.setUint32(40, samples.length * 2, true);
-
                 floatTo16BitPCM(view, 44, samples);
-
                 return view;
             }
 
