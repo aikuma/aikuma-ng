@@ -35,23 +35,26 @@
             md-cols-gt-md="12" md-cols="1" md-cols-md="1"
             md-row-height-gt-md="1:1" md-row-height="1:1"
             md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
-        <md-grid-tile ng-repeat="region in rCtrl.regionList">
-            <md-button class="md-raised" ng-click="rCtrl.playRegion($index)" >
+        <md-grid-tile ng-repeat="region in rCtrl.segMap">
+            <md-button class="md-raised" ng-click="rCtrl.playSegment($index)" >
                 {{$index+1}}
             </md-button>
         </md-grid-tile>
     </md-grid-list>
 </md-content>
 
+<div ng-if="rCtrl.hasRecording">
+    <audio ng-src="{{rCtrl.recordingFile}}" controls></audio>
+</div>
+
 <md-button class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
     <md-icon md-svg-icon="action:restore"></md-icon>
     {{"RESET" | translate}}
 </md-button>
 
-<md-button class="md-raised" aria-label="Save" ng-click="rCtrl.save()" >
+<md-button class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
     <md-icon md-svg-icon="content:save"></md-icon>
     {{"SAVE" | translate}}
 </md-button>
-
 
 

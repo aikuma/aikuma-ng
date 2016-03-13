@@ -501,14 +501,19 @@
     var respeak2DirectiveController = function ($timeout, config, $scope, keyService, $attrs, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         var recorder;           // recorder.js
-        var ctrlKeyCode = 17;   // control key (16 is shift)
+        var ctrlKeyCode = 16;   // control key (16 is shift)
         var ffKeyCode = 39;     // right arrow
         var rwKeyCode = 37;     // left arrow
         var escKeyCode = 27;    // escape
         var skipTimeValue = 1;  // amount of time to skip backwards for rewind
         var ffPlaybackRate = 2; // playback speed in FF mode
         var minRegionLength = 1;
+        var respeakAudioContext = new AudioContext();
+        // Variables that record playin position, array of wavesurfer regions, segmentation map and more
+        var recordedAudioBuffer = null;
         vm.playIn = 0;
+        vm.regionList = [];
+        vm.segMap = [];
         var lastAction = null;
         vm.isPlaying = false;
         vm.isRecording = false;
@@ -516,8 +521,7 @@
         vm.begunrecording = false;
         vm.recordDisabled = true;
         vm.clickPlaybackOn = false;
-        vm.redo = escKey;
-        vm.regionList = [];
+
         // used to block multiple key presses
         vm.leftKeyDown = false;
         vm.rightKeyDown = false;
@@ -525,6 +529,10 @@
         vm.recordClass = 'activespeaker';
         vm.startedMicrophone = false;
         vm.hasSeeked = false;
+        vm.hasRecording = false;
+        // VM bindings to the UI
+        vm.saveFile = createFile;
+        vm.redo = escKey;
 
         var textStrings = ['First play the source by holding left-control','Now hold right-control to record', 'Repeat press left-control to listen again', 'Repeat press right-control again to re-record',
                            'Hold right cursor to fast forward', 'Changed your mind? Press escape to undo','You got it!',''];
@@ -587,7 +595,6 @@
         // Set up the wavesurfer microphone record visualising and the microphone plugin
         // Note that we run them in parallel because pausing the wavesurfer microphone will disconnect the
         // recorder.js audio node!
-        var respeakAudioContext = new AudioContext();
         var wsRecord = Object.create(WaveSurfer);
         wsRecord.init({
             container: "#respeakRecord",
@@ -620,17 +627,19 @@
                 console.log('audio spaz', feh);
             });
 
-        vm.playRegion = function(regidx) {
+        vm.playSegment = function(regidx) {
             var thisPosition = wsPlayback.getCurrentTime();
             disableRecording();
             wsPlayback.toggleInteraction();
+            // segmap and regionlist have elements in the same order, we use the wavesurfer region for playback of the source
             var reg = vm.regionList[regidx];
-            console.log(reg.start,reg.end);
             reg.play();
             wsPlayback.once('pause', function(){
                 seekToTime(thisPosition);
                 wsPlayback.toggleInteraction();
-                playbackAudio(reg.data.audio);
+                var [startpos, endpos] = vm.segMap[regidx].child_samp;
+                audioService.playbackBuffer(respeakAudioContext, recordedAudioBuffer, startpos, endpos);
+                //playbackAudio(reg.data.audio);
             });
         };
 
@@ -684,12 +693,10 @@
             vm.rightKeyDown = true;
             if (vm.recordDisabled) {return;}               // do nothing if record is disabled
             if (lastAction === 'play') {
-                // this order is important
-                //makePlayRegion();
                 vm.playIn = wsPlayback.getCurrentTime();
             }
             lastAction = 'record';
-            setRegionRecorded();
+            setRegionRecording();
             vm.recordClass = 'activerecord';
             recorder.record();                  // begin recorder.js
             vm.isRecording = true;
@@ -699,8 +706,11 @@
             vm.rightKeyDown = false;
             if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.isRecording = false;
-            recorder.stop();                  // stop recorder.js
-            saveAudioToRegion();
+            // stop recorder.js and save audio buffer (will be appended)
+            recorder.stop();
+            setRegionFinishedRecording();
+            saveAudioBuffer();
+            // Now let's update the UI
             vm.recordClass = 'activespeaker';
             updateHelpText();
             $scope.$apply();
@@ -741,16 +751,25 @@
             }
             $scope.$apply();
         }
+
+        //
+        // DELETE LAST REGION
+        //
         // escape key to undo last region - currently infinite length
-        // after removing a region, we set the valid vm.playIn point to the end of the last region, or 0 if we have no more regions
+        // after removing a region, update the UI
         function escKey() {
             deleteLastRegion();
             updateHelpText();
             $scope.$apply();
         }
 
+        // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
         function deleteLastRegion() {
             if (vm.regionList.length) {
+                // if this is not the case, then the user is undoing a region that doesn't have recorded data yet.
+                if (vm.segMap.length === vm.regionList.length) {
+                    deleteLastAudio();
+                }
                 var reg = vm.regionList.pop();
                 reg.remove();
                 if (vm.regionList.length) {
@@ -762,22 +781,21 @@
                 disableRecording();
                 // this is so we don't start moving a record-mode region!
                 lastAction = 'delete';
+                makeSegmap(); // update the Segmap
             }
         }
 
-
-        // Alternate colours slightly so you can tell them apart.
-        function setRegionRecorded() {
-            var colidx = _.last(vm.regionList).data.colidx;
-            var hue = 198 + (colidx*40);
-            _.last(vm.regionList).update(
-                {
-                    color: 'hsla('+hue+', 100%, 30%, 0.1)',
-                    data: {colidx:colidx}
-                }
-            );
+        function deleteLastAudio() {
+            if (!vm.segMap.length) {return;}
+            var [start, end] = _.last(vm.segMap).child_samp;
+            recordedAudioBuffer = audioService.chopFromArray(recordedAudioBuffer, ((end - start) + 1));
         }
-        // let's make a region on playback
+
+        //
+        // MAKE NEW REGION
+        //
+
+        // let's make a region when we begin playing (it'll be green at first)
         function makeNewRegion(starttime) {
             // this stuff just alternates which we use to colour when the region switches to record mode
             if (vm.regionList.length) {
@@ -797,65 +815,93 @@
             var reg = wsPlayback.addRegion({
                 start: starttime,
                 end: starttime,
-                color: 'hsla('+hue+', 100%, 30%, 0.1)',
+                color: 'hsla('+hue+', 100%, 30%, 0.15)',
                 drag: false,
                 resize: false,
                 data: col
             });
             vm.regionList.push(reg);
         }
+        // Set region to one colour when recording
+        function setRegionRecording() {
+            var hue = 0;
+            _.last(vm.regionList).update(
+                {
+                    color: 'hsla('+hue+', 100%, 30%, 0.2)',
+                }
+            );
+        }
+        // Alternate colours slightly so you can tell them apart.
+        function setRegionFinishedRecording() {
+            var colidx = _.last(vm.regionList).data.colidx;
+            var hue = 198 + (colidx*40);
+            _.last(vm.regionList).update(
+                {
+                    color: 'hsla('+hue+', 100%, 30%, 0.1)',
+                    data: {colidx:colidx}
+                }
+            );
+        }
 
         // Dump the recorder audio buffer directly into the region data.
         // Since our array of regions in regionList is order sorted, we can simply serialise them all on save/export
-        function saveAudioToRegion() {
+        // Resample the audio also.
+        function saveAudioBuffer() {
             var reg = _.last(vm.regionList);
             recorder.getBuffer(function(buffer) {
-                reg.data.audio = buffer;
-            });
-        }
-        // Not interested in boundaries finer than 1ms.
-        function roundMs(time) {
-            return Math.round(time * 1000) / 1000;
-        }
-        // Mostly for debugging, if you click on a region, you'll hear the original audio followed by respoken
-        // it was quite buggy on click with multiple clicks registering, hence this debug mezannine function
-
-        // basic playback of an audio buffer
-        function playbackAudio(inputbuffer) {
-            var newSource = respeakAudioContext.createBufferSource();
-            var newBuffer = respeakAudioContext.createBuffer(1, inputbuffer[0].length, respeakAudioContext.sampleRate);
-            newBuffer.getChannelData(0).set(inputbuffer[0]);
-            newSource.buffer = newBuffer;
-            newSource.connect(respeakAudioContext.destination);
-            newSource.onended = function () {
-                $scope.$apply(function () {
-                    $scope.playbackClass = '';
+                audioService.resampleAudioBuffer(microphone.micContext, buffer, config.sampleRate, function(resampledBuffer) {
+                    var audioArrayData = resampledBuffer.getAudioBuffer().getChannelData(0);
+                    var length = audioArrayData.length;
+                    if (recordedAudioBuffer) {
+                        recordedAudioBuffer = audioService.appendArrays(recordedAudioBuffer, audioArrayData);
+                    } else {
+                        recordedAudioBuffer = audioArrayData;
+                    }
+                    vm.debug = recordedAudioBuffer.length;
+                    reg.data.audioLength = length;
+                    makeSegmap(); // update the segmentation map every time we save data to a segment.
                 });
-            };
-            newSource.start(0);
-            vm.reviewPlayback = true;
-            $scope.$apply(function () {
-                $scope.playbackClass = 'nowplaying';
             });
         }
 
+        // creates a segmentation map array of objects, based on the currently existing regions
+        // the values are in milliseconds but are based on sample-based absolute offsets to avoid
+        // cumulative rounding errors.
+        function makeSegmap() {
+            vm.segMap = [];
+            var sampleOffset = 0;
+            vm.regionList.forEach(function(reg){
+                var restart = audioService.roundMs(sampleOffset / config.sampleRate);
+                var reend = audioService.roundMs((sampleOffset + reg.data.audioLength) / config.sampleRate);
+                vm.segMap.push(
+                    {
+                        source: [audioService.roundMs(reg.start), audioService.roundMs(reg.end)],
+                        child_ms: [restart, reend],
+                        child_samp: [sampleOffset, (sampleOffset + reg.data.audioLength - 1)]
+                    }
+                );
+                sampleOffset += reg.data.audioLength;
+            });
+        }
+
+        //
+        // UTILITY FUNCTIONS
+        //
+        // Simple cycle through help text strings. This needs to be updated to be based on handles in the localisation files.
         function updateHelpText() {
             if (vm.helpIdx == (textStrings.length-1)) {return;}
             ++vm.helpIdx;
             vm.helpText = textStrings[vm.helpIdx];
         }
-
-        vm.testfunc = function () {
-          vm.regionList[2].play();
-        };
-
+        // Called from several places as a means to pause the microphone and disable record controls
+        // and update UI elements to show that the user cannot record at this point.
         function disableRecording() {
             vm.recordClass = 'inactivespeaker';
             microphone.pause();
             wsRecord.empty();
             vm.recordDisabled = true;
         }
-
+        // Often we force seek to play-in because we don't allow the user to play back where they cannot record.
         function seekToPlayin() {
             var length = wsPlayback.getDuration();
             var floatpos = vm.playIn / length;
@@ -866,18 +912,22 @@
             var floatpos = time / length;
             wsPlayback.seekTo(floatpos);
         }
-
-
+        // With just one array, it's easy to make a file as required
+        function createFile() {
+            var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
+            var fileURL = URL.createObjectURL(newBlob);
+            vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
+            vm.hasRecording = true;
+        }
 
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {
             keyService.clearAll();
             wsPlayback.destroy();
-            wsPlayback.destroy();
+            wsRecord.destroy();
             if(recorder) {recorder.clear();}
         });
     };
     respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', 'keyService', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
-
 
 })();
