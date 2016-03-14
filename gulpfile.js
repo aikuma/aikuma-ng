@@ -11,7 +11,8 @@ var wiredep = require('wiredep').stream,
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     clean = require('gulp-clean'),
-    useref = require('gulp-useref');
+    useref = require('gulp-useref'),
+    debug = require('gulp-debug');
 
 gulp.task('wavesurfer', function () {
     // We need to build wavesurfer since the package only deploys minified files
@@ -48,7 +49,7 @@ gulp.task('cleandist', function () {
         .pipe(clean());
 });
 
-gulp.task('deploy', ['cleandist'], function () {
+gulp.task('copyfiles', ['cleandist'], function () {
     // copy view templates
     gulp.src('./views/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
@@ -67,16 +68,18 @@ gulp.task('deploy', ['cleandist'], function () {
         .pipe(gulp.dest('dist'));
     gulp.src('./icons/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
-    gulp.src('./_locales/**/*', {base: './'})
-        .pipe(gulp.dest('dist'));
     gulp.src(['background.js', 'manifest.json'])
         .pipe(gulp.dest('dist'));
     // build the final root html with a single minified js
+});
+
+gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
-        //.pipe(useref({'noconcat':true}))
-        .pipe(useref())
+        .pipe(useref({'noconcat':true}))
+        //.pipe(useref())
         //.pipe(gulpif('*.js', uglify().on('error', gutil.log)))
         //.pipe(gulpif('*.css', minifyCss()))
+        .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));
 });
 

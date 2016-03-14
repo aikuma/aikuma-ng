@@ -26,7 +26,7 @@
 
 </div>
 
-<md-content layout-padding>
+<md-content ng-if="rCtrl.playBoxesEnabled">
     <md-grid-list
             md-cols-gt-md="12" md-cols="1" md-cols-md="1"
             md-row-height-gt-md="1:1" md-row-height="1:1"
@@ -38,7 +38,6 @@
         </md-grid-tile>
     </md-grid-list>
 </md-content>
-
 
 <!--<div ng-if="rCtrl.hasRecording">
     <audio ng-src="{{rCtrl.recordingFile}}" controls></audio>

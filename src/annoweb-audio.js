@@ -500,6 +500,7 @@
     //
     var respeak2DirectiveController = function ($timeout, config, $scope, keyService, $attrs, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
+        vm.playBoxesEnabled = false;
         var recorder;           // recorder.js
         var ctrlKeyCode = 16;   // control key (16 is shift)
         var ffKeyCode = 39;     // right arrow
