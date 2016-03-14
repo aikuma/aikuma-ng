@@ -33,6 +33,14 @@
   "RECORD": "Record",
   "REDO": "Redo",
   "SAVE": "Save",
-  "RESET": "Reset"
+  "RESET": "Reset",
+  "RSPK_HELP1": "First play the source by holding left-shift",
+  "RSPK_HELP2": "Now hold right-shift to record",
+  "RSPK_HELP3": "Repeat press left-shift to listen again",
+  "RSPK_HELP4": "Repeat press right-shift again to re-record",
+  "RSPK_HELP5": "Hold right cursor to fast forward",
+  "RSPK_HELP6": "Changed your mind? Press escape to undo",
+  "RSPK_HELP7": "You got it!",
+  "FINISH": "Finish"
 }
 

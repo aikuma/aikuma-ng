@@ -511,9 +511,7 @@
         var respeakAudioContext = new AudioContext();
         // Variables that record playin position, array of wavesurfer regions, segmentation map and more
         var recordedAudioBuffer = null;
-        vm.playIn = 0;
-        vm.regionList = [];
-        vm.segMap = [];
+
         var lastAction = null;
         vm.isPlaying = false;
         vm.isRecording = false;
@@ -534,10 +532,48 @@
         vm.saveFile = createFile;
         vm.redo = escKey;
 
-        var textStrings = ['First play the source by holding left-control','Now hold right-control to record', 'Repeat press left-control to listen again', 'Repeat press right-control again to re-record',
-                           'Hold right cursor to fast forward', 'Changed your mind? Press escape to undo','You got it!',''];
+        var textStrings = ['RSPK_HELP1','RSPK_HELP2','RSPK_HELP3','RSPK_HELP4','RSPK_HELP5','RSPK_HELP6','RSPK_HELP7',''];
         vm.helpIdx = 0;
         vm.helpText = textStrings[vm.helpIdx];
+
+        //
+        // This is code which restores from a backend
+        //
+        // if we have saved data...
+        if ($scope.respeakSegmap) {
+            vm.segMap = $scope.respeakSegmap;
+            var colcol = 1;
+            vm.segMap.forEach(function(seg){
+                if (colcol === 0) {colcol = 1;}
+                else {colcol = 0;}
+                var slen = seg.child_ms[1] - seg.child_ms[0] + 1;
+                var coldat = {
+                    colidx: colcol,
+                    audioLength: slen
+                };
+                var hue = 198 + (colcol*40);
+                var reg = wsPlayback.addRegion({
+                    start: seg.source[0],
+                    end: seg.source[1],
+                    color: 'hsla('+hue+', 100%, 30%, 0.15)',
+                    drag: false,
+                    resize: false,
+                    data: coldat
+                });
+                vm.regionList.push(reg);
+            });
+            vm.playIn = _.last(vm.regionList.end);
+            var arrayBuffer;
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+                arrayBuffer = this.result;
+                recordedAudioBuffer = new Float32Array(arrayBuffer);
+            };
+        } else {
+            vm.playIn = 0;
+            vm.regionList = [];
+            vm.segMap = [];
+        }
 
         //
         // Set up Wavesurfer
@@ -637,7 +673,8 @@
             wsPlayback.once('pause', function(){
                 seekToTime(thisPosition);
                 wsPlayback.toggleInteraction();
-                var [startpos, endpos] = vm.segMap[regidx].child_samp;
+                var startpos = vm.segMap[regidx].child_samp[0];
+                var endpos = vm.segMap[regidx].child_samp[1];
                 audioService.playbackBuffer(respeakAudioContext, recordedAudioBuffer, startpos, endpos);
                 //playbackAudio(reg.data.audio);
             });
@@ -787,8 +824,10 @@
 
         function deleteLastAudio() {
             if (!vm.segMap.length) {return;}
-            var [start, end] = _.last(vm.segMap).child_samp;
+            var start = _.last(vm.segMap).child_samp[0];
+            var end = _.last(vm.segMap).child_samp[1];
             recordedAudioBuffer = audioService.chopFromArray(recordedAudioBuffer, ((end - start) + 1));
+            saveToBackend();
         }
 
         //
@@ -827,7 +866,7 @@
             var hue = 0;
             _.last(vm.regionList).update(
                 {
-                    color: 'hsla('+hue+', 100%, 30%, 0.2)',
+                    color: 'hsla('+hue+', 100%, 30%, 0.2)'
                 }
             );
         }
@@ -859,7 +898,8 @@
                     }
                     vm.debug = recordedAudioBuffer.length;
                     reg.data.audioLength = length;
-                    makeSegmap(); // update the segmentation map every time we save data to a segment.
+                    makeSegmap();
+                    saveToBackend();
                 });
             });
         }
@@ -883,6 +923,7 @@
                 sampleOffset += reg.data.audioLength;
             });
         }
+
 
         //
         // UTILITY FUNCTIONS
@@ -913,12 +954,24 @@
             wsPlayback.seekTo(floatpos);
         }
         // With just one array, it's easy to make a file as required
+        // DEPRECATED
         function createFile() {
             var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
             var fileURL = URL.createObjectURL(newBlob);
             vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
             vm.hasRecording = true;
         }
+
+        //
+        // This is called every time there is data to be saved
+        //
+        function saveToBackend() {
+            var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
+            var fileURL = URL.createObjectURL(newBlob);
+            // 1. do something with this fileURL
+            // 2. do something with vm.segMap
+        }
+
 
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {

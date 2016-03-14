@@ -28,20 +28,6 @@ md-toolbar .md-button.md-default-theme {
     opacity: 0.8;
 }
 
-md-toolbar:not(.md-hue-1),
-.md-fab {
-    fill: #fff;
-}
-
-md-sidenav {
-    fill: #737373;
-}
-
-md-sidenav ng-md-icon {
-    position: relative;
-    top: 5px;
-}
-
 .nav-header {
     background: rgba(93,230,216,1);
     background: -moz-linear-gradient(-45deg, rgba(93,230,216,1) 0%, rgba(93,230,216,1) 25%, rgba(79,195,247,1) 57%, rgba(79,195,247,1) 100%);
@@ -50,7 +36,6 @@ md-sidenav ng-md-icon {
     background: -o-linear-gradient(-45deg, rgba(93,230,216,1) 0%, rgba(93,230,216,1) 25%, rgba(79,195,247,1) 57%, rgba(79,195,247,1) 100%);
     background: -ms-linear-gradient(-45deg, rgba(93,230,216,1) 0%, rgba(93,230,216,1) 25%, rgba(79,195,247,1) 57%, rgba(79,195,247,1) 100%);
     background: linear-gradient(135deg, rgba(93,230,216,1) 0%, rgba(93,230,216,1) 25%, rgba(79,195,247,1) 57%, rgba(79,195,247,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5de6d8', endColorstr='#4fc3f7', GradientType=1 );
 }
 
 /* Center the doc tool icons at the top */
@@ -84,7 +69,7 @@ md-sidenav {
     text-transform: uppercase;
     font-weight: 500;
     font-size: 14px;
-    color: #757575;"
+    color: #757575;
 }
 
 .statusicon {
@@ -160,14 +145,6 @@ md-sidenav {
 }
 .md-button span.buttontext {
     margin-right:6px;
-}
-
-.png-icon{
-    margin: 5px auto auto;
-    padding: 0;
-    display: inline-block;
-    background-repeat: no-repeat no-repeat;
-    pointer-events: none;
 }
 
 .md-toolbar-avatar {

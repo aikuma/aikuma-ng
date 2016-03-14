@@ -73,9 +73,9 @@ gulp.task('deploy', ['cleandist'], function () {
         .pipe(gulp.dest('dist'));
     // build the final root html with a single minified js
     return gulp.src('./window.html')
-        .pipe(useref({'noconcat':true}))
-        //.pipe(useref())
-        .pipe(gulpif('*.js', uglify().on('error', gutil.log)))
+        //.pipe(useref({'noconcat':true}))
+        .pipe(useref())
+        //.pipe(gulpif('*.js', uglify().on('error', gutil.log)))
         //.pipe(gulpif('*.css', minifyCss()))
         .pipe(gulp.dest('dist'));
 });

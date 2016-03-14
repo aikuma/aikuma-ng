@@ -39,7 +39,12 @@
         "plugin/wavesurfer.minimap.js",
         "plugin/wavesurfer.regions.js",
         "plugin/wavesurfer.timeline.js"
-      ]
+      ],
+      "Keypress": {
+        "main": [
+          "keypress.js"
+        ]
+      }
     },
     "angular-resizable": {
       "main": [

@@ -19,13 +19,9 @@
             <span flex>{{"RECORD" | translate}}</span>
         </md-button>
 
-        <div ng-if="rCtrl.hasrecording()">
-            <audio controls ng-src="{{recording}}">
-            </audio>
-        </div>
     </div>
     <div flex="50" id="respeakRecord" class="respeakwavesurfer" ng-class="rCtrl.recordClass" style="position:relative">
-        <span class="centertextbox md-headline">{{rCtrl.helpText}}</span>
+        <span class="centertextbox md-headline">{{rCtrl.helpText | translate}}</span>
     </div>
 
 </div>
@@ -43,18 +39,12 @@
     </md-grid-list>
 </md-content>
 
-<div ng-if="rCtrl.hasRecording">
-    <audio ng-src="{{rCtrl.recordingFile}}" controls></audio>
-</div>
 
-<md-button class="md-raised" aria-label="Reset" ng-click="rCtrl.reset()" >
-    <md-icon md-svg-icon="action:restore"></md-icon>
-    {{"RESET" | translate}}
-</md-button>
+<!--<div ng-if="rCtrl.hasRecording">
+    <audio ng-src="{{rCtrl.recordingFile}}" controls></audio>
+</div>-->
 
 <md-button class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
     <md-icon md-svg-icon="content:save"></md-icon>
-    {{"SAVE" | translate}}
+    {{"FINISH" | translate}}
 </md-button>
-
-
