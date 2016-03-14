@@ -72,7 +72,7 @@
                         },
                         2: {
                             'names': ['Bo:ong Wind', '風高清'],
-                            'imageFileId': '1',
+                            'imageFileId': null,
                             'email': 'foo@bar'
                         },
                         3: {

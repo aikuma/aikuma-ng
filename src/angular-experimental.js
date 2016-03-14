@@ -94,12 +94,20 @@
             }
 
             // create a contact object out of these constructed details
+
+            var imageurl = '';
+            if (users[id].imageFileId) {
+                imageurl = vm.userData.data.files[users[id].imageFileId].url;
+            } else {
+                imageurl = 'img/placeholder_avatar.png';
+            }
+
             var personObj = {
                 'id': id,
                 'pname': pname,
                 'fnames': fnames,
                 'email': users[id].email,
-                'image': vm.userData.data.files[users[id].imageFileId].url
+                'image': imageurl
             };
             return personObj;
         }
@@ -117,7 +125,7 @@
                 var personObj = {
                     names: names,
                     email: '',
-                    imageFileId: '1'
+                    imageFileId: null
                 };
                 // get a new person id and save it all
                 var pid = vm.userData.addUserPerson(personObj);
