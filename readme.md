@@ -16,6 +16,23 @@ Aikuma-*ng* design goals are:
 4. Based on Material Design to accomodate touch-screen devices, tablets and eventually mobile phones
 5. Focus on sharing content to social platforms, e.g. exporting captions for YouTube
 
+### Features ###
+
+Aikuma-*ng* allows users to import audio files or record new audio files. Work is organised into sessions, each of which represents
+a primary recording and a set of descriptive metadata.
+
+![Aikuma-ng status screenshot](https://github.com/aikuma/Annoweb/blob/master/markdown/status-screenshot.png)
+
+Users may either annotate source files directly or they may first 'respeak' and/or translate. In this way, a native speaker (perhaps an elder) would be
+able to make a source recording more suitable for transcription, or may translate, while someone else (perhaps a younger person)could use the
+annotation editor to produce a set of annotations.
+
+![Aikuma-ng respeak screenshot](https://github.com/aikuma/Annoweb/blob/master/markdown/respeak-screenshot.png)
+
+The respeak and translate interface are very easy-to-use, operated by toggling between playback and record with the left and right
+shift keys. Seeking or fast-forwarding into a lengthy recording is also supported. Work is automatically saved so that users may continue working
+on a long source recording when time permits.
+
 ### The Aikuma Project ###
 
 Aikuma-*ng* is part of the [Aikuma project](http://www.aikuma.org), an international research and development effort to design and build tools for collaborative language documentation.
