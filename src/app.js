@@ -24,7 +24,7 @@
         ])
         .constant('config', {
             appName: 'Aikuma-ng',
-            appVersion: 'alpha 18',
+            appVersion: 'alpha 19',
             sampleRate: 16000,
             languages: [
                 {
@@ -164,6 +164,10 @@
                     })
                     .when('/help', {
                         templateUrl: 'views/help.html'
+                    })
+                    .when('/settings', {
+                        templateUrl: 'views/settings.html',
+                        controller: 'settingsController as seCtrl'
                     })
                     .otherwise({
                         redirectTo: '/'

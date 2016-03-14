@@ -365,7 +365,7 @@
         vm.details = vm.sessionObj.data.details;
         
         vm.addMetadata = function(ev) {
-            AnnowebDialog.newMetdata();
+            AnnowebDialog.newMetadata();
         };
 
         vm.defaultdisplay = ['Description','Location'];

@@ -1,0 +1,36 @@
+<md-dialog  style="max-width:800px;max-height:810px;min-width:700px;min-height:200px;">
+    <form>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{"META_ADD" | translate}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="mdCtrl.close()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content>
+        <md-input-container class="md-block">
+            <label>{{"META_TYPE" | translate}}</label>
+            <md-select ng-model="mdxCtrl.metaD">
+                 <md-option ng-repeat="meta in mdxCtrl.defaultMeta" value="{{meta.name}}">
+                     <!--<md-icon md-svg-icon="{{meta.icon}}" aria-label="{{meta.name | translate}}"></md-icon>-->
+                    {{meta.name | translate}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container ng-if="mdxCtrl.metaD.name=='META_CUSTOM'" class="md-block" flex-gt-sm>
+            <label>{{"META_NAME" | translate}}</label>
+                <input ng-model="mdxCtrl.customName"/>
+        </md-input-container>
+        <md-input-container class="md-block">
+            <label>{{"METADATA" | translate}}</label>
+            <textarea ng-model="mdxCtrl.metaText" md-maxlength="150" rows="5" md-select-on-focus></textarea>
+        </md-input-container>
+    </md-content>
+    <md-dialog-actions layout="row">
+        <md-buttonng-click="mdxCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>
+        <md-button ng-click="mdxCtrl.close()" style="margin-right:20px;">{{"BUTTON_CANCEL" | translate}}</md-button>
+    </md-dialog-actions>
+    </form>
+</md-dialog>

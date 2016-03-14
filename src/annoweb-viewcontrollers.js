@@ -8,7 +8,8 @@
 
         .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
             var vm = this;
-            
+            vm.speedDial = false;
+
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
             
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
@@ -50,9 +51,15 @@
             vm.goStatus = function(sessionIndex) {
                 $location.path('session/'+vm.sessionList[sessionIndex]._ID);
             };
-            vm.addNew = function() {
+            vm.recordNew = function() {
                 $location.path('/new');
             };
+
+        }])
+
+        .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
+            var vm = this;
+
             vm.wipeData = function() {
                 window.indexedDB.deleteDatabase('myIndexedDB');
                 $timeout(function() {
@@ -98,7 +105,7 @@
                             url: 'img/dummy_user.jpg',
                             type: 'image/jpeg'
                         },
-                        2: {    
+                        2: {
                             url: 'img/test_small.jpg',
                             type: 'image/jpeg',
                             description: 'A picture that has nothing to do with the recording.',
@@ -109,8 +116,8 @@
                         }
                     }
                 };
-                
-                
+
+
                 // mock data
                 var mockSessionData = {
                     '1': {
@@ -192,7 +199,7 @@
                         creatorId: 'foo@gmail.com'
                     }
                 };
-                
+
                 dataService.setUser(mockUserData).then(function(ids) {
                     return ids[0];
                 }).then(function(userId){
@@ -206,7 +213,7 @@
                         });
                     }
                 }).catch(function(err) {
-                    console.error('ERR: ' + err);    
+                    console.error('ERR: ' + err);
                 });
 
                 $timeout(function() {
@@ -214,9 +221,8 @@
                 }, 1000);
 
             };
-
         }])
-    
+
         .controller('newSessionController', ['$location', 'loginService', 'userObj', function($location, loginService, userObj) {
             // For now, new.html is just a container of ngRecord directive
             var vm = this;

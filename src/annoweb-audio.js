@@ -979,7 +979,9 @@
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {
             keyService.clearAll();
+            timeline.destroy();
             wsPlayback.destroy();
+            microphone.destroy();
             wsRecord.destroy();
             if(recorder) {recorder.clear();}
         });

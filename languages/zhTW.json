@@ -40,5 +40,7 @@
   "RSPK_HELP5": "Hold right cursor to fast forward",
   "RSPK_HELP6": "Changed your mind? Press escape to undo",
   "RSPK_HELP7": "You got it!",
-  "FINISH": "Finish"
+  "FINISH": "Finish",
+  "METADATA": "Details",
+  "METADATA_ADD": "Add new details"
 }

@@ -41,6 +41,15 @@
   "RSPK_HELP5": "Hold right cursor to fast forward",
   "RSPK_HELP6": "Changed your mind? Press escape to undo",
   "RSPK_HELP7": "You got it!",
-  "FINISH": "Finish"
+  "FINISH": "Finish",
+  "METADATA": "Details",
+  "META_ADD": "Add new details",
+  "META_TYPE": "Type",
+  "META_NAME": "Name",
+  "META_DESC": "Description",
+  "META_LOC": "Location",
+  "META_CITY": "City",
+  "META_CONSENT": "Consent",
+  "META_CUSTOM": "Custom"
 }
 

@@ -19,7 +19,7 @@
             factory.newMetadata = function(ev, userId, sessionId) {
                 $mdDialog.show({
                     controller: newMetaDialogController,
-                    controllerAs: 'mdCtrl',
+                    controllerAs: 'mdxCtrl',
                     templateUrl: 'views/templates/dialog-newMeta.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
@@ -233,19 +233,30 @@
     var newMetaDialogController = function ($mdDialog, userId, sessionId, annoService) {
         var vm = this;
 
-        var defaultMeta = [
+        vm.defaultMeta = [
             {
-                name: 'Description',
-                icon: 'action:description',
-                type: 'text'
+                name: 'META_CUSTOM',
+                icon: 'action:assignment_ind'
             },
             {
-                name: 'Location',
-                icon: 'action:description',
-                type: 'text'
+                name: 'META_DESC',
+                icon: 'action:description'
+            },
+            {
+                name: 'META_LOC',
+                icon: 'communication:location_on'
+            },
+            {
+                name: 'META_CITY',
+                icon: 'social:location_city'
+            },
+            {
+                name: 'META_CONSENT',
+                icon: 'communication:vpn_key'
             }
         ];
-
+        vm.metaD = vm.defaultMeta[0];
+        vm.close = function() {$mdDialog.cancel();};
 
     };
     newAnnotationController.$inject = ['$mdDialog', 'userId', 'sessionId', 'annoService'];

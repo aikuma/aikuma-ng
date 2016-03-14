@@ -1,21 +1,12 @@
-<h3>Settings / Preferences</h3>
+<ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
+<md-content class="md-padding">
+    <md-button class="md-raised" ng-click="hCtrl.loadMockData()">
+        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+        Load mock-data
+    </md-button>
 
-<p><b>Purpose</b>: To manage preferences for the user across projects. Perhaps to handle a common list of users and languages.</p>
-
-<p><b>Design influence</b>: ?</p>
-
-<p><b>Navigation</b>: They get here from the home or side nav. Does not return anywhere.</p>
-
-<md-content style="{background-color:lightgrey;}" flex class="md-whiteframe-2dp md-padding">
-
-    <h3>Mock-up</h3>
-
-    <ul>
-        <li>Your Aikumahub account</li>
-        <li>Your languages</li>
-        <li>Your people</li>
-        <li>Your places</li>
-        <li>Your tags</li>
-    </ul>
-
+    <md-button class="md-raised" ng-click="hCtrl.wipeData()">
+        <md-icon md-svg-icon="action:delete"></md-icon>
+        Wipe all data
+    </md-button>
 </md-content>
