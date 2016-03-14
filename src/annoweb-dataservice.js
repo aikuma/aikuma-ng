@@ -89,6 +89,7 @@
                     lastModified: true,
                     source: true,
                     creatorId: true,
+                    olac: false,
                     details: false,  // mat: array of objects
                     roles: false,   // object of array
                     tagIds: false,  // array

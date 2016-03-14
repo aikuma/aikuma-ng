@@ -9,8 +9,8 @@
             return {
                 restrict: "E",
                 scope: {
-                    userId: '@',
-                    sessionId: '@',
+                    userObj: '=',
+                    sessionObj: '=',
                     role: '@'
                 },
                 templateUrl: "views/templates/person-selector-template.html",
@@ -22,23 +22,18 @@
     var personSelectorController = function ($scope, dataService, $mdDialog) {
         var vm = this;
         // load all user data from the service and create an array of contacts needed for md-contact-chips
-
-        dataService.get('user', $scope.userId).then(function(userObj) {
-            vm.userData = userObj;
-            vm.allPeople = loadPeople(vm.userData.data.people);
-            // load the requested session from the service and get the current users
-            return dataService.get('session', $scope.sessionId);
-
-        }).then(function(sessionObj) {
-            vm.sessionData = sessionObj;
-            vm.selectedIds = [];
-            if(sessionObj.data.roles) {
-                vm.selectedIds = sessionObj.data.roles[$scope.role];
-            }
-            // onload populate the chips selector with existing (based on ids)
-            vm.selectedPeople = _.map(vm.selectedIds, function(id) {
-                return makePersonObj(vm.userData.data.people,id);
-            });
+        vm.userObj = $scope.userObj;
+        vm.allPeople = loadPeople(vm.userObj.data.people);
+        
+        // load the requested session from the service and get the current users
+        vm.sessionObj = $scope.sessionObj;
+        vm.selectedIds = [];
+        if(vm.sessionObj.data.roles) {
+            vm.selectedIds = vm.sessionObj.data.roles[$scope.role];
+        }
+        // onload populate the chips selector with existing (based on ids)
+        vm.selectedPeople = _.map(vm.selectedIds, function(id) {
+            return makePersonObj(vm.userObj.data.people,id);
         });
 
         vm.placeholder = "Add speakers";
@@ -52,7 +47,10 @@
             console.log('add');
             updateSession();
         };
-        vm.rem = function() {console.log('remove');};
+        vm.rem = function() {
+            console.log('remove'); 
+            updateSession(); 
+        };
         vm.sel = function() {console.log('select');};
 
         vm.transformChip = function(chip) {
@@ -97,7 +95,7 @@
 
             var imageurl = '';
             if (users[id].imageFileId) {
-                imageurl = vm.userData.data.files[users[id].imageFileId].url;
+                imageurl = vm.userObj.data.files[users[id].imageFileId].url;
             } else {
                 imageurl = 'img/placeholder_avatar.png';
             }
@@ -128,15 +126,17 @@
                     imageFileId: null
                 };
                 // get a new person id and save it all
-                var pid = vm.userData.addUserPerson(personObj);
-                vm.userData.save();
+                var pid = vm.userObj.addUserPerson(personObj);
+                vm.userObj.save();
                 // push the id to the selected ids
                 vm.selectedIds.push(pid);
                 // refresh the entire list of people
-                vm.allPeople = loadPeople(vm.userData.data.people);
+                vm.allPeople = loadPeople(vm.userObj.data.people);
                 vm.selectedPeople = _.map(vm.selectedIds, function(id) {
-                    return makePersonObj(vm.userData.data.people,id);
+                    return makePersonObj(vm.userObj.data.people,id);
                 });
+                // Save the refreshed list of people
+                updateSession();
             }, function() {
                 console.log('cancelled');
             });
@@ -144,12 +144,12 @@
         // gets shit from selected people
         function updateSession() {
             var idList = _.pluck(vm.selectedPeople, 'id');
-            if(!vm.sessionData.data.roles) {
-                vm.sessionData.data.roles = {};
+            if(!vm.sessionObj.data.roles) {
+                vm.sessionObj.data.roles = {};
             }
-            vm.sessionData.data.roles[$scope.role] = idList;
-            console.log(vm.sessionData.data.roles[$scope.role]);
-            vm.sessionData.save();
+            vm.sessionObj.data.roles[$scope.role] = idList;
+            console.log(vm.sessionObj.data.roles[$scope.role]);
+            vm.sessionObj.save();
         }
     };
     personSelectorController.$inject = ['$scope', 'dataService', '$mdDialog'];

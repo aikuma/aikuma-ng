@@ -7,8 +7,8 @@
                 <span class="md-body-2"><md-datepicker ng-model="sCtrl.myDate" md-placeholder="Enter date"></md-datepicker></span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:location_on"></md-icon>
                     {{sCtrl.location}}</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>36 seconds.</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>English.</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>{{sCtrl.dur}} seconds</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>{{sCtrl.langStr}}</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>2 annotations (1 transcription, 1 translation).</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
@@ -49,12 +49,12 @@
         </md-card>
 
     </div>
-    <ng-person-selector role="speakerIds" user-id="{{sCtrl.userId}}" session-id="{{sCtrl.sessionId}}"></ng-person-selector>
+    <ng-person-selector role="speakerIds" user-obj="sCtrl.userObj" session-obj="sCtrl.sessionObj"></ng-person-selector>
 
     <p></p>
     <ng-tag-selector user-obj="sCtrl.userObj" session-obj="sCtrl.sessionObj"></ng-tag-selector>
 
-    <ng-metadata session-id="{{sCtrl.sessionId}}"></ng-metadata>
+    <ng-metadata session-obj="sCtrl.sessionObj"></ng-metadata>
     <p></p>
 
     <ng-annotation-list user-id="1" session-id="1"></ng-annotation-list>

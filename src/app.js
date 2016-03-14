@@ -119,6 +119,9 @@
                             sessionObj: ['$route', 'dataService', function($route, dataService) {
                                 var sessionId = $route.current.params.sessionId;
                                 return dataService.get('session', sessionId);
+                            }],
+                            langObjList: ['fileService', function(fileService) {
+                                return fileService.getLanguages();
                             }]
                         }
                     })

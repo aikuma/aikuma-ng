@@ -230,6 +230,7 @@
         $scope.$on('$destroy', function() {
             if(rec)
                 rec.clear();
+            fileService.setTempObject(null);
         });
         
         $window.onbeforeunload = function() {
@@ -970,6 +971,7 @@
             var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
             var fileURL = URL.createObjectURL(newBlob);
             // 1. do something with this fileURL
+            
             // 2. do something with vm.segMap
         }
 

@@ -109,44 +109,84 @@
                         }
                     }
                 };
-
+                
+                
                 // mock data
                 var mockSessionData = {
                     '1': {
                         names: ['The Rotunda Conversation'],
-                        details: 'make up a details string or something',
+                        details: [
+                            {
+                                'name': 'Description',
+                                'icon': 'action:description',
+                                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                            },
+                            {
+                                'name': 'Location',
+                                'icon': 'communication:location_on',
+                                'data': ''
+                            }
+                        ],
                         roles: {
                             'speakerIds': ['1', '2', '3']
                         },
                         tagIds: ['1', '3'],
                         source: {
-                            recordFileId: '3'
+                            recordFileId: '3',
+                            langIds: ['eng'],
+                            duration: 36000
                         },
                         imageIds: ['2'],
                         creatorId: 'foo@gmail.com'
                     },
                     '2': {
                         names: ["A recording that doesn't actually exist"],
-                        details: 'make up a details string or something',
+                        details: [
+                            {
+                                'name': 'Description',
+                                'icon': 'action:description',
+                                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                            },
+                            {
+                                'name': 'Location',
+                                'icon': 'communication:location_on',
+                                'data': ''
+                            }
+                        ],
                         roles: {
                             'speakerIds': ['1', '2', '3']
                         },
                         tagIds: ['1', '3']     ,
                         source: {
-                            recordFileId: '3'
+                            recordFileId: '3',
+                            langIds: ['eng'],
+                            duration: 36000
                         },
                         imageIds: ['2'],
                         creatorId: 'foo@gmail.com'
                     },
                     '3': {
                         names: ["Another fictional dummy data recording"],
-                        details: 'make up a details string or something',
+                        details: [
+                            {
+                                'name': 'Description',
+                                'icon': 'action:description',
+                                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                            },
+                            {
+                                'name': 'Location',
+                                'icon': 'communication:location_on',
+                                'data': ''
+                            }
+                        ],
                         roles: {
                             'speakerIds': ['1', '2', '3']
                         },
                         tagIds: ['1', '3'],
                         source: {
-                            recordFileId: '3'
+                            recordFileId: '3',
+                            langIds: ['eng'],
+                            duration: 36000
                         },
                         imageIds: ['2'],
                         creatorId: 'foo@gmail.com'
@@ -184,10 +224,9 @@
             vm.userObj = userObj;
         }])
 
-        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', function($location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj) {
+        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', function($location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
-            vm.olac = 'drama';
             vm.location = 'MPI, Netherlands.';
 
             // For directives in status.html
@@ -277,10 +316,18 @@
                 $location.path('/session/'+vm.sessionId+'/respeak');
             };
 
+            vm.olac = sessionObj.data.olac || 'drama';
             vm.clickOlac = function(clickwhat) {
                 vm.olac = clickwhat;
+                sessionObj.data.olac = clickwhat;
+                sessionObj.save();
             };
 
+            var srcDurMsec = sessionObj.data.source.duration;
+            vm.dur = srcDurMsec? srcDurMsec/1000 : 0;
+            
+            var srcLangIds = sessionObj.data.source.langIds;
+            vm.langList = langObjList.filter(function(obj) { return srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.
         .controller('respeakController', ['userObj', 'sessionObj', function(userObj, sessionObj) {

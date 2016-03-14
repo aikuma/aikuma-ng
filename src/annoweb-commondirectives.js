@@ -50,8 +50,7 @@
             return {
                 restrict: "E",
                 scope: {
-                    userId: '@',
-                    sessionId: '@'
+                    sessionObj: '='
                 },
                 templateUrl: "views/templates/metadata-template.html",
                 controller: metadataController,
@@ -123,12 +122,24 @@
         };
         annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
 
-        var navController = function (config, $scope, $location, loginService, fileService) {
+        var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService) {
             var vm = this;
             vm.languages = config.languages;
-            vm.username = 'anonymous';
+            
             vm.getLoginStatus = loginService.getLoginStatus;
             vm.versionString = config.appName+' '+config.appVersion;
+            
+            $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
+                if(isLoggedin) {
+                    $translate('NAV_LOGAS').then(function(LOGINAS) { vm.LOGINAS = LOGINAS; });
+                    dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
+                        vm.currentUserName = function() { return userObj.data.names[0]; };
+                    });
+                } else {
+                    vm.LOGINAS = '';
+                    vm.currentUserName = function() { return ''; };
+                }
+            });
             
             vm.login = function() {
                 
@@ -136,6 +147,7 @@
             
             vm.logout = function() {
                 loginService.logout();
+                $location.path('/');
             };
             
             vm.menu = [
@@ -182,6 +194,7 @@
                     state: 'reportbug'
                 }
             ];
+            
             vm.changeState = function(statename) {
                 if(statename !== 'import') {
                     $location.path('/'+statename);
@@ -196,7 +209,7 @@
             });
 
         };
-    navController.$inject = ['config', '$scope', '$location', 'loginService', 'fileService'];
+    navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService'];
 
     var userSelectorController = function ($scope, loginService, dataService) {
         var vm = this;
@@ -347,28 +360,15 @@
 
     var metadataController = function ($scope, loginService, dataService, AnnowebDialog) {
         var vm = this;
-        dataService.get('session', $scope.sessionId).then(function(sessionObj){
-            vm.sessionData = sessionObj.data;
-        });
-
+        
+        vm.sessionObj = $scope.sessionObj;
+        vm.details = vm.sessionObj.data.details;
+        
         vm.addMetadata = function(ev) {
             AnnowebDialog.newMetdata();
         };
 
         vm.defaultdisplay = ['Description','Location'];
-
-        vm.details = [
-            {
-                'name': 'Description',
-                'icon': 'action:description',
-                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
-            },
-            {
-                'name': 'Location',
-                'icon': 'communication:location_on',
-                'data': ''
-            }
-        ];
 
     };
     metadataController.$inject = ['$scope', 'loginService', 'dataService', 'AnnowebDialog'];
