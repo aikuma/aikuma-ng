@@ -43,7 +43,7 @@
     <audio ng-src="{{rCtrl.recordingFile}}" controls></audio>
 </div>-->
 
-<md-button class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
+<md-button ng-disabled="rCtrl.isTempObjsaving" class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
     <md-icon md-svg-icon="content:save"></md-icon>
     {{"FINISH" | translate}}
 </md-button>

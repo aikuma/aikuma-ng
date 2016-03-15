@@ -256,7 +256,7 @@
                         return dbOps.set(USER_TYPE, userId, data, store);
                     });
                 });
-            }
+            };
             
             service.updateSession = function(sessionId, data) {
                 return $indexedDB.openStore(SESSION_TYPE, function(store) {
@@ -297,6 +297,7 @@
                             wrapper.addUserFile = dataMethods.addUserMeta('files').bind(wrapper);
                             wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
                         } else if(type === SESSION_TYPE) {
+                            wrapper.addSrcSegment = dataMethods.addUserMeta('segments').bind(wrapper);
                             wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
                         }
 
@@ -328,6 +329,44 @@
                     }
                     return sessionList;
                 });
+            };
+            
+            service.getSecondaryList = function(userId, sessionId) {
+                return $indexedDB.openStore(SECONDARY_TYPE, function(store) {
+                    return store.eachBy('user_session_idx', {beginKey: [userId, sessionId], endKey: [userId, sessionId]});
+                }).then(function(secList) {
+                    return secList;
+                });
+            };
+            
+            // Temporary metadata
+            
+            var getTempStorageKey = function(userId, sessionId, type) {
+                return userId + sessionId + type;
+            };
+            
+            service.setTempJsonObj = function(userId, sessionId, type, obj) {
+                if(window.sessionStorage) {
+                    var key = getTempStorageKey(userId, sessionId, type);
+                    window.sessionStorage[key] = JSON.stringify(obj);
+                }
+            };
+            
+            service.deleteTempJsonObj = function(userId, sessionId, type) {
+                if(window.sessionStorage) {    
+                    var key = getTempStorageKey(userId, sessionId, type);
+                    window.sessionStorage.removeItem(key);
+                }
+            };
+            
+            service.getTempJsonObj = function(userId, sessionId, type) {
+                if(window.sessionStorage) {
+                    var key = getTempStorageKey(userId, sessionId, type);
+                    if(window.sessionStorage[key])
+                        return JSON.parse(window.sessionStorage[key]);
+                    else
+                        return null;
+                }
             };
             
             return service;

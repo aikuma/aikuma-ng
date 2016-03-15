@@ -230,7 +230,7 @@
             vm.userObj = userObj;
         }])
 
-        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', function($location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList) {
+        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', function($location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList, secondaryList) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
             vm.location = 'MPI, Netherlands.';
@@ -240,6 +240,8 @@
             vm.sessionId = $routeParams.sessionId;
             vm.userObj = userObj;
             vm.sessionObj = sessionObj;
+            vm.langObjList = langObjList;
+            vm.secondaryList = secondaryList;
             
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
@@ -333,11 +335,17 @@
             vm.dur = srcDurMsec? srcDurMsec/1000 : 0;
             
             var srcLangIds = sessionObj.data.source.langIds;
-            vm.langList = langObjList.filter(function(obj) { return srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
+            vm.langNameList = _.object(vm.langObjList.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
+            vm.srcLangStr = vm.langObjList.filter(function(obj) { return srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
+            
+            vm.numAnnotation = vm.secondaryList.length;
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.
         .controller('respeakController', ['userObj', 'sessionObj', function(userObj, sessionObj) {
             var vm = this;
+            
+            vm.userObj = userObj;
+            vm.sessionObj = sessionObj;
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
         

@@ -120,6 +120,13 @@
                                 var sessionId = $route.current.params.sessionId;
                                 return dataService.get('session', sessionId);
                             }],
+                            secondaryList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                if(userId) {
+                                    return dataService.getSecondaryList(userId, sessionId);
+                                }
+                            }],
                             langObjList: ['fileService', function(fileService) {
                                 return fileService.getLanguages();
                             }]
@@ -188,8 +195,7 @@
                 itemStore.createIndex('user_idx', 'userId');
                 
                 var secondaryStore = db.createObjectStore('secondary', {keyPath: '_ID'});
-                secondaryStore.createIndex('user_idx', 'userId');
-                secondaryStore.createIndex('item_idx', 'itemId');
+                secondaryStore.createIndex('user_session_idx', ['userId', 'sessionId']);
             });
         }])
         .run(['$rootScope', '$location', function($rootScope, $location) {

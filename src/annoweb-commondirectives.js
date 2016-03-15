@@ -41,6 +41,10 @@
         .directive("ngAnnotationList", function() {
             return {
                 restrict: "E",
+                scope: {
+                    secondaryList: '=',
+                    langNameList: '='
+                },
                 templateUrl: "views/templates/annotationList-template.html",
                 controller: annotationListController,
                 controllerAs: 'alCtrl'
@@ -113,12 +117,21 @@
 
         var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
             var vm = this;
-            vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
+            //vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
+            vm.annotations = $scope.secondaryList.map(function(secondaryObj) {
+                var viewObj = {};
+                viewObj.type = secondaryObj.type;
+                if(secondaryObj.source.langIds && secondaryObj.source.langIds.length !== 0) {
+                    var langIds = secondaryObj.source.langIds;
+                    viewObj.langStr = $scope.langNameList[langIds[0]];
+                    viewObj.langISO = langIds[0];
+                }
+                return viewObj;
+            });
+            
             vm.addAnno = function (ev) {
                 AnnowebDialog.newAnno(ev, $attrs.userId,$attrs.sessionId);
             };
-
-
         };
         annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
 

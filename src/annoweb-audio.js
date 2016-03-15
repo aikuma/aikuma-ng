@@ -499,7 +499,7 @@
     //
     // RESPEAK2 DIRECTIVE
     //
-    var respeak2DirectiveController = function ($timeout, config, $scope, keyService, $attrs, loginService, audioService, dataService, fileService, $sce) {
+    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, $attrs, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         vm.playBoxesEnabled = false;
         var recorder;           // recorder.js
@@ -542,41 +542,47 @@
         // This is code which restores from a backend
         //
         // if we have saved data...
-        if ($scope.respeakSegmap) {
-            vm.segMap = $scope.respeakSegmap;
-            var colcol = 1;
-            vm.segMap.forEach(function(seg){
-                if (colcol === 0) {colcol = 1;}
-                else {colcol = 0;}
-                var slen = seg.child_ms[1] - seg.child_ms[0] + 1;
-                var coldat = {
-                    colidx: colcol,
-                    audioLength: slen
-                };
-                var hue = 198 + (colcol*40);
-                var reg = wsPlayback.addRegion({
-                    start: seg.source[0],
-                    end: seg.source[1],
-                    color: 'hsla('+hue+', 100%, 30%, 0.15)',
-                    drag: false,
-                    resize: false,
-                    data: coldat
+        var prevState = dataService.getTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak');
+        
+        vm.playIn = 0;
+        vm.regionList = [];
+        vm.segMap = [];
+        function restoreState() {
+            if (prevState) {
+                vm.regionList = [];
+                vm.segMap = prevState.segObj;
+                var colcol = 1;
+                vm.segMap.forEach(function(seg) {
+                    if (colcol === 0) {colcol = 1;}
+                    else {colcol = 0;}
+                    var slen = seg.child_ms[1] - seg.child_ms[0] + 1;
+                    var coldat = {
+                        colidx: colcol,
+                        audioLength: slen
+                    };
+                    var hue = 198 + (colcol*40);
+                    var reg = wsPlayback.addRegion({
+                        start: seg.source[0]/1000,
+                        end: seg.source[1]/1000,
+                        color: 'hsla('+hue+', 100%, 30%, 0.15)',
+                        drag: false,
+                        resize: false,
+                        data: coldat
+                    });
+                    vm.regionList.push(reg);
                 });
-                vm.regionList.push(reg);
-            });
-            vm.playIn = _.last(vm.regionList.end);
-            var arrayBuffer;
-            var fileReader = new FileReader();
-            fileReader.onload = function() {
-                arrayBuffer = this.result;
-                recordedAudioBuffer = new Float32Array(arrayBuffer);
-            };
-        } else {
-            vm.playIn = 0;
-            vm.regionList = [];
-            vm.segMap = [];
-        }
+                vm.playIn = _.last(vm.regionList).end;
 
+                var fileReader = new FileReader();
+                fileReader.onload = function() {
+                    recordedAudioBuffer = new Float32Array(this.result);
+                };
+                fileService.getFile(prevState.fileObj.url).then(function(prevFile) {
+                    fileReader.readAsArrayBuffer(prevFile); 
+                });
+            }
+        }
+        
         //
         // Set up Wavesurfer
         //
@@ -587,6 +593,7 @@
             hideScrollbar: false,
             scrollParent: true
         });
+
         /* Initialize the time line */
         var timeline = Object.create(wsPlayback.Timeline);
         timeline.init({
@@ -603,6 +610,7 @@
         wsPlayback.load($scope.source);
         // Register key bindings after wavesurfer is ready to play
         wsPlayback.on('ready', function() {
+            restoreState();
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
                 if (ev.location === 1) {leftKeyDown();}
@@ -958,23 +966,93 @@
         // With just one array, it's easy to make a file as required
         // DEPRECATED
         function createFile() {
+            if(!recordedAudioBuffer)
+                return;
+            
             var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
-            var fileURL = URL.createObjectURL(newBlob);
-            vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
-            vm.hasRecording = true;
+            //var fileURL = URL.createObjectURL(newBlob);
+            //vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
+            //vm.hasRecording = true;
+            
+            var respeakFileId, srcSegId;
+            fileProcessPromise.then(function() {
+                return fileService.writeFile(prevState.fileObj.url, newBlob);
+            }).then(function() {
+                respeakFileId = $scope.userObj.addUserFile(prevState.fileObj);
+                return $scope.userObj.save();
+            }).then(function() {
+                var sourceSegList = _.pluck(vm.segMap, 'source');
+                srcSegId = $scope.sessionObj.addSrcSegment(sourceSegList);
+                return $scope.sessionObj.save();
+            }).then(function() {
+                var respeakData = {
+                    names: [],          // need UI
+                    type: 'respeak'
+                };
+                respeakData.creatorId = loginService.getLoggedinUserId();    
+                respeakData.source = {
+                    recordFileId: respeakFileId,
+                    created: Date.now(),
+                    duration: Math.floor(recordedAudioBuffer.length / (config.sampleRate/1000)),
+                    langIds: $scope.sessionObj.data.source.langIds   // need UI
+                };
+                respeakData.segment = {
+                    sourceSegId: srcSegId,
+                    segMsec: _.pluck(vm.segMap, 'child_ms'),
+                    segSample: _.pluck(vm.segMap, 'child_samp')
+                };
+                
+                return dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, respeakData);
+            }).then(function() {
+                // clear prevState
+                return dataService.deleteTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak');
+            }).then(function() {
+                $location.path('session/' + $scope.sessionObj.data._ID);  
+            }).catch(function(err) {
+                console.error(err);
+            });
         }
 
         //
         // This is called every time there is data to be saved
         //
+        vm.isTempObjsaving = false;
+        var fileProcessPromise;
         function saveToBackend() {
-            var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
-            var fileURL = URL.createObjectURL(newBlob);
+            //var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
+            //var fileURL = URL.createObjectURL(newBlob);
             // 1. do something with this fileURL
-            
             // 2. do something with vm.segMap
+            
+            var newBlob = new Blob([recordedAudioBuffer], { type: "audio/wav" });
+            if(vm.isTempObjsaving) 
+                return;
+            
+            vm.isTempObjsaving = true;
+            if(prevState) {
+                fileProcessPromise = fileService.writeFile(prevState.fileObj.url, newBlob).then(function() {
+                    prevState.segObj = vm.segMap;
+                    dataService.setTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak', prevState);
+                    vm.isTempObjsaving = false;
+                }).catch(function(err){
+                    console.error(err);
+                });
+            } else {
+                fileProcessPromise = fileService.createFile(loginService.getLoggedinUserId(), newBlob).then(function(url) {
+                    prevState = {};
+                    prevState.fileObj = {
+                        url: url,
+                        type: newBlob.type
+                    };
+                    
+                    prevState.segObj = vm.segMap;
+                    dataService.setTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak', prevState);
+                    vm.isTempObjsaving = false;
+                }).catch(function(err){
+                    console.error(err);
+                });
+            }
         }
-
 
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {
@@ -984,8 +1062,9 @@
             microphone.destroy();
             wsRecord.destroy();
             if(recorder) {recorder.clear();}
+            recordedAudioBuffer = null;
         });
     };
-    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', 'keyService', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
 })();

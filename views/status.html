@@ -8,8 +8,8 @@
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:location_on"></md-icon>
                     {{sCtrl.location}}</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>{{sCtrl.dur}} seconds</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>{{sCtrl.langStr}}</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>2 annotations (1 transcription, 1 translation).</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>{{sCtrl.srcLangStr}}</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>{{sCtrl.numAnnotation}} annotations</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
             <section class="inset">
@@ -22,6 +22,7 @@
                     </div>
                 </div>
             </section>
+            
             <ng-player source="{{sCtrl.audioSourceUrl}}" wave-color="#4FC3F7" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-player>
             <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
                 <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
@@ -57,7 +58,7 @@
     <ng-metadata session-obj="sCtrl.sessionObj"></ng-metadata>
     <p></p>
 
-    <ng-annotation-list user-id="1" session-id="1"></ng-annotation-list>
+    <ng-annotation-list secondary-list="sCtrl.secondaryList" lang-name-list="sCtrl.langNameList"></ng-annotation-list>
     
     
     <input id="image-input" type="file" file-model="imageFile" accept="image/*" style="display:none;" >
