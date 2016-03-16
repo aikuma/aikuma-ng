@@ -48,5 +48,8 @@
   "ANNO_TRANS": "Translation",
   "ANNO_COMM": "Comments",
   "ANNO_OTH": "Other",
-  "ANNO_ADD": "Add new annotation"
+  "ANNO_ADD": "Add new annotation",
+  "ANNO_CREATE": "Create new annotation",
+  "ADD_NEW": "Add new",
+  "SESSION_ADD": "Add new session"
 }
