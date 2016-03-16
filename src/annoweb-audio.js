@@ -576,6 +576,7 @@
                 var fileReader = new FileReader();
                 fileReader.onload = function() {
                     recordedAudioBuffer = new Float32Array(this.result);
+                    console.log(recordedAudioBuffer.length, ' == ', prevState.fileLength);
                 };
                 fileService.getFile(prevState.fileObj.url).then(function(prevFile) {
                     fileReader.readAsArrayBuffer(prevFile); 
@@ -837,7 +838,9 @@
             var start = _.last(vm.segMap).child_samp[0];
             var end = _.last(vm.segMap).child_samp[1];
             recordedAudioBuffer = audioService.chopFromArray(recordedAudioBuffer, ((end - start) + 1));
-            saveToBackend();
+            if(prevState) {
+                prevState.fileLength -= (end - start + 1);
+            }
         }
 
         //
@@ -969,11 +972,20 @@
             if(!recordedAudioBuffer)
                 return;
             
+            fileProcessPromise.then(function() {
+                if(recordedAudioBuffer !== prevState.fileLength) {
+                    saveToBackend();
+                }
+                return fileProcessPromise;
+            }).then(function() {
+                $location.path('session/' + $scope.sessionObj.data._ID);
+            })
+            
             var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
             //var fileURL = URL.createObjectURL(newBlob);
             //vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
             //vm.hasRecording = true;
-            
+            /*
             var respeakFileId, srcSegId;
             fileProcessPromise.then(function() {
                 return fileService.writeFile(prevState.fileObj.url, newBlob);
@@ -1010,7 +1022,7 @@
                 $location.path('session/' + $scope.sessionObj.data._ID);  
             }).catch(function(err) {
                 console.error(err);
-            });
+            });*/
         }
 
         //
@@ -1024,13 +1036,15 @@
             // 1. do something with this fileURL
             // 2. do something with vm.segMap
             
-            var newBlob = new Blob([recordedAudioBuffer], { type: "audio/wav" });
+            var newAudioBuffer = prevState? recordedAudioBuffer.subarray(prevState.fileLength) : recordedAudioBuffer;
+            var newBlob = new Blob([newAudioBuffer], { type: "audio/wav" });
             if(vm.isTempObjsaving) 
                 return;
             
             vm.isTempObjsaving = true;
             if(prevState) {
-                fileProcessPromise = fileService.writeFile(prevState.fileObj.url, newBlob).then(function() {
+                fileProcessPromise = fileService.writeFile(prevState.fileObj.url, newBlob, 4 * prevState.fileLength).then(function() {
+                    prevState.fileLength += newAudioBuffer.length;
                     prevState.segObj = vm.segMap;
                     dataService.setTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak', prevState);
                     vm.isTempObjsaving = false;
@@ -1045,6 +1059,7 @@
                         type: newBlob.type
                     };
                     
+                    prevState.fileLength = recordedAudioBuffer.length;
                     prevState.segObj = vm.segMap;
                     dataService.setTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak', prevState);
                     vm.isTempObjsaving = false;
@@ -1062,7 +1077,6 @@
             microphone.destroy();
             wsRecord.destroy();
             if(recorder) {recorder.clear();}
-            recordedAudioBuffer = null;
         });
     };
     respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
