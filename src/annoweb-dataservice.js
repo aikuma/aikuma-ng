@@ -182,6 +182,13 @@
                         return id;
                     };
                 },
+                pushMeta: function(metaKey) {
+                    return function(metaObj) {
+                        if(!this.data[metaKey])
+                            this.data[metaKey] = [];
+                        this.data[metaKey].push(metaObj);
+                    };
+                },
                 save: function(type) {
                     return function() {
                         if(type === USER_TYPE) {
@@ -298,6 +305,7 @@
                             wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
                         } else if(type === SESSION_TYPE) {
                             wrapper.addSrcSegment = dataMethods.addUserMeta('segments').bind(wrapper);
+                            wrapper.pushDetail = dataMethods.pushMeta('details').bind(wrapper);
                             wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
                         }
 

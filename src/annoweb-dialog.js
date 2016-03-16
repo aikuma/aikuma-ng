@@ -12,7 +12,13 @@
                     templateUrl: 'views/templates/dialog-newMeta.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
-                    clickOutsideToClose: true
+                    clickOutsideToClose: true,
+                    resolve: {
+                        sessionObj: ['$route', 'dataService', function($route, dataService) {
+                            var sessionId = $route.current.params.sessionId;
+                            return dataService.get('session', sessionId);
+                        }]
+                    }
                 });
             };
             factory.alert = function(alerttitle, alerttext, callbackfunc) {
@@ -74,9 +80,9 @@
     };
     profileController.$inject = ['$mdDialog', '$scope', 'userObj'];
 
-    var newMetaDialogController = function ($mdDialog) {
+    var newMetaDialogController = function ($mdDialog, sessionObj) {
         var vm = this;
-
+        
         vm.defaultMeta = [
             {
                 name: 'META_CUSTOM',
@@ -100,10 +106,24 @@
             }
         ];
         vm.metaD = vm.defaultMeta[0];
+        vm.save = function() {
+            var detail = {};
+            if(vm.metaD.name === 'META_CUSTOM')
+                detail.name = vm.customName;
+            else
+                detail.name = vm.metaD.name;
+            detail.icon = vm.metaD.icon;
+            detail.data = vm.metaText;
+            
+            sessionObj.pushDetail(detail);
+            sessionObj.save();
+            $mdDialog.hide();
+        };
+        
         vm.close = function() {$mdDialog.cancel();};
 
     };
-    newMetaDialogController.$inject = ['$mdDialog'];
+    newMetaDialogController.$inject = ['$mdDialog', 'sessionObj'];
     
 })();
 

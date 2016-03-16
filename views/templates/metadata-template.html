@@ -4,7 +4,7 @@
         <md-card-content>
             <span class="headtext">
                 <md-icon style="width:32px;height:32px;padding-right:4px;" md-svg-icon="{{detail.icon}}"></md-icon>
-                {{detail.name}}
+                {{detail.name | translate}}
             </span>
             <p ng-if="detail.data==''" class="md-body-2"><i>None</i></p>
             <p ng-if="detail.data!=''" class="md-body-1">{{detail.data}}</p>

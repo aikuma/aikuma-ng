@@ -4,7 +4,7 @@
         <div class="md-toolbar-tools">
             <h2>{{"META_ADD" | translate}}</h2>
             <span flex></span>
-            <md-button class="md-icon-button" ng-click="mdCtrl.close()">
+            <md-button class="md-icon-button" ng-click="mdxCtrl.close()">
                 <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
             </md-button>
         </div>
@@ -13,7 +13,7 @@
         <md-input-container class="md-block">
             <label>{{"META_TYPE" | translate}}</label>
             <md-select ng-model="mdxCtrl.metaD">
-                 <md-option ng-repeat="meta in mdxCtrl.defaultMeta" value="{{meta.name}}">
+                 <md-option ng-repeat="meta in mdxCtrl.defaultMeta" ng-value="meta">
                      <!--<md-icon md-svg-icon="{{meta.icon}}" aria-label="{{meta.name | translate}}"></md-icon>-->
                     {{meta.name | translate}}
                 </md-option>
@@ -29,7 +29,7 @@
         </md-input-container>
     </md-content>
     <md-dialog-actions layout="row">
-        <md-buttonng-click="mdxCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>
+        <md-button ng-disabled="!mdxCtrl.metaText || (mdxCtrl.metaD.name == 'META_CUSTOM' && !mdxCtrl.customName)" ng-click="mdxCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>
         <md-button ng-click="mdxCtrl.close()" style="margin-right:20px;">{{"BUTTON_CANCEL" | translate}}</md-button>
     </md-dialog-actions>
     </form>

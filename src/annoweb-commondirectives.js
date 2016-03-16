@@ -115,9 +115,9 @@
         };
         topbarController.$inject = ['$scope', '$translate', 'config', 'loginService', 'AnnowebDialog'];
 
-        var annotationListController = function ($scope, $attrs, annoService, AnnowebDialog) {
+        var annotationListController = function ($scope, $attrs, aikumaService, AnnowebDialog) {
             var vm = this;
-            //vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
+            //vm.annotations = aikumaService.getAnnotations($attrs.userId,$attrs.sessionId);
             vm.annotations = $scope.secondaryList.map(function(secondaryObj) {
                 var viewObj = {};
                 viewObj.type = secondaryObj.type;
@@ -133,7 +133,7 @@
                 AnnowebDialog.newAnno(ev, $attrs.userId,$attrs.sessionId);
             };
         };
-        annotationListController.$inject = ['$scope', '$attrs', 'annoService', 'AnnowebDialog'];
+        annotationListController.$inject = ['$scope', '$attrs', 'aikumaService', 'AnnowebDialog'];
 
         var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService) {
             var vm = this;
