@@ -150,9 +150,9 @@
                             }]
                         }
                     })
-                    .when('/session/:sessionId/annotate/:annoId', {
+                    .when('/session/:sessionId/annotate', {
                         templateUrl: 'views/annotate.html',
-                        controller: 'statusController as sCtrl',
+                        controller: 'annotateViewController as avCtrl',
                         authorize: true,
                         resolve: {
                             userObj: ['loginService', 'dataService', function(loginService, dataService) {

@@ -22,8 +22,7 @@
             return {
                 restrict: "E",
                 scope: {
-                    secondaryList: '=',
-                    langNameList: '='
+                    sessionId: '='
                 },
                 templateUrl: "views/templates/annotations-template.html",
                 controller: annotationsController,
@@ -187,9 +186,8 @@
     }
     newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name'];
 
-    var annotationsController = function ($scope, $translate, aikumaService, $mdDialog, $mdToast) {
+    var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast) {
         var vm = this;
-        //vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
         vm.annotations = [];
         vm.annotationsx = [
             {
@@ -239,9 +237,12 @@
                 });
             });
         };
+        vm.editAnno = function(annoIdx) {
+            $location.path('/session/'+$scope.sessionId+'/annotate');
+        };
 
     };
-    annotationsController.$inject = ['$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast'];
+    annotationsController.$inject = ['$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
         var vm = this;

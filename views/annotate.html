@@ -1,16 +1,5 @@
-<md-toolbar>
-    <div class="md-toolbar-tools">
-        <span class="md-headline"><A HREF="#/">Home</A> &nbsp;&gt;&nbsp {{sCtrl.sessionData.name}}</span>
-    </div>
-</md-toolbar>
-<md-content class="md-padding">
+<ng-topbar session="{{avCtrl.sessionData.names[0]}}" session-id="{{avCtrl.sessionData._ID}}" activity="ACTIVITY_ANNOTATE"></ng-topbar>
 
-    <div layout="row">
-        <div layout="column" r-width="1000" resizable r-directions="['right']" r-flex="true">
-            <ng-wavesurfer flex wave-color="#3f51b5" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-wavesurfer>
-            <ng-annotate flex layout="row"></ng-annotate>
-        </div>
-        <ng-transcript flex layout-fill></ng-transcript>
-    </div>
-
+<md-content class="md-padding" md-scroll-y>
+    <ng-annotator></ng-annotator>
 </md-content>

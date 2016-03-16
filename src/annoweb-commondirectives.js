@@ -38,18 +38,6 @@
                 controllerAs: 'tsCtrl'
             };
         })
-        .directive("ngAnnotationList", function() {
-            return {
-                restrict: "E",
-                scope: {
-                    secondaryList: '=',
-                    langNameList: '='
-                },
-                templateUrl: "views/templates/annotationList-template.html",
-                controller: annotationListController,
-                controllerAs: 'alCtrl'
-            };
-        })
         .directive("ngMetadata", function() {
             return {
                 restrict: "E",
@@ -114,26 +102,6 @@
             };
         };
         topbarController.$inject = ['$scope', '$translate', 'config', 'loginService', 'AnnowebDialog'];
-
-        var annotationListController = function ($scope, $attrs, aikumaService, AnnowebDialog) {
-            var vm = this;
-            //vm.annotations = aikumaService.getAnnotations($attrs.userId,$attrs.sessionId);
-            vm.annotations = $scope.secondaryList.map(function(secondaryObj) {
-                var viewObj = {};
-                viewObj.type = secondaryObj.type;
-                if(secondaryObj.source.langIds && secondaryObj.source.langIds.length !== 0) {
-                    var langIds = secondaryObj.source.langIds;
-                    viewObj.langStr = $scope.langNameList[langIds[0]];
-                    viewObj.langISO = langIds[0];
-                }
-                return viewObj;
-            });
-            
-            vm.addAnno = function (ev) {
-                AnnowebDialog.newAnno(ev, $attrs.userId,$attrs.sessionId);
-            };
-        };
-        annotationListController.$inject = ['$scope', '$attrs', 'aikumaService', 'AnnowebDialog'];
 
         var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService) {
             var vm = this;
