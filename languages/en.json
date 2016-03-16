@@ -50,6 +50,15 @@
   "META_LOC": "Location",
   "META_CITY": "City",
   "META_CONSENT": "Consent",
-  "META_CUSTOM": "Custom"
+  "META_CUSTOM": "Custom",
+  "VIDEO": "Video",
+  "ANNO_ANNO": "Annotation",
+  "ANNO_TRANS": "Translation",
+  "ANNO_COMM": "Comments",
+  "ANNO_OTH": "Other",
+  "ANNO_ADD": "Add new annotation",
+  "ANNO_CREATE": "Create new annotation",
+  "ADD_NEW": "Add new",
+  "SESSION_ADD": "Add new session"
 }
 

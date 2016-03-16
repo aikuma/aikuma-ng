@@ -17,6 +17,18 @@
                 controller: personSelectorController,
                 controllerAs: 'psCtrl'
             };
+        })
+        .directive("ngAnnotations", function() {
+            return {
+                restrict: "E",
+                scope: {
+                    secondaryList: '=',
+                    langNameList: '='
+                },
+                templateUrl: "views/templates/annotations-template.html",
+                controller: annotationsController,
+                controllerAs: 'annoCtrl'
+            };
         });
 
     var personSelectorController = function ($scope, dataService, $mdDialog) {
@@ -174,5 +186,120 @@
         };
     }
     newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name'];
+
+    var annotationsController = function ($scope, aikumaService, $mdDialog) {
+        var vm = this;
+        //vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
+        vm.annotations = [
+            {
+                'type': 'annotation',
+                'langStr': 'English',
+                'langISO': 'en',
+                'SegId': 'seg1'
+            }
+        ];
+
+        vm.addAnno = function (ev) {
+            $mdDialog.show({
+                controller: newAnnotationController,
+                controllerAs: 'dCtrl',
+                templateUrl: 'views/templates/dialog-newAnnotation.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                locals: {thisScope: $scope}
+            });
+        };
+    };
+    annotationsController.$inject = ['$scope', 'aikumaService', '$mdDialog'];
+
+    var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
+        var vm = this;
+        vm.types = ['ANNO_ANNO','ANNO_TRANS','ANNO_COMM','ANNO_OTH'];
+        vm.choices = [{type:'ANNO_ANNO'}];
+        vm.hide = function() {
+            $mdDialog.hide();
+        };
+        vm.cancel = function() {
+            $mdDialog.cancel();
+        };
+        vm.answer = function(answer) {
+            $mdDialog.hide(answer);
+        };
+        // list of `language` value/display objects
+        vm.languages = loadAllx();
+
+        vm.querySearch   = querySearch;
+        vm.selectedItemChange = selectedItemChange;
+        vm.invalid = true;
+        vm.addNewChoice = function() {
+            vm.choices.push({});
+        };
+        vm.removeChoice = function(idx) {
+            vm.choices.splice(idx);
+        };
+        vm.makeAnno = function() {
+            var annos = [];
+            vm.choices.forEach(function(choice){
+                if (choice.searchText) {
+                    if (!choice.type) {choice.type='Unknown';}
+                    annos.push({
+                        lang: choice.searchText,
+                        ISO: choice.ISO,
+                        type: choice.type
+                    });
+                }
+            });
+            aikumaService.createAnnotations(annos);
+            $mdDialog.hide();
+        };
+
+        vm.newLanguage = function(language) {
+        };
+
+        vm.isDisabled = function(item) {
+            return vm.options[item].disabled;
+        };
+
+        vm.lastFilled = function() {
+            var lastitem = _.last(vm.choices);
+            if (lastitem.searchText && lastitem.type) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        function querySearch (query) {
+            return query ? vm.languages.filter( createFilterFor(query) ) : vm.languages;
+        }
+        function selectedItemChange(item,idx) {
+            $log.info('Item changed to ' + JSON.stringify(item));
+            if (item.id) {vm.choices[idx].ISO = item.id;}
+        }
+
+        function loadAllx() {
+            var languages=[];
+            aikumaService.languages.forEach( function(s) {
+                languages.push({
+                    value: s.Ref_Name.toLowerCase(),
+                    display: s.Ref_Name,
+                    id: s.Id
+                });
+            });
+            return languages;
+        }
+
+        /**
+         * Create filter function for a query string
+         */
+        function createFilterFor(query) {
+            var lowercaseQuery = angular.lowercase(query);
+            return function filterFn(language) {
+                return (language.value.indexOf(lowercaseQuery) === 0);
+            };
+        }
+    };
+    newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'aikumaService'];
 
 })();

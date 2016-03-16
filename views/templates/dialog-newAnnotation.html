@@ -9,64 +9,40 @@
                 </md-button>
             </div>
         </md-toolbar>
-        <md-dialog-content style="max-width:800px;max-height:810px;min-width:700px;min-height:300px;">
-            <md-tabs md-dynamic-height md-border-bottom>
-                <md-tab label="Annotations">
-                    <md-content class="md-padding">
+        <md-content style="max-width:500px;max-height:400px;min-width:500px;min-height:150px;">
+            <div layout="row" ng-repeat="choice in dCtrl.choices" layout-align="start start">
+                <md-autocomplete flex  style="height:16px"
+                                 md-input-name="choice.languageField"
+                                 md-selected-item="choice.selectedItem"
+                                 md-search-text="choice.searchText"
+                                 md-selected-item-change="dCtrl.selectedItemChange(item,$index)"
+                                 md-items="item in dCtrl.querySearch(choice.searchText)"
+                                 md-item-text="item.display"
+                                 placeholder="What language?"
+                                 md-floating-label="Language"
+                                 md-delay="200"
+                                 md-min-length="2">
+                    <md-item-template>
+                        <!-- <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}}</span> -->
+                        <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
+                    </md-item-template>
+                </md-autocomplete>
 
-                        <div layout="row" ng-repeat="choice in dCtrl.choices" layout-align="start start">
-                            <md-autocomplete flex  style="height:16px"
-                                             md-input-name="choice.languageField"
-                                             md-selected-item="choice.selectedItem"
-                                             md-search-text="choice.searchText"
-                                             md-selected-item-change="dCtrl.selectedItemChange(item,$index)"
-                                             md-items="item in dCtrl.querySearch(choice.searchText)"
-                                             md-item-text="item.display"
-                                             placeholder="What language?"
-                                             md-floating-label="Language"
-                                             md-delay="200"
-                                             md-min-length="2"
-                            >
-                                <md-item-template>
-                                    <!-- <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}}</span> -->
-                                    <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
-                                </md-item-template>
-                            </md-autocomplete>
+                <md-select required flex ng-model="choice.type"  md-floating-label="Language" placeholder="Type">
+                    <md-option ng-repeat="type in dCtrl.types" value="{{type}}">
+                        {{type | translate}}
+                    </md-option>
+                </md-select>
+            </div>
 
-                            <md-select required flex ng-model="choice.type"  md-floating-label="Language" placeholder="Type">
-                                <md-option ng-repeat="type in dCtrl.types" value="{{type.name}}">
-                                    {{type.name}}
-                                </md-option>
-                            </md-select>
-                        </div>
+            <md-button ng-disabled="!dCtrl.lastFilled()" ng-click="dCtrl.addNewChoice()" >
+                <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> Add New
+            </md-button>
 
-                        <md-button ng-disabled="!dCtrl.lastFilled()" ng-click="dCtrl.addNewChoice()" >
-                            <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> Add New
-                        </md-button>
-
-                        <md-divider></md-divider>
-
-
-                        <md-subheader class="md-no-sticky">Options</md-subheader>
-                        <div ng-repeat="option in dCtrl.optionlist">
-                            <md-checkbox  ng-disabled="dCtrl.isDisabled(option)" ng-checked="dCtrl.options[option].selected" ng-click="dCtrl.optionToggle(option)">
-                                {{ dCtrl.options[option].name }}
-                            </md-checkbox>
-                        </div>
-
-                    </md-content>
-
-                </md-tab>
-                <md-tab label="People">
-                    <md-content class="md-padding">
-                        <p>This is where we select people.</p>
-                    </md-content>
-                </md-tab>
-            </md-tabs>
-        </md-dialog-content>
+        </md-content>
         <md-dialog-actions layout="row">
-            <md-button ng-click="dCtrl.makeAnno()" ng-disabled="!dCtrl.choices[0].searchText || !dCtrl.choices[0].type">Create annotation</md-button>
-            <md-button ng-click="dCtrl.cancel()" style="margin-right:20px;" > Cancel</md-button>
+            <md-button ng-click="dCtrl.makeAnno()" ng-disabled="!dCtrl.choices[0].searchText || !dCtrl.choices[0].type">{{"ANNO_CREATE" | translate}}</md-button>
+            <md-button ng-click="dCtrl.cancel()" style="margin-right:20px;" > {{"BUTTON_CANCEL" | translate}}</md-button>
         </md-dialog-actions>
     </form>
 </md-dialog>

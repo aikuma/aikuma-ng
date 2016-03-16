@@ -43,5 +43,11 @@
   "RSPK_HELP7": "You got it!",
   "FINISH": "Finish",
   "METADATA": "Details",
-  "METADATA_ADD": "Add new details"
+  "METADATA_ADD": "Add new details",
+  "VIDEO": "Video",
+  "ANNO_ANNO": "Annotation",
+  "ANNO_TRANS": "Translation",
+  "ANNO_COMM": "Comments",
+  "ANNO_OTH": "Other",
+  "ANNO_ADD": "Add new annotation"
 }

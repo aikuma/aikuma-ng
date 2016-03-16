@@ -7,6 +7,7 @@
             'annoweb-wavesurfer',       // the wavesurfer directive
             'annoweb-dialog',           // dialog and alert service
              //'annoweb-service',       // old AnnowebService - needs to be removed (it should be removed when the files are removed)
+            'aikuma-video',             // experiment
             'pascalprecht.translate',   // localization
             'annoweb-experimental',     // Directives being tested before replacing old versions
             'annoweb-newservice',       // new AnnowebService and mock data service
@@ -175,6 +176,10 @@
                     .when('/settings', {
                         templateUrl: 'views/settings.html',
                         controller: 'settingsController as seCtrl'
+                    })
+                    .when('/video', {
+                        templateUrl: 'views/video.html',
+                        controller: 'videoController as vCtrl'
                     })
                     .otherwise({
                         redirectTo: '/'

@@ -202,6 +202,13 @@
                 },
                 {
                     class : '',
+                    title: 'VIDEO',
+                    icon: 'av:videocam',
+                    state: 'video'
+                },
+
+                {
+                    class : '',
                     title: 'NAV_BUGREP',
                     icon: 'action:bug_report',
                     state: 'reportbug'
