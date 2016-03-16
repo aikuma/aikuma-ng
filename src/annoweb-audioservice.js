@@ -128,8 +128,8 @@
 
             service.chopFromArray = function(buffer1, choplength) {
                 var newendpos = buffer1.length - choplength;
-                var  newBuffer = new Float32Array(buffer1.length - choplength);
-                newBuffer.set(buffer1.slice(0, newendpos));
+                var newBuffer = new Float32Array(buffer1.length - choplength);
+                newBuffer.set(buffer1.subarray(0, newendpos));
                 return newBuffer;
             };
 

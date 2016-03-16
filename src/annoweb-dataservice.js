@@ -527,19 +527,29 @@
                 return folderDefer.promise;
             };
             
-            service.writeFile = function(url, file) {
+            service.writeFile = function(url, file, pos) {
                 var fileDefer = $q.defer();
                 service.getFileEntry(url).then(function(fileEntry) {
                     fileEntry.createWriter(function(fileWriter) {
-                        fileWriter.onwriteend = function() {					
-                            fileDefer.resolve(fileEntry.toURL());
+                        fileWriter.onwriteend = function() {
+                            if(pos) {
+                                fileWriter.seek(pos);
+                                pos = 0;
+                                fileWriter.write(file);
+                            } else {
+                                fileDefer.resolve(fileEntry.toURL());
+                            }
                         };
 
                         fileWriter.onerror = function(err) {
                             fileDefer.reject(err);
                         };
-
-                        fileWriter.write(file);
+                        
+                        if(pos) {
+                            fileWriter.truncate(pos);
+                        } else {
+                            fileWriter.write(file);
+                        }
                     }, function(err) {
                         fileDefer.reject(err);
                     });
