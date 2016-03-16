@@ -187,10 +187,11 @@
     }
     newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name'];
 
-    var annotationsController = function ($scope, aikumaService, $mdDialog) {
+    var annotationsController = function ($scope, $translate, aikumaService, $mdDialog, $mdToast) {
         var vm = this;
         //vm.annotations = annoService.getAnnotations($attrs.userId,$attrs.sessionId);
-        vm.annotations = [
+        vm.annotations = [];
+        vm.annotationsx = [
             {
                 'type': 'annotation',
                 'langStr': 'English',
@@ -208,10 +209,39 @@
                 targetEvent: ev,
                 clickOutsideToClose: true,
                 locals: {thisScope: $scope}
+            }).then(function(annotations){
+                annotations.forEach(function(anno) {
+                    vm.annotations.push(anno);
+                });
+                console.log(annotations);
+            }, function() {
+                console.log('cancelled');
             });
         };
+        vm.deleteAnno = function(annoIdx,ev) {
+            $translate(["ANNO_DELCONF1", "ANNO_DELCONF2", "ANNO_DELNO", "ANNO_DELYES"]).then(function (translations) {
+                var confirm = $mdDialog.confirm()
+                    .title(translations.ANNO_DELCONF1)
+                    .textContent(translations.ANNO_DELCONF2)
+                    .targetEvent(ev)
+                    .ok(translations.ANNO_DELYES)
+                    .cancel(translations.ANNO_DELNO);
+                $mdDialog.show(confirm).then(function () {
+                    vm.annotations.splice(annoIdx);
+                }, function () {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .parent(angular.element( document.querySelector( '#annotationList' ) ))
+                            .hideDelay(2000)
+                            .position("top right")
+                            .textContent('Cluck cluck cluck!')
+                    );
+                });
+            });
+        };
+
     };
-    annotationsController.$inject = ['$scope', 'aikumaService', '$mdDialog'];
+    annotationsController.$inject = ['$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
         var vm = this;
@@ -244,16 +274,14 @@
                 if (choice.searchText) {
                     if (!choice.type) {choice.type='Unknown';}
                     annos.push({
-                        lang: choice.searchText,
-                        ISO: choice.ISO,
+                        langStr: choice.searchText,
+                        langISO: choice.ISO,
                         type: choice.type
                     });
                 }
             });
-            aikumaService.createAnnotations(annos);
-            $mdDialog.hide();
+            $mdDialog.hide(annos);
         };
-
         vm.newLanguage = function(language) {
         };
 

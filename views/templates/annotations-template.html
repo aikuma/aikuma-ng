@@ -1,19 +1,22 @@
 <!-- This is displayed if we have no regions to edit -->
 <div ng-if="annoCtrl.annotations.length==0">
-    <h5 class="md-warn md-subhead">No annotations yet!</h5>
+    <span class="md-warn md-title">{{"ANNO_NOEXIST" | translate}}</span>
 </div>
 
-<md-list>
-    <md-list-item class="md-2-line" ng-repeat="anno in annoCtrl.annotations" ng-click="annoCtrl.edit($index)">
+<md-list id="annotationList">
+    <md-list-item class="md-2-line" ng-repeat="anno in annoCtrl.annotations" ng-click="annoCtrl.edit($index)" layout="row">
         <md-icon md-svg-icon="image:filter_{{$index+1}}" class="md-avatar-icon" style="width:32px;height:32px;"></md-icon>
-
-        <div class="md-list-item-text" layout="column">
-            <h4 class="md-subhead" style="text-transform: uppercase;">{{anno.type}}</h4>
+        <div class="md-list-item-text" layout="column" flex>
+            <h4 class="md-subhead" style="text-transform: uppercase;">{{anno.type | translate}}</h4>
             <p class="md-body-2">{{anno.langStr}} ({{anno.langISO}})</p>
         </div>
+        <md-button class="md-icon-button md-warn" aria-label="Delete" ng-click="annoCtrl.deleteAnno($index,$event)">
+            <md-tooltip>{{"ANNO_DEL" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="nav:close"></md-icon>
+        </md-button>
         <md-divider ></md-divider>
     </md-list-item>
-    <md-button class="md-fab" aria-label="Add new" ng-click="annoCtrl.addAnno($event)">
+    <md-button class="md-fab" aria-label="Add new" style="margin-left:13px" ng-click="annoCtrl.addAnno($event)">
         <md-tooltip md-direction="right">{{"ANNO_ADD" | translate}}</md-tooltip>
         <md-icon md-svg-icon="content:add"></md-icon>
     </md-button>

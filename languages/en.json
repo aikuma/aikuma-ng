@@ -58,7 +58,13 @@
   "ANNO_OTH": "Other",
   "ANNO_ADD": "Add new annotation",
   "ANNO_CREATE": "Create new annotation",
+  "ANNO_NOEXIST": "No annotations yet!",
+  "ANNO_DEL": "Delete annotation",
   "ADD_NEW": "Add new",
-  "SESSION_ADD": "Add new session"
+  "SESSION_ADD": "Add new session",
+  "ANNO_DELCONF1": "Are you sure you want to delete this annotation?",
+  "ANNO_DELCONF2": "This cannot be undone!",
+  "ANNO_DELNO": "No way!",
+  "ANNO_DELYES": "Delete annotation"
 }
 
