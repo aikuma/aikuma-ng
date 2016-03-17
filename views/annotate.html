@@ -1,5 +1,10 @@
 <ng-topbar session="{{avCtrl.sessionData.names[0]}}" session-id="{{avCtrl.sessionData._ID}}" activity="ACTIVITY_ANNOTATE"></ng-topbar>
 
-<md-content class="md-padding" md-scroll-y>
-    <ng-annotator></ng-annotator>
-</md-content>
+<div layout="row">
+    <section layout="column" resizable r-directions="['right']" r-flex="false" style="width:60%">
+        <ng-annotator user-obj="avCtrl.userObj" session-obj="avCtrl.sessionObj" source="{{avCtrl.audioSourceUrl}}"></ng-annotator>
+    </section>
+    <section flex layout="column" class="md-padding" style="width:40%">
+        <ng-transcript user-obj="avCtrl.userObj" session-obj="avCtrl.sessionObj"></ng-transcript>
+    </section>
+</div>

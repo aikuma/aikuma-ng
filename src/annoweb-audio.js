@@ -277,7 +277,7 @@
     //
     // RESPEAK2 DIRECTIVE
     //
-    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, $attrs, loginService, audioService, dataService, fileService, $sce) {
+    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         vm.playBoxesEnabled = false;
         var recorder;           // recorder.js
@@ -399,10 +399,10 @@
                     if (ev.location === 1) {leftKeyUp();}
                     if (ev.location === 2) {rightKeyUp();}
             });
-            keyService.regKey(ffKeyCode,'keydown',  function(ev) {ffKeyDown(ev);});
-            keyService.regKey(ffKeyCode,'keyup',    function(ev) {ffKeyUp(ev);});
-            keyService.regKey(rwKeyCode,'keydown',  function(ev) {rwKey(ev);});
-            keyService.regKey(escKeyCode,'keydown', function(ev) {escKey(ev);});
+            keyService.regKey(ffKeyCode,'keydown',  function(ev) {ffKeyDown(true);});
+            keyService.regKey(ffKeyCode,'keyup',    function(ev) {ffKeyUp(true);});
+            keyService.regKey(rwKeyCode,'keydown',  function(ev) {rwKey(true);});
+            keyService.regKey(escKeyCode,'keydown', function(ev) {escKey(true);});
         });
         wsPlayback.on('seek', function() {
             vm.hasSeeked = true;
@@ -472,7 +472,7 @@
         // Most of these key handling functions will silently return if the user is holding another key
         // Note the order of setting the keydown status. We allow for people releasing keys before return, but we will not register keys down under simultaneous keypress conditions.
         // left key actions for playback
-        function leftKeyDown() {
+        function leftKeyDown(nokey) {
             if (vm.rightKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.leftKeyDown = true;
             disableRecording();
@@ -493,9 +493,9 @@
             lastAction = 'play';
             vm.isPlaying = true;
             recorder.clear();
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
-        function leftKeyUp() {
+        function leftKeyUp(nokey) {
             vm.leftKeyDown = false;
             if (vm.rightKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             wsPlayback.pause();
@@ -509,12 +509,12 @@
             }
             vm.recordClass = 'activespeaker';
             updateHelpText();
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
         vm.playDown = leftKeyDown;
         vm.playUp = leftKeyUp;
         // right key actions for playback
-        function rightKeyDown() {
+        function rightKeyDown(nokey) {
             if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.rightKeyDown = true;
             if (vm.recordDisabled) {return;}               // do nothing if record is disabled
@@ -526,9 +526,9 @@
             vm.recordClass = 'activerecord';
             recorder.record();                  // begin recorder.js
             vm.isRecording = true;
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
-        function rightKeyUp() {
+        function rightKeyUp(nokey) {
             vm.rightKeyDown = false;
             if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.isRecording = false;
@@ -539,13 +539,13 @@
             // Now let's update the UI
             vm.recordClass = 'activespeaker';
             updateHelpText();
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
         vm.recDown = rightKeyDown;
         vm.recUp = rightKeyUp;
         // fast forward key triggers playback at ffPlaybackRate times normal speed
         // We can also use this to create different region entry points, e.g. skip content we don't wish to respeak.
-        function ffKeyDown() {
+        function ffKeyDown(nokey) {
             if (vm.leftKeyDown || vm.rightKeyDown) {return;}  // Block multiple keys
             vm.ffKeyDown = true;
             vm.hasSeeked = true;
@@ -557,16 +557,16 @@
             wsPlayback.setPlaybackRate(ffPlaybackRate);
             wsPlayback.play();
             updateHelpText();
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
-        function ffKeyUp() {
+        function ffKeyUp(nokey) {
             vm.ffKeyDown = false;
             if (vm.leftKeyDown || vm.rightKeyDown) {return;}  // Block multiple keys
             wsPlayback.pause();
             wsPlayback.setPlaybackRate(1);
         }
         // rewind key just jumps the cursor back 1 second each time. No playback.
-        function rwKey() {
+        function rwKey(nokey) {
             disableRecording();
             var thistime =  wsPlayback.getCurrentTime();
             console.log('tt',thistime,vm.playIn);
@@ -575,7 +575,7 @@
             } else {
                 wsPlayback.skipBackward(skipTimeValue);
             }
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
 
         //
@@ -583,10 +583,10 @@
         //
         // escape key to undo last region - currently infinite length
         // after removing a region, update the UI
-        function escKey() {
+        function escKey(nokey) {
             deleteLastRegion();
             updateHelpText();
-            $scope.$apply();
+            if (nokey) {$scope.$apply();}
         }
 
         // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
@@ -857,6 +857,6 @@
             if(recorder) {recorder.clear();}
         });
     };
-    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', '$attrs', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
 })();

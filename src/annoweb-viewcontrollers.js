@@ -360,7 +360,6 @@
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
 
-
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }

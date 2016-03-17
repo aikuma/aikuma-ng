@@ -26,7 +26,7 @@
   "ACTIVITY_RESPEAK": "Respeak",
   "ACTIVITY_TRANSLATE": "Translate",
   "ACTIVITY_CHANGES": "Changes",
-  "ACTIVITY_ANNOTATE": "Annotate",
+  "ACTIVITY_ANNOTATE": "註釋",
   "ACTIVITY_HELP": "Help",
   "ACTIVITY_RECORD": "Record New",
   "PLAY": "播放",
@@ -66,5 +66,6 @@
   "ANNO_DELCONF2": "This cannot be undone!",
   "ANNO_DELNO": "No way!",
   "ANNO_DELYES": "Delete annotation",
-  "ANNO_DO": "Perform annotation"
+  "ANNO_DO": "Perform annotation",
+  "HOME_LOGREQ": "You are not logged in, please select a user"
 }

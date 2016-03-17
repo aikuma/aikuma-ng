@@ -180,3 +180,8 @@ md-sidenav {
     transform: translate(0, -50%);
     width:100%;
 }
+
+.transcript-content {
+    overflow-y: scroll;
+    height:400px;"
+}

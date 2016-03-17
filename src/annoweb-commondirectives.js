@@ -168,13 +168,12 @@
                     icon: 'action:change_history',
                     state: 'changes'
                 },
-                {
-                    class : '',
-                    title: 'VIDEO',
-                    icon: 'av:videocam',
-                    state: 'video'
-                },
-
+                //{
+                //    class : '',
+                //    title: 'VIDEO',
+                //    icon: 'av:videocam',
+                //    state: 'video'
+                //},
                 {
                     class : '',
                     title: 'NAV_BUGREP',

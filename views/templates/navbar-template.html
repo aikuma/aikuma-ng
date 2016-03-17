@@ -2,9 +2,9 @@
     <header class="nav-header">
         <div layout="column" layout-align="center center">
 
-            <img flex width="200" height="200" src="img/worldvoices.svg"/>
+            <img class="animated rollIn" flex width="200" height="200" src="img/worldvoices.svg"/>
 
-            <span flex class="md-subtitle inset" style="color:black">{{navCtrl.LOGINAS}} <i>{{navCtrl.currentUserName()}}</i></span>
+            <span flex class="md-subtitle inset animated slideInLeft" style="color:black">{{navCtrl.LOGINAS}} <i>{{navCtrl.currentUserName()}}</i></span>
         </div>
     </header>
     <md-button ng-if="!navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.login()">
