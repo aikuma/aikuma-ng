@@ -6,7 +6,7 @@
             <div ng-repeat="anno in axCtrl.annotations" layout="row">
                 <md-input-container flex class="md-block">
                     <label> {{anno.langStr+' ('+anno.langISO+')'}}</label>
-                    <input focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]" ng-focus="axCtrl.selectAnno($index)" ng-disabled="!axCtrl.annoEnabled[$index]" ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
+                    <input focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]" ng-focus="axCtrl.selectAnno($index)" ng-disabled="!axCtrl.annoEnabled[$index] || axCtrl.curRegion == null" ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
                 </md-input-container>
                 <md-input-container>
                     <md-switch ng-model="axCtrl.annoEnabled[$index]"></md-switch>
@@ -28,4 +28,10 @@
 
 </div>
 <md-button ng-click="axCtrl.test()">Test</md-button>
-{{axCtrl.regionList}}
+<div ng-repeat="reg in axCtrl.regionList">
+    start: {{reg.start}}
+    end: {{reg.end}}
+</div>
+region: {{axCtrl.curRegion}}
+playin: {{axCtrl.playIn}}
+
