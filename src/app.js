@@ -150,7 +150,7 @@
                             }]
                         }
                     })
-                    .when('/session/:sessionId/annotate', {
+                    .when('/session/:sessionId/annotate/:annotateId', {
                         templateUrl: 'views/annotate.html',
                         controller: 'annotateViewController as avCtrl',
                         authorize: true,
@@ -164,6 +164,10 @@
                             sessionObj: ['$route', 'dataService', function($route, dataService) {
                                 var sessionId = $route.current.params.sessionId;
                                 return dataService.get('session', sessionId);
+                            }],
+                            annotationObj: ['$route', 'dataService', function($route, dataService) {
+                                var annotateId = $route.current.params.annotateId;
+                                return dataService.get('secondary', annotateId);
                             }]
                         }
                     })
