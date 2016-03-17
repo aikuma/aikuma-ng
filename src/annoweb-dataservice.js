@@ -307,6 +307,14 @@
                             wrapper.addSrcSegment = dataMethods.addUserMeta('segments').bind(wrapper);
                             wrapper.pushDetail = dataMethods.pushMeta('details').bind(wrapper);
                             wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
+                        } else if(type === SECONDARY_TYPE) {
+                            wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
+                            
+                            //annotation
+                            if(data.type.indexOf('anno_') === 0) {
+                                
+                            }
+                            //other secondary
                         }
 
                         if(!cachedWrappers[cacheKey])
@@ -344,6 +352,12 @@
                     return store.eachBy('user_session_idx', {beginKey: [userId, sessionId], endKey: [userId, sessionId]});
                 }).then(function(secList) {
                     return secList;
+                });
+            };
+            
+            service.getAnnotationList = function(userId, sessionId) {
+                return service.getSecondaryList(userId, sessionId).then(function(secList) {
+                    return secList.filter(function(secData) { return secData.type.indexOf('anno_') === 0; });
                 });
             };
             

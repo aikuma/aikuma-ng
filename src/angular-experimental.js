@@ -22,7 +22,8 @@
             return {
                 restrict: "E",
                 scope: {
-                    sessionId: '='
+                    langNameList: '=',
+                    sessionId: '@'
                 },
                 templateUrl: "views/templates/annotations-template.html",
                 controller: annotationsController,
@@ -186,18 +187,43 @@
     }
     newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name'];
 
-    var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast) {
+    var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
         var vm = this;
         vm.annotations = [];
-        vm.annotationsx = [
-            {
-                'type': 'annotation',
-                'langStr': 'English',
-                'langISO': 'en',
-                'SegId': 'seg1'
+        
+        dataService.getAnnotationList(loginService.getLoggedinUserId(), $scope.sessionId).then(function(annoList) {
+            annoList.forEach(function(annoData) {
+                var temp = {
+                    id: annoData._ID,
+                    type: convertType(annoData.type),
+                    langISO: annoData.source.langIds[0],
+                    langStr: $scope.langNameList[ annoData.source.langIds[0] ]
+                };
+                vm.annotations.push(temp);
+            });
+        });
+        
+        function convertType(typeStr) {
+            switch(typeStr) {
+                case 'ANNO_ANNO':
+                    return 'anno_annotation';
+                case 'ANNO_TRANS':
+                    return 'anno_translation';
+                case 'ANNO_COMM':
+                    return 'anno_comments';
+                case 'ANNO_OTH':
+                    return 'anno_other';
+                case 'anno_annotation':
+                    return 'ANNO_ANNO';
+                case 'anno_translation':
+                    return 'ANNO_TRANS';
+                case 'anno_comments':
+                    return 'ANNO_COMM';
+                case 'anno_other':
+                    return 'ANNO_OTH';
             }
-        ];
-
+        }
+        
         vm.addAnno = function (ev) {
             $mdDialog.show({
                 controller: newAnnotationController,
@@ -208,14 +234,35 @@
                 clickOutsideToClose: true,
                 locals: {thisScope: $scope}
             }).then(function(annotations){
+                var promises = [];
                 annotations.forEach(function(anno) {
-                    vm.annotations.push(anno);
+                    var annotationData = {
+                        names: [],  // need UI
+                        type: convertType(anno.type),
+                        creatorId: loginService.getLoggedinUserId(),
+                        source: {
+                            created: Date.now(),
+                            langIds: [anno.langISO]
+                        },
+                        segment: {}
+                    };
+                    
+                    var promise = dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionId, annotationData);
+                    promises.push(promise);
                 });
-                console.log(annotations);
+                
+                $q.all(promises).then(function(res) {
+                    annotations.forEach(function(anno, index) {
+                        anno.id = res[index][0];
+                        vm.annotations.push(anno);
+                    });
+                });
+                
             }, function() {
                 console.log('cancelled');
             });
         };
+        
         vm.deleteAnno = function(annoIdx,ev) {
             $translate(["ANNO_DELCONF1", "ANNO_DELCONF2", "ANNO_DELNO", "ANNO_DELYES"]).then(function (translations) {
                 var confirm = $mdDialog.confirm()
@@ -238,11 +285,11 @@
             });
         };
         vm.editAnno = function(annoIdx) {
-            $location.path('/session/'+$scope.sessionId+'/annotate');
+            $location.path('/session/'+$scope.sessionId+'/annotate/' + vm.annotations[annoIdx].id);
         };
 
     };
-    annotationsController.$inject = ['$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast'];
+    annotationsController.$inject = ['$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast', '$q', 'loginService', 'dataService'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
         var vm = this;
