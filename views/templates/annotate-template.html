@@ -1,2 +1,31 @@
-<div id="annotate-timeline" style="height:20px" layout-fill></div>
-<div id="annotatePlayback"></div>
+<div layout="row">
+    <section layout="column" resizable class="md-padding" r-directions="['right']" r-flex="false" style="width:60%">
+        <div id="annotate-timeline" style="height:20px" layout-fill></div>
+        <div id="annotatePlayback"></div>
+        <section>
+            <div ng-repeat="anno in axCtrl.annotations" layout="row">
+                <md-input-container flex class="md-block">
+                    <label> {{anno.langStr+' ('+anno.langISO+')'}}</label>
+                    <input focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]" ng-focus="axCtrl.selectAnno($index)" ng-disabled="!axCtrl.annoEnabled[$index]" ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
+                </md-input-container>
+                <md-input-container>
+                    <md-switch ng-model="axCtrl.annoEnabled[$index]"></md-switch>
+                </md-input-container>
+            </div>
+        </section>
+
+    </section>
+    <section flex layout="column" class="md-padding" style="width:40%">
+        <md-content flex class="md-whiteframe-3dp">
+            <md-list flex>
+                <md-list-item class="md-1-line" ng-repeat="anno in axCtrl.annotations[axCtrl.selectedAnno].annos">
+                    <span ng-if="$index == axCtrl.curRegion">X: </span>
+                    {{anno}}
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </section>
+
+</div>
+<md-button ng-click="axCtrl.test()">Test</md-button>
+{{axCtrl.regionList}}

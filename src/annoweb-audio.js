@@ -310,7 +310,9 @@
         vm.hasRecording = false;
         // VM bindings to the UI
         vm.saveFile = createFile;
-        vm.redo = escKey;
+        vm.redo = function() {
+            escKey(false);
+        };
 
         var textStrings = ['RSPK_HELP1','RSPK_HELP2','RSPK_HELP3','RSPK_HELP4','RSPK_HELP5','RSPK_HELP6','RSPK_HELP7',''];
         vm.helpIdx = 0;
@@ -511,8 +513,12 @@
             updateHelpText();
             if (nokey) {$scope.$apply();}
         }
-        vm.playDown = leftKeyDown;
-        vm.playUp = leftKeyUp;
+        vm.playDown = function() {
+            leftKeyDown(false);
+        };
+        vm.playUp = function() {
+            leftKeyUp(false);
+        };
         // right key actions for playback
         function rightKeyDown(nokey) {
             if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
@@ -541,8 +547,12 @@
             updateHelpText();
             if (nokey) {$scope.$apply();}
         }
-        vm.recDown = rightKeyDown;
-        vm.recUp = rightKeyUp;
+        vm.recDown = function() {
+            rightKeyDown(false);
+        };
+        vm.recUp = function() {
+            rightKeyUp(false);
+        };
         // fast forward key triggers playback at ffPlaybackRate times normal speed
         // We can also use this to create different region entry points, e.g. skip content we don't wish to respeak.
         function ffKeyDown(nokey) {
@@ -628,10 +638,11 @@
         // let's make a region when we begin playing (it'll be green at first)
         function makeNewRegion(starttime) {
             // this stuff just alternates which we use to colour when the region switches to record mode
+            var colidx = 1;
             if (vm.regionList.length) {
-                var colidx = _.last(vm.regionList).data.colidx;
+                colidx = _.last(vm.regionList).data.colidx;
             } else {
-                var colidx = 1;
+                colidx = 1;
             }
             if (colidx === 0) {
                 colidx = 1;

@@ -42,38 +42,54 @@
                     ser.languages = results.data;
                 }
             });
-            ser.AnnoDesc = [
+            ser.mockannotations = [
                 {
                     'type': 'annotation',
                     'langStr': 'English',
                     'langISO': 'en',
-                    'SegId': 'seg1'
+                    'SegId': 'seg1',
+                    'annos': ['This is a bit of English', 'and a little bit more']
                 },
                 {
                     'type': 'translation',
                     'langStr': 'Chinese Mandarin',
                     'langISO': 'cmn',
-                    'SegId': 'seg1'
+                    'SegId': 'seg2',
+                    'annos': ['這是一段中文', '也多一小段']
                 }
             ];
+            ser.mocksegMap = {
+                'seg1': [
+                    {
+                        'source': [0, 2000],
+                        'map': null
+                    },
+                    {
+                        'source': [2500, 4000],
+                        'map': null
+                    }
+                ],
+                'seg2': [
+                    {
+                        'source': [0, 2000],
+                        'map': null
+                    },
+                    {
+                        'source': [2500, 4000],
+                        'map': null
+                    }
+                ]
+            };
 
             ser.getAnnotations = function() {
-                return ser.AnnoDesc;
+                return ser.mockannotations;
+            };
+            ser.getSegmap = function(id) {
+                return ser.mocksegMap[id];
             };
 
-            ser.createAnnotations = function(annotations) {
-                var newid = Math.max(Object.keys(ser.SegMap))+1;
-                ser.SegMap[newid] = [];
-                annotations.forEach(function(anno) {
-                    var newanno = {
-                        SegId: newid,
-                        type: anno.type,
-                        langStr: anno.lang,
-                        langISO: anno.ISO
-                    };
-                    ser.AnnoDesc.push(newanno);
-                });
-            };
+
+
             return ser;
         }]);
 
