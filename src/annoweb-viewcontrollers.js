@@ -230,7 +230,7 @@
             vm.userObj = userObj;
         }])
 
-        .controller('statusController', ['$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', function($location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList, secondaryList) {
+        .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList, secondaryList) {
             var vm = this;
             vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
             vm.location = 'MPI, Netherlands.';
@@ -245,6 +245,29 @@
             
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
+
+
+            // dummy data for respeaking/translation buttons
+            vm.hasRespeaking = true;
+            vm.hasTranslation = true;
+            vm.numRespeaking = 2;
+            vm.numTranslation = 3;
+            vm.respeakings = ['12/1/2016', '19/2/2016'];
+            vm.translations = ['6/1/2016', '11/2/2016', '9/3/2016'];
+
+            vm.editTranslation = function(index) {
+                // edit existing translation of index
+            };
+            vm.editRespeaking = function(index) {
+                // edit existing respeaking of index
+            };
+            vm.newTranslation = function() {
+                // record a new translation
+            };
+            vm.newRespeaking = function() {
+                // record a new respeaking
+            };
+
             
             if (vm.sessionData.imageIds) {
                 vm.ImageCount = vm.sessionData.imageIds.length;
@@ -271,6 +294,13 @@
             };
             vm.hasNextImage = function() {
                 return vm.currentImageIdx < vm.ImageCount;
+            };
+
+            vm.openRspMenu = function($mdOpenMenu, ev) {
+                $mdOpenMenu(ev);
+            };
+            vm.openTrnMenu = function($mdOpenMenu, ev) {
+                $mdOpenMenu(ev);
             };
 
             // When Image is imported

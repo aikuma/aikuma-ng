@@ -13,22 +13,81 @@
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
             <section class="inset">
-                <div layout="row">
+                <div layout="row" layout-align="start center">
                     <div ng-repeat="type in sCtrl.olactypes">
                         <img width="32" height="32" ng-click="sCtrl.clickOlac(type)" ng-class="{'imageunderlined': sCtrl.olac === type}" ng-src="img/icons/discourse-type-icons/32px/{{sCtrl.olac === type ? 'clicked' : 'unclick'}}/{{type}}.png" style="padding-left:8px;padding-right:8px;"/>
                         <md-tooltip md-direction="below">
                             {{type}}
                         </md-tooltip>
                     </div>
+
                 </div>
             </section>
             
             <ng-player source="{{sCtrl.audioSourceUrl}}" wave-color="#4FC3F7" progress-color="#33627c" height="120" min_Px_Per_Sec="150"></ng-player>
-            <md-button aria-label="Respeak" ng-click="sCtrl.respeak()" >
-                <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-                Add respeaking
+
+            <!--Respeaking button or menu-->
+            <section layout="row" layout-align="start center">
+            <div>
+                <md-icon md-svg-src="img/icons/technology.svg" style="width:32px;height:32px;margin-left:8px;" aria-label="Recordings"></md-icon>
+            </div>
+
+            <md-button ng-if="!sCtrl.hasRespeaking" aria-label="Record respeaking" class="" ng-click="sCtrl.respeak()" >
+                <md-icon md-svg-icon="av:mic"></md-icon>
+                Record Respeaking
             </md-button>
+            <md-menu ng-if="sCtrl.hasRespeaking">
+                <md-button aria-label="Respeaking menu" ng-click="sCtrl.openRspMenu($mdOpenMenu, $event)">
+                    <md-icon md-menu-origin md-svg-icon="nav:refresh"></md-icon>
+                    <span>Respeaking ({{sCtrl.numRespeaking}})</span>
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item  ng-repeat="respk in sCtrl.respeakings">
+                        <md-button ng-click="sCtrl.editRespeak($index)">
+                            <md-icon md-menu-align-target md-svg-icon="editor:mode_edit"></md-icon>
+                            <span class="md-body-2">Edit Respeaking <i>{{respk}}</i></span>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="sCtrl.newRespeaking()">
+                            <md-icon md-menu-align-target md-svg-icon="av:mic"></md-icon>
+                            <span class="md-body-2">Record New Respeaking</span>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+
+            <!--Translation button or menu-->
+            <md-button ng-if="!sCtrl.hasTranslation" aria-label="Record translation" ng-click="sCtrl.respeak()" >
+                <md-icon md-svg-icon="av:mic"></md-icon>
+                Record Translation
+            </md-button>
+            <md-menu ng-if="sCtrl.hasTranslation">
+                <md-button aria-label="Translation menu" ng-click="sCtrl.openTrnMenu($mdOpenMenu, $event)">
+                    <md-icon md-menu-origin md-svg-icon="action:translate"></md-icon>
+                    <span>Translation ({{sCtrl.numTranslation}})</span>
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item ng-repeat="trans in sCtrl.translations">
+                        <md-button ng-click="sCtrl.editTranslate($index)">
+                            <md-icon md-menu-align-target md-svg-icon="editor:mode_edit"></md-icon>
+                            <span class="md-body-2">Edit Translation <i>{{trans}}</i></span>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="sCtrl.newTranslation()">
+                            <md-icon md-menu-align-target md-svg-icon="av:mic"></md-icon>
+                            <span class="md-body-2">Record New Translation</span>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+
+            </section >
+
         </div>
+
+
 
         <md-card>
             <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" style="width:160px;height:160px;"></md-icon>

@@ -4,17 +4,14 @@
 </div>
 
 <md-list id="annotationList">
-    <md-list-item class="md-2-line animated bounceInRight" ng-repeat="anno in annoCtrl.annotations" ng-click="annoCtrl.editAnno($index)" layout="row">
+    <md-list-item class="md-2-line animated bounceInRight" ng-repeat="anno in annoCtrl.annotations" layout="row" ng-click="annoCtrl.editAnno($index)">
         <md-icon md-svg-icon="image:filter_{{$index+1}}" class="md-avatar-icon" style="width:32px;height:32px;"></md-icon>
-        <md-tooltip md-direction="top">Perform annotation</md-tooltip>
-        <div class="md-list-item-text" layout="column" flex>
+        <md-tooltip md-direction="top">{{"ANNO_DO" | translate}}</md-tooltip>
+        <div class="md-list-item-text" layout="column" flex  >
             <h4 class="md-subhead" style="text-transform: uppercase;">{{anno.type | translate}}</h4>
             <p class="md-body-2">{{anno.langStr}} ({{anno.langISO}})</p>
         </div>
-        <md-button class="md-icon-button md-warn" aria-label="Delete" ng-click="annoCtrl.deleteAnno($index,$event)">
-            <md-tooltip md-direction="left">{{"ANNO_DO" | translate}}</md-tooltip>
-            <md-icon md-svg-icon="nav:close"></md-icon>
-        </md-button>
+        <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="annoCtrl.deleteAnno($index,$event)"><md-tooltip md-direction="left">{{"ANNO_DEL" | translate}}</md-tooltip></md-icon>
         <md-divider ></md-divider>
     </md-list-item>
     <md-button ng-class="{'animated infinite pulse' : annoCtrl.annotations.length==0}" class="md-fab" aria-label="Add new" style="margin-left:13px" ng-click="annoCtrl.addAnno($event)">

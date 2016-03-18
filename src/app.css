@@ -1,5 +1,9 @@
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
 #annowebframe {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
@@ -184,4 +188,8 @@ md-sidenav {
 .transcript-content {
     overflow-y: scroll;
     height:400px;"
+}
+
+.dividerhackfix:focus {
+    background-color: yellow;
 }
