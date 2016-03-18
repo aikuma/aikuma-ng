@@ -1,7 +1,7 @@
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', 'Noto Sans TC', sans-serif;
 }
 
 #annowebframe {
