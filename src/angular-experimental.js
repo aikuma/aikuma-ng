@@ -22,6 +22,7 @@
             return {
                 restrict: "E",
                 scope: {
+                    annotationList: '=',
                     langNameList: '=',
                     sessionId: '@'
                 },
@@ -189,18 +190,13 @@
 
     var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
         var vm = this;
-        vm.annotations = [];
-        
-        dataService.getAnnotationList(loginService.getLoggedinUserId(), $scope.sessionId).then(function(annoList) {
-            annoList.forEach(function(annoData) {
-                var temp = {
-                    id: annoData._ID,
-                    type: convertType(annoData.type),
-                    langISO: annoData.source.langIds[0],
-                    langStr: $scope.langNameList[ annoData.source.langIds[0] ]
-                };
-                vm.annotations.push(temp);
-            });
+        vm.annotations = $scope.annotationList.map(function(annoData) {
+            return {
+                id: annoData._ID,
+                type: convertType(annoData.type),
+                langISO: annoData.source.langIds[0],
+                langStr: $scope.langNameList[ annoData.source.langIds[0] ]
+            };
         });
         
         function convertType(typeStr) {
@@ -249,6 +245,7 @@
                     
                     var promise = dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionId, annotationData);
                     promises.push(promise);
+                    $scope.annotationList.push(annotationData);
                 });
                 
                 $q.all(promises).then(function(res) {
@@ -272,7 +269,11 @@
                     .ok(translations.ANNO_DELYES)
                     .cancel(translations.ANNO_DELNO);
                 $mdDialog.show(confirm).then(function () {
-                    vm.annotations.splice(annoIdx);
+                    dataService.remove('secondary', vm.annotations[annoIdx].id).then(function() {
+                        vm.annotations.splice(annoIdx, 1);
+                        $scope.annotationList.splice(annoIdx, 1);
+                    });
+                    
                 }, function () {
                     $mdToast.show(
                         $mdToast.simple()

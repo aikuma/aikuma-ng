@@ -127,7 +127,10 @@
                     recordFileId: true,
                     langIds: true,
                     created: true,
-                    duration: true
+                    duration: true,
+                    
+                    sampleRate: false,      // for continuous save of respeak
+                    sampleLength: false     // for continuous save of respeak
                 },
                 segment: {
                     sourceSegId: true,
@@ -549,8 +552,33 @@
                 return folderDefer.promise;
             };
             
+            var wavHeaderBuf = new ArrayBuffer(8);
+            var postprocessFuncs = {};
+            postprocessFuncs['audio/wav'] = function(fileWriter, step, byteBuf) {
+                switch(step) {
+                    case 2:
+                        fileWriter.seek(4);
+                        fileWriter.write(new Blob([byteBuf.slice(0, 4)]));
+                        break;
+                    case 1:
+                        fileWriter.seek(40);
+                        fileWriter.write(new Blob([byteBuf.slice(4, 8)]));
+                        break;
+                }
+            };
             service.writeFile = function(url, file, pos) {
                 var fileDefer = $q.defer();
+                var step = 0;
+                
+                if(pos < 0) {
+                    return;
+                } else if(file.type === 'audio/wav') {
+                    step = 2;
+                    var view = new DataView(wavHeaderBuf);
+                    view.setUint32(0, (pos + file.size) - 8, true);
+                    view.setUint32(4, (pos + file.size) - 44, true);
+                }
+                
                 service.getFileEntry(url).then(function(fileEntry) {
                     fileEntry.createWriter(function(fileWriter) {
                         fileWriter.onwriteend = function() {
@@ -558,6 +586,8 @@
                                 fileWriter.seek(pos);
                                 pos = 0;
                                 fileWriter.write(file);
+                            } else if(step) {
+                                postprocessFuncs[file.type](fileWriter, step--, wavHeaderBuf);
                             } else {
                                 fileDefer.resolve(fileEntry.toURL());
                             }

@@ -22,7 +22,7 @@
                         oncomplete({
                             getAudioBuffer: function() {
                                 return resampeledBuffer;
-                            },
+                            },/*
                             getFile: function() {
                                 var audioData = {
                                     sampleRate: resampeledBuffer.sampleRate,
@@ -36,7 +36,7 @@
                                 });
                                 return blob;
                                 //return URL.createObjectURL(blob);
-                            }
+                            }*/
                         });
                     }
                 };
@@ -57,6 +57,13 @@
                 });
                 return blob;
             };
+            
+            service.floatTo16BitPCM = function(samples) {
+                var buffer = new ArrayBuffer(samples.length * 2);
+                var view = new DataView(buffer);
+                floatTo16BitPCM(view, 0, samples);
+                return new Int16Array(buffer);
+            } 
 
             function floatTo16BitPCM(output, offset, input) {
                 for (var i = 0; i < input.length; i++, offset += 2) {

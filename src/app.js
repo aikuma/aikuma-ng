@@ -138,15 +138,34 @@
                         controller: 'respeakController as rsCtrl',
                         authorize: true,
                         resolve: {
-                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                            dataObj: ['$q', '$route', 'loginService', 'dataService', function($q, $route, loginService, dataService) {
+                                var promises = [];
                                 var userId = loginService.getLoggedinUserId();
-                                if(userId) {
-                                    return dataService.get('user', userId);
-                                }
-                            }],
-                            sessionObj: ['$route', 'dataService', function($route, dataService) {
                                 var sessionId = $route.current.params.sessionId;
-                                return dataService.get('session', sessionId);
+                                
+                                promises.push(dataService.get('user', userId));
+                                promises.push(dataService.get('session', sessionId));
+                                
+                                return $q.all(promises);
+                            }]
+                        }
+                    })
+                    .when('/session/:sessionId/respeak/:respeakId', {
+                        templateUrl: 'views/respeak.html',
+                        controller: 'respeakController as rsCtrl',
+                        authorize: true,
+                        resolve: {
+                            dataObj: ['$q', '$route', 'loginService', 'dataService', function($q, $route, loginService, dataService) {
+                                var promises = [];
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                var respeakId = $route.current.params.respeakId;
+                                
+                                promises.push(dataService.get('user', userId));
+                                promises.push(dataService.get('session', sessionId));
+                                promises.push(dataService.get('secondary', respeakId));
+                                
+                                return $q.all(promises);
                             }]
                         }
                     })

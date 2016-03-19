@@ -22,6 +22,7 @@
                 scope: {
                     userObj: '=',
                     sessionObj: '=',
+                    respeakObj: '=',
                     source: "@"
                 },
                 templateUrl: "views/templates/respeak2-template.html",
@@ -99,7 +100,9 @@
                     vm.recordDurMsec = Math.floor(buf[0].length / (microphone.micContext.sampleRate/1000));
                     console.log('rt', vm.recordDurMsec);
                     audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
-                        var blob = thinggy.getFile();
+                        //var blob = thinggy.getFile();
+                        var audioBuf = thinggy.getAudioBuffer();
+                        var blob = audioService.arrayToBlob(audioBuf.getChannelData(0), 1, audioBuf.sampleRate);
                         fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
                             callback(url);
                             $scope.recording=$sce.trustAsResourceUrl(url);
@@ -279,7 +282,7 @@
     //
     var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
-        vm.playBoxesEnabled = false;
+        vm.playBoxesEnabled = false;    //playSegment will not work
         var recorder;           // recorder.js
         var ctrlKeyCode = 16;   // control key (16 is shift)
         var ffKeyCode = 39;     // right arrow
@@ -291,6 +294,7 @@
         var respeakAudioContext = new AudioContext();
         // Variables that record playin position, array of wavesurfer regions, segmentation map and more
         var recordedAudioBuffer = null;
+        var resampledRate = config.sampleRate;
 
         var lastAction = null;
         vm.isPlaying = false;
@@ -322,20 +326,34 @@
         // This is code which restores from a backend
         //
         // if we have saved data...
-        var prevState = dataService.getTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak');
+        var prevState = $scope.respeakObj? {} : null;
         
         vm.playIn = 0;
         vm.regionList = [];
         vm.segMap = [];
         function restoreState() {
-            if (prevState) {
-                vm.regionList = [];
-                vm.segMap = prevState.segObj;
+            if ($scope.respeakObj) {
+                prevState.fileObj = $scope.userObj.data.files[$scope.respeakObj.data.source.recordFileId];
+                prevState.sampleLength = $scope.respeakObj.data.source.sampleLength;
+                prevState.sampleRate = $scope.respeakObj.data.source.sampleRate;
+                prevState.srcSegId = $scope.respeakObj.data.segment.sourceSegId;
+                
+                var sourceSeg = $scope.sessionObj.data.segments[prevState.srcSegId];
+                var respeakSeg = $scope.respeakObj.data.segment.segMsec;
+                var respeakSegSample = $scope.respeakObj.data.segment.segSample;
+                vm.segMap = _.zip(sourceSeg, respeakSeg, respeakSegSample).map(function(arr) {
+                    return {
+                        source: arr[0],
+                        child_ms: arr[1],
+                        child_samp: arr[2]
+                    };
+                });
+                
                 var colcol = 1;
                 vm.segMap.forEach(function(seg) {
                     if (colcol === 0) {colcol = 1;}
                     else {colcol = 0;}
-                    var slen = seg.child_ms[1] - seg.child_ms[0] + 1;
+                    var slen = seg.child_samp[1] - seg.child_samp[0] + 1;
                     var coldat = {
                         colidx: colcol,
                         audioLength: slen
@@ -352,15 +370,16 @@
                     vm.regionList.push(reg);
                 });
                 vm.playIn = _.last(vm.regionList).end;
-
+                /*
                 var fileReader = new FileReader();
                 fileReader.onload = function() {
                     recordedAudioBuffer = new Float32Array(this.result);
-                    console.log(recordedAudioBuffer.length, ' == ', prevState.fileLength);
+                    console.log(recordedAudioBuffer.length, ' == ', prevState.sampleLength);
                 };
                 fileService.getFile(prevState.fileObj.url).then(function(prevFile) {
                     fileReader.readAsArrayBuffer(prevFile); 
-                });
+                });*/
+                recordedAudioBuffer = new Float32Array(prevState.sampleLength);
             }
         }
         
@@ -391,7 +410,7 @@
         wsPlayback.load($scope.source);
         // Register key bindings after wavesurfer is ready to play
         wsPlayback.on('ready', function() {
-            restoreState();
+            $scope.$apply(restoreState);
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
                 if (ev.location === 1) {leftKeyDown();}
@@ -454,7 +473,7 @@
                 console.log('audio spaz', feh);
             });
 
-        vm.playSegment = function(regidx) {
+        vm.playSegment = function(regidx) { // recordedAudioBuffer needs to be converted to make this function work
             var thisPosition = wsPlayback.getCurrentTime();
             disableRecording();
             wsPlayback.toggleInteraction();
@@ -601,10 +620,12 @@
 
         // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
         function deleteLastRegion() {
+            var isAudioDeleted = false;
             if (vm.regionList.length) {
                 // if this is not the case, then the user is undoing a region that doesn't have recorded data yet.
                 if (vm.segMap.length === vm.regionList.length) {
                     deleteLastAudio();
+                    isAudioDeleted = true;
                 }
                 var reg = vm.regionList.pop();
                 reg.remove();
@@ -613,11 +634,15 @@
                 } else {
                     vm.playIn = 0;
                 }
-                seekToPlayin();
-                disableRecording();
                 // this is so we don't start moving a record-mode region!
                 lastAction = 'delete';
                 makeSegmap(); // update the Segmap
+                if(isAudioDeleted) {
+                    saveToBackend();
+                }
+                
+                seekToPlayin();
+                disableRecording();
             }
         }
 
@@ -627,7 +652,7 @@
             var end = _.last(vm.segMap).child_samp[1];
             recordedAudioBuffer = audioService.chopFromArray(recordedAudioBuffer, ((end - start) + 1));
             if(prevState) {
-                prevState.fileLength -= (end - start + 1);
+                prevState.sampleLength -= (end - start + 1);
             }
         }
 
@@ -698,6 +723,7 @@
                     } else {
                         recordedAudioBuffer = audioArrayData;
                     }
+                    resampledRate = resampledBuffer.getAudioBuffer().sampleRate;
                     vm.debug = recordedAudioBuffer.length;
                     reg.data.audioLength = length;
                     makeSegmap();
@@ -758,60 +784,22 @@
         // With just one array, it's easy to make a file as required
         // DEPRECATED
         function createFile() {
-            if(!recordedAudioBuffer)
-                return;
-            
-            fileProcessPromise.then(function() {
-                if(recordedAudioBuffer !== prevState.fileLength) {
+            if(fileProcessPromise && recordedAudioBuffer.length !== prevState.sampleLength) {
+                fileProcessPromise.then(function() {
                     saveToBackend();
-                }
-                return fileProcessPromise;
-            }).then(function() {
+                    return fileProcessPromise;
+                }).then(function() {
+                    $location.path('session/' + $scope.sessionObj.data._ID);
+                });
+            } else {
                 $location.path('session/' + $scope.sessionObj.data._ID);
-            })
+            }
             
-            var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
+            
+            //var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
             //var fileURL = URL.createObjectURL(newBlob);
             //vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
             //vm.hasRecording = true;
-            /*
-            var respeakFileId, srcSegId;
-            fileProcessPromise.then(function() {
-                return fileService.writeFile(prevState.fileObj.url, newBlob);
-            }).then(function() {
-                respeakFileId = $scope.userObj.addUserFile(prevState.fileObj);
-                return $scope.userObj.save();
-            }).then(function() {
-                var sourceSegList = _.pluck(vm.segMap, 'source');
-                srcSegId = $scope.sessionObj.addSrcSegment(sourceSegList);
-                return $scope.sessionObj.save();
-            }).then(function() {
-                var respeakData = {
-                    names: [],          // need UI
-                    type: 'respeak'
-                };
-                respeakData.creatorId = loginService.getLoggedinUserId();    
-                respeakData.source = {
-                    recordFileId: respeakFileId,
-                    created: Date.now(),
-                    duration: Math.floor(recordedAudioBuffer.length / (config.sampleRate/1000)),
-                    langIds: $scope.sessionObj.data.source.langIds   // need UI
-                };
-                respeakData.segment = {
-                    sourceSegId: srcSegId,
-                    segMsec: _.pluck(vm.segMap, 'child_ms'),
-                    segSample: _.pluck(vm.segMap, 'child_samp')
-                };
-                
-                return dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, respeakData);
-            }).then(function() {
-                // clear prevState
-                return dataService.deleteTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak');
-            }).then(function() {
-                $location.path('session/' + $scope.sessionObj.data._ID);  
-            }).catch(function(err) {
-                console.error(err);
-            });*/
         }
 
         //
@@ -825,32 +813,87 @@
             // 1. do something with this fileURL
             // 2. do something with vm.segMap
             
-            var newAudioBuffer = prevState? recordedAudioBuffer.subarray(prevState.fileLength) : recordedAudioBuffer;
-            var newBlob = new Blob([newAudioBuffer], { type: "audio/wav" });
+            if(prevState && prevState.sampleRate && prevState.sampleRate !== resampledRate) {
+                // error
+                return;
+            }
+            
             if(vm.isTempObjsaving) 
                 return;
             
             vm.isTempObjsaving = true;
+            var newBlob;
             if(prevState) {
-                fileProcessPromise = fileService.writeFile(prevState.fileObj.url, newBlob, 4 * prevState.fileLength).then(function() {
-                    prevState.fileLength += newAudioBuffer.length;
-                    prevState.segObj = vm.segMap;
-                    dataService.setTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak', prevState);
+                var newAudioBuffer = recordedAudioBuffer.subarray(prevState.sampleLength);
+                newBlob = new Blob([audioService.floatTo16BitPCM(newAudioBuffer)], { type: 'audio/wav' });
+                
+                fileProcessPromise = fileService.writeFile(prevState.fileObj.url, newBlob, 44 + prevState.sampleLength*2).then(function() {
+                    
+                    prevState.sampleLength += newAudioBuffer.length;
+                    
+                    var sourceSegList = _.pluck(vm.segMap, 'source');
+                    if($scope.sessionObj.data.segments[prevState.srcSegId]) {
+                        $scope.sessionObj.data.segments[prevState.srcSegId] = sourceSegList;
+                    }
+                    return $scope.sessionObj.save();
+                }).then(function() {
+                    if($scope.respeakObj.data) {
+                        $scope.respeakObj.data.source.duration = Math.floor(recordedAudioBuffer.length / (resampledRate/1000));
+                        $scope.respeakObj.data.source.sampleLength = recordedAudioBuffer.length;
+                        $scope.respeakObj.data.segment.segMsec = _.pluck(vm.segMap, 'child_ms');
+                        $scope.respeakObj.data.segment.segSample = _.pluck(vm.segMap, 'child_samp');
+                    }
+                    return $scope.respeakObj.save();
+                }).then(function() {
                     vm.isTempObjsaving = false;
                 }).catch(function(err){
                     console.error(err);
                 });
             } else {
+                newBlob = audioService.arrayToBlob(recordedAudioBuffer, 1, resampledRate);
+                
+                var respeakFileId;
                 fileProcessPromise = fileService.createFile(loginService.getLoggedinUserId(), newBlob).then(function(url) {
                     prevState = {};
                     prevState.fileObj = {
                         url: url,
                         type: newBlob.type
                     };
+                    prevState.sampleLength = recordedAudioBuffer.length;
+                    prevState.sampleRate = resampledRate;
                     
-                    prevState.fileLength = recordedAudioBuffer.length;
-                    prevState.segObj = vm.segMap;
-                    dataService.setTempJsonObj(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, 'respeak', prevState);
+                    respeakFileId = $scope.userObj.addUserFile(prevState.fileObj);
+                    return $scope.userObj.save();
+                }).then(function() {
+                    var sourceSegList = _.pluck(vm.segMap, 'source');
+                    prevState.srcSegId = $scope.sessionObj.addSrcSegment(sourceSegList);
+                    return $scope.sessionObj.save();
+                }).then(function() {
+                    var respeakData = {
+                        names: [],          // need UI
+                        type: 'respeak'
+                    };
+                    respeakData.creatorId = loginService.getLoggedinUserId();    
+                    respeakData.source = {
+                        recordFileId: respeakFileId,
+                        created: Date.now(),
+                        duration: Math.floor(recordedAudioBuffer.length / (resampledRate/1000)),
+                        langIds: $scope.sessionObj.data.source.langIds,   // need UI
+                        
+                        sampleRate: resampledRate,
+                        sampleLength: recordedAudioBuffer.length
+                    };
+                    respeakData.segment = {
+                        sourceSegId: prevState.srcSegId,
+                        segMsec: _.pluck(vm.segMap, 'child_ms'),
+                        segSample: _.pluck(vm.segMap, 'child_samp')
+                    };
+
+                    return dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, respeakData);
+                }).then(function(secId) {
+                    return dataService.get('secondary', secId[0]);
+                }).then(function(respeakObj){
+                    $scope.respeakObj = respeakObj;
                     vm.isTempObjsaving = false;
                 }).catch(function(err){
                     console.error(err);

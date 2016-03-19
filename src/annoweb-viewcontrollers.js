@@ -290,24 +290,27 @@
 
 
             // dummy data for respeaking/translation buttons
-            vm.hasRespeaking = true;
-            vm.hasTranslation = true;
-            vm.numRespeaking = 2;
-            vm.numTranslation = 3;
-            vm.respeakings = ['12/1/2016', '19/2/2016'];
-            vm.translations = ['6/1/2016', '11/2/2016', '9/3/2016'];
-
+            vm.respeakings = vm.secondaryList.filter(function(secData) { return secData.type === 'respeak'; });
+            vm.translations = vm.secondaryList.filter(function(secData) { return secData.type === 'translate'; });
+            vm.annotations = vm.secondaryList.filter(function(secData) { return secData.type.indexOf('anno_') === 0; });
+            vm.hasRespeaking = vm.respeakings.length !== 0;
+            vm.hasTranslation = vm.translations.length !== 0;
+            vm.numRespeaking = vm.respeakings.length;
+            vm.numTranslation = vm.translations.length;
+            
             vm.editTranslation = function(index) {
                 // edit existing translation of index
             };
             vm.editRespeaking = function(index) {
                 // edit existing respeaking of index
+                $location.path('/session/'+vm.sessionId+'/respeak/'+vm.respeakings[index]._ID);
             };
             vm.newTranslation = function() {
                 // record a new translation
             };
             vm.newRespeaking = function() {
                 // record a new respeaking
+                $location.path('/session/'+vm.sessionId+'/respeak');
             };
 
             
@@ -392,10 +395,6 @@
                 $location.path('/session/'+vm.sessionId+'/annotate'+'/'+index);
             };
 
-            vm.respeak = function() {
-                $location.path('/session/'+vm.sessionId+'/respeak');
-            };
-
             vm.olac = sessionObj.data.olac || 'drama';
             vm.clickOlac = function(clickwhat) {
                 vm.olac = clickwhat;
@@ -409,17 +408,16 @@
             var srcLangIds = sessionObj.data.source.langIds;
             vm.langNameList = _.object(vm.langObjList.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
             vm.srcLangStr = vm.langObjList.filter(function(obj) { return srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
-            
-            vm.numAnnotation = vm.secondaryList.length;
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.
-        .controller('respeakController', ['userObj', 'sessionObj', function(userObj, sessionObj) {
+        .controller('respeakController', ['dataObj', function(dataObj) {
             var vm = this;
-            
-            vm.userObj = userObj;
-            vm.sessionObj = sessionObj;
-            vm.userData = userObj.data;
-            vm.sessionData = sessionObj.data;
+            vm.userObj = dataObj[0];
+            vm.sessionObj = dataObj[1];
+            if(dataObj.length == 3)
+                vm.respeakObj = dataObj[2];
+            vm.userData = vm.userObj.data;
+            vm.sessionData = vm.sessionObj.data;
         
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;

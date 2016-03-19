@@ -9,7 +9,7 @@
                     {{sCtrl.location}}</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>{{sCtrl.dur}} seconds</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>{{sCtrl.srcLangStr}}</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>{{sCtrl.numAnnotation}} annotations</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>{{sCtrl.annotations.length}} annotations</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
 
@@ -33,7 +33,7 @@
                 <md-icon md-svg-src="img/icons/technology.svg" style="width:32px;height:32px;margin-left:8px;" aria-label="Recordings"></md-icon>
             </div>
 
-            <md-button ng-if="!sCtrl.hasRespeaking" aria-label="Record respeaking" class="" ng-click="sCtrl.respeak()" >
+            <md-button ng-if="!sCtrl.hasRespeaking" aria-label="Record respeaking" class="" ng-click="sCtrl.newRespeaking()" >
                 <md-icon md-svg-icon="av:mic"></md-icon>
                 {{"RECORD_RESPEAK" | translate}}
             </md-button>
@@ -43,10 +43,10 @@
                     <span>{{"RESPEAKING" | translate}} ({{sCtrl.numRespeaking}})</span>
                 </md-button>
                 <md-menu-content width="4">
-                    <md-menu-item  ng-repeat="respk in sCtrl.respeakings">
-                        <md-button ng-click="sCtrl.editRespeak($index)">
+                    <md-menu-item  ng-repeat="respk in sCtrl.respeakings ">
+                        <md-button ng-click="sCtrl.editRespeaking($index)">
                             <md-icon md-menu-align-target md-svg-icon="editor:mode_edit"></md-icon>
-                            <span class="md-body-2">{{"EDIT_RESPEAK" | translate}} <i>{{respk}}</i></span>
+                            <span class="md-body-2">{{"EDIT_RESPEAK" | translate}} <i>{{respk.source.created | date:'dd/MM/yyyy'}}</i></span>
                         </md-button>
                     </md-menu-item>
                     <md-menu-item>
@@ -59,7 +59,7 @@
             </md-menu>
 
             <!--Translation button or menu-->
-            <md-button ng-if="!sCtrl.hasTranslation" aria-label="Record translation" ng-click="sCtrl.respeak()" >
+            <md-button ng-if="!sCtrl.hasTranslation" aria-label="Record translation" ng-click="sCtrl.newTranslation()" >
                 <md-icon md-svg-icon="av:mic"></md-icon>
                 {{"RECORD_TRANS" | translate}}
             </md-button>
@@ -70,9 +70,9 @@
                 </md-button>
                 <md-menu-content width="4">
                     <md-menu-item ng-repeat="trans in sCtrl.translations">
-                        <md-button ng-click="sCtrl.editTranslate($index)">
+                        <md-button ng-click="sCtrl.editTranslation($index)">
                             <md-icon md-menu-align-target md-svg-icon="editor:mode_edit"></md-icon>
-                            <span class="md-body-2">{{"EDIT_TRANS" | translate}} <i>{{trans}}</i></span>
+                            <span class="md-body-2">{{"EDIT_TRANS" | translate}} <i>{{trans.source.created | date:'dd/MM/yyyy'}}</i></span>
                         </md-button>
                     </md-menu-item>
                     <md-menu-item>
@@ -120,8 +120,8 @@
 
     <!--<ng-annotation-list secondary-list="sCtrl.secondaryList" lang-name-list="sCtrl.langNameList"></ng-annotation-list>
     -->
-    <ng-annotations session-id="{{sCtrl.sessionId}}" lang-name-list="sCtrl.langNameList"></ng-annotations>
-    
+    <ng-annotations session-id="{{sCtrl.sessionId}}" lang-name-list="sCtrl.langNameList" annotation-list="sCtrl.annotations"></ng-annotations>
+ 
     <input id="image-input" type="file" file-model="imageFile" accept="image/*" style="display:none;" >
 
 </md-content>
