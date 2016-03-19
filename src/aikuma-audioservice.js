@@ -4,7 +4,7 @@
 (function(){
     'use strict';
     angular
-        .module('annoweb-audioService', [])
+        .module('aikuma-audioService', [])
         .factory('audioService', ['config', function (config) {
             var service = {};
 

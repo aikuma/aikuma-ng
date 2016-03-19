@@ -4,7 +4,7 @@
 (function(){
     'use strict';
     angular
-        .module('annoweb-audio', [])
+        .module('aikuma-audio', [])
         .directive('ngRecord', function() {
             return {
                 restrict: 'E',

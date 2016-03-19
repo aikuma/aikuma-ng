@@ -4,8 +4,8 @@
     var SPEAKER_ROLE = 'speakers';
     
     angular
-        .module('annoweb-dataservice', [])
-        .factory('AnnowebUtils', function() {
+        .module('aikuma-dataservice', [])
+        .factory('aikumaUtils', function() {
             var NUMBER = '0123456789',
                 LOWER_ALPHABET = 'abcdefghijklmnopqrstuvwxyz',
                 UPPER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -70,7 +70,7 @@
 
             return service;
         }])
-        .factory('dataService', ['$q', '$indexedDB', 'AnnowebUtils', function($q, $indexedDB, AnnowebUtils){
+        .factory('dataService', ['$q', '$indexedDB', 'aikumaUtils', function($q, $indexedDB, aikumaUtils){
             // id, lastModified is automatically created
             var dataModel = {
                 user: {
@@ -176,7 +176,7 @@
             var dataMethods = {
                 addUserMeta: function(metaKey) {
                     return function(metaObj) {
-                        var id = this.data._ID + AnnowebUtils.createRandomNumbers(12);
+                        var id = this.data._ID + aikumaUtils.createRandomNumbers(12);
                         // If this metadata doesn't exist
                         if(!this.data[metaKey])
                             this.data[metaKey] = {};
@@ -227,7 +227,7 @@
             var service = {};
             service.setUser = function(data) {
                 //var id = data.email;
-                var id = AnnowebUtils.createRandomAlphabets(12);
+                var id = aikumaUtils.createRandomAlphabets(12);
                 
                 return $indexedDB.openStore(USER_TYPE, function(store) {
                    return dbOps.set(USER_TYPE, id, data, store); 
@@ -235,7 +235,7 @@
             };
             
             service.setSession = function(userId, data) {
-                var id = AnnowebUtils.createRandomAlphabets(12);
+                var id = aikumaUtils.createRandomAlphabets(12);
                 data['userId'] = userId;
                 data['type'] = SESSION_TYPE;
                 
@@ -247,7 +247,7 @@
             };
             
             service.setSecondary = function(userId, sessionId, data) {
-                var id = sessionId + AnnowebUtils.createRandomNumbers(6);
+                var id = sessionId + aikumaUtils.createRandomNumbers(6);
                 data['userId'] = userId;
                 data['sessionId'] = sessionId;
                 
@@ -396,7 +396,7 @@
             
             return service;
         }])
-        .factory('fileService', ['$q', 'AnnowebUtils', 'dataService', function($q, AnnowebUtils, dataService) {
+        .factory('fileService', ['$q', 'aikumaUtils', 'dataService', function($q, aikumaUtils, dataService) {
             window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
             window.resolveLocalFileSystemURL = window.resolveLocalFileSystemURL || window.webkitResolveLocalFileSystemURL;
 
@@ -616,7 +616,7 @@
                 var fileDefer = $q.defer();
 
                 if(!file.name) {
-                    file.name = AnnowebUtils.createRandomAlphabets(20);
+                    file.name = aikumaUtils.createRandomAlphabets(20);
                     if(file.type === 'audio/wav') {
                         file.name += '.wav';
                     }

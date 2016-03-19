@@ -4,7 +4,7 @@
 (function(){
     'use strict';
     angular
-        .module('annoweb-viewcontrollers', [])
+        .module('aikuma-viewcontrollers', [])
 
         .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
             var vm = this;
@@ -230,7 +230,7 @@
             vm.userObj = userObj;
         }])
 
-        .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList, secondaryList) {
+        .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'aikumaDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, aikumaDialog, userObj, sessionObj, langObjList, secondaryList) {
             var vm = this;
             vm.olactypes = [
                 {
@@ -324,7 +324,7 @@
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             } else {
-                AnnowebDialog.toast('Aint no audio file for this session!');
+                aikumaDialog.toast('Aint no audio file for this session!');
             }
 
             vm.nextImage = function() {

@@ -2,8 +2,8 @@
 
     /* This module defines a service for displaying dialogs */
     angular
-        .module('annoweb-dialog', [])
-        .factory('AnnowebDialog', ['$document', '$mdDialog', '$mdToast', function ($document, $mdDialog, $mdToast) {
+        .module('aikuma-dialog', [])
+        .factory('aikumaDialog', ['$document', '$mdDialog', '$mdToast', function ($document, $mdDialog, $mdToast) {
             var factory = {};
             factory.newMetadata = function(ev) {
                 $mdDialog.show({

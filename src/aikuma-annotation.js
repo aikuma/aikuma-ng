@@ -4,7 +4,7 @@
 (function(){
     'use strict';
     angular
-        .module('annoweb-annotation', [])
+        .module('aikuma-annotation', [])
         .directive("ngAnnotator", function() {
             return {
                 restrict: "E",
@@ -234,7 +234,7 @@
                 data: col
             });
             vm.regionList.push(reg);
-
+            $scope.$broadcast('inputfoo0');
         }
 
         // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
@@ -260,6 +260,9 @@
                     data: {colidx:colidx}
                 }
             );
+            vm.playIn = _.last(vm.regionList).end;
+
+
         }
 
         // Often we force seek to play-in because we don't allow the user to play back where they cannot record.
@@ -273,6 +276,8 @@
             var floatpos = time / length;
             wsAnnotate.seekTo(floatpos);
         }
+
+
 
         function setWsRegions(annoIdx) {
             wsAnnotate.clearRegions();

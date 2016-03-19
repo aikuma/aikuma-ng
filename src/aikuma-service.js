@@ -4,7 +4,7 @@
 (function(){
     'use strict';
     angular
-        .module('annoweb-newservice', [])
+        .module('aikuma-service', [])
         .factory('keyService', [function () {
             var ser = {};
             var subscribers = [];

@@ -2,7 +2,7 @@
     'use strict';
     /* annoweb-wavesurfer directive module. */
     angular
-        .module('annoweb-wavesurfer', ['annoweb-util'])
+        .module('annoweb-wavesurfer', [])
         .directive('ngWavesurfer', [ 'randomColor', 'extractRegions',
             function(randomColor, extractRegions) {
                 return {

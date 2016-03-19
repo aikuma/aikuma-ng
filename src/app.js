@@ -4,28 +4,24 @@
         .module('annoweb', [
             'ngRoute',
             'ngMaterial',
-            'annoweb-wavesurfer',       // the wavesurfer directive
-            'annoweb-dialog',           // dialog and alert service
-             //'annoweb-service',       // old AnnowebService - needs to be removed (it should be removed when the files are removed)
-            'aikuma-video',             // experiment
-            'pascalprecht.translate',   // localization
-            'annoweb-experimental',     // Directives being tested before replacing old versions
-            'annoweb-newservice',       // new AnnowebService and mock data service
-            'annoweb-annotation',       // directive and controller for annotation UI
-            'annoweb-viewcontrollers',  // common controllers for view routes (when we don't have separate files)
-            'annoweb-commondirectives', // common directives including the nav bar.
-            'annoweb-audio',            // respeaking and stuff
-            'annoweb-audioService',     // resampling and audio format conversion
-            'file-model',               // deprecated: made it a bit easier to select a file
-            'cfp.hotkeys',              // hotkey controller system, hotkeys tend to be bound in views
-            'angularResizable',         // used by annotation controller, Angular Material doesn't usually resize
-            'indexedDB',                // used by dataservice to store metadata
-            'annoweb-dataservice',      // data service dealing with metadata and files
-            'ngPrettyJson'              // for debugging
+            'aikuma-dialog',           // dialog and alert service (being deprecated)
+            'pascalprecht.translate',  // AKA angular translate
+            'aikuma-experimental',     // Directives being tested before replacing old versions
+            'aikuma-service',          // Aikuma service (annotations)
+            'aikuma-annotation',       // directive and controller for annotation UI
+            'aikuma-viewcontrollers',  // common controllers for view routes (when we don't have separate files)
+            'aikuma-commondirectives', // common directives including the nav bar
+            'aikuma-audio',            // respeaking, recording
+            'aikuma-audioService',     // resampling and audio format conversion
+            'cfp.hotkeys',             // hotkey controller system (deprecated due to lack of key-hold support)
+            'angularResizable',        // used by annotation controller, Angular Material doesn't usually resize
+            'indexedDB',               // used by dataservice to store metadata
+            'aikuma-dataservice',      // data service dealing with metadata and files
+            'ngPrettyJson'             // for debugging
         ])
         .constant('config', {
             appName: 'Aikuma-ng',
-            appVersion: 'alpha 19',
+            appVersion: 'alpha 20',
             sampleRate: 16000,
             languages: [
                 {
@@ -85,7 +81,7 @@
                     'default': '500'
                 });
         }])
-        // Note that controllers are in annoweb-viewcontrollers.js
+        // Note that controllers are in aikuma-viewcontrollers.js
         .config(['$routeProvider',
             function($routeProvider) {
                 $routeProvider
