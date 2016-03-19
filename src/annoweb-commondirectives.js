@@ -87,6 +87,14 @@
                     });
                 }
             };
+        }])
+        .directive('ngLanguageSelector', [function(){
+            return {
+                restrict: 'E',
+                templateUrl: "views/templates/language-selector-template.html",
+                controller: langSelectController,
+                controllerAs: 'lsCtrl'
+            };
         }]);
 
         var topbarController = function ($scope, $translate, config, loginService, AnnowebDialog) {
@@ -112,7 +120,6 @@
             
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
-                    $translate('NAV_LOGAS').then(function(LOGINAS) { vm.LOGINAS = LOGINAS; });
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
                         vm.currentUserName = function() { return userObj.data.names[0]; };
                     });
@@ -401,23 +408,6 @@
             }
         });
 
-        // Only add minimap when we need it. The thing is, we need to know this before we call load,
-        // so this will only work if we pass in the duration first.
-/*        vm.wsPlayback.on('ready', function () {
-            var width = vm.wsPlayback.drawer.container.clientWidth;
-            var duration = vm.wsPlayback.getDuration();
-            if ((duration*vm.options.minPxPerSec) > width) {
-                /!* Minimap plugin *!/
-                vm.wsPlayback.initMinimap({
-                    height: 30,
-                    waveColor: '#555',
-                    progressColor: '#999',
-                    cursorColor: '#999'
-                });
-            }
-        });*/
-
-
 
         vm.wsPlayback.on('finish', function () {
             vm.isplaying = false;
@@ -437,4 +427,71 @@
         
     };
     playerController.$inject = ['$scope', '$attrs'];
+
+    var langSelectController = function (aikumaService, $scope, $attrs) {
+        var vm = this;
+        // list of `language` value/display objects
+        vm.languages = loadAllx();
+        vm.selectedLanguages = [];
+
+        vm.querySearch = querySearch;
+        vm.selectedItemChange = selectedItemChange;
+
+        function querySearch (query) {
+            return query ? vm.languages.filter( createFilterFor(query) ) : vm.languages;
+        }
+        function selectedItemChange(item,idx) {
+
+        }
+
+        vm.transformChip = function(chip) {
+            // If it is an object, it's already a known chip
+            console.log(chip);
+            if (angular.isObject(chip)) {
+                return {
+                    langStr: chip.display,
+                    langISO: chip.id
+                };
+            }
+            // Otherwise, create a new one
+            return {
+                langStr: chip,
+                langISO: ''
+            };
+        };
+
+
+        vm.add = function() {
+
+        };
+        vm.sel = function() {
+
+        };
+
+        function loadAllx() {
+            var languages=[];
+            aikumaService.getLanguages(function(langs){
+                langs.forEach( function(s) {
+                    languages.push({
+                        value: s.Ref_Name.toLowerCase(),
+                        display: s.Ref_Name,
+                        id: s.Id
+                    });
+                });
+            });
+            return languages;
+        }
+        /**
+         * Create filter function for a query string
+         */
+        function createFilterFor(query) {
+            var lowercaseQuery = angular.lowercase(query);
+            return function filterFn(language) {
+                return (language.value.indexOf(lowercaseQuery) === 0);
+            };
+        }
+    };
+    langSelectController.$inject = ['aikumaService', '$scope', '$attrs'];
+
+
 })();

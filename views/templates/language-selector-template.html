@@ -1,0 +1,30 @@
+
+<md-chips ng-model="lsCtrl.selectedLanguages" md-autocomplete-snap
+          md-transform-chip="lsCtrl.transformChip($chip)"
+          md-require-match="false"
+         >
+
+    <md-autocomplete style=""
+                     md-input-name="lsCtrl.languageField"
+                     md-selected-item="lsCtrl.selectedItem"
+                     md-search-text="lsCtrl.searchText"
+                     md-selected-item-change="lsCtrl.selectedItemChange(item,$index)"
+                     md-items="item in lsCtrl.querySearch(lsCtrl.searchText)"
+                     md-item-text="item.display"
+                     md-delay="200"
+                     md-min-length="2"
+                     placeholder="{{'LANG_ADD' | translate}}"
+                     secondary-placeholder="{{'LANG_ADD' | translate}}"
+                     class="md-subhead"
+                     >
+
+        <div class="md-contact-suggestion">
+            <span md-highlight-text="lsCtrl.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
+        </div>
+    </md-autocomplete>
+
+    <md-chip-template>
+        {{$chip.langStr}}<span ng-if="$chip.langISO!=''"> ({{$chip.langISO}})</span>
+    </md-chip-template>
+
+</md-chips>

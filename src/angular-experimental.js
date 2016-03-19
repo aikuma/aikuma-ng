@@ -350,7 +350,6 @@
             return query ? vm.languages.filter( createFilterFor(query) ) : vm.languages;
         }
         function selectedItemChange(item,idx) {
-            $log.info('Item changed to ' + JSON.stringify(item));
             if (item.id) {vm.choices[idx].ISO = item.id;}
         }
 

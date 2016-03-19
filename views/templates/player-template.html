@@ -3,10 +3,10 @@
     <div id="sessionPlayer"></div>
     <md-button class="md-raised" aria-label="Check" ng-click="pCtrl.wsPlayback.playPause()" >
         <div ng-if="!pCtrl.isplaying">
-            <md-icon md-svg-icon="av:play_arrow"></md-icon><span class="buttontext">Play</span>
+            <md-icon md-svg-icon="av:play_arrow"></md-icon><span class="buttontext">{{"PLAY" | translate}}</span>
         </div>
         <div ng-if="pCtrl.isplaying">
-            <md-icon md-svg-icon="av:pause"></md-icon><span class="buttontext">Pause</span>
+            <md-icon md-svg-icon="av:pause"></md-icon><span class="buttontext">{{"PAUSE" | translate}}</span>
         </div>
     </md-button>
 </md-content>

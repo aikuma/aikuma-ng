@@ -232,7 +232,49 @@
 
         .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'AnnowebDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, AnnowebDialog, userObj, sessionObj, langObjList, secondaryList) {
             var vm = this;
-            vm.olactypes = ['dialogue','drama','formulaic','ludic','narrative','oratory','procedural','report','singing','unintelligible'];
+            vm.olactypes = [
+                {
+                    name: 'dialogue',
+                    trans: 'OLAC1'
+                },
+                {
+                    name: 'drama',
+                    trans: 'OLAC2',
+                },
+                {
+                    name: 'formulaic',
+                    trans: 'OLAC3'
+                },
+                {
+                    name: 'ludic',
+                    trans: 'OLAC4'
+                },
+                {
+                    name: 'narrative',
+                    trans: 'OLAC5'
+                },
+                {
+                    name: 'oratory',
+                    trans: 'OLAC6'
+                },
+                {
+                    name: 'procedural',
+                    trans: 'OLAC7'
+                },
+                {
+                    name: 'report',
+                    trans: 'OLAC8'
+                },
+                {
+                    name: 'singing',
+                    trans: 'OLAC9'
+                },
+                {
+                    name: 'unintelligible',
+                    trans: 'OLAC10'
+                }
+            ];
+
             vm.location = 'MPI, Netherlands.';
 
             // For directives in status.html

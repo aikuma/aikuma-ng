@@ -1,4 +1,5 @@
 {
+  "AIKUMA": "Aikuma",
   "ENGLISH": "English",
   "CHINESE_TRAD": "Traditional Chinese",
   "CHINESE_SIMP": "Simplified Chinese",
@@ -67,6 +68,30 @@
   "ANNO_DELNO": "No way!",
   "ANNO_DELYES": "Delete annotation",
   "ANNO_DO": "Perform annotation",
-  "HOME_LOGREQ": "You are not logged in, please select a user"
+  "HOME_LOGREQ": "You are not logged in, please select a user",
+  "LANG_WHAT": "What language?",
+  "LANG_ADD": "Add a language",
+  "OLAC1": "dialogue",
+  "OLAC2": "drama",
+  "OLAC3": "formulaic",
+  "OLAC4": "ludic",
+  "OLAC5": "narrative",
+  "OLAC6": "oratory",
+  "OLAC7": "procedural",
+  "OLAC8": "report",
+  "OLAC9": "singing",
+  "OLAC10": "unintelligible",
+  "PROFILE_OPEN": "Open profile",
+  "UPLOAD": "Upload",
+  "PLAY": "Play",
+  "PAUSE": "Pause",
+  "STOP": "Stop",
+  "RESPEAKING": "Respeaking",
+  "RECORD_RESPEAK": "Record Respeaking",
+  "RECORD_NRESPEAK": "Record New Respeaking",
+  "RECORD_TRANS": "Record Translation",
+  "RECORD_NTRANS": "Record New Translation",
+  "EDIT_RESPEAK": "Edit Respeaking",
+  "EDIT_TRANS": "Edit Translation"
 }
 

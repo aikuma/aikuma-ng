@@ -3,8 +3,8 @@
         <div layout="column" layout-align="center center">
 
             <img class="animated rollIn" flex width="200" height="200" src="img/worldvoices.svg"/>
-
-            <span flex class="md-subtitle inset animated slideInLeft" style="color:black">{{navCtrl.LOGINAS}} <i>{{navCtrl.currentUserName()}}</i></span>
+            <md-tooltip class="md-subhead" md-direction="top">{{"AIKUMA" | translate}}-<i>NG</i></md-tooltip>
+            <span flex class="md-subtitle inset animated slideInLeft" style="color:black">{{"NAV_LOGAS" | translate}} <i>{{navCtrl.currentUserName()}}</i></span>
         </div>
     </header>
     <md-button ng-if="!navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.login()">

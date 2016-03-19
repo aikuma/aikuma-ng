@@ -11,7 +11,7 @@
         </md-toolbar>
         <md-content style="max-width:500px;max-height:400px;min-width:500px;min-height:150px;">
             <div layout="row" ng-repeat="choice in dCtrl.choices" layout-align="start start">
-                <md-autocomplete flex  style="height:16px"
+                <md-autocomplete flex
                                  md-input-name="choice.languageField"
                                  md-selected-item="choice.selectedItem"
                                  md-search-text="choice.searchText"
@@ -21,7 +21,8 @@
                                  placeholder="What language?"
                                  md-floating-label="Language"
                                  md-delay="200"
-                                 md-min-length="2">
+                                 md-min-length="2"
+                                  class="md-subhead">
                     <md-item-template>
                         <!-- <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}}</span> -->
                         <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
