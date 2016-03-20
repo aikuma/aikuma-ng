@@ -14,7 +14,7 @@
             ser.clearKey = function(keypress, keypresstype) {
                 var max = subscribers ? subscribers.length : 0;
                 for (var i = 0; i < max; i += 1) {
-                    if (subscribers[i].keypress == keypress && subscribers[i].keypresstype == keypresstype) {
+                    if (subscribers[i].keypress === keypress && subscribers[i].keypresstype === keypresstype) {
                         subscribers.splice(i, 1);
                         break;
                     }
@@ -22,8 +22,9 @@
             };
             ser.handleKey = function(ev) {
                 subscribers.forEach(function(sub){
-                    if (ev.type == sub.keypresstype && ev.keyCode == sub.keypress) {
+                    if (ev.type === sub.keypresstype && ev.keyCode === sub.keypress) {
                         sub.callback(ev);
+                        ev.preventDefault();
                     }
                 });
             };

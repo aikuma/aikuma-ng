@@ -20,7 +20,7 @@
         });
 
     // The new annotation controller.
-    var annotationController = function ($scope, keyService, aikumaService) {
+    var annotationController = function ($scope, keyService, aikumaService, $timeout, $mdDialog) {
         var vm = this;
         vm.userObj = $scope.userObj;
         vm.sessionObj = $scope.sessionObj;
@@ -28,6 +28,7 @@
         var ffKeyCode = 39;     // right arrow
         var rwKeyCode = 37;     // left arrow
         var escKeyCode = 27;    // escape
+        var tabKeyCode = 9;     // tab - also prevents default
         var ffPlaybackRate = 2.5; // playback speed in FF mode
         var skipTimeValue = 3;  // amount of time to skip backwards for rewind
         var oneMillisecond = 0.001;
@@ -42,6 +43,14 @@
         vm.regionList = [];
         vm.isPlaying = false;
         vm.regionMarked = false;
+
+        vm.respeakings = [0,1,2];
+        vm.curRespeak = 0;
+        vm.activeRespeak = {0:true,1:true,2:true};
+        vm.translations = [0,1];
+        vm.activeTranslation = {0:true,1:true};
+        vm.curTranslate = 0;
+        vm.childMode = 'respeak';
 
         //
         // Set up Wavesurfer
@@ -82,16 +91,19 @@
             keyService.regKey(ffKeyCode,'keyup',    function(ev)  {ffKeyUp(true);});
             keyService.regKey(rwKeyCode,'keydown',  function(ev)  {rwKey(true);});
             keyService.regKey(escKeyCode,'keydown', function(ev)  {escKey(true);});
+            keyService.regKey(tabKeyCode,'keydown', function(ev)  {tabKey(true);});
             setWsRegions(0);
             vm.playIn = _.last(vm.regionList).end;
             $scope.$broadcast('inputfoo0');
         });
         wsAnnotate.on('region-in', function(reg) {
-            vm.curRegion = reg.data.idx;
+            // When are we going to PLAY into a region? or is it not just play?
             $scope.$apply();
         });
         wsAnnotate.on('region-out', function(reg) {
-            vm.curRegion = null;
+            // This will fire if we pause while doing the region-resize thing on play
+            // vm.isPlaying = false if a playKeyUp event has occurred.
+            // What other conditions will we play through a region?
             $scope.$apply();
         });
         wsAnnotate.on('audioprocess', function() {
@@ -117,10 +129,12 @@
                 if (thisTime >= vm.playIn) {
                     makeNewRegion(thisTime);
                     vm.regionMarked = true;
-                    console.log(vm.regionList.length);
                     vm.curRegion = vm.regionList.length - 1;
                     vm.playIn = thisTime;
-                    console.log(vm.curRegion);
+                    $scope.$apply();
+                    $timeout(function() {
+                        $scope.$broadcast('inputfoo0');
+                    }, 0);
                 }
                 wsAnnotate.play();
             }
@@ -147,14 +161,18 @@
                 var seeked = false;
                 vm.regionList.every(function(reg, index) {
                     if (reg.start > thisTime) {
+                        // we are now seeking to this region
                         seekToTime(reg.start);
                         vm.curRegion = index;
+                        $timeout(function() {
+                            $scope.$broadcast('inputfoo0');
+                        }, 0);
                         seeked = true;
                         return false;
                     } else {return true;}
                 });
                 if (!seeked) {
-                    vm.curRegion = null;
+                    vm.curRegion = -1;
                     seekToTime(vm.playIn+oneMillisecond);
                     seekToPlayin();
                 }
@@ -162,6 +180,7 @@
             } else {
                 if (vm.regionMarked) {
                     deleteLastRegion();
+                    vm.curRegion = -1;
                 }
                 wsAnnotate.setPlaybackRate(ffPlaybackRate);
                 wsAnnotate.play();
@@ -182,14 +201,15 @@
             if (vm.regionMarked) {deleteLastRegion();}
             var thisTime = wsAnnotate.getCurrentTime();
             if ((thisTime - skipTimeValue) < vm.playIn) {
-                if (vm.curRegion != 0) {
+                if (vm.curRegion !== 0) {
                     var lastidx = _.findLastIndex(vm.regionList, function (reg) {
-                        if (reg.start < thisTime) {
-                            seekToTime(reg.start);
-                            return true;
-                        }
+                        if (reg.start < thisTime) {return true;}
                     });
+                    seekToTime(vm.regionList[lastidx].start);
                     vm.curRegion = lastidx;
+                    $timeout(function() {
+                        $scope.$broadcast('inputfoo0');
+                    }, 0);
                 } else {
                     seekToTime(vm.regionList[0].start);
                 }
@@ -203,10 +223,81 @@
             deleteLastRegion();
         }
 
+        function tabKey(nokey) {
+            if (vm.childMode === 'respeak') {toggleRespeak();}
+            if (vm.childMode === 'translate') {toggleTranslate();}
+        }
+
+        function toggleRespeak() {
+            var found = false;
+            var newrsp = vm.curRespeak;
+            while (!found) {
+                ++newrsp;
+                if (newrsp > (vm.respeakings.length - 1)) {
+                    newrsp = 0;
+                }
+                if (newrsp === vm.curRespeak) {
+                    break;
+                }
+                if (vm.activeRespeak[newrsp]) {
+                    found = true;
+                }
+            }
+            if (found) {vm.curRespeak = newrsp;}
+        }
+        function toggleTranslate() {
+            var found = false;
+            var newrsp = vm.curTranslate;
+            while (!found) {
+                ++newrsp;
+                if (newrsp > (vm.translations.length - 1)) {
+                    newrsp = 0;
+                }
+                if (newrsp === vm.curTranslate) {
+                    break;
+                }
+                if (vm.activeTranslation[newrsp]) {
+                    found = true;
+                }
+            }
+            if (found) {vm.curTranslate = newrsp;}
+        }
+
         vm.selectAnno = function(annoIdx) {
             vm.selectedAnno = annoIdx;
             //setWsRegions(annoIdx);
         };
+        vm.openMenu = function($mdOpenMenu, ev) {
+            $mdOpenMenu(ev);
+        };
+        vm.toggleRespeaking = function(idx) {
+            vm.activeRespeak[idx] = !vm.activeRespeak[idx];
+            restoreFocus();
+        };
+        vm.toggleTranslation = function(idx) {
+            vm.activeTranslation[idx] = !vm.activeTranslation[idx];
+            restoreFocus();
+        };
+        vm.toggleChildMode = function() {
+            if (vm.childMode === 'respeak') {
+                vm.childMode = 'translate';
+                restoreFocus();
+                return;
+            }
+            if (vm.childMode === 'translate') {
+                vm.childMode = 'respeak';
+                restoreFocus();
+                return;
+            }
+        };
+
+
+
+        function restoreFocus() {
+            $timeout(function() {
+                $scope.$broadcast('inputfoo0');
+            }, 0);
+        }
 
         function makeNewRegion(starttime) {
             // this stuff just alternates which we use to colour when the region switches to record mode
@@ -234,7 +325,6 @@
                 data: col
             });
             vm.regionList.push(reg);
-            $scope.$broadcast('inputfoo0');
         }
 
         // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
@@ -242,13 +332,30 @@
             var reg = vm.regionList.pop();
             reg.remove();
             vm.regionMarked = false;
+            vm.playIn = _.last(vm.regionList).end;
+            vm.curRegion = -1;
         }
 
         vm.inputReturn = function() {
             if (vm.regionMarked) {
                 markLastRegionComplete();
                 vm.regionMarked = false;
+                vm.curRegion = -1;
             }
+        };
+
+        vm.seekRegion = function(idx) {
+            console.log(idx);
+            if (vm.regionMarked) {
+                deleteLastRegion();
+                vm.curRegion = -1;
+            }
+            seekToTime(vm.regionList[idx].start);
+            vm.curRegion = idx;
+            vm.regionList[idx].play();
+            $timeout(function() {
+                $scope.$broadcast('inputfoo0');
+            }, 0);
         };
 
         function markLastRegionComplete() {
@@ -279,6 +386,7 @@
 
 
 
+
         function setWsRegions(annoIdx) {
             wsAnnotate.clearRegions();
             var sm = aikumaService.getSegmap(vm.annotations[annoIdx].SegId);
@@ -293,6 +401,7 @@
             });
 
         }
+        annotationController.$inject = ['$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog'];
     };
 
 })();
