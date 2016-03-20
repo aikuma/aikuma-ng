@@ -300,6 +300,7 @@
             
             vm.editTranslation = function(index) {
                 // edit existing translation of index
+                $location.path('/session/'+vm.sessionId+'/translate/'+vm.translations[index]._ID);
             };
             vm.editRespeaking = function(index) {
                 // edit existing respeaking of index
@@ -307,6 +308,7 @@
             };
             vm.newTranslation = function() {
                 // record a new translation
+                $location.path('/session/'+vm.sessionId+'/translate');
             };
             vm.newRespeaking = function() {
                 // record a new respeaking
@@ -405,17 +407,24 @@
             var srcDurMsec = sessionObj.data.source.duration;
             vm.dur = srcDurMsec? srcDurMsec/1000 : 0;
             
-            var srcLangIds = sessionObj.data.source.langIds;
-            vm.langNameList = _.object(vm.langObjList.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
-            vm.srcLangStr = vm.langObjList.filter(function(obj) { return srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
+            vm.srcLangIds = sessionObj.data.source.langIds;
+            vm.langIdNameMap = _.object(vm.langObjList.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
+            vm.srcLangStr = vm.langObjList.filter(function(obj) { return vm.srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
+            vm.saveLangs = function(langIds) {
+                sessionObj.data.source.langIds = langIds;
+                sessionObj.save();
+            };
+            
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.
-        .controller('respeakController', ['dataObj', function(dataObj) {
+        .controller('respeakController', ['type', 'dataObj', function(type, dataObj) {
             var vm = this;
-            vm.userObj = dataObj[0];
-            vm.sessionObj = dataObj[1];
-            if(dataObj.length == 3)
-                vm.respeakObj = dataObj[2];
+            vm.type = type;
+            vm.langIdNameMap = _.object(dataObj[0].map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
+            vm.userObj = dataObj[1];
+            vm.sessionObj = dataObj[2];
+            if(dataObj.length == 4)
+                vm.respeakObj = dataObj[3];
             vm.userData = vm.userObj.data;
             vm.sessionData = vm.sessionObj.data;
         

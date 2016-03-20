@@ -21,7 +21,7 @@
                             {{type.trans | translate}}
                         </md-tooltip>
                     </div>
-                    <ng-language-selector flex style="margin-left:8px;"></ng-language-selector>
+                    <ng-language-selector lang-id-name-map="sCtrl.langIdNameMap" lang-id-list="sCtrl.srcLangIds" on-change="sCtrl.saveLangs(langIds)" flex style="margin-left:8px;"></ng-language-selector>
                 </div>
             </section>
             
@@ -120,7 +120,7 @@
 
     <!--<ng-annotation-list secondary-list="sCtrl.secondaryList" lang-name-list="sCtrl.langNameList"></ng-annotation-list>
     -->
-    <ng-annotations session-id="{{sCtrl.sessionId}}" lang-name-list="sCtrl.langNameList" annotation-list="sCtrl.annotations"></ng-annotations>
+    <ng-annotations session-id="{{sCtrl.sessionId}}" lang-id-name-map="sCtrl.langIdNameMap" annotation-list="sCtrl.annotations"></ng-annotations>
  
     <input id="image-input" type="file" file-model="imageFile" accept="image/*" style="display:none;" >
 

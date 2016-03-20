@@ -98,6 +98,11 @@
         .directive('ngLanguageSelector', [function(){
             return {
                 restrict: 'E',
+                scope: {
+                    langIdList: '=',
+                    langIdNameMap: '=',
+                    onChange: '&'
+                },
                 templateUrl: "views/templates/language-selector-template.html",
                 controller: langSelectController,
                 controllerAs: 'lsCtrl'
@@ -121,7 +126,7 @@
                 restrict: "E",
                 scope: {
                     annotationList: '=',
-                    langNameList: '=',
+                    langIdNameMap: '=',
                     sessionId: '@'
                 },
                 templateUrl: "views/templates/annotations-template.html",
@@ -488,7 +493,20 @@
         var vm = this;
         // list of `language` value/display objects
         vm.languages = loadAllx();
-        vm.selectedLanguages = [];
+        vm.selectedLanguages = $scope.langIdList.map(function(id) {
+            var langStr = $scope.langIdNameMap[id];
+            if(langStr) {
+                return {
+                    langStr: langStr,
+                    langISO: id
+                };
+            } else {
+                return {
+                    langStr: id,
+                    langISO: ''
+                };
+            }
+        });
 
         vm.querySearch = querySearch;
         vm.selectedItemChange = selectedItemChange;
@@ -518,7 +536,13 @@
 
 
         vm.add = function() {
-
+            var langIds = vm.selectedLanguages.map(function(langViewModel) {
+                return langViewModel.langISO? langViewModel.langISO : langViewModel.langStr;
+            });
+            $scope.onChange({langIds: langIds});
+        };
+        vm.remove = function() {
+            vm.add();
         };
         vm.sel = function() {
 
@@ -714,7 +738,7 @@
                 id: annoData._ID,
                 type: convertType(annoData.type),
                 langISO: annoData.source.langIds[0],
-                langStr: $scope.langNameList[ annoData.source.langIds[0] ]
+                langStr: $scope.langIdNameMap[ annoData.source.langIds[0] ]
             };
         });
 

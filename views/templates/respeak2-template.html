@@ -5,21 +5,25 @@
 
 <div layout="row">
 
-    <div layout="row" flex="50" >
-        <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
-            <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
-            <span flex>{{"PLAY" | translate}}</span>
-        </md-button>
-        <md-button flex ng-disabled="rCtrl.regionList.length == 0" class="md-raised" aria-label="Reset" ng-click="rCtrl.redo()" >
-            <md-icon md-svg-icon="av:replay" style="width:50px;height:50px"></md-icon>
-            <span flex>{{"REDO" | translate}}</span>
-        </md-button>
-        <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'nowrecording': rCtrl.isRecording}" aria-label="Record" ng-mousedown="rCtrl.recDown()" ng-mouseup="rCtrl.recUp()" >
-            <md-icon md-svg-icon="av:mic" style="width:50px;height:50px"></md-icon>
-            <span flex>{{"RECORD" | translate}}</span>
-        </md-button>
+    <div layout="column" flex="50">
+        <ng-language-selector ng-if="type === 'translate'" lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;"></ng-language-selector>
+        <div layout="row" flex="50" >
+            <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
+                <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
+                <span flex>{{"PLAY" | translate}}</span>
+            </md-button>
+            <md-button flex ng-disabled="rCtrl.regionList.length == 0" class="md-raised" aria-label="Reset" ng-click="rCtrl.redo()" >
+                <md-icon md-svg-icon="av:replay" style="width:50px;height:50px"></md-icon>
+                <span flex>{{"REDO" | translate}}</span>
+            </md-button>
+            <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'nowrecording': rCtrl.isRecording}" aria-label="Record" ng-mousedown="rCtrl.recDown()" ng-mouseup="rCtrl.recUp()" >
+                <md-icon md-svg-icon="av:mic" style="width:50px;height:50px"></md-icon>
+                <span flex>{{"RECORD" | translate}}</span>
+            </md-button>
 
+        </div>
     </div>
+    
     <div flex="50" id="respeakRecord" class="respeakwavesurfer" ng-class="rCtrl.recordClass" style="position:relative">
         <span class="centertextbox md-headline">{{rCtrl.helpText | translate}}</span>
     </div>

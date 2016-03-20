@@ -394,6 +394,25 @@
                 }
             };
             
+            
+            // Language
+            var langDefer = $q.defer();
+            
+            Papa.parse("extdata/iso-639-3_20160115.tab", {
+                header: true,
+                download: true,
+                error: function(err, file, inputElem, reason) {
+                    langDefer.reject(err, ': ', reason);
+                },
+                complete: function(results) {
+                    langDefer.resolve(results.data);
+                }
+            });
+            
+            service.getLanguages = function() {
+                return langDefer.promise;
+            };
+            
             return service;
         }])
         .factory('fileService', ['$q', 'aikumaUtils', 'dataService', function($q, aikumaUtils, dataService) {
@@ -663,25 +682,7 @@
 
                 return fileDefer.promise;    
             };
-
             
-            // Language
-            var langDefer = $q.defer();
-            
-            Papa.parse("extdata/iso-639-3_20160115.tab", {
-                header: true,
-                download: true,
-                error: function(err, file, inputElem, reason) {
-                    langDefer.reject(err, ': ', reason);
-                },
-                complete: function(results) {
-                    langDefer.resolve(results.data);
-                }
-            });
-            
-            service.getLanguages = function() {
-                return langDefer.promise;
-            };
             
             // Temporary storage
             var tempObj;

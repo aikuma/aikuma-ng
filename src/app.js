@@ -124,8 +124,8 @@
                                     return dataService.getSecondaryList(userId, sessionId);
                                 }
                             }],
-                            langObjList: ['fileService', function(fileService) {
-                                return fileService.getLanguages();
+                            langObjList: ['dataService', function(dataService) {
+                                return dataService.getLanguages();
                             }]
                         }
                     })
@@ -139,11 +139,13 @@
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
                                 
+                                promises.push(dataService.getLanguages());
                                 promises.push(dataService.get('user', userId));
                                 promises.push(dataService.get('session', sessionId));
                                 
                                 return $q.all(promises);
-                            }]
+                            }],
+                            type: function() { return 'respeak'; }
                         }
                     })
                     .when('/session/:sessionId/respeak/:respeakId', {
@@ -157,12 +159,54 @@
                                 var sessionId = $route.current.params.sessionId;
                                 var respeakId = $route.current.params.respeakId;
                                 
+                                promises.push(dataService.getLanguages());
                                 promises.push(dataService.get('user', userId));
                                 promises.push(dataService.get('session', sessionId));
                                 promises.push(dataService.get('secondary', respeakId));
                                 
                                 return $q.all(promises);
-                            }]
+                            }],
+                            type: function() { return 'respeak'; }
+                        }
+                    })
+                    .when('/session/:sessionId/translate', {
+                        templateUrl: 'views/respeak.html',
+                        controller: 'respeakController as rsCtrl',
+                        authorize: true,
+                        resolve: {
+                            dataObj: ['$q', '$route', 'loginService', 'dataService', function($q, $route, loginService, dataService) {
+                                var promises = [];
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                
+                                promises.push(dataService.getLanguages());
+                                promises.push(dataService.get('user', userId));
+                                promises.push(dataService.get('session', sessionId));
+                                
+                                return $q.all(promises);
+                            }],
+                            type: function() { return 'translate'; }
+                        }
+                    })
+                    .when('/session/:sessionId/translate/:translateId', {
+                        templateUrl: 'views/respeak.html',
+                        controller: 'respeakController as rsCtrl',
+                        authorize: true,
+                        resolve: {
+                            dataObj: ['$q', '$route', 'loginService', 'dataService', function($q, $route, loginService, dataService) {
+                                var promises = [];
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                var translateId = $route.current.params.translateId;
+                                
+                                promises.push(dataService.getLanguages());
+                                promises.push(dataService.get('user', userId));
+                                promises.push(dataService.get('session', sessionId));
+                                promises.push(dataService.get('secondary', translateId));
+                                
+                                return $q.all(promises);
+                            }],
+                            type: function() { return 'translate'; }
                         }
                     })
                     .when('/session/:sessionId/annotate/:annotateId', {

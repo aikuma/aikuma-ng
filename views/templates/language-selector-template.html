@@ -2,6 +2,8 @@
 <md-chips ng-model="lsCtrl.selectedLanguages" md-autocomplete-snap
           md-transform-chip="lsCtrl.transformChip($chip)"
           md-require-match="false"
+          md-on-add="lsCtrl.add()" 
+          md-on-remove="lsCtrl.remove()"
          >
 
     <md-autocomplete style=""

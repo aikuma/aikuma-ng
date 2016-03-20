@@ -23,7 +23,9 @@
                     userObj: '=',
                     sessionObj: '=',
                     respeakObj: '=',
-                    source: "@"
+                    langIdNameMap: '=',
+                    type: '@',
+                    source: '@'
                 },
                 templateUrl: "views/templates/respeak2-template.html",
                 controller: respeak2DirectiveController,
@@ -252,7 +254,7 @@
         vm.titleSecPlaceholder = "Add more";
         
         // Language input interface for session
-        fileService.getLanguages().then(function(langObjList) {
+        dataService.getLanguages().then(function(langObjList) {
             var langList = langObjList.map(function(langObj) {
                 return {
                     id: langObj.Id,
@@ -840,6 +842,7 @@
                     if($scope.respeakObj.data) {
                         $scope.respeakObj.data.source.duration = Math.floor(recordedAudioBuffer.length / (resampledRate/1000));
                         $scope.respeakObj.data.source.sampleLength = recordedAudioBuffer.length;
+                        $scope.respeakObj.data.source.langIds = vm.srcLangIds;
                         $scope.respeakObj.data.segment.segMsec = _.pluck(vm.segMap, 'child_ms');
                         $scope.respeakObj.data.segment.segSample = _.pluck(vm.segMap, 'child_samp');
                     }
@@ -871,14 +874,14 @@
                 }).then(function() {
                     var respeakData = {
                         names: [],          // need UI
-                        type: 'respeak'
+                        type: $scope.type
                     };
                     respeakData.creatorId = loginService.getLoggedinUserId();    
                     respeakData.source = {
                         recordFileId: respeakFileId,
                         created: Date.now(),
                         duration: Math.floor(recordedAudioBuffer.length / (resampledRate/1000)),
-                        langIds: $scope.sessionObj.data.source.langIds,   // need UI
+                        langIds: vm.srcLangIds,
                         
                         sampleRate: resampledRate,
                         sampleLength: recordedAudioBuffer.length
@@ -900,6 +903,23 @@
                 });
             }
         }
+        
+        // language directives
+        vm.srcLangIds = [];
+        if($scope.type === 'translate' && $scope.respeakObj) {
+            vm.srcLangIds = $scope.respeakObj.data.source.langIds;
+        } else if($scope.type === 'respeak') {
+            vm.srcLangIds = $scope.sessionObj.data.source.langIds;
+        }
+        
+        vm.saveLangs = function(langIds) {
+            if($scope.type === 'translate' && $scope.respeakObj) {
+                $scope.respeakObj.data.source.langIds = langIds;
+                $scope.respeakObj.save();
+            } else {
+                vm.srcLangIds = langIds;   
+            }
+        };
 
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {
@@ -908,7 +928,8 @@
             wsPlayback.destroy();
             microphone.destroy();
             wsRecord.destroy();
-            if(recorder) {recorder.clear();}
+            if(recorder) 
+                recorder.clear();
         });
     };
     respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
