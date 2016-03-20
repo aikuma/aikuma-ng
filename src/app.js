@@ -205,9 +205,10 @@
                     });
             }])
 
-        /*.config(['$compileProvider', function($compileProvider) {
+        .config(['$compileProvider', function($compileProvider) {
                 $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|filesystem|chrome-extension):/);
-        }])*/
+                $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data|filesystem|chrome-extension):/);
+        }])
         .config(['$indexedDBProvider', function($indexedDBProvider) {
             $indexedDBProvider
             .connection('myIndexedDB')
