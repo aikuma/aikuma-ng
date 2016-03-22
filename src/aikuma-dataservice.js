@@ -394,7 +394,6 @@
                 }
             };
             
-            
             // Language
             var langDefer = $q.defer();
             
@@ -413,35 +412,89 @@
                 return langDefer.promise;
             };
             
+            // Backup/Import DB
+            service.getJsonBackup = function() {
+                var backup = {};
+                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                    return store0.getAll().then(function(userData) {
+                        backup[USER_TYPE] = userData;
+                        return store1.getAll();
+                    }).then(function(sessionData) {
+                        backup[SESSION_TYPE] = sessionData;
+                        return store2.getAll();
+                    }).then(function(secondaryData) {
+                        backup[SECONDARY_TYPE] = secondaryData;
+                        return backup;
+                    });
+                });
+            };
+            
+            service.clear = function() {
+                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                    return store0.clear().then(function() {
+                        return store1.clear();
+                    }).then(function() {
+                        return store2.clear();
+                    });
+                });
+            };
+            
+            service.importJsonDb = function(jsonDbStr, fileIdMap) {
+                var dbObj = JSON.parse(jsonDbStr);
+                
+                // Change users' files' urls
+                dbObj[USER_TYPE].forEach(function(userData) {
+                    if(userData.files) {
+                        for(var fileId in userData.files) {
+                            var fileData = userData.files[fileId];
+                            var key = fileData.url.match(/[^/]+\/[^/]+\..+$/i)[0];
+                            if(fileIdMap[key]) {
+                                //console.log(fileData.url, ';', key, '; ', fileIdMap[key]);
+                                fileData.url = fileIdMap[key];
+                            }
+                        }
+                    }
+                });
+                
+                // Import DB
+                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                    return store0.upsert(dbObj[USER_TYPE]).then(function() {
+                        return store1.upsert(dbObj[SESSION_TYPE]);
+                    }).then(function() {
+                        return store2.upsert(dbObj[SECONDARY_TYPE]);
+                    });
+                });
+            };
+            
             return service;
         }])
-        .factory('fileService', ['$q', 'aikumaUtils', 'dataService', function($q, aikumaUtils, dataService) {
+        .factory('fileService', ['config', '$q', 'aikumaUtils', 'dataService', function(config, $q, aikumaUtils, dataService) {
             window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
             window.resolveLocalFileSystemURL = window.resolveLocalFileSystemURL || window.webkitResolveLocalFileSystemURL;
 
             var rootFs = $q.defer();
             var currentUserId;
-            var userWorkingFolder;
             var validation = {
-                validateUserId: function(userId) {
+                validateUserId: function(userId, bypass) {
                     var userIdValidationDefer = $q.defer();
 
                     if(currentUserId === userId) {
                         userIdValidationDefer.resolve();
+                    } else if(bypass) {
+                        currentUserId = userId;
+                        service.createFolder(userId).then(function() {
+                            userIdValidationDefer.resolve();
+                        }).catch(function(err) {
+                            userIdValidationDefer.reject(err);
+                        });
                     } else {
                         dataService.get(USER_TYPE, userId).then(function() {
                             currentUserId = userId;
-                            if(userWorkingFolder) {
-                                userIdValidationDefer.resolve();    
-                            } else {
-                                service.createFolder(userId).then(function() {
-                                    userWorkingFolder = true;
-                                    userIdValidationDefer.resolve();
-                                }).catch(function(err) {
-                                    userIdValidationDefer.reject(err);
-                                });
-                            }
-
+                            service.createFolder(userId).then(function() {
+                                userIdValidationDefer.resolve();
+                            }).catch(function(err) {
+                                userIdValidationDefer.reject(err);
+                            });
                         }).catch(function(err) {
                             userIdValidationDefer.reject(err);
                         });
@@ -482,7 +535,7 @@
                 rootFs.reject('Error: ' + msg);
             };
 
-            navigator.webkitPersistentStorage.requestQuota(100*1024*1024, function(bytes) {
+            navigator.webkitPersistentStorage.requestQuota(config.fileStorageMB*1024*1024, function(bytes) {
                 window.requestFileSystem(window.PERSISTENT, bytes, onInitFs, onErrorFs);
             }, function(err) {
                 rootFs.reject('Error: ' + err);
@@ -631,17 +684,19 @@
                 return fileDefer.promise;
             };
             
-            service.createFile = function(userId, file) {
+            service.createFile = function(userId, file, bypass) {
                 var fileDefer = $q.defer();
 
                 if(!file.name) {
                     file.name = aikumaUtils.createRandomAlphabets(20);
                     if(file.type === 'audio/wav') {
                         file.name += '.wav';
+                    } else if(file.type.indexOf('image') === 0) {
+                        file.name += zip.getExtension(file.type);
                     }
                 }
                 
-                validation.validateUserId(userId).then(function() {
+                validation.validateUserId(userId, bypass).then(function() {
                     service.getFileEntryFromName(userId, file.name, {create: true}).then(function(fileEntry) {
                         fileEntry.createWriter(function(fileWriter) {	
                             fileWriter.onwriteend = function() {					
@@ -683,6 +738,117 @@
                 return fileDefer.promise;    
             };
             
+            // Get indexedDB backup
+            // Import zip
+            zip.workerScriptsPath = "src/lib/";
+            service.getBackupFile = function() {
+                var zipDefer = $q.defer();
+                var backupFile = new zip.fs.FS();
+                var jsonDb;
+                dataService.getJsonBackup().then(function(dbBackup) {
+                    jsonDb = dbBackup;
+                    return rootFs.promise;
+                }).then(function(fs) {
+                    var onsuccess = function() {
+                        backupFile.exportData64URI(function(uri) {
+                            zipDefer.resolve(uri);
+                        }, null, function() { zipDefer.reject('no uri'); } );
+                    };
+
+                    var onerror = function() { 
+                        zipDefer.reject('fileService.getBackupFile: Zipping Error'); 
+                    };
+                    //Sync
+                    backupFile.root.addBlob('db.json', new Blob([JSON.stringify(jsonDb)], {type: 'application/json'}));
+                    //Async
+                    backupFile.root.addFileEntry(fs.root, onsuccess, onerror);
+                }).catch(function(err) {
+                    zipDefer.reject(err);
+                });
+
+                return zipDefer.promise;
+            };
+            
+            service.clear = function() {
+                var clearDefer = $q.defer();
+                
+                rootFs.promise.then(function(fs) {
+                    var rootReader = fs.root.createReader();
+                    rootReader.readEntries(function(entries) {
+                        var i = 0;
+                        var onerror = function() {
+                            clearDefer.reject('failure');
+                        };
+                        var onsuccess = function() {
+                            if(!entries[i]) {
+                                clearDefer.resolve('success');
+                            } else {
+                                entries[i++].removeRecursively(onsuccess, onerror);
+                            }
+                        };
+                        
+                        if(entries.length !== 0) {
+                            entries[i++].removeRecursively(onsuccess, onerror);
+                        } else {
+                            clearDefer.resolve('success');
+                        }
+                    });
+                });
+                    
+                return clearDefer.promise;
+            };
+
+            service.importBackupFile = function(file) {
+                var importDefer = $q.defer();
+                var backupFile = new zip.fs.FS();
+                var onerror = function() {
+                    importDefer.reject('fileService.importBackupFile: Importing error');
+                };
+
+                backupFile.root.importBlob(file, function() {
+                    if(file.name.indexOf('.zip') === -1)
+                        return;
+
+                    //var promises = [];
+                    var userFileList = [];
+                    var fileIdMap = {};
+                    // Preprocessing
+                    backupFile.root.children.forEach(function(childEntry) {
+                        if(childEntry.directory) {
+                            userFileList.push([childEntry.name, childEntry.children]);   
+                        }
+                    });
+
+                    function importFile(userIndex, fileIndex) {
+                        if(!userFileList[userIndex]) {     //Import JSON db after copy finishes
+                            var dbFileEntry = backupFile.root.getChildByName('db.json');
+                            dbFileEntry.getText(function(txt) {
+                                //console.log(txt);
+                                importDefer.resolve(dataService.importJsonDb(txt, fileIdMap));
+                            });
+                        } else {    // copy all users' files
+                            var fileEntry = userFileList[userIndex][1][fileIndex];
+                            if(!fileEntry) {
+                                importFile(userIndex + 1, 0);
+                            } else if(!fileEntry.directory) {
+                                fileEntry.getBlob(zip.getMimeType(fileEntry.name), function(blob) {
+                                    //promises.push(service.createFile(userFileList[userIndex][0], blob));
+                                    service.createFile(userFileList[userIndex][0], blob, true).then(function(url) {
+                                        fileIdMap[userFileList[userIndex][0] + '/' + fileEntry.name] = url;
+                                        importFile(userIndex, fileIndex + 1);
+                                    });
+                                    //importFile(userIndex, fileIndex + 1);
+                                });
+                            }
+                        }
+                    }
+                    
+                    importFile(0, 0);
+                    
+                }, null, onerror);
+
+                return importDefer.promise;
+            };
             
             // Temporary storage
             var tempObj;

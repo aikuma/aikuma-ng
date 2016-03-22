@@ -1,12 +1,30 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
 <md-content class="md-padding">
-    <md-button class="md-raised" ng-click="seCtrl.loadMockData()">
+    
+    <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" href="{{seCtrl.dataUri}}">
+        <md-icon md-svg-icon="file:file_download"></md-icon>
+        Download backup file  
+    </md-button>
+    
+    <label class="md-button md-raised" for="zip-input">
+        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+        Load backup file
+    </label>
+    <input id="zip-input" type="file" file-model="zipFile" style="display:none;">
+    
+    <label class="md-button md-raised" ng-click="seCtrl.loadMockData()">
         <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
         Load mock-data
-    </md-button>
+    </label>
 
-    <md-button class="md-raised" ng-click="seCtrl.wipeData()">
+    <label class="md-button md-raised" ng-click="seCtrl.wipeData()">
         <md-icon md-svg-icon="action:delete"></md-icon>
         Wipe all data
-    </md-button>
+    </label>
+    
+    <label class="md-button md-raised" ng-click="seCtrl.resetDb()">
+        <md-icon md-svg-icon="action:delete"></md-icon>
+        Reset Database
+    </label>
+    
 </md-content>

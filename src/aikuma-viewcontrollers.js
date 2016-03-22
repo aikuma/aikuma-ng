@@ -57,168 +57,199 @@
 
         }])
 
-        .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
+        .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
             var vm = this;
 
+            $scope.$watch('zipFile', function (file) {
+                if(file) {
+                    fileService.clear().then(function() {
+                        return dataService.clear();
+                    }).then(function() {
+                        fileService.importBackupFile(file);  
+                    }).then(function(){
+                        aikumaDialog.toast('All backup-data are loaded');
+                    }).catch(function(err) {
+                        aikumaDialog.toast('Backup-data loading failed: ' + err);
+                    });
+                }
+            });
+            
+            
+            fileService.getBackupFile().then(function(uri) {
+                console.log(uri);
+                vm.dataPrepared = true;
+                vm.dataUri = uri;
+            });   
+            
+            
             vm.wipeData = function() {
-                window.indexedDB.deleteDatabase('myIndexedDB');
-                $timeout(function() {
-                    $route.reload();
-                }, 1000);
+                fileService.clear().then(function() {
+                    return dataService.clear();
+                }).then(function() {
+                    aikumaDialog.toast('All data are wiped');
+                }).catch(function(err){
+                    aikumaDialog.toast('Wiping data failed: ' + err);
+                });
+            };
+            
+            vm.resetDb = function() {
+                var request = window.indexedDB.deleteDatabase('myIndexedDB');
+                request.onerror = function(event) {
+                    aikumaDialog.toast('DB-reset failed');
+                };
+                request.onsuccess = function(event) {
+                    aikumaDialog.toast('DB is reset');
+                };
+            };
+            
+            var mockUserData = {
+                names: ['Mat Bettinson', '茂修'],
+                email: 'foo@gmail.com',
+                people: {
+                    1: {
+                        'names': ['Mat Bettinson', '茂修'],
+                        'imageFileId': '1',
+                        'email': 'foo@bar'
+                    },
+                    2: {
+                        'names': ['Bo:ong Wind', '風高清'],
+                        'imageFileId': null,
+                        'email': 'foo@bar'
+                    },
+                    3: {
+                        'names': ['Nick Giannopoulos'],
+                        'imageFileId': '1',
+                        'email': 'foo@bar'
+                    },
+                    4: {
+                        'names': ['Some-guy withalongalastaname', 'Terry'],
+                        'imageFileId': '1',
+                        'email': ''
+                    }
+                },
+                tags: {
+                    1: 'poor quality',
+                    2: 'good quality',
+                    3: 'requires approval',
+                    4: 'received approval',
+                    5: 'archived'
+                },
+                files: {
+                    1: {
+                        url: 'img/dummy_user.jpg',
+                        type: 'image/jpeg'
+                    },
+                    2: {
+                        url: 'img/test_small.jpg',
+                        type: 'image/jpeg',
+                        description: 'A picture that has nothing to do with the recording.',
+                    },
+                    3: {
+                        url: 'media/elan-example1.mp3',
+                        type: 'audio/wav'
+                    }
+                }
+            };
+
+
+            // mock data
+            var mockSessionData = {
+                '1': {
+                    names: ['The Rotunda Conversation'],
+                    details: [
+                        {
+                            'name': 'Description',
+                            'icon': 'action:description',
+                            'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                        },
+                        {
+                            'name': 'Location',
+                            'icon': 'communication:location_on',
+                            'data': ''
+                        }
+                    ],
+                    roles: {
+                        'speakerIds': ['1', '2', '3']
+                    },
+                    tagIds: ['1', '3'],
+                    source: {
+                        recordFileId: '3',
+                        langIds: ['eng'],
+                        duration: 36000
+                    },
+                    imageIds: ['2'],
+                    creatorId: 'foo@gmail.com'
+                },
+                '2': {
+                    names: ["A recording that doesn't actually exist"],
+                    details: [
+                        {
+                            'name': 'Description',
+                            'icon': 'action:description',
+                            'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                        },
+                        {
+                            'name': 'Location',
+                            'icon': 'communication:location_on',
+                            'data': ''
+                        }
+                    ],
+                    roles: {
+                        'speakerIds': ['1', '2', '3']
+                    },
+                    tagIds: ['1', '3']     ,
+                    source: {
+                        recordFileId: '3',
+                        langIds: ['eng'],
+                        duration: 36000
+                    },
+                    imageIds: ['2'],
+                    creatorId: 'foo@gmail.com'
+                },
+                '3': {
+                    names: ["Another fictional dummy data recording"],
+                    details: [
+                        {
+                            'name': 'Description',
+                            'icon': 'action:description',
+                            'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
+                        },
+                        {
+                            'name': 'Location',
+                            'icon': 'communication:location_on',
+                            'data': ''
+                        }
+                    ],
+                    roles: {
+                        'speakerIds': ['1', '2', '3']
+                    },
+                    tagIds: ['1', '3'],
+                    source: {
+                        recordFileId: '3',
+                        langIds: ['eng'],
+                        duration: 36000
+                    },
+                    imageIds: ['2'],
+                    creatorId: 'foo@gmail.com'
+                }
             };
 
             vm.loadMockData = function() {
-                var mockUserData = {
-                    names: ['Mat Bettinson', '茂修'],
-                    email: 'foo@gmail.com',
-                    people: {
-                        1: {
-                            'names': ['Mat Bettinson', '茂修'],
-                            'imageFileId': '1',
-                            'email': 'foo@bar'
-                        },
-                        2: {
-                            'names': ['Bo:ong Wind', '風高清'],
-                            'imageFileId': null,
-                            'email': 'foo@bar'
-                        },
-                        3: {
-                            'names': ['Nick Giannopoulos'],
-                            'imageFileId': '1',
-                            'email': 'foo@bar'
-                        },
-                        4: {
-                            'names': ['Some-guy withalongalastaname', 'Terry'],
-                            'imageFileId': '1',
-                            'email': ''
-                        }
-                    },
-                    tags: {
-                        1: 'poor quality',
-                        2: 'good quality',
-                        3: 'requires approval',
-                        4: 'received approval',
-                        5: 'archived'
-                    },
-                    files: {
-                        1: {
-                            url: 'img/dummy_user.jpg',
-                            type: 'image/jpeg'
-                        },
-                        2: {
-                            url: 'img/test_small.jpg',
-                            type: 'image/jpeg',
-                            description: 'A picture that has nothing to do with the recording.',
-                        },
-                        3: {
-                            url: 'media/elan-example1.mp3',
-                            type: 'audio/wav'
-                        }
-                    }
-                };
-
-
-                // mock data
-                var mockSessionData = {
-                    '1': {
-                        names: ['The Rotunda Conversation'],
-                        details: [
-                            {
-                                'name': 'Description',
-                                'icon': 'action:description',
-                                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
-                            },
-                            {
-                                'name': 'Location',
-                                'icon': 'communication:location_on',
-                                'data': ''
-                            }
-                        ],
-                        roles: {
-                            'speakerIds': ['1', '2', '3']
-                        },
-                        tagIds: ['1', '3'],
-                        source: {
-                            recordFileId: '3',
-                            langIds: ['eng'],
-                            duration: 36000
-                        },
-                        imageIds: ['2'],
-                        creatorId: 'foo@gmail.com'
-                    },
-                    '2': {
-                        names: ["A recording that doesn't actually exist"],
-                        details: [
-                            {
-                                'name': 'Description',
-                                'icon': 'action:description',
-                                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
-                            },
-                            {
-                                'name': 'Location',
-                                'icon': 'communication:location_on',
-                                'data': ''
-                            }
-                        ],
-                        roles: {
-                            'speakerIds': ['1', '2', '3']
-                        },
-                        tagIds: ['1', '3']     ,
-                        source: {
-                            recordFileId: '3',
-                            langIds: ['eng'],
-                            duration: 36000
-                        },
-                        imageIds: ['2'],
-                        creatorId: 'foo@gmail.com'
-                    },
-                    '3': {
-                        names: ["Another fictional dummy data recording"],
-                        details: [
-                            {
-                                'name': 'Description',
-                                'icon': 'action:description',
-                                'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
-                            },
-                            {
-                                'name': 'Location',
-                                'icon': 'communication:location_on',
-                                'data': ''
-                            }
-                        ],
-                        roles: {
-                            'speakerIds': ['1', '2', '3']
-                        },
-                        tagIds: ['1', '3'],
-                        source: {
-                            recordFileId: '3',
-                            langIds: ['eng'],
-                            duration: 36000
-                        },
-                        imageIds: ['2'],
-                        creatorId: 'foo@gmail.com'
-                    }
-                };
-
                 dataService.setUser(mockUserData).then(function(ids) {
                     return ids[0];
                 }).then(function(userId){
                     console.log('SUCCESS: ' + userId);
+                    var promises = [];
                     for(var i in mockSessionData) {
                         console.log(mockSessionData[i]);
-                        dataService.setSession(userId, mockSessionData[i]).then(function(data) {
-                            console.log('SUCCESS' + data);
-                        }).catch(function(err) {
-                            console.error('ERR: ' + err);
-                        });
+                        promises.push(dataService.setSession(userId, mockSessionData[i]));
                     }
+                    return $q.all(promises);
+                }).then(function(){
+                    aikumaDialog.toast('All mock-data are loaded');
                 }).catch(function(err) {
-                    console.error('ERR: ' + err);
+                    aikumaDialog.toast('Mock-data loading failed: ' + err);
                 });
-
-                $timeout(function() {
-                    $route.reload();
-                }, 1000);
 
             };
         }])
