@@ -1,0 +1,43 @@
+{
+  "name": "app-name",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "LegoMushroom",
+    "email": "legomushroom@gmail.com",
+    "url": "http://legomushroom.com"
+  },
+  "private": false,
+  "scripts": {
+    "test": "karma start --single-run"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "3.8.10",
+    "gulp-util": "3.0.1",
+    "gulp-minify-css": "~0.3.0",
+    "gulp-stylus": "0.0.12",
+    "gulp-autoprefixer": "0.0.6",
+    "gulp-notify": "~0.5.1",
+    "gulp-livereload": "~1.2.0",
+    "gulp-coffee": "~1.4.1",
+    "gulp-changed": "~0.2.0",
+    "gulp-jade": "~0.4.2",
+    "gulp-watch": "2.0.0",
+    "gulp-coffeelint": "0.4.0",
+    "gulp-plumber": "0.6.6",
+    "gulp-uglify": "1.0.1",
+    "testem": "0.6.23",
+    "gulp-jasmine2-phantomjs": "0.2.0",
+    "ansi-styles": "^1.1.0",
+    "escape-string-regexp": "^1.0.0",
+    "has-ansi": "^0.1.0",
+    "strip-ansi": "^0.3.0",
+    "supports-color": "^0.2.0",
+    "karma": "^0.12.21",
+    "karma-cli": "0.0.4",
+    "karma-jasmine": "^0.2.0",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-phantomjs-launcher": "^0.1.4"
+  }
+}

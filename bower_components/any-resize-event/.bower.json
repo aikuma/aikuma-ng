@@ -1,0 +1,14 @@
+{
+  "name": "any-resize-event",
+  "homepage": "https://github.com/legomushroom/resize",
+  "version": "1.0.0",
+  "_release": "1.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.0",
+    "commit": "c36ecc2455fcc77840f209a853ba2a2ee6f66308"
+  },
+  "_source": "git://github.com/legomushroom/resize.git",
+  "_target": "^1.0.0",
+  "_originalSource": "any-resize-event"
+}

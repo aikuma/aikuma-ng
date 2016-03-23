@@ -1,0 +1,10 @@
+dependencies:
+  cache_directories:
+    - "bower_components"
+    - "node_modules"
+  override:
+    - ./npm_install.sh
+    - ./node_modules/.bin/bower install
+test:
+  override:
+    - ./node_modules/.bin/grunt test
