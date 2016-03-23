@@ -16,6 +16,7 @@
         <span flex>{{'NAV_LOGOUT' | translate}}</span>
     </md-button>
     <label ng-repeat="item in navCtrl.menu" class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
+        <md-tooltip ng-if="item.tooltip" class="md-body-2" md-direction="right">{{item.tooltip | translate}} </md-tooltip>
         <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
         <span flex>{{item.title | translate}}</span>
     </label>

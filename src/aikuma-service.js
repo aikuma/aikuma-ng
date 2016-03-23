@@ -36,16 +36,13 @@
         .factory('aikumaService', [function () {
             var ser = {};
             ser.languages = [];
-            ser.getLanguages = function(callback) {
-                Papa.parse("extdata/iso-639-3_20160115.tab", {
-                    header: true,
-                    download: true,
-                    complete: function(results) {
-                        ser.languages = results.data;
-                        callback(results.data);
-                    }
-                });
-            };
+            Papa.parse("extdata/iso-639-3_20160115.tab", {
+                header: true,
+                download: true,
+                complete: function(results) {
+                    ser.languages = results.data;
+                }
+            });
            
             ser.mockannotations = [
                 {

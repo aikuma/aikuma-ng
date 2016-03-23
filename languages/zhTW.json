@@ -94,5 +94,6 @@
   "EDIT_RESPEAK": "主編重複說話",
   "EDIT_TRANS": "主編翻譯",
   "ADD_PERSON": "為了加一個人，键入名字",
-  "ADD_TAG": "為了加一個標籤，键入名字"
+  "ADD_TAG": "為了加一個標籤，键入名字",
+  "NOT_IMPLEMENTED": "尚未實現"
 }

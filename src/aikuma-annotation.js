@@ -10,9 +10,10 @@
                 restrict: "E",
                 templateUrl: "views/templates/annotate-template.html",
                 scope: {
+                    source: '@',
                     userObj: '=',
                     sessionObj: '=',
-                    source: "@"
+                    annotationObj: "="
                 },
                 controller: annotationController,
                 controllerAs: 'axCtrl'

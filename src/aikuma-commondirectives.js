@@ -222,7 +222,8 @@
                     class : '',
                     title: 'NAV_SHARE',
                     icon: 'social:share',
-                    state: 'share'
+                    state: 'share',
+                    tooltip: 'NOT_IMPLEMENTED'
                 },
                 {
                     class : '',
@@ -246,7 +247,8 @@
                     class : '',
                     title: 'NAV_BUGREP',
                     icon: 'action:bug_report',
-                    state: 'reportbug'
+                    state: 'reportbug',
+                    tooltip: 'NOT_IMPLEMENTED'
                 }
             ];
             
@@ -546,13 +548,11 @@
 
         function loadAllx() {
             var languages=[];
-            aikumaService.getLanguages(function(langs){
-                langs.forEach( function(s) {
-                    languages.push({
-                        value: s.Ref_Name.toLowerCase(),
-                        display: s.Ref_Name,
-                        id: s.Id
-                    });
+            aikumaService.languages.forEach( function(s) {
+                languages.push({
+                    value: s.Ref_Name.toLowerCase(),
+                    display: s.Ref_Name,
+                    id: s.Id
                 });
             });
             return languages;

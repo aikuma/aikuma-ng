@@ -463,8 +463,9 @@
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }
         }])
-        .controller('annotateViewController', ['userObj', 'sessionObj', function(userObj, sessionObj) {
+        .controller('annotateViewController', ['userObj', 'sessionObj', 'annotationObj', function(userObj, sessionObj, annotationObj) {
             var vm = this;
+            console.log(annotationObj);
             vm.userObj = userObj;
             vm.sessionObj = sessionObj;
             vm.userData = userObj.data;
