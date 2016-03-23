@@ -364,6 +364,18 @@
                 });
             };
             
+            service.getAnnotationObjList = function(userId, sessionId) {
+                return service.getSecondaryList(userId, sessionId).then(function(secList) {
+                    return secList.map(function(secData) { 
+                        if(secData.type.indexOf('anno_') === 0) {
+                            var wrapper = {data: secData};
+                            wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
+                            return wrapper;
+                        } 
+                    });
+                });
+            };
+            
             // Temporary metadata
             
             var getTempStorageKey = function(userId, sessionId, type) {

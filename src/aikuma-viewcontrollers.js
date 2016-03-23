@@ -463,14 +463,17 @@
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }
         }])
-        .controller('annotateViewController', ['userObj', 'sessionObj', 'annotationObj', 'annotationList', function(userObj, sessionObj, annotationObj, annotationList) {
+        .controller('annotateViewController', ['$routeParams', 'userObj', 'sessionObj', 'annotationObjList', function($routeParams, userObj, sessionObj, annotationObjList) {
             var vm = this;
             vm.userObj = userObj;
             vm.sessionObj = sessionObj;
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
+            
+            console.log(annotationObjList);
+            var annotationObj = annotationObjList.filter(function(obj) {return obj.data._ID === $routeParams.annotateId;})[0];
             console.log(annotationObj);
-            console.log(annotationList);
+            
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }
