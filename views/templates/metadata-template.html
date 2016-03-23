@@ -6,11 +6,11 @@
                 <md-icon style="width:32px;height:32px;padding-right:4px;" md-svg-icon="{{detail.icon}}"></md-icon>
                 {{detail.name | translate}}
             </span>
-            <p ng-if="detail.data==''" class="md-body-2"><i>None</i></p>
+            <p ng-if="detail.data==''" class="md-body-2"><i>{{"NONE"| translate}}</i></p>
             <p ng-if="detail.data!=''" class="md-body-1">{{detail.data}}</p>
         </md-card-content>
         <md-card-actions layout="row" layout-align="end end">
-            <md-button aria-label="Edit" class="md-icon-button">
+            <md-button aria-label="Edit" class="md-icon-button" ng-click="mCtrl.editMetadata($event,$index)">
                 <md-icon style="width:28px;height:28px;padding-right:8px;" md-svg-icon="image:edit"></md-icon>
             </md-button>
         </md-card-actions>

@@ -36,14 +36,41 @@
         .factory('aikumaService', [function () {
             var ser = {};
             ser.languages = [];
-            Papa.parse("extdata/iso-639-3_20160115.tab", {
-                header: true,
-                download: true,
-                complete: function(results) {
-                    ser.languages = results.data;
+            ser.langOverrides = [
+                {
+                    Ref_Name: '中文',
+                    Id: 'cmn'
+                },
+                {
+                    Ref_Name: '漢語',
+                    Id: 'cmn'
+                },
+                {
+                    Ref_Name: '台語',
+                    Id: 'nan'
+                },
+                {
+                    Ref_Name: '賽夏語',
+                    Id: 'xsy'
+                },
+                {
+                    Ref_Name: '泰雅語',
+                    Id: 'tay'
                 }
-            });
-           
+
+            ];
+            ser.getLanguages = function(callback) {
+                Papa.parse("extdata/iso-639-3_20160115.tab", {
+                    header: true,
+                    download: true,
+                    complete: function(results) {
+                        ser.languages = results.data;
+                        angular.extend(ser.languages,ser.langOverrides)
+                        callback(results.data);
+                    }
+                });
+            };
+
             ser.mockannotations = [
                 {
                     'type': 'annotation',

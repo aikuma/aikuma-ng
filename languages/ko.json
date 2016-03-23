@@ -95,5 +95,8 @@
   "EDIT_TRANS": "Edit Translation",
   "ADD_PERSON": "Add people",
   "ADD_TAG": "Add tags",
-  "NOT_IMPLEMENTED": "Not yet implemented"
+  "NOT_IMPLEMENTED": "Not yet implemented",
+  "NONE": "None",
+  "META_EDIT": "Edit details",
+  "META_DEL": "Delete"
 }

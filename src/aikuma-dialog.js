@@ -6,20 +6,7 @@
         .factory('aikumaDialog', ['$document', '$mdDialog', '$mdToast', function ($document, $mdDialog, $mdToast) {
             var factory = {};
             factory.newMetadata = function(ev) {
-                $mdDialog.show({
-                    controller: newMetaDialogController,
-                    controllerAs: 'mdxCtrl',
-                    templateUrl: 'views/templates/dialog-newMeta.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    clickOutsideToClose: true,
-                    resolve: {
-                        sessionObj: ['$route', 'dataService', function($route, dataService) {
-                            var sessionId = $route.current.params.sessionId;
-                            return dataService.get('session', sessionId);
-                        }]
-                    }
-                });
+                
             };
             factory.alert = function(alerttitle, alerttext, callbackfunc) {
                 $mdDialog.show(
@@ -80,50 +67,7 @@
     };
     profileController.$inject = ['$mdDialog', '$scope', 'userObj'];
 
-    var newMetaDialogController = function ($mdDialog, sessionObj) {
-        var vm = this;
-        
-        vm.defaultMeta = [
-            {
-                name: 'META_CUSTOM',
-                icon: 'action:assignment_ind'
-            },
-            {
-                name: 'META_DESC',
-                icon: 'action:description'
-            },
-            {
-                name: 'META_LOC',
-                icon: 'communication:location_on'
-            },
-            {
-                name: 'META_CITY',
-                icon: 'social:location_city'
-            },
-            {
-                name: 'META_CONSENT',
-                icon: 'communication:vpn_key'
-            }
-        ];
-        vm.metaD = vm.defaultMeta[0];
-        vm.save = function() {
-            var detail = {};
-            if(vm.metaD.name === 'META_CUSTOM')
-                detail.name = vm.customName;
-            else
-                detail.name = vm.metaD.name;
-            detail.icon = vm.metaD.icon;
-            detail.data = vm.metaText;
-            
-            sessionObj.pushDetail(detail);
-            sessionObj.save();
-            $mdDialog.hide();
-        };
-        
-        vm.close = function() {$mdDialog.cancel();};
 
-    };
-    newMetaDialogController.$inject = ['$mdDialog', 'sessionObj'];
     
 })();
 

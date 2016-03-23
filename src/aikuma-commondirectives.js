@@ -411,20 +411,109 @@
     };
     tagSelectorController.$inject = ['$scope', 'loginService', 'dataService'];
 
-    var metadataController = function ($scope, loginService, dataService, aikumaDialog) {
+    var metadataController = function ($scope, loginService, dataService, $mdDialog) {
         var vm = this;
-        
         vm.sessionObj = $scope.sessionObj;
         vm.details = vm.sessionObj.data.details;
-        
         vm.addMetadata = function(ev) {
-            aikumaDialog.newMetadata();
+            $mdDialog.show({
+                controller: newMetaDialogController,
+                controllerAs: 'mdxCtrl',
+                templateUrl: 'views/templates/dialog-newMeta.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                resolve: {
+                    sessionObj: ['$route', 'dataService', function ($route, dataService) {
+                        var sessionId = $route.current.params.sessionId;
+                        return dataService.get('session', sessionId);
+                    }]
+                }
+            });
+        }
+        vm.editMetadata = function(ev, idx) {
+            $mdDialog.show({
+                controller: editMetaDialogController,
+                controllerAs: 'mdyCtrl',
+                templateUrl: 'views/templates/dialog-editMeta.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true,
+                locals: {
+                    metaindex: idx
+                },
+                resolve: {
+                    sessionObj: ['$route', 'dataService', function ($route, dataService) {
+                        var sessionId = $route.current.params.sessionId;
+                        return dataService.get('session', sessionId);
+                    }]
+                }
+            });
         };
-
         vm.defaultdisplay = ['Description','Location'];
-
     };
-    metadataController.$inject = ['$scope', 'loginService', 'dataService', 'aikumaDialog'];
+    metadataController.$inject = ['$scope', 'loginService', 'dataService', '$mdDialog'];
+
+    var newMetaDialogController = function ($mdDialog, sessionObj) {
+        var vm = this;
+        vm.defaultMeta = [
+            {
+                name: 'META_CUSTOM',
+                icon: 'action:assignment_ind'
+            },
+            {
+                name: 'META_DESC',
+                icon: 'action:description'
+            },
+            {
+                name: 'META_LOC',
+                icon: 'communication:location_on'
+            },
+            {
+                name: 'META_CITY',
+                icon: 'social:location_city'
+            },
+            {
+                name: 'META_CONSENT',
+                icon: 'communication:vpn_key'
+            }
+        ];
+
+        vm.metaD = vm.defaultMeta[0];
+        vm.save = function() {
+            var detail = {};
+            if(vm.metaD.name === 'META_CUSTOM')
+                detail.name = vm.customName;
+            else
+                detail.name = vm.metaD.name;
+            detail.icon = vm.metaD.icon;
+            detail.data = vm.metaText;
+            sessionObj.pushDetail(detail);
+            sessionObj.save();
+            $mdDialog.hide();
+        };
+        vm.close = function() {$mdDialog.cancel();};
+    };
+    newMetaDialogController.$inject = ['$mdDialog', 'sessionObj'];
+
+    var editMetaDialogController = function (metaindex, $mdDialog, sessionObj) {
+        var vm = this;
+        vm.close = function() {$mdDialog.cancel();};
+        vm.metaD = sessionObj.data.details[metaindex];
+        if(vm.metaD.name === 'META_CUSTOM')
+            vm.customName = vm.metaD.data.name;
+        vm.metaText = sessionObj.data.details[metaindex].data;
+        vm.save = function() {
+            sessionObj.save();
+            $mdDialog.hide();
+        };
+        vm.delete = function() {
+            sessionObj.data.details.splice(metaindex);
+            sessionObj.save();
+            $mdDialog.hide();
+        };
+    };
+    editMetaDialogController.$inject = ['metaindex', '$mdDialog', 'sessionObj'];
 
     var playerController = function ($scope, $attrs) {
         var vm = this;
@@ -548,11 +637,13 @@
 
         function loadAllx() {
             var languages=[];
-            aikumaService.languages.forEach( function(s) {
-                languages.push({
-                    value: s.Ref_Name.toLowerCase(),
-                    display: s.Ref_Name,
-                    id: s.Id
+            aikumaService.getLanguages(function(langs){
+                langs.forEach( function(s) {
+                    languages.push({
+                        value: s.Ref_Name.toLowerCase(),
+                        display: s.Ref_Name,
+                        id: s.Id
+                    });
                 });
             });
             return languages;
