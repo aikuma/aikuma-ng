@@ -413,8 +413,7 @@
 
     var metadataController = function ($scope, loginService, dataService, $mdDialog) {
         var vm = this;
-        vm.sessionObj = $scope.sessionObj;
-        vm.details = vm.sessionObj.data.details;
+        vm.details = $scope.sessionObj.data.details;
         vm.addMetadata = function(ev) {
             $mdDialog.show({
                 controller: newMetaDialogController,
@@ -423,11 +422,8 @@
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: true,
-                resolve: {
-                    sessionObj: ['$route', 'dataService', function ($route, dataService) {
-                        var sessionId = $route.current.params.sessionId;
-                        return dataService.get('session', sessionId);
-                    }]
+                locals: {
+                    sessionObj: $scope.sessionObj
                 }
             });
         }
@@ -440,13 +436,8 @@
                 targetEvent: ev,
                 clickOutsideToClose: true,
                 locals: {
-                    metaindex: idx
-                },
-                resolve: {
-                    sessionObj: ['$route', 'dataService', function ($route, dataService) {
-                        var sessionId = $route.current.params.sessionId;
-                        return dataService.get('session', sessionId);
-                    }]
+                    metaindex: idx,
+                    sessionObj: $scope.sessionObj
                 }
             });
         };

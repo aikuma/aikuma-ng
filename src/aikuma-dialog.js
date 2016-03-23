@@ -47,25 +47,29 @@
             return factory;
         }]);
 
-    var profileController = function($mdDialog, $scope, userObj) {
+    var profileController = function($mdDialog, $scope, $translate, config, userObj) {
         var vm = this;
+        vm.languages = config.languages;
         vm.namePlaceholder = 'Add names';
         vm.nameSecPlaceholder = 'Add more';
         vm.emailPlaceholder = 'Email';
         
         vm.userNames = userObj.data.names.slice();
         vm.userEmail = userObj.data.email; 
+        vm.userLangPref = userObj.data.preferences.langCode;
         
         vm.save = function() {
             userObj.data.names = vm.userNames;
             userObj.data.email = vm.userEmail;
+            userObj.data.preferences.langCode = vm.userLangPref;
             userObj.save();
+            $translate.use(vm.userLangPref);
             $mdDialog.hide();
         };
         
         vm.close = function() {$mdDialog.cancel();};
     };
-    profileController.$inject = ['$mdDialog', '$scope', 'userObj'];
+    profileController.$inject = ['$mdDialog', '$scope', '$translate', 'config', 'userObj'];
 
 
     

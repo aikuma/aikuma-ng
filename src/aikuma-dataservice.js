@@ -78,6 +78,7 @@
                     names: true,    // array
                     email: true,
                     lastModified: true,
+                    preferences: true,
                     people: false,  // array
                     tags: false,    // array
                     files: false    // array

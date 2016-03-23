@@ -14,6 +14,7 @@
                       placeholder="{{pdCtrl.namePlaceholder}}"
                       secondary-placeholder="{{pdCtrl.nameSecPlaceholder}}">
             </md-chips>
+            
             <md-input-container md-no-float class="md-block">
                 <input name="email" ng-model="pdCtrl.userEmail" required 
                        placeholder="{{pdCtrl.emailPlaceholder}}"
@@ -23,6 +24,14 @@
                         Your email must be between 10 and 100 characters long and look like an e-mail address.
                     </div>
                 </div>
+            </md-input-container>
+            
+            <md-input-container class="md-block">
+                <md-select ng-model="pdCtrl.userLangPref">
+                     <md-option ng-repeat="lang in pdCtrl.languages" ng-value="lang.code">
+                        <span class="md-body-2">{{lang.name | translate}}</span>
+                    </md-option>
+                </md-select>
             </md-input-container>
         </md-dialog-content>
         <md-dialog-actions layout="row">

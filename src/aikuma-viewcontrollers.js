@@ -38,7 +38,10 @@
             vm.createNewUser = function() {
                 var mockUserData = {
                     names: ['Anonymous'],
-                    email: 'foo@gmail.com'
+                    email: 'foo@gmail.com',
+                    preferences: {
+                        langCode: 'en'
+                    }
                 };
                 
                 dataService.setUser(mockUserData).then(function(data) {
@@ -105,6 +108,9 @@
             var mockUserData = {
                 names: ['Mat Bettinson', '茂修'],
                 email: 'foo@gmail.com',
+                preferences: {
+                    langCode: 'en'
+                },
                 people: {
                     1: {
                         'names': ['Mat Bettinson', '茂修'],
