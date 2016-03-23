@@ -24,6 +24,7 @@
   "PROFILE_EDIT": "Edit Profile",
   "BUTTON_OK": "OK",
   "BUTTON_CANCEL": "Cancel",
+  "BUTTON_CONFIRM": "Confirm",
   "ACTIVITY_RESPEAK": "Respeak",
   "ACTIVITY_TRANSLATE": "Translate",
   "ACTIVITY_CHANGES": "Changes",
@@ -58,7 +59,6 @@
   "ANNO_COMM": "Comments",
   "ANNO_OTH": "Other",
   "ANNO_ADD": "Add new annotation",
-  "ANNO_CREATE": "Create new annotation",
   "ANNO_NOEXIST": "No annotations yet!",
   "ANNO_DEL": "Delete annotation",
   "ADD_NEW": "Add new",
@@ -92,5 +92,7 @@
   "RECORD_TRANS": "Record Translation",
   "RECORD_NTRANS": "Record New Translation",
   "EDIT_RESPEAK": "Edit Respeaking",
-  "EDIT_TRANS": "Edit Translation"
+  "EDIT_TRANS": "Edit Translation",
+  "ADD_PERSON": "Add people",
+  "ADD_TAG": "Add tags"
 }

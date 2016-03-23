@@ -177,7 +177,7 @@
             vm.languages = config.languages;
             
             vm.getLoginStatus = loginService.getLoginStatus;
-            vm.versionString = config.appName+' '+config.appVersion;
+            vm.versionString = config.appVersion;
             
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
@@ -382,10 +382,6 @@
                 name: angular.lowercase(chip)
             };
         };
-        
-
-        vm.placeholder = "Add tags";
-        vm.secondaryPlaceholder = "Add more";
 
         function makeTagObj(tags,id) {
             var tagObj = {

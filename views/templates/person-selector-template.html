@@ -4,17 +4,17 @@
           md-on-add="psCtrl.add()"
           md-on-remove="psCtrl.rem()"
           md-on-select="psCtrl.sel()">
-    <md-autocomplete
+    <md-autocomplete class="md-body-2"
             md-selected-item="psCtrl.selectedItem"
             md-search-text="psCtrl.searchText"
             md-items="item in psCtrl.personQuerySearch(psCtrl.searchText)"
             md-item-text="item.pname"
-            placeholder="Add speakers"
+            placeholder="{{'ADD_PERSON' | translate}}"
             secondary-placeholder="Add new">
         <div class="md-contact-suggestion">
             <img ng-src="{{item.image}}"/>
               <span class="md-contact-name" md-highlight-text="psCtrl.searchText" md-highlight-flags="i">
-                {{item.pname}}
+                <span class="md-body-2">{{item.pname}}</span>
               </span>
         </div>
 
@@ -24,7 +24,7 @@
             <img ng-src="{{$chip.image}}"/>
         </div>
         <div class="md-contact-name">
-          {{$chip.pname}}
+          <span class="md-body-2">{{$chip.pname}}</span>
         </div>
     </md-chip-template>
 </md-chips>

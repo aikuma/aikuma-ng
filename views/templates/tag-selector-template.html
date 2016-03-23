@@ -3,11 +3,12 @@
               md-transform-chip="tsCtrl.transformChip($chip)"
               md-require-match="false">
         <md-autocomplete
+                class="md-body-2"
                 md-selected-item="tsCtrl.selectedItem"
                 md-search-text="tsCtrl.searchText"
                 md-items="item in tsCtrl.tagQuerySearch(tsCtrl.searchText)"
                 md-item-text="item.name"
-                placeholder="{{tsCtrl.placeholder}}">
+                placeholder="{{'ADD_TAG' | translate}}">
             <span md-highlight-text="tsCtrl.searchText">{{item.name}}</span>
         </md-autocomplete>
         <md-chip-template>

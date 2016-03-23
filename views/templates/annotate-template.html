@@ -5,24 +5,24 @@
         <div>
             <md-button aria-label="Toogle translate respeaking" ng-click="axCtrl.toggleChildMode()">
                 <span ng-if="axCtrl.childMode === 'respeak'">
-                    <md-icon md-menu-origin md-svg-icon="nav:refresh"></md-icon>
+                    <md-icon md-menu-origin class="imgsvgicon" md-svg-icon="nav:refresh"></md-icon>
                     <span>{{"RESPEAKING" | translate}}</span>
                 </span>
                 <span ng-if="axCtrl.childMode === 'translate'">
-                    <md-icon md-menu-origin md-svg-icon="action:translate"></md-icon>
+                    <md-icon md-menu-origin class="imgsvgicon" md-svg-icon="action:translate"></md-icon>
                     <span>{{"TRANSLATE" | translate}}</span>
                 </span>
             </md-button>
             <md-menu>
                 <md-button ng-disabled="axCtrl.childMode !== 'respeak'" aria-label="Respeaking menu" ng-click="axCtrl.openMenu($mdOpenMenu, $event)">
-                    <md-icon md-menu-origin md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                    <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
                     <span>{{"RESPEAKING" | translate}} {{axCtrl.curRespeak + 1}}</span>
                 </md-button>
                 <md-menu-content width="4">
                     <md-menu-item  ng-repeat="respk in axCtrl.respeakings">
                         <md-button ng-click="axCtrl.toggleRespeaking($index)">
-                             <md-icon ng-if="axCtrl.activeRespeak[$index]" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                             <md-icon ng-if="!axCtrl.activeRespeak[$index]" md-svg-src="img/icons/speaker_off.svg"></md-icon>
+                             <md-icon ng-if="axCtrl.activeRespeak[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                             <md-icon ng-if="!axCtrl.activeRespeak[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
                              <span class="md-body-2">{{"RESPEAKING" | translate}} {{$index + 1}}<i><!--{{respk.source.created | date:'dd/MM/yyyy'}}--></i></span>
                         </md-button>
                     </md-menu-item>
@@ -30,14 +30,14 @@
             </md-menu>
             <md-menu>
                 <md-button  ng-disabled="axCtrl.childMode !== 'translate'" aria-label="Translation menu" ng-click="axCtrl.openMenu($mdOpenMenu, $event)">
-                    <md-icon md-menu-origin md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                    <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
                     <span>{{"TRANSLATE" | translate}} {{axCtrl.curTranslate + 1}}</span>
                 </md-button>
                 <md-menu-content width="4">
                     <md-menu-item  ng-repeat="trans in axCtrl.translations">
                         <md-button ng-click="axCtrl.toggleTranslation($index)">
-                            <md-icon ng-if="axCtrl.activeTranslation[$index]" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                            <md-icon ng-if="!axCtrl.activeTranslation[$index]" md-svg-src="img/icons/speaker_off.svg"></md-icon>
+                            <md-icon ng-if="axCtrl.activeTranslation[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                            <md-icon ng-if="!axCtrl.activeTranslation[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
                             <span class="md-body-2">{{"TRANSLATE" | translate}} {{$index + 1}}<i><!--{{respk.source.created | date:'dd/MM/yyyy'}}--></i></span>
                         </md-button>
                     </md-menu-item>
@@ -49,9 +49,12 @@
         </div>
         <section>
             <div ng-repeat="anno in axCtrl.annotations" layout="row">
-                <md-input-container flex class="md-block">
-                    <label> {{anno.langStr+' ('+anno.langISO+')'}}</label>
-                    <input focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]" ng-focus="axCtrl.selectAnno($index)" ng-disabled="!axCtrl.annoEnabled[$index] || axCtrl.curRegion < 0" ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
+                <md-input-container flex class="md-block1">
+                    <label class="md-subhead"> {{anno.langStr+' ('+anno.langISO+')'}}</label>
+                    <input class="md-body-1" focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]"
+                           ng-focus="axCtrl.selectAnno($index)"
+                           ng-disabled="!axCtrl.annoEnabled[$index] || axCtrl.curRegion < 0"
+                           ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
                 </md-input-container>
                 <md-input-container>
                     <md-switch ng-model="axCtrl.annoEnabled[$index]"></md-switch>
@@ -62,12 +65,12 @@
         <md-button ng-click="axCtrl.test()">Test</md-button>
         <div layout="row" flex>
             <div ng-repeat="reg in axCtrl.regionList">
-                start: {{reg.start}}<br/>
-                end: {{reg.end}}
+                <span class="md-body-1">start: {{reg.start}}</span><br/>
+                <span class="md-body-1">end: {{reg.end}}</span>
             </div>
         </div>
-        region: {{axCtrl.curRegion}}<br/>
-        playin: {{axCtrl.playIn}}<br/>
+        <span class="md-body-1">region: {{axCtrl.curRegion}}</span><br/>
+        <span class="md-body-1">playin: {{axCtrl.playIn}}</span><br/>
 
     </section>
     <md-content flex layout="column" class="md-whiteframe-3dp md-padding" style="width:40%;overflow-y: scroll">
@@ -75,7 +78,7 @@
             <md-list-item ng-repeat="anno in axCtrl.annotations[axCtrl.selectedAnno].annos track by $index"
                           ng-class="($index == axCtrl.curRegion) ? 'transcript-highlight' : 'transcript-normal'"
                           ng-click="axCtrl.seekRegion($index)">
-                {{anno}}
+                <span class="md-body-1">{{anno}}</span>
             </md-list-item>
         </md-list>
     </md-content>

@@ -18,8 +18,7 @@
                                  md-selected-item-change="dCtrl.selectedItemChange(item,$index)"
                                  md-items="item in dCtrl.querySearch(choice.searchText)"
                                  md-item-text="item.display"
-                                 placeholder="What language?"
-                                 md-floating-label="Language"
+                                 md-floating-label="{{'LANGUAGE' | translate}}"
                                  md-delay="200"
                                  md-min-length="2"
                                   class="md-subhead">
@@ -29,20 +28,20 @@
                     </md-item-template>
                 </md-autocomplete>
 
-                <md-select required flex ng-model="choice.type"  md-floating-label="Language" placeholder="Type">
+                <md-select required flex ng-model="choice.type"  md-floating-label="{{'LANGUAGE' | translate}}" placeholder="Type">
                     <md-option ng-repeat="type in dCtrl.types" value="{{type}}">
-                        {{type | translate}}
+                        <span class="md-body-2">{{type | translate}}</span>
                     </md-option>
                 </md-select>
             </div>
 
             <md-button ng-disabled="!dCtrl.lastFilled()" ng-click="dCtrl.addNewChoice()" >
-                <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> Add New
+                <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> <span class="md-body-2">{{"ANNO_ADD" | translate}}</span>
             </md-button>
 
         </md-content>
         <md-dialog-actions layout="row">
-            <md-button ng-click="dCtrl.makeAnno()" ng-disabled="!dCtrl.choices[0].searchText || !dCtrl.choices[0].type">{{"ANNO_CREATE" | translate}}</md-button>
+            <md-button ng-click="dCtrl.makeAnno()" ng-disabled="!dCtrl.choices[0].searchText || !dCtrl.choices[0].type">{{"BUTTON_CONFIRM" | translate}}</md-button>
             <md-button ng-click="dCtrl.cancel()" style="margin-right:20px;" > {{"BUTTON_CANCEL" | translate}}</md-button>
         </md-dialog-actions>
     </form>

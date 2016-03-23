@@ -8,7 +8,6 @@
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:location_on"></md-icon>
                     {{sCtrl.location}}</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>{{sCtrl.dur}} seconds</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:language"></md-icon>{{sCtrl.srcLangStr}}</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>{{sCtrl.annotations.length}} annotations</span>
                 <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
             </div>
@@ -96,13 +95,13 @@
 
             <md-card-actions layout="row" layout-align="end center">
                 <label class="md-button" aria-label="Upload new image" for="image-input">
-                    <md-icon md-svg-icon="file:file_upload"></md-icon>{{"UPLOAD" | translate}}
+                    <md-icon md-svg-icon="file:file_upload"></md-icon><span class="md-body-2">{{"UPLOAD" | translate}}</span>
                 </label>
                 <md-button aria-label="Previous image" ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
                     <md-icon  md-svg-icon="av:skip_previous"></md-icon>
                 </md-button>
-                <div ng-if="!sCtrl.ImageCount"> - / - </div>
-                <div ng-if="sCtrl.ImageCount"> {{sCtrl.currentImageIdx}} / {{sCtrl.ImageCount}} </div>
+                <div ng-if="!sCtrl.ImageCount" class="md-body-2"> - / - </div>
+                <div ng-if="sCtrl.ImageCount" class="md-body-2"> {{sCtrl.currentImageIdx}} / {{sCtrl.ImageCount}} </div>
                 <md-button aria-label="Next image" ng-disabled="!sCtrl.hasNextImage()" ng-click="sCtrl.nextImage()">
                     <md-icon md-svg-icon="av:skip_next" ></md-icon>
                 </md-button>
