@@ -463,14 +463,14 @@
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }
         }])
-        .controller('annotateViewController', ['userObj', 'sessionObj', 'annotationObj', function(userObj, sessionObj, annotationObj) {
+        .controller('annotateViewController', ['userObj', 'sessionObj', 'annotationObj', 'annotationList', function(userObj, sessionObj, annotationObj, annotationList) {
             var vm = this;
-            console.log(annotationObj);
             vm.userObj = userObj;
             vm.sessionObj = sessionObj;
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
-
+            console.log(annotationObj);
+            console.log(annotationList);
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }
