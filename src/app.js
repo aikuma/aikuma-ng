@@ -224,15 +224,10 @@
                                 var sessionId = $route.current.params.sessionId;
                                 return dataService.get('session', sessionId);
                             }],
-                            annotationObj: ['$route', 'dataService', function($route, dataService) {
-                                var annotateId = $route.current.params.annotateId;
-                                return dataService.get('secondary', annotateId);
-                            }],
-                            annotationList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
+                            annotationObjList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
-                                var annotateId = $route.current.params.annotateId;
-                                return dataService.getAnnotationList(userId, sessionId, [annotateId]);
+                                return dataService.getAnnotationObjList(userId, sessionId);
                             }]
                         }
                     })
