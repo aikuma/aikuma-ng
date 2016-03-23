@@ -47,8 +47,8 @@
   "METADATA": "詳細信息",
   "META_ADD": "加入新的細節",
   "META_TYPE": "類型",
-  "META_NAME": "姓名e",
-  "META_DESC": "說明”",
+  "META_NAME": "姓名",
+  "META_DESC": "說明",
   "META_LOC": "位置",
   "META_CITY": "城市",
   "META_CONSENT": "同意",
@@ -96,7 +96,7 @@
   "ADD_PERSON": "為了加一個人，键入名字",
   "ADD_TAG": "為了加一個標籤，键入名字",
   "NOT_IMPLEMENTED": "尚未實現",
-  "NONE": "None",
+  "NONE": "沒有",
   "META_EDIT": "Edit details",
-  "META_DEL": "Delete"
+  "META_DEL": "删除"
 }

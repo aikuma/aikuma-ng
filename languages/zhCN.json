@@ -46,7 +46,7 @@
   "FINISH": "完成",
   "METADATA": "详细信息",
   "META_ADD": "加入新的细节",
-  "META_TYPE": "类型”",
+  "META_TYPE": "类型",
   "META_NAME": "姓名",
   "META_DESC": "说明",
   "META_LOC": "位置",
@@ -96,7 +96,7 @@
   "ADD_PERSON": "为了加一个人，键入名字",
   "ADD_TAG": "为了加一个标签，键入名字",
   "NOT_IMPLEMENTED": "尚未实现",
-  "NONE": "None",
+  "NONE": "没有",
   "META_EDIT": "Edit details",
-  "META_DEL": "Delete"
+  "META_DEL": "删除"
 }

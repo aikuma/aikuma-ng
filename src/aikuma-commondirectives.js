@@ -504,6 +504,7 @@
             vm.customName = vm.metaD.data.name;
         vm.metaText = sessionObj.data.details[metaindex].data;
         vm.save = function() {
+            sessionObj.data.details[metaindex].data = vm.metaText;
             sessionObj.save();
             $mdDialog.hide();
         };

@@ -158,12 +158,12 @@
                     names: ['The Rotunda Conversation'],
                     details: [
                         {
-                            'name': 'Description',
+                            'name': 'META_DESC',
                             'icon': 'action:description',
                             'data': 'Some guy at the MPI describes how to get somewhere to another guy. There are many Rotundas.'
                         },
                         {
-                            'name': 'Location',
+                            'name': 'META_LOC',
                             'icon': 'communication:location_on',
                             'data': ''
                         }
