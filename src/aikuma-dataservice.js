@@ -27,7 +27,7 @@
                 }
             };
         })
-        .factory('loginService', ['dataService', function (dataService) {
+        .factory('loginService', ['$translate', 'dataService', function ($translate, dataService) {
             var loginStatus = false;
             var currentUserData;
             
@@ -43,6 +43,7 @@
                 dataService.get(USER_TYPE, userId).then(function(userObj) {
                     loginStatus = true;
                     currentUserData = userObj.data;
+                    $translate.use(userObj.data.preferences.langCode);
                     if(window.sessionStorage) {
                         window.sessionStorage.currentUserData = JSON.stringify(currentUserData);
                     }

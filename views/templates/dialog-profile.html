@@ -25,14 +25,6 @@
                     </div>
                 </div>
             </md-input-container>
-            
-            <md-input-container class="md-block">
-                <md-select ng-model="pdCtrl.userLangPref">
-                     <md-option ng-repeat="lang in pdCtrl.languages" ng-value="lang.code">
-                        <span class="md-body-2">{{lang.name | translate}}</span>
-                    </md-option>
-                </md-select>
-            </md-input-container>
         </md-dialog-content>
         <md-dialog-actions layout="row">
             <md-button ng-disabled="userForm.email.$invalid || pdCtrl.userNames.length == 0" ng-click="pdCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>

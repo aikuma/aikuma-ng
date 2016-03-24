@@ -22,7 +22,8 @@
         .constant('config', {
             appName: 'Aikuma-ng',
             appVersion: 'alpha 20',
-            sampleRate: 16000,
+            sampleRate: 48000,
+            fileStorageMB: 1000,
             languages: [
                 {
                     code:'en',
@@ -268,7 +269,7 @@
                 secondaryStore.createIndex('user_session_idx', ['userId', 'sessionId']);
             });
         }])
-        .run(['$rootScope', '$location', function($rootScope, $location) {
+        .run(['$rootScope', '$location', 'dataService', 'loginService', function($rootScope, $location, dataService, loginService) {
             $rootScope.$on('$routeChangeStart', function(ev, dest) {
                 if(dest.authorize) {
                     dest.resolve = dest.resolve || {};
@@ -282,5 +283,18 @@
                     }];
                 }
             });
+            
+            $rootScope.$on('$translateChangeSuccess', function(ev, data) {
+                var userId = loginService.getLoggedinUserId();
+                if(userId) {
+                    dataService.get('user', userId).then(function(userObj) {
+                        userObj.data.preferences.langCode = data.language;
+                        return userObj.save();
+                    }).then(function() {
+                        console.log('Language preference is saved');
+                    });
+                }
+            });
+            
         }]);
 })();
