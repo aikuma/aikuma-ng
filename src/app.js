@@ -23,6 +23,7 @@
             appName: 'Aikuma-ng',
             appVersion: 'alpha 20',
             sampleRate: 16000,
+		fileStorageMB: 100,
             languages: [
                 {
                     code:'en',
