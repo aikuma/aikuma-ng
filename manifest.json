@@ -1,6 +1,6 @@
 {
     "name": "Aikuma-ng",
-    "description": "Speech annotation for regular folk",
+    "description": "Speech annotation for communities",
     "version": "0.2",
     "manifest_version": 2,
     "app": {
@@ -9,9 +9,8 @@
     }
     },
     "icons": { 
-        "16": "icons/annoweb-16.png", 
-        "32": "icons/annoweb-32.png", 
-        "128": "icons/annoweb-128.png" 
+        "32": "icons/aikuma-32.png",
+        "128": "icons/aikuma-128.png"
     },
     "file_handlers": {
         "audio": {

@@ -9,6 +9,10 @@
   "author": "mat@plothatching.com",
   "license": "MIT",
   "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lingomat/repository.git"
+  },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",
@@ -21,6 +25,7 @@
     "gulp-uglify": "^1.5.1",
     "gulp-useref": "^3.0.5",
     "gulp-util": "^3.0.7",
+    "gulp-zip": "^3.2.0",
     "wiredep": "^3.0.0"
   }
 }

@@ -86,13 +86,13 @@
                     miniMap.progress(miniMap.wavesurfer.backend.getPlayedPercents());
                 }, 25)
             );
-            keyService.regKey(playKeyCode,'keydown', function(ev) {playKeyDown(true);});
-            keyService.regKey(playKeyCode,'keyup', function(ev)   {playKeyUp(true);});
-            keyService.regKey(ffKeyCode,'keydown',  function(ev)  {ffKeyDown(true);});
-            keyService.regKey(ffKeyCode,'keyup',    function(ev)  {ffKeyUp(true);});
-            keyService.regKey(rwKeyCode,'keydown',  function(ev)  {rwKey(true);});
-            keyService.regKey(escKeyCode,'keydown', function(ev)  {escKey(true);});
-            keyService.regKey(tabKeyCode,'keydown', function(ev)  {tabKey(true);});
+            keyService.regKey(playKeyCode,'keydown', function() {playKeyDown(true);});
+            keyService.regKey(playKeyCode,'keyup', function()   {playKeyUp(true);});
+            keyService.regKey(ffKeyCode,'keydown',  function()  {ffKeyDown(true);});
+            keyService.regKey(ffKeyCode,'keyup',    function()  {ffKeyUp(true);});
+            keyService.regKey(rwKeyCode,'keydown',  function()  {rwKey(true);});
+            keyService.regKey(escKeyCode,'keydown', function()  {escKey(true);});
+            keyService.regKey(tabKeyCode,'keydown', function()  {tabKey(true);});
             setWsRegions(0);
             vm.playIn = _.last(vm.regionList).end;
             $scope.$broadcast('inputfoo0');

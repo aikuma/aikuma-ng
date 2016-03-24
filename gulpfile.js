@@ -12,7 +12,8 @@ var wiredep = require('wiredep').stream,
     rename = require('gulp-rename'),
     clean = require('gulp-clean'),
     useref = require('gulp-useref'),
-    debug = require('gulp-debug');
+    debug = require('gulp-debug'),
+    zip = require('gulp-zip');
 
 gulp.task('wavesurfer', function () {
     // We need to build wavesurfer since the package only deploys minified files
@@ -75,11 +76,17 @@ gulp.task('copyfiles', ['cleandist'], function () {
 
 gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
-        .pipe(useref({'noconcat':true}))
+        .pipe(useref({'noconcat':false}))
         //.pipe(useref())
         //.pipe(gulpif('*.js', uglify().on('error', gutil.log)))
-        //.pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulpif('*.css', minifyCss()))
         .pipe(debug({title: 'x:'}))
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('zip', ['deploy'], function () {
+    return gulp.src('./dist/**/*', {base: './dist'})
+        .pipe(zip('aikuma-ng-chrome.zip'))
         .pipe(gulp.dest('dist'));
 });
 
