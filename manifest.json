@@ -27,6 +27,7 @@
     },
     "permissions": [
         "unlimitedStorage",
+        "storage",
         {"fileSystem": ["write", "retainEntries", "directory"]}
     ]
 }

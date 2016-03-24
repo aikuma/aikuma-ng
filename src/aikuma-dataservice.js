@@ -39,13 +39,28 @@
             
             var service = {};
             
+            service.loginPreviousUser = function() {
+                if(window.chrome && chrome.storage) 
+                    chrome.storage.local.get('userId', function(obj) { service.loginUser(obj.userId); });
+                else
+                    service.loginUser(localStorage.getItem('userId'));
+            };
+            
             service.loginUser = function(userId) {
+                if(!userId || userId.search(/^[A-Z]{12}$/) === -1)
+                    return;
+                
                 dataService.get(USER_TYPE, userId).then(function(userObj) {
                     loginStatus = true;
                     currentUserData = userObj.data;
                     $translate.use(userObj.data.preferences.langCode);
                     if(window.sessionStorage) {
                         window.sessionStorage.currentUserData = JSON.stringify(currentUserData);
+                    if(window.chrome && chrome.storage)
+                        chrome.storage.local.set({userId: currentUserData._ID});
+                    else
+                        localStorage.setItem('userId', currentUserData._ID);
+                        
                     }
                 });
             };
