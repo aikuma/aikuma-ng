@@ -371,25 +371,25 @@
                 return $indexedDB.openStore(SECONDARY_TYPE, function(store) {
                     return store.eachBy('user_session_idx', {beginKey: [userId, sessionId], endKey: [userId, sessionId]});
                 }).then(function(secList) {
+                    if(secList) {
+                        secList.sort(function (a, b) {
+                            return new Date(a.source.created) - new Date(b.source.created);
+                        });
+                    }
                     return secList;
-                });
-            };
-            
-            service.getAnnotationList = function(userId, sessionId, excludeIds) {
-                return service.getSecondaryList(userId, sessionId).then(function(secList) {
-                    console.log('sl',secList);
-                    return secList.filter(function(secData) { return secData.type.indexOf('anno_') === 0 && excludeIds.indexOf(secData._ID) === -1; });
                 });
             };
             
             service.getAnnotationObjList = function(userId, sessionId) {
                 return service.getSecondaryList(userId, sessionId).then(function(secList) {
-                    return secList.map(function(secData) { 
-                        if(secData.type.indexOf('anno_') === 0) {
-                            var wrapper = {data: secData};
-                            wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
-                            return wrapper;
-                        } 
+                    return secList.filter(function(secData){
+                        return secData.type.indexOf('anno_') === 0;
+                    }).sort(function(a, b){
+                        return new Date(a.source.created) - new Date(b.source.created);
+                    }).map(function(secData) { 
+                        var wrapper = {data: secData};
+                        wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
+                        return wrapper;
                     });
                 });
             };
