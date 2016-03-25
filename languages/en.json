@@ -98,6 +98,12 @@
   "NOT_IMPLEMENTED": "Not yet implemented",
   "NONE": "None",
   "META_EDIT": "Edit details",
-  "META_DEL": "Delete"
+  "META_DEL": "Delete",
+  "PLAY_SRC": "Play source",
+  "PLAY_RSPK": "Play respeak",
+  "PLAY_TRANS": "Play translation",
+  "PLAY_LOOP": "Loop playback",
+  "PLAY_ONCE": "Play once",
+  "ANNO_TOG": "Toggle annotation"
 }
 

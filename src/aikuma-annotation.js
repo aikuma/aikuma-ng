@@ -62,6 +62,9 @@
                 markLastRegionComplete();
             });
         }
+        function playAudio(annoIdx,region) {
+            vm.regionList[region].play();
+        }
         // Post Wavesurfer start initialisation
         function initializeRegions() {
             aikumaService.getLanguages(function(langs){
@@ -70,10 +73,12 @@
                         _ID: anno._ID,
                         name: aikumaService.lookupLanguage(anno.source.langIds[0], langs),
                         type: angular.uppercase(anno.type),
-                        enabled: anno._ID === $scope.selectedAnno
+                        enabled: anno._ID === $scope.selectedAnno,
+                        loop: false,
+                        annos: {}
                     };
                 });
-                vm.selectedAnno = _.indexOf(vm.annoList, function(anno) {
+                vm.selectedAnno = _.findIndex(vm.annoList, function(anno) {
                     return anno._ID === $scope.selectedAnno;
                 });
                 $scope.$apply();
@@ -92,9 +97,15 @@
             } else {
                 vm.hasTranslation = false;
             }
-            //setWsRegions(0);
-            //vm.playIn = _.last(vm.regionList).end;
-            $scope.$broadcast('inputfoo0');
+
+            if (vm.regionList.length) {
+                vm.curRegion = 0;
+                vm.playIn = _.last(vm.regionList).end;
+                restoreFocus();
+                playAudio(vm.selectedAnno,vm.curRegion);
+            } else {
+                vm.curRegion = -1;
+            }
         }
 
         function playKeyDown(nokey) {
@@ -105,18 +116,22 @@
             if (vm.regionMarked) {
                 wsAnnotate.play(vm.playIn);
             } else {
-                var thisTime = wsAnnotate.getCurrentTime();
-                if (thisTime >= vm.playIn) {
+                if (vm.curRegion > -1) {
+                    playAudio(vm.selectedAnno,vm.curRegion);
+                } else {
+                    var thisTime = wsAnnotate.getCurrentTime();
                     makeNewRegion(thisTime);
                     vm.regionMarked = true;
                     vm.curRegion = vm.regionList.length - 1;
+                    // no amount of deleting or setting to undefine in the delete last region function will work
+                    vm.annoList.forEach(function(anno){
+                        anno.annos[vm.curRegion] = '';
+                    });
                     vm.playIn = thisTime;
                     $scope.$apply();
-                    $timeout(function() {
-                        $scope.$broadcast('inputfoo0');
-                    }, 0);
+                    restoreFocus();
+                    wsAnnotate.play();
                 }
-                wsAnnotate.play();
             }
             if (nokey) {$scope.$apply();}
 
@@ -127,8 +142,10 @@
         function playKeyUp(nokey) {
             vm.playKeyDown = false;
             if (vm.ffKeyDown) {return;}  // Block multiple keys
-            vm.isPlaying = false;
-            wsAnnotate.pause();
+            if (vm.regionMarked) {
+                vm.isPlaying = false;
+                wsAnnotate.pause();
+            }
         }
         vm.playUp = function() {
             playKeyUp(true);
@@ -181,17 +198,19 @@
             if (vm.regionMarked) {deleteLastRegion();}
             var thisTime = wsAnnotate.getCurrentTime();
             if ((thisTime - skipTimeValue) < vm.playIn) {
-                if (vm.curRegion !== 0) {
+                if (vm.regionList.length) {
                     var lastidx = _.findLastIndex(vm.regionList, function (reg) {
                         if (reg.start < thisTime) {return true;}
                     });
-                    seekToTime(vm.regionList[lastidx].start);
-                    vm.curRegion = lastidx;
-                    $timeout(function() {
-                        $scope.$broadcast('inputfoo0');
-                    }, 0);
+                    if (lastidx > -1) {
+                        seekToTime(vm.regionList[lastidx].start);
+                        vm.curRegion = lastidx;
+                        $timeout(function () {
+                            $scope.$broadcast('inputfoo0');
+                        }, 0);
+                    }
                 } else {
-                    seekToTime(vm.regionList[0].start);
+                seekToTime(0);
                 }
             } else {
                 wsAnnotate.skipBackward(skipTimeValue);
@@ -208,40 +227,6 @@
             if (vm.childMode === 'translate') {toggleTranslate();}
         }
 
-        function toggleRespeak() {
-            var found = false;
-            var newrsp = vm.curRespeak;
-            while (!found) {
-                ++newrsp;
-                if (newrsp > (vm.respeakings.length - 1)) {
-                    newrsp = 0;
-                }
-                if (newrsp === vm.curRespeak) {
-                    break;
-                }
-                if (vm.activeRespeak[newrsp]) {
-                    found = true;
-                }
-            }
-            if (found) {vm.curRespeak = newrsp;}
-        }
-        function toggleTranslate() {
-            var found = false;
-            var newrsp = vm.curTranslate;
-            while (!found) {
-                ++newrsp;
-                if (newrsp > (vm.translations.length - 1)) {
-                    newrsp = 0;
-                }
-                if (newrsp === vm.curTranslate) {
-                    break;
-                }
-                if (vm.activeTranslation[newrsp]) {
-                    found = true;
-                }
-            }
-            if (found) {vm.curTranslate = newrsp;}
-        }
         //
         // Set up Wavesurfer
         //
@@ -304,7 +289,8 @@
         }
         function restoreFocus() {
             $timeout(function() {
-                $scope.$broadcast('inputfoo0');
+                console.log('inputfoo'+vm.selectedAnno);
+                $scope.$broadcast('inputfoo'+vm.selectedAnno);
             }, 0);
         }
 
@@ -341,7 +327,11 @@
             var reg = vm.regionList.pop();
             reg.remove();
             vm.regionMarked = false;
-            vm.playIn = _.last(vm.regionList).end;
+            if (vm.regionList.length) {
+                vm.playIn = _.last(vm.regionList).end;
+            } else {
+                vm.playIn = 0;
+            }
             vm.curRegion = -1;
         }
 
@@ -363,12 +353,31 @@
         vm.regionList = [];
         vm.isPlaying = false;
         vm.regionMarked = false;
+        vm.activeTranslation = {};
+        vm.activeRespeak = {};
+        vm.sourcePlayback = {};
 
         vm.respeakings = $scope.secondaryList.filter(function(secData) { return secData.type === 'respeak'; });
         vm.translations = $scope.secondaryList.filter(function(secData) { return secData.type === 'translate'; });
         vm.annotations = $scope.secondaryList.filter(function(secData) { return secData.type.indexOf('anno_') === 0; });
-        vm.annoList = [];
+        // Enable playback for all source audio files for each annotation
+        // This allows for preferences depending on the annotation
+        vm.annotations.forEach(function(item, aidx){
+            vm.activeTranslation[item._ID] = {};
+            vm.activeRespeak[item._ID] = {};
+            vm.sourcePlayback[aidx] = true;
+            vm.respeakings.forEach(function(fitem,idx){
+                vm.activeRespeak[item._ID][idx] = true;
+            });
+            vm.translations.forEach(function(fitem,idx){
+                vm.activeTranslation[item._ID][idx] = true;
+            });
+        });
 
+        vm.loop = {};
+
+
+        
         //
         // FUNCTIONS BOUND TO VIEW MODEL
         //
@@ -378,14 +387,25 @@
         vm.openMenu = function($mdOpenMenu, ev) {
             $mdOpenMenu(ev);
         };
-        vm.toggleRespeaking = function(idx) {
-            vm.activeRespeak[idx] = !vm.activeRespeak[idx];
+        vm.toggleRespeaking = function(aidx, ridx) {
+            vm.activeRespeak[aidx][ridx] = !vm.activeRespeak[aidx][ridx] ;
             restoreFocus();
         };
-        vm.toggleTranslation = function(idx) {
-            vm.activeTranslation[idx] = !vm.activeTranslation[idx];
+        
+        vm.isRspkActive = function(aidx, ridx) {
+            return vm.activeRespeak[aidx][ridx];
+        };
+        
+        vm.toggleTranslation = function(aidx, ridx) {
+            vm.activeTranslation[aidx][ridx] = !vm.activeTranslation[aidx][ridx];
             restoreFocus();
         };
+        vm.isTransActive = function(aidx, ridx) {
+            return vm.activeTranslation[aidx][ridx];
+        };
+
+
+
         vm.toggleChildMode = function() {
             if (vm.childMode === 'respeak') {
                 vm.childMode = 'translate';
@@ -409,10 +429,17 @@
                 markLastRegionComplete();
                 vm.regionMarked = false;
                 vm.curRegion = -1;
+            } else {
+                if (vm.curRegion === (vm.regionList.length -1)) {
+                    seekToTime(vm.regionList[vm.curRegion].end + 0.001);
+                    vm.curRegion = -1;
+                } else {
+                    ++vm.curRegion;
+                    vm.seekRegion(vm.curRegion);
+                }
             }
         };
         vm.seekRegion = function(idx) {
-            console.log(idx);
             if (vm.regionMarked) {
                 deleteLastRegion();
                 vm.curRegion = -1;
