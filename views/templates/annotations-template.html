@@ -11,7 +11,7 @@
             <h4 class="md-subhead" style="text-transform: uppercase;">{{anno.type | translate}}</h4>
             <p class="md-body-2">{{anno.langStr}} ({{anno.langISO}})</p>
         </div>
-        <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="annoCtrl.deleteAnno($index,$event)"><md-tooltip md-direction="left" class="md-body-1">{{"ANNO_DEL" | translate}}</md-tooltip></md-icon>
+        <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="annoCtrl.deleteAnno($index,$event)" aria-label="Delete"><md-tooltip md-direction="left" class="md-body-1">{{"ANNO_DEL" | translate}}</md-tooltip></md-icon>
         <md-divider ></md-divider>
     </md-list-item>
     <md-button ng-class="{'animated infinite pulse' : annoCtrl.annotations.length==0}" class="md-fab" aria-label="Add new" style="margin-left:13px" ng-click="annoCtrl.addAnno($event)">

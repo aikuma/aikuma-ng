@@ -229,6 +229,13 @@
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
                                 return dataService.getAnnotationObjList(userId, sessionId);
+                            }],
+                            secondaryList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                if(userId) {
+                                    return dataService.getSecondaryList(userId, sessionId);
+                                }
                             }]
                         }
                     })

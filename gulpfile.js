@@ -78,7 +78,7 @@ gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
         .pipe(useref({'noconcat':false}))
         //.pipe(useref())
-        //.pipe(gulpif('*.js', uglify().on('error', gutil.log)))
+        .pipe(gulpif('*.js', uglify().on('error', gutil.log)))
         .pipe(gulpif('*.css', minifyCss()))
         .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));

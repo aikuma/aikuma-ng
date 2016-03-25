@@ -209,9 +209,7 @@ md-sidenav {
 .transcript-normal {
     margin-bottom: 1px;
     border-bottom: 1px solid #e0e0e0;
-    height:16px;
 }
 .transcript-highlight {
     border-bottom: 2px solid #4fc3f7;
-    height:16px;
 }

@@ -71,6 +71,14 @@
                 });
             };
 
+            ser.lookupLanguage = function(id, langList) {
+                var flang = _.find(langList, function(lang) {
+                    return lang.Id === id;
+                });
+                if (!flang) return id;
+                return flang.Ref_Name + ' (' + id + ')';
+            };
+
             ser.mockannotations = [
                 {
                     'type': 'annotation',

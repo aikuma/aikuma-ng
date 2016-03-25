@@ -277,7 +277,7 @@
                 },
                 {
                     name: 'drama',
-                    trans: 'OLAC2',
+                    trans: 'OLAC2'
                 },
                 {
                     name: 'formulaic',
@@ -470,19 +470,17 @@
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
             }
         }])
-        .controller('annotateViewController', ['$routeParams', 'userObj', 'sessionObj', 'annotationObjList', function($routeParams, userObj, sessionObj, annotationObjList) {
-            var vm = this;
-            vm.userObj = userObj;
-            vm.sessionObj = sessionObj;
-            vm.userData = userObj.data;
-            vm.sessionData = sessionObj.data;
-            
-            console.log(annotationObjList);
-            var annotationObj = annotationObjList.filter(function(obj) {return obj.data._ID === $routeParams.annotateId;})[0];
-            console.log(annotationObj);
-            
-            if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
-                vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
+        .controller('annotateViewController', ['$scope', '$routeParams', 'userObj', 'sessionObj', 'annotationObjList', 'secondaryList', function($scope, $routeParams, userObj, sessionObj, annotationObjList, secondaryList) {
+            $scope.userObj = userObj;
+            $scope.sessionObj = sessionObj;
+            $scope.userData = userObj.data;
+            $scope.sessionData = sessionObj.data;
+            $scope.annotationObjList = annotationObjList;
+            $scope.selectedAnno = $routeParams.annotateId;
+            $scope.secondaryList = secondaryList;
+
+            if($scope.sessionData.source && $scope.sessionData.source.recordFileId) {
+                $scope.audioSourceUrl = $scope.userData.files[$scope.sessionData.source.recordFileId].url;
             }
         }]);
 })();

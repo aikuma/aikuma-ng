@@ -9,12 +9,7 @@
             return {
                 restrict: "E",
                 templateUrl: "views/templates/annotate-template.html",
-                scope: {
-                    source: '@',
-                    userObj: '=',
-                    sessionObj: '=',
-                    annotationObj: "="
-                },
+                scope: true,
                 controller: annotationController,
                 controllerAs: 'axCtrl'
             };
@@ -23,8 +18,6 @@
     // The new annotation controller.
     var annotationController = function ($scope, keyService, aikumaService, $timeout, $mdDialog) {
         var vm = this;
-        vm.userObj = $scope.userObj;
-        vm.sessionObj = $scope.sessionObj;
         var playKeyCode = 17;   // control key (16 is shift)
         var ffKeyCode = 39;     // right arrow
         var rwKeyCode = 37;     // left arrow
@@ -33,90 +26,76 @@
         var ffPlaybackRate = 2.5; // playback speed in FF mode
         var skipTimeValue = 3;  // amount of time to skip backwards for rewind
         var oneMillisecond = 0.001;
-        vm.selectedAnno = 0;
-        vm.annoEnabled = {};
-        vm.curRegion = 0;
-        vm.annoEnabled[0] = true;
-        vm.annotations = aikumaService.getAnnotations();
-        // used for guarding against multiple key presses
-        vm.playKeyDown = false;
-        vm.ffKeyDown = false;
-        vm.regionList = [];
-        vm.isPlaying = false;
-        vm.regionMarked = false;
+        var wsAnnotate, timeline, miniMap;
 
-        vm.respeakings = [0,1,2];
-        vm.curRespeak = 0;
-        vm.activeRespeak = {0:true,1:true,2:true};
-        vm.translations = [0,1];
-        vm.activeTranslation = {0:true,1:true};
-        vm.curTranslate = 0;
-        vm.childMode = 'respeak';
-
-        //
-        // Set up Wavesurfer
-        //
-        var wsAnnotate = WaveSurfer.create({
-            backend: "WebAudio",
-            container: "#annotatePlayback",
-            normalize: true,
-            hideScrollbar: false,
-            scrollParent: true
-        });
-
-        /* Initialize the time line */
-        var timeline = Object.create(wsAnnotate.Timeline);
-        timeline.init({
-            wavesurfer: wsAnnotate,
-            container: "#annotate-timeline"
-        });
-        /* Minimap plugin */
-        var miniMap = wsAnnotate.initMinimap({
-            height: 40,
-            waveColor: '#555',
-            progressColor: '#999',
-            cursorColor: '#999'
-        });
-        wsAnnotate.load($scope.source);
-        wsAnnotate.on('ready', function(){
-            // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
-            var wavesurferelement = document.getElementById('annotatePlayback');
-            wavesurferelement.addEventListener('onresize', _.debounce(function(){
-                    miniMap.render();
-                    miniMap.progress(miniMap.wavesurfer.backend.getPlayedPercents());
-                }, 25)
+        function markLastRegionComplete() {
+            var colidx = _.last(vm.regionList).data.colidx;
+            var hue = 198 + (colidx*40);
+            _.last(vm.regionList).update(
+                {
+                    color: 'hsla('+hue+', 100%, 30%, 0.1)',
+                    data: {colidx:colidx}
+                }
             );
-            keyService.regKey(playKeyCode,'keydown', function() {playKeyDown(true);});
-            keyService.regKey(playKeyCode,'keyup', function()   {playKeyUp(true);});
-            keyService.regKey(ffKeyCode,'keydown',  function()  {ffKeyDown(true);});
-            keyService.regKey(ffKeyCode,'keyup',    function()  {ffKeyUp(true);});
-            keyService.regKey(rwKeyCode,'keydown',  function()  {rwKey(true);});
-            keyService.regKey(escKeyCode,'keydown', function()  {escKey(true);});
-            keyService.regKey(tabKeyCode,'keydown', function()  {tabKey(true);});
-            setWsRegions(0);
             vm.playIn = _.last(vm.regionList).end;
-            $scope.$broadcast('inputfoo0');
-        });
-        wsAnnotate.on('region-in', function(reg) {
-            // When are we going to PLAY into a region? or is it not just play?
-            $scope.$apply();
-        });
-        wsAnnotate.on('region-out', function(reg) {
-            // This will fire if we pause while doing the region-resize thing on play
-            // vm.isPlaying = false if a playKeyUp event has occurred.
-            // What other conditions will we play through a region?
-            $scope.$apply();
-        });
-        wsAnnotate.on('audioprocess', function() {
-            var currentPos = wsAnnotate.getCurrentTime();
-            if (vm.regionMarked) {
-                _.last(vm.regionList).update({end: currentPos});
+        }
+
+        // Often we force seek to play-in because we don't allow the user to play back where they cannot record.
+        function seekToPlayin() {
+            var length = wsAnnotate.getDuration();
+            var floatpos = vm.playIn / length;
+            wsAnnotate.seekTo(floatpos);
+        }
+        function seekToTime(time) {
+            var length = wsAnnotate.getDuration();
+            var floatpos = time / length;
+            wsAnnotate.seekTo(floatpos);
+        }
+        // make a new region list out of an array of millisecond segments
+        function makeWSRegions(segMsec) {
+            vm.regionList = [];
+            segMsec.forEach(function(seg) {
+                var stime = seg[0] / 1000;
+                var etime = seg[1] / 1000;
+                makeNewRegion(stime);
+                _.last(vm.regionList).update({end:etime});
+                markLastRegionComplete();
+            });
+        }
+        // Post Wavesurfer start initialisation
+        function initializeRegions() {
+            aikumaService.getLanguages(function(langs){
+                vm.annoList = vm.annotations.map(function(anno) {
+                    return {
+                        _ID: anno._ID,
+                        name: aikumaService.lookupLanguage(anno.source.langIds[0], langs),
+                        type: angular.uppercase(anno.type),
+                        enabled: anno._ID === $scope.selectedAnno
+                    };
+                });
+                vm.selectedAnno = _.indexOf(vm.annoList, function(anno) {
+                    return anno._ID === $scope.selectedAnno;
+                });
+                $scope.$apply();
+            });
+            // restore child
+            if (vm.respeakings.length) {
+                vm.hasRespeaking = true;
+                vm.rSeg = vm.respeakings[0].segment.segMsec;
+                makeWSRegions(vm.rSeg);
+            } else {
+                vm.hasRespeaking = false;
             }
-        });
-
-        vm.test = function() {
-
-        };
+            if (vm.translations.length) {
+                vm.hasTranslation = true;
+                vm.tSeg = vm.translations[0].segment.segMsec;
+            } else {
+                vm.hasTranslation = false;
+            }
+            //setWsRegions(0);
+            //vm.playIn = _.last(vm.regionList).end;
+            $scope.$broadcast('inputfoo0');
+        }
 
         function playKeyDown(nokey) {
             if (vm.ffKeyDown) {return;}  // Block multiple keys
@@ -263,37 +242,66 @@
             }
             if (found) {vm.curTranslate = newrsp;}
         }
+        //
+        // Set up Wavesurfer
+        //
+        function initialize() {
+            wsAnnotate = WaveSurfer.create({
+                backend: "WebAudio",
+                container: "#annotatePlayback",
+                normalize: true,
+                hideScrollbar: false,
+                scrollParent: true
+            });
 
-        vm.selectAnno = function(annoIdx) {
-            vm.selectedAnno = annoIdx;
-            //setWsRegions(annoIdx);
-        };
-        vm.openMenu = function($mdOpenMenu, ev) {
-            $mdOpenMenu(ev);
-        };
-        vm.toggleRespeaking = function(idx) {
-            vm.activeRespeak[idx] = !vm.activeRespeak[idx];
-            restoreFocus();
-        };
-        vm.toggleTranslation = function(idx) {
-            vm.activeTranslation[idx] = !vm.activeTranslation[idx];
-            restoreFocus();
-        };
-        vm.toggleChildMode = function() {
-            if (vm.childMode === 'respeak') {
-                vm.childMode = 'translate';
-                restoreFocus();
-                return;
-            }
-            if (vm.childMode === 'translate') {
-                vm.childMode = 'respeak';
-                restoreFocus();
-                return;
-            }
-        };
-
-
-
+            /* Initialize the time line */
+            timeline = Object.create(wsAnnotate.Timeline);
+            timeline.init({
+                wavesurfer: wsAnnotate,
+                container: "#annotate-timeline"
+            });
+            /* Minimap plugin */
+            miniMap = wsAnnotate.initMinimap({
+                height: 40,
+                waveColor: '#555',
+                progressColor: '#999',
+                cursorColor: '#999'
+            });
+            wsAnnotate.load($scope.audioSourceUrl);
+            wsAnnotate.on('ready', function(){
+                // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
+                var wavesurferelement = document.getElementById('annotatePlayback');
+                wavesurferelement.addEventListener('onresize', _.debounce(function(){
+                        miniMap.render();
+                        miniMap.progress(miniMap.wavesurfer.backend.getPlayedPercents());
+                    }, 25)
+                );
+                keyService.regKey(playKeyCode,'keydown', function() {playKeyDown(true);});
+                keyService.regKey(playKeyCode,'keyup', function()   {playKeyUp(true);});
+                keyService.regKey(ffKeyCode,'keydown',  function()  {ffKeyDown(true);});
+                keyService.regKey(ffKeyCode,'keyup',    function()  {ffKeyUp(true);});
+                keyService.regKey(rwKeyCode,'keydown',  function()  {rwKey(true);});
+                keyService.regKey(escKeyCode,'keydown', function()  {escKey(true);});
+                keyService.regKey(tabKeyCode,'keydown', function()  {tabKey(true);});
+                initializeRegions();
+            });
+            wsAnnotate.on('region-in', function(reg) {
+                // When are we going to PLAY into a region? or is it not just play?
+                $scope.$apply();
+            });
+            wsAnnotate.on('region-out', function(reg) {
+                // This will fire if we pause while doing the region-resize thing on play
+                // vm.isPlaying = false if a playKeyUp event has occurred.
+                // What other conditions will we play through a region?
+                $scope.$apply();
+            });
+            wsAnnotate.on('audioprocess', function() {
+                var currentPos = wsAnnotate.getCurrentTime();
+                if (vm.regionMarked) {
+                    _.last(vm.regionList).update({end: currentPos});
+                }
+            });
+        }
         function restoreFocus() {
             $timeout(function() {
                 $scope.$broadcast('inputfoo0');
@@ -337,6 +345,65 @@
             vm.curRegion = -1;
         }
 
+        //
+        //
+        // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
+        $scope.$on('$destroy', function() {
+            keyService.clearAll();
+            timeline.destroy();
+            wsAnnotate.destroy();
+        });
+
+        vm.selectedAnno = 0;
+        vm.curRegion = 0;
+        vm.annotations = aikumaService.getAnnotations();
+        // used for guarding against multiple key presses
+        vm.playKeyDown = false;
+        vm.ffKeyDown = false;
+        vm.regionList = [];
+        vm.isPlaying = false;
+        vm.regionMarked = false;
+
+        vm.respeakings = $scope.secondaryList.filter(function(secData) { return secData.type === 'respeak'; });
+        vm.translations = $scope.secondaryList.filter(function(secData) { return secData.type === 'translate'; });
+        vm.annotations = $scope.secondaryList.filter(function(secData) { return secData.type.indexOf('anno_') === 0; });
+        vm.annoList = [];
+
+        //
+        // FUNCTIONS BOUND TO VIEW MODEL
+        //
+        vm.selectAnno = function(annoIdx) {
+            vm.selectedAnno = annoIdx;
+        };
+        vm.openMenu = function($mdOpenMenu, ev) {
+            $mdOpenMenu(ev);
+        };
+        vm.toggleRespeaking = function(idx) {
+            vm.activeRespeak[idx] = !vm.activeRespeak[idx];
+            restoreFocus();
+        };
+        vm.toggleTranslation = function(idx) {
+            vm.activeTranslation[idx] = !vm.activeTranslation[idx];
+            restoreFocus();
+        };
+        vm.toggleChildMode = function() {
+            if (vm.childMode === 'respeak') {
+                vm.childMode = 'translate';
+                restoreFocus();
+                return;
+            }
+            if (vm.childMode === 'translate') {
+                vm.childMode = 'respeak';
+                restoreFocus();
+                return;
+            }
+        };
+        vm.selectRespeak = function() {
+            
+        };
+        vm.selectTranslate = function() {
+
+        };
         vm.inputReturn = function() {
             if (vm.regionMarked) {
                 markLastRegionComplete();
@@ -344,7 +411,6 @@
                 vm.curRegion = -1;
             }
         };
-
         vm.seekRegion = function(idx) {
             console.log(idx);
             if (vm.regionMarked) {
@@ -359,50 +425,13 @@
             }, 0);
         };
 
-        function markLastRegionComplete() {
-            var colidx = _.last(vm.regionList).data.colidx;
-            var hue = 198 + (colidx*40);
-            _.last(vm.regionList).update(
-                {
-                    color: 'hsla('+hue+', 100%, 30%, 0.1)',
-                    data: {colidx:colidx}
-                }
-            );
-            vm.playIn = _.last(vm.regionList).end;
+        //
+        //
+        //
+        initialize();
 
 
-        }
-
-        // Often we force seek to play-in because we don't allow the user to play back where they cannot record.
-        function seekToPlayin() {
-            var length = wsAnnotate.getDuration();
-            var floatpos = vm.playIn / length;
-            wsAnnotate.seekTo(floatpos);
-        }
-        function seekToTime(time) {
-            var length = wsAnnotate.getDuration();
-            var floatpos = time / length;
-            wsAnnotate.seekTo(floatpos);
-        }
-
-
-
-
-        function setWsRegions(annoIdx) {
-            wsAnnotate.clearRegions();
-            var sm = aikumaService.getSegmap(vm.annotations[annoIdx].SegId);
-            var aix = 0;
-            vm.annotations[annoIdx].annos.forEach(function(an){
-                var stime = sm[aix].source[0] / 1000;
-                var etime = sm[aix].source[1] / 1000;
-                makeNewRegion(stime);
-                _.last(vm.regionList).update({end:etime});
-                markLastRegionComplete();
-                ++aix;
-            });
-
-        }
-        annotationController.$inject = ['$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog'];
     };
+    annotationController.$inject = ['$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog'];
 
 })();

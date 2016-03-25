@@ -2,62 +2,57 @@
     <section layout="column" resizable class="md-padding" r-directions="['right']" r-flex="false" style="width:60%">
         <div id="annotate-timeline" style="height:20px" layout-fill></div>
         <div id="annotatePlayback"></div>
-        <div>
-            <md-button aria-label="Toogle translate respeaking" ng-click="axCtrl.toggleChildMode()">
-                <span ng-if="axCtrl.childMode === 'respeak'">
-                    <md-icon md-menu-origin class="imgsvgicon" md-svg-icon="nav:refresh"></md-icon>
+       <div>
+            <md-button ng-if="axCtrl.hasRespeaking" ng-disabled="axCtrl.childMode !== 'respeak'" aria-label="Select respeaking" ng-click="axCtrl.selectRespeak()">
+                <md-icon md-menu-origin class="imgsvgicon" md-svg-icon="nav:refresh"></md-icon>
                     <span>{{"RESPEAKING" | translate}}</span>
-                </span>
-                <span ng-if="axCtrl.childMode === 'translate'">
-                    <md-icon md-menu-origin class="imgsvgicon" md-svg-icon="action:translate"></md-icon>
+             </md-button>
+           <md-button ng-if="axCtrl.hasTranslation"  ng-disabled="axCtrl.childMode !== 'translate'"  aria-label="Select translation" ng-click="axCtrl.selectTranslate()">
+                <md-icon md-menu-origin class="imgsvgicon" md-svg-icon="action:translate"></md-icon>
                     <span>{{"TRANSLATE" | translate}}</span>
-                </span>
             </md-button>
-            <md-menu>
-                <md-button ng-disabled="axCtrl.childMode !== 'respeak'" aria-label="Respeaking menu" ng-click="axCtrl.openMenu($mdOpenMenu, $event)">
-                    <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                    <span>{{"RESPEAKING" | translate}} {{axCtrl.curRespeak + 1}}</span>
-                </md-button>
-                <md-menu-content width="4">
-                    <md-menu-item  ng-repeat="respk in axCtrl.respeakings">
-                        <md-button ng-click="axCtrl.toggleRespeaking($index)">
-                             <md-icon ng-if="axCtrl.activeRespeak[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                             <md-icon ng-if="!axCtrl.activeRespeak[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
-                             <span class="md-body-2">{{"RESPEAKING" | translate}} {{$index + 1}}<i><!--{{respk.source.created | date:'dd/MM/yyyy'}}--></i></span>
-                        </md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
-            <md-menu>
-                <md-button  ng-disabled="axCtrl.childMode !== 'translate'" aria-label="Translation menu" ng-click="axCtrl.openMenu($mdOpenMenu, $event)">
-                    <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                    <span>{{"TRANSLATE" | translate}} {{axCtrl.curTranslate + 1}}</span>
-                </md-button>
-                <md-menu-content width="4">
-                    <md-menu-item  ng-repeat="trans in axCtrl.translations">
-                        <md-button ng-click="axCtrl.toggleTranslation($index)">
-                            <md-icon ng-if="axCtrl.activeTranslation[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                            <md-icon ng-if="!axCtrl.activeTranslation[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
-                            <span class="md-body-2">{{"TRANSLATE" | translate}} {{$index + 1}}<i><!--{{respk.source.created | date:'dd/MM/yyyy'}}--></i></span>
-                        </md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
-
-
-
-        </div>
+           <!--             <md-menu>
+                           <md-button ng-disabled="axCtrl.childMode !== 'respeak'" aria-label="Respeaking menu" ng-click="axCtrl.openMenu($mdOpenMenu, $event)">
+                               <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                               <span>{{"RESPEAKING" | translate}} {{axCtrl.curRespeak + 1}}</span>
+                           </md-button>
+                           <md-menu-content width="4">
+                               <md-menu-item  ng-repeat="respk in axCtrl.respeakings">
+                                   <md-button ng-click="axCtrl.toggleRespeaking($index)">
+                                        <md-icon ng-if="axCtrl.activeRespeak[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                                        <md-icon ng-if="!axCtrl.activeRespeak[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
+                                        <span class="md-body-2">{{"RESPEAKING" | translate}} {{$index + 1}}<i>&lt;!&ndash;{{respk.source.created | date:'dd/MM/yyyy'}}&ndash;&gt;</i></span>
+                                   </md-button>
+                               </md-menu-item>
+                           </md-menu-content>
+                       </md-menu>
+                       <md-menu>
+                           <md-button  ng-disabled="axCtrl.childMode !== 'translate'" aria-label="Translation menu" ng-click="axCtrl.openMenu($mdOpenMenu, $event)">
+                               <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                               <span>{{"TRANSLATE" | translate}} {{axCtrl.curTranslate + 1}}</span>
+                           </md-button>
+                           <md-menu-content width="4">
+                               <md-menu-item  ng-repeat="trans in axCtrl.translations">
+                                   <md-button ng-click="axCtrl.toggleTranslation($index)">
+                                       <md-icon ng-if="axCtrl.activeTranslation[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                                       <md-icon ng-if="!axCtrl.activeTranslation[$index]" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
+                                       <span class="md-body-2">{{"TRANSLATE" | translate}} {{$index + 1}}<i>&lt;!&ndash;{{respk.source.created | date:'dd/MM/yyyy'}}&ndash;&gt;</i></span>
+                                   </md-button>
+                               </md-menu-item>
+                           </md-menu-content>
+                       </md-menu>-->
+       </div>
         <section>
-            <div ng-repeat="anno in axCtrl.annotations" layout="row">
+            <div ng-repeat="anno in axCtrl.annoList" layout="row">
                 <md-input-container flex class="md-block1">
-                    <label class="md-subhead"> {{anno.langStr+' ('+anno.langISO+')'}}</label>
+                    <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.name}}</label>
                     <input class="md-body-1" focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]"
                            ng-focus="axCtrl.selectAnno($index)"
-                           ng-disabled="!axCtrl.annoEnabled[$index] || axCtrl.curRegion < 0"
+                           ng-disabled="!anno.enabled || axCtrl.curRegion < 0"
                            ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
                 </md-input-container>
                 <md-input-container>
-                    <md-switch ng-model="axCtrl.annoEnabled[$index]"></md-switch>
+                    <md-switch ng-model="anno.enabled" arial-label="Enable disable"></md-switch>
                 </md-input-container>
             </div>
         </section>
@@ -74,13 +69,13 @@
 
     </section>
     <md-content flex layout="column" class="md-whiteframe-3dp md-padding" style="width:40%;overflow-y: scroll">
-        <md-list flex>
-            <md-list-item ng-repeat="anno in axCtrl.annotations[axCtrl.selectedAnno].annos track by $index"
+        <div ng-if="!axCtrl.annotations[axCtrl.selectedAnno].annos" class="md-body-2"><i>{{"NONE" | translate}}</i></div>
+        <div ng-repeat="anno in axCtrl.annotations[axCtrl.selectedAnno].annos track by $index"
                           ng-class="($index == axCtrl.curRegion) ? 'transcript-highlight' : 'transcript-normal'"
                           ng-click="axCtrl.seekRegion($index)">
-                <span class="md-body-1">{{anno}}</span>
-            </md-list-item>
-        </md-list>
+            <span class="md-body-1">{{anno}}</span>
+        </div>
+
     </md-content>
 
 

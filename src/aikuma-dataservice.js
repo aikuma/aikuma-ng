@@ -377,6 +377,7 @@
             
             service.getAnnotationList = function(userId, sessionId, excludeIds) {
                 return service.getSecondaryList(userId, sessionId).then(function(secList) {
+                    console.log('sl',secList);
                     return secList.filter(function(secData) { return secData.type.indexOf('anno_') === 0 && excludeIds.indexOf(secData._ID) === -1; });
                 });
             };

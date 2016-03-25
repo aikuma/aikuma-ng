@@ -815,32 +815,11 @@
         vm.annotations = $scope.annotationList.map(function(annoData) {
             return {
                 id: annoData._ID,
-                type: convertType(annoData.type),
+                type: angular.uppercase(annoData.type),
                 langISO: annoData.source.langIds[0],
                 langStr: $scope.langIdNameMap[ annoData.source.langIds[0] ]
             };
         });
-
-        function convertType(typeStr) {
-            switch(typeStr) {
-                case 'ANNO_ANNO':
-                    return 'anno_annotation';
-                case 'ANNO_TRANS':
-                    return 'anno_translation';
-                case 'ANNO_COMM':
-                    return 'anno_comments';
-                case 'ANNO_OTH':
-                    return 'anno_other';
-                case 'anno_annotation':
-                    return 'ANNO_ANNO';
-                case 'anno_translation':
-                    return 'ANNO_TRANS';
-                case 'anno_comments':
-                    return 'ANNO_COMM';
-                case 'anno_other':
-                    return 'ANNO_OTH';
-            }
-        }
 
         vm.addAnno = function (ev) {
             $mdDialog.show({
@@ -856,7 +835,7 @@
                 annotations.forEach(function(anno) {
                     var annotationData = {
                         names: [],  // need UI
-                        type: convertType(anno.type),
+                        type: angular.lowercase(anno.type),
                         creatorId: loginService.getLoggedinUserId(),
                         source: {
                             created: Date.now(),
@@ -864,6 +843,7 @@
                         },
                         segment: {}
                     };
+                    console.log('v',annotationData);
 
                     var promise = dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionId, annotationData);
                     promises.push(promise);
