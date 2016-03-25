@@ -5,9 +5,29 @@
     'use strict';
     angular
         .module('aikuma-audioService', [])
-        .factory('audioService', ['config', function (config) {
+        .factory('audioService', ['config', 'fileService', function (config, fileService) {
             var service = {};
 
+            service.playbackLocalFile = function(audioContext, fsUri, start, end, callback) {
+                fileService.getFile(fsUri).then(function(file) {
+                    service.playbackFile(audioContext, file, start, end, callback);
+                });
+            };
+            
+            service.playbackFile = function(audioContext, file, start, end, callback) {
+                var fileReader = new FileReader();
+                fileReader.onload = function() {
+                    audioContext.decodeAudioData(this.result, function(decodedBuffer) {
+                        var audioSourceNode = audioContext.createBufferSource();
+                        audioSourceNode.buffer = decodedBuffer;
+                        audioSourceNode.connect(audioContext.destination);
+                        audioSourceNode.onended = function() { callback(); };
+                        audioSourceNode.start(audioContext.currentTime, start/1000, (end-start)/1000);
+                    });
+                };
+                fileReader.readAsArrayBuffer(file);
+            };
+            
             service.resampleAudioBuffer = function (audiocontext,audioBuffer,targetSampleRate,oncomplete) {
                 var newBuffer = audiocontext.createBuffer( 1, audioBuffer[0].length, audiocontext.sampleRate );
                 newBuffer.getChannelData(0).set(audioBuffer[0]);
