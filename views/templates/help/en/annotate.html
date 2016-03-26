@@ -1,0 +1,40 @@
+<md-dialog aria-label="Help: Annotate" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{"ACTIVITY_HELP" | translate}}: {{"ACTIVITY_ANNOTATE" | translate}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+<div class="md-dialog-content">
+
+<p>There are two ways to annotate in Aikuma-NG.</p>
+
+    <p>1. You can choose to hold down the control-key to play. You will see a green region that grows larger as you continue to play.
+The current annotation is based on what's in the box. If you let go and press the control-key again, it will rewind so you can
+hear the recording again. When you press return, the annotation is saved and you can move on.</p>
+
+    <p>Press and hold left and right-arrow keys will skip back or fast forward. Escape-key deletes the previous region and annotation.</p>
+
+    <p>2. If you have made recorded 'respeaking' or translations, you can select those as a basis for your annotations. When
+you do, several regions will appear. You can play the current annotation by tapping the control key. Playback will
+stop at the end of the current region. If you tap control again, the region will play again.</p>
+
+    <p>Additionally, you can also listen to the respeaking or translation recordings for this region. The speaker button opens
+a menu so you can select which recordings you want to listen to, if you want them to loop and so on.</p>
+
+    <p>Tap Left and right-arrow keys to go to previous and next regions. Escape-key deletes the previous region and annotation.</p>
+
+</div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="hide()" style="margin-right:20px;">
+            {{"BUTTON_OK" | translate}}
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

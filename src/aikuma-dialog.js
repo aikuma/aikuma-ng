@@ -3,7 +3,7 @@
     /* This module defines a service for displaying dialogs */
     angular
         .module('aikuma-dialog', [])
-        .factory('aikumaDialog', ['$document', '$mdDialog', '$mdToast', function ($document, $mdDialog, $mdToast) {
+        .factory('aikumaDialog', ['$document', '$mdDialog', '$mdToast', '$translate', '$templateRequest', '$sce', function ($document, $mdDialog, $mdToast, $translate, $templateRequest, $sce) {
             var factory = {};
             factory.newMetadata = function(ev) {
                 
@@ -44,8 +44,28 @@
                     }
                 });
              };
+            factory.help = function(ev, page) {
+                $mdDialog.show({
+                    controller: helpDialogController,
+                    templateUrl: 'views/templates/help/'+$translate.use()+'/'+page+'.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose:true
+                });
+            };
             return factory;
         }]);
+
+    var helpDialogController = function($scope ,$mdDialog) {
+        "use strict";
+        $scope.hide = function() {
+            $mdDialog.hide();
+        };
+        $scope.cancel = function() {
+            $mdDialog.cancel();
+        };
+    };
+    helpDialogController.$inject = ['$scope','$mdDialog'];
 
     var profileController = function($mdDialog, $scope, $translate, userObj) {
         var vm = this;

@@ -16,7 +16,7 @@
         });
 
     // The new annotation controller.
-    var annotationController = function ($scope, keyService, aikumaService, $timeout, $mdDialog) {
+    var annotationController = function ($scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate) {
         var vm = this;
         var playKeyCode = 17;   // control key (16 is shift)
         var ffKeyCode = 39;     // right arrow
@@ -40,6 +40,9 @@
             vm.playIn = _.last(vm.regionList).end;
         }
 
+        function hasAnnotations() {
+            return true;
+        }
         // Often we force seek to play-in because we don't allow the user to play back where they cannot record.
         function seekToPlayin() {
             var length = wsAnnotate.getDuration();
@@ -70,10 +73,10 @@
             aikumaService.getLanguages(function(langs){
                 vm.annoList = vm.annotations.map(function(anno) {
                     return {
-                        _ID: anno._ID,
-                        name: aikumaService.lookupLanguage(anno.source.langIds[0], langs),
-                        type: angular.uppercase(anno.type),
-                        enabled: anno._ID === $scope.selectedAnno,
+                        _ID: anno.data._ID,
+                        name: aikumaService.lookupLanguage(anno.data.source.langIds[0], langs),
+                        type: angular.uppercase(anno.data.type),
+                        enabled: anno.data._ID === $scope.selectedAnno,
                         loop: false,
                         annos: {}
                     };
@@ -87,7 +90,6 @@
             if (vm.respeakings.length) {
                 vm.hasRespeaking = true;
                 vm.rSeg = vm.respeakings[0].segment.segMsec;
-                makeWSRegions(vm.rSeg);
             } else {
                 vm.hasRespeaking = false;
             }
@@ -98,14 +100,7 @@
                 vm.hasTranslation = false;
             }
 
-            if (vm.regionList.length) {
-                vm.curRegion = 0;
-                vm.playIn = _.last(vm.regionList).end;
-                restoreFocus();
-                playAudio(vm.selectedAnno,vm.curRegion);
-            } else {
-                vm.curRegion = -1;
-            }
+
         }
 
         function playKeyDown(nokey) {
@@ -345,32 +340,35 @@
         });
 
         vm.selectedAnno = 0;
-        vm.curRegion = 0;
-        vm.annotations = aikumaService.getAnnotations();
+        vm.curRegion = -1;
         // used for guarding against multiple key presses
         vm.playKeyDown = false;
         vm.ffKeyDown = false;
         vm.regionList = [];
         vm.isPlaying = false;
         vm.regionMarked = false;
+        // Playback object of objects for annotation playback preferences
         vm.activeTranslation = {};
         vm.activeRespeak = {};
         vm.sourcePlayback = {};
+        vm.importedSegmentation = false; // for the respeak/translate import buttons
 
-        vm.respeakings = $scope.secondaryList.filter(function(secData) { return secData.type === 'respeak'; });
         vm.translations = $scope.secondaryList.filter(function(secData) { return secData.type === 'translate'; });
-        vm.annotations = $scope.secondaryList.filter(function(secData) { return secData.type.indexOf('anno_') === 0; });
+        vm.respeakings = $scope.secondaryList.filter(function(secData) { return secData.type === 'respeak'; });
+        console.log($scope.annotationObjList);
+
+        vm.annotations = $scope.annotationObjList;
         // Enable playback for all source audio files for each annotation
         // This allows for preferences depending on the annotation
-        vm.annotations.forEach(function(item, aidx){
-            vm.activeTranslation[item._ID] = {};
-            vm.activeRespeak[item._ID] = {};
+        vm.annotations.forEach(function(annodata, aidx){
+            vm.activeTranslation[annodata.data._ID] = {};
+            vm.activeRespeak[annodata.data._ID] = {};
             vm.sourcePlayback[aidx] = true;
             vm.respeakings.forEach(function(fitem,idx){
-                vm.activeRespeak[item._ID][idx] = true;
+                vm.activeRespeak[annodata.data._ID][idx] = true;
             });
             vm.translations.forEach(function(fitem,idx){
-                vm.activeTranslation[item._ID][idx] = true;
+                vm.activeTranslation[annodata.data._ID][idx] = true;
             });
         });
 
@@ -404,6 +402,14 @@
             return vm.activeTranslation[aidx][ridx];
         };
 
+        vm.toggleSourcePlayback = function(idx) {
+            vm.sourcePlayback[idx] = !vm.sourcePlayback[idx];
+            restoreFocus();
+        };
+        vm.toggleLoopPlayback = function(idx) {
+            vm.annoList[idx].loop = !vm.annoList[idx].loop;
+            restoreFocus();
+        };
 
 
         vm.toggleChildMode = function() {
@@ -451,6 +457,54 @@
                 $scope.$broadcast('inputfoo0');
             }, 0);
         };
+        vm.help = function(ev) {
+            aikumaDialog.help(ev, 'annotate');
+        };
+
+
+        vm.useRspkTrans = function(ev, type) {
+            if (hasAnnotations()) {
+                $translate(['ANNO_EXIST', 'ANNO_DELCONF1', 'ANNO_DELCONF2', 'ANNO_DELNO', 'USE_RSPK', 'USE_TRANS']).then(function (translations) {
+                    var okaytext;
+                    switch(type) {
+                        case 'respeak':
+                            okaytext = translations.USE_RSPK;
+                            break;
+                        case 'translate':
+                            okaytext = translations.USE_TRANS;
+                            break;
+                    }
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.ANNO_EXIST)
+                        .textContent(translations.ANNO_DELCONF1)
+                        .ariaLabel('Delete annotations')
+                        .targetEvent(ev)
+                        .ok(okaytext)
+                        .cancel(translations.ANNO_DELNO);
+                    $mdDialog.show(confirm).then(function() {
+                        // User has agreed. Make wavesurfer regions
+                        // Assuming successful, set current region to start, set playIn to the end of the last region
+                        // Set focus on the appropriate annotation
+                        // and play the region
+                        vm.importedSegmentation = true; // for disabling buttons
+                        if (type === 'respeak') {makeWSRegions(vm.rSeg);}
+                        if (type === 'translate') {makeWSRegions(vm.tSeg);}
+                        if (vm.regionList.length) {
+                            vm.curRegion = 0;
+                            vm.playIn = _.last(vm.regionList).end;
+                            restoreFocus();
+                            playAudio(vm.selectedAnno,vm.curRegion);
+                        } else {
+                            vm.curRegion = -1;
+                        }
+                    }, function() {
+
+                    });
+
+                });
+
+            }
+        };
 
         //
         //
@@ -459,6 +513,6 @@
 
 
     };
-    annotationController.$inject = ['$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog'];
+    annotationController.$inject = ['$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate'];
 
 })();

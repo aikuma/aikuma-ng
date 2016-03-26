@@ -104,6 +104,9 @@
   "PLAY_TRANS": "Play translation",
   "PLAY_LOOP": "Loop playback",
   "PLAY_ONCE": "Play once",
-  "ANNO_TOG": "Toggle annotation"
+  "ANNO_TOG": "Toggle annotation",
+  "USE_RSPK": "Use respeaking recording",
+  "USE_TRANS": "Use translation recording",
+  "ANNO_EXIST": "You have annotations"
 }
 
