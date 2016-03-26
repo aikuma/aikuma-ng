@@ -27,4 +27,17 @@
         Reset Database
     </label>
     
+    <div>
+    <ul>
+        <li ng-repeat="type in seCtrl.keys">
+            <span> {{type}} </span>
+            <ul>
+                <li ng-repeat="data in seCtrl.db[type]" ng-click="seCtrl.showElem(data._ID)">
+                    <span>{{data.names}} ( {{data._ID}} : {{data.type}} ) </span>
+                    <pre ng-show="seCtrl.isActive[data._ID]"> {{data | json: 2}} </pre>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </div>
 </md-content>

@@ -64,6 +64,18 @@
         .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
             var vm = this;
 
+            dataService.getJsonBackup().then(function(db) {
+                vm.db = db;
+                vm.keys = Object.keys(db);
+                vm.isActive = {};
+                vm.showElem = function(id) {
+                    if(vm.isActive[id])
+                        vm.isActive[id] = false;
+                    else
+                        vm.isActive[id] = true;
+                };
+            });
+            
             $scope.$watch('zipFile', function (file) {
                 if(file) {
                     fileService.clear().then(function() {
