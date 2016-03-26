@@ -202,6 +202,13 @@
                         return id;
                     };
                 },
+                setUserMeta: function(metaKey) {
+                    return function(id, metaObj) {
+                        if(!this.data[metaKey])
+                            this.data[metaKey] = {};
+                        this.data[metaKey][id] = metaObj;
+                    }; 
+                },
                 pushMeta: function(metaKey) {
                     return function(metaObj) {
                         if(!this.data[metaKey])
@@ -324,6 +331,7 @@
                             wrapper.addUserFile = dataMethods.addUserMeta('files').bind(wrapper);
                             wrapper.save = dataMethods.save(USER_TYPE).bind(wrapper);
                         } else if(type === SESSION_TYPE) {
+                            wrapper.setSrcSegment = dataMethods.setUserMeta('segments').bind(wrapper);
                             wrapper.addSrcSegment = dataMethods.addUserMeta('segments').bind(wrapper);
                             wrapper.pushDetail = dataMethods.pushMeta('details').bind(wrapper);
                             wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
