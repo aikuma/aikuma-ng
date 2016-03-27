@@ -84,6 +84,15 @@
                 vm.selectedAnno = _.findIndex(vm.annoList, function(anno) {
                     return anno._ID === $scope.selectedAnno;
                 });
+
+                //shitty restore
+                if (vm.annotations[0].data.segment.annotations) {
+                    var segmentId = vm.annotations[0].data.segment.sourceSegId;
+                    makeWSRegions($scope.sessionObj.data.segments[segmentId]);
+                    console.log(vm.annoList);
+                    vm.annoList[0].annos = vm.annotations[0].data.segment.annotations;
+                }
+
                 $scope.$apply();
             });
             // restore child
@@ -101,6 +110,29 @@
             }
 
 
+
+        }
+
+        // Pass index of annotation to save, depends on globals vm.regionList, vm.annotations and vm.annoList
+        function saveAnnotation(annoIdx) {
+            var annotext = [];
+            var seglist = [];
+            // make simple data structures to poke into the db
+            vm.regionList.forEach(function(reg,idx){
+                annotext.push(vm.annoList[annoIdx].annos[idx]);
+                seglist.push([Math.round(reg.start * 1000),Math.round(reg.end * 1000)]);
+            });
+            var segmentId;
+            if (vm.annotations[annoIdx].data.segment.hasOwnProperty('"sourceSegId"')) {
+                segmentId = vm.annotations[annoIdx].data.segment.sourceSegId;
+                $scope.sessionObj.setSrcSegment(segmentId, seglist);
+            } else {
+                segmentId = $scope.sessionObj.addSrcSegment(seglist);
+                vm.annotations[annoIdx].data.segment['sourceSegId'] = segmentId;
+            }
+            vm.annotations[annoIdx].data.segment.annotations = annotext;
+            vm.annotations[annoIdx].save();
+            $scope.sessionObj.save();
         }
 
         function playKeyDown(nokey) {
@@ -282,11 +314,9 @@
                 }
             });
         }
+
         function restoreFocus() {
-            $timeout(function() {
-                console.log('inputfoo'+vm.selectedAnno);
-                $scope.$broadcast('inputfoo'+vm.selectedAnno);
-            }, 0);
+
         }
 
         function makeNewRegion(starttime) {
@@ -328,6 +358,7 @@
                 vm.playIn = 0;
             }
             vm.curRegion = -1;
+            vm.annoList[0].annos.pop();
         }
 
         //
@@ -374,8 +405,6 @@
 
         vm.loop = {};
 
-
-        
         //
         // FUNCTIONS BOUND TO VIEW MODEL
         //
@@ -430,7 +459,7 @@
         vm.selectTranslate = function() {
 
         };
-        vm.inputReturn = function() {
+        vm.inputReturn = function(annoIdx) {
             if (vm.regionMarked) {
                 markLastRegionComplete();
                 vm.regionMarked = false;
@@ -444,6 +473,7 @@
                     vm.seekRegion(vm.curRegion);
                 }
             }
+            saveAnnotation(annoIdx);
         };
         vm.seekRegion = function(idx) {
             if (vm.regionMarked) {
@@ -487,6 +517,7 @@
                         // Set focus on the appropriate annotation
                         // and play the region
                         vm.importedSegmentation = true; // for disabling buttons
+                        
                         if (type === 'respeak') {makeWSRegions(vm.rSeg);}
                         if (type === 'translate') {makeWSRegions(vm.tSeg);}
                         if (vm.regionList.length) {

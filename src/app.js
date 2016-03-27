@@ -9,6 +9,7 @@
             'aikuma-experimental',     // Directives being tested before replacing old versions
             'aikuma-service',          // Aikuma service (annotations)
             'aikuma-annotation',       // directive and controller for annotation UI
+            'aikuma-anno-service',     // Annotation UI service helper
             'aikuma-viewcontrollers',  // common controllers for view routes (when we don't have separate files)
             'aikuma-commondirectives', // common directives including the nav bar
             'aikuma-audio',            // respeaking, recording

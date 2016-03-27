@@ -29,7 +29,7 @@
                     <input class="md-body-1" focus-on="{{'inputfoo'+$index}}" ng-model="anno.annos[axCtrl.curRegion]"
                            ng-focus="axCtrl.selectAnno($index)"
                            ng-disabled="!anno.enabled || axCtrl.curRegion < 0"
-                           ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn()">
+                           ng-keyup="$event.keyCode == 13 && axCtrl.inputReturn($index)">
                 </md-input-container>
 
                 <md-menu>
@@ -60,7 +60,7 @@
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="axCtrl.toggleLoopPlayback($index)">
+                            <md-button ng-click="axCtrl.($index)">
                                 <span ng-if="anno.loop" class="md-body-2"><md-icon class="imgsvgicon" md-svg-icon="av:loop"></md-icon> {{"PLAY_LOOP" | translate}}</span>
                                 <span ng-if="!anno.loop" class="md-body-2"><md-icon class="imgsvgicon" md-svg-icon="av:play_arrow"></md-icon> {{"PLAY_ONCE" | translate}}</span>
                             </md-button>
@@ -78,6 +78,8 @@
 
             </div>
         </section>
+
+
 
     </section>
     <md-content flex layout="column" class="md-whiteframe-3dp md-padding" style="width:40%;overflow-y: scroll">
