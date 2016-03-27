@@ -5,12 +5,13 @@
     'use strict';
     angular
         .module('aikuma-anno-service', [])
-        .service('annoServ', ['$timeout', 'keyService', function($timeout, keyService) {
+        .service('annoServ', ['$timeout', 'keyService', '$mdDialog', '$translate', function($timeout, keyService, $mdDialog, $translate) {
             var asx = this;
 
             asx.regionList = [];     // regions for the currently active wavesurfer view (e.g. particular annotation selected)
             asx.regionMarked = false;
-
+            asx.seeked = false;
+            
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
             asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, callback) {
                 asx.annoObjList = annoObjList;
@@ -24,7 +25,9 @@
                     container: "#annotatePlayback",
                     normalize: true,
                     hideScrollbar: false,
-                    scrollParent: true
+                    scrollParent: true,
+                    progressColor: '#797',
+                    waveColor: '#457'
                 });
                 /* Initialize the time line */
                 asx.timeline = Object.create(asx.wavesurfer.Timeline);
@@ -35,9 +38,8 @@
                 /* Minimap plugin */
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,
-                    waveColor: '#555',
-                    progressColor: '#999',
-                    cursorColor: '#999'
+                    waveColor: '#4FC3F7',
+                    progressColor: '#4FC3F7',
                 });
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
@@ -56,6 +58,11 @@
                     );
                     callback();
                 });
+                asx.wavesurfer.on('seek', function (seekval) {
+                    asx.seeked = true;
+                    asx.seektime = asx.wavesurfer.getDuration()*seekval;
+                    if (asx.regionMarked) {asx.deleteLastRegion();}
+                });
 
             };
 
@@ -72,14 +79,15 @@
                 }
             };
 
-            asx.getRegionFromTime = function() {
-                var thistime = asx.wavesurfer.getCurrentTime();
+            asx.getRegionFromTime = function(seektime) {
+                if (seektime === undefined) {seektime = asx.wavesurfer.getCurrentTime();}
+                var fidx = -1;
                 asx.regionList.forEach(function(reg,idx){
-                    if (thistime >= reg.start && thistime <= reg.end) {
-                        return idx;
+                    if (seektime >= reg.start && seektime <= reg.end) {
+                        fidx = idx;
                     }
                 });
-                return -1;
+                return fidx;
             };
 
             // make a new region list out of an array of millisecond segments
@@ -93,9 +101,58 @@
                     asx.markLastRegionComplete();
                 });
             };
+            // builds wavesurfer regions from an annotation object (data)
+            asx.makeWSRegions2 = function(annoObj, copyCol, defaultCol) {
+                var sourceSegId = annoObj.segment.sourceSegId;
+                var segList = asx.sessionObj.data.segments[sourceSegId];
+                var copyPointCol = -1;
+                if ('copiedFrom' in annoObj.segment) {
+                    copyPointCol = annoObj.segment.copiedFrom.length -1;
+                }
+                asx.regionList = [];
+                segList.forEach(function(seg, indx) {
+                    var segcol;
+                    var stime = seg[0] / 1000;
+                    var etime = seg[1] / 1000;
+                    // all this stuff is to set the colours of the regions depending if the data was copied (and hence has different audio) or not
+                    if (indx <= copyPointCol) {
+                        segcol = copyCol;
+                    } else {
+                        segcol = defaultCol;
+                    }
+                    asx.makeCopyRegion(stime, etime, segcol);
+                });
+            };
+
+            asx.makeCopyRegion = function(starttime, endtime, color) {
+                // this stuff just alternates which we use to colour when the region switches to record mode
+                var colidx;
+                if (asx.regionList.length) {
+                    colidx = _.last(asx.regionList).data.colidx;
+                } else {
+                    colidx = 1;
+                }
+                colidx = !colidx;
+                var col = {
+                    colidx: colidx
+                };
+                var hue = color[0] + (colidx*5);
+                var sat = color[1];
+                var vol = 50 + (colidx*25);
+                var reg = asx.wavesurfer.addRegion({
+                    start: starttime,
+                    end: endtime,
+                    color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.20)',
+                    drag: false,
+                    resize: false,
+                    data: col
+                });
+                asx.regionList.push(reg);
+            };
+
             asx.makeNewRegion = function(starttime) {
                 // this stuff just alternates which we use to colour when the region switches to record mode
-                var colidx = 1;
+                var colidx;
                 if (asx.regionList.length) {
                     colidx = _.last(asx.regionList).data.colidx;
                 } else {
@@ -118,9 +175,10 @@
                     resize: false,
                     data: col
                 });
-                console.log(starttime);
                 asx.regionList.push(reg);
             };
+
+
             asx.markLastRegionComplete = function() {
                 var colidx = _.last(asx.regionList).data.colidx;
                 var hue = 198 + (colidx*40);
@@ -147,7 +205,6 @@
                 } else {
                     asx.playIn = 0;
                 }
-                asx.annoList[0].annos.pop();
             };
             
             asx.destroyAll = function() {
@@ -171,17 +228,19 @@
                 asx.regionMarked = false;
             };
             
-            asx.copySegment = function(annoIdx, secondaryId) {
+            asx.copySegment = function(annoIdx, secondaryId, color) {
+                asx.clearAnno(annoIdx);
                 var secondary = asx.secondaryObjList.filter(function(secData) { return secData._ID === secondaryId; });
                 var sourceSegId = secondary[0].segment.sourceSegId;
                 var segList = asx.sessionObj.data.segments[sourceSegId];
                 var AnnoSegmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
                 asx.sessionObj.setSrcSegment(AnnoSegmentId, segList);
-                asx.annoObjList[annoIdx].data.segment.copied_from = {
+                asx.annoObjList[annoIdx].data.segment.copiedFrom = {
                     secondarySegId: secondaryId,
                     length: segList.length
                 };
-                asx.makeWSRegions(segList);
+                //asx.makeWSRegions(segList);
+                asx.makeWSRegions2(asx.annoObjList[annoIdx].data, color, [0,0]);
                 asx.playIn = _.last(asx.regionList).end + 0.001;
                 asx.annoObjList[annoIdx].data.segment.annotations = [];
             };

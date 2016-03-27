@@ -85,7 +85,7 @@
                     </md-button>
                     <md-menu-content width="3" ng-init="aIdx = $index">
                         <md-menu-item ng-repeat="source in annoC.audioSourceList">
-                            <md-button ng-click="annoC.copyTrack(aIdx, $index)">
+                            <md-button ng-click="annoC.copyTrackConf($event, aIdx, $index)">
                                 <md-icon class="imgsvgicon" ng-style="source.color" md-svg-icon="{{source.icon}}"></md-icon>
                                 <span class="md-body-2">{{source.action | translate}}</span>
                             </md-button>
@@ -100,7 +100,7 @@
                 </md-menu>
 
             </div>
-            {{annoC.annoSettings}}
+
         </section>
 
     </section>

@@ -53,7 +53,10 @@
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
                 vm.playKeyDownStat = true;
                 vm.isPlaying = true;
-
+                if (annoServ.seeked) {
+                    vm.curRegion = annoServ.getRegionFromTime(annoServ.seektime);
+                    annoServ.seeked = false;
+                }
                 if (annoServ.regionMarked) {
                     annoServ.wavesurfer.play(annoServ.playIn);
                 } else {
@@ -85,28 +88,21 @@
             };
 
             vm.ffKeyDown = function(nokey) {
+                if (annoServ.seeked) {vm.curRegion = annoServ.getRegionFromTime(); }
                 if (vm.playKeyDownStat) {return;}  // Block multiple keys
                 vm.ffKeyDownStat = true;
-                var thisTime = annoServ.wavesurfer.getCurrentTime();
-                if (thisTime < annoServ.playIn) {
-                    var seeked = false;
-                    annoServ.regionList.every(function(reg, index) {
-                        if (reg.start > thisTime) {
-                            // we are now seeking to this region
-                            annoServ.seekToTime(reg.start);
-                            vm.curRegion = index;
-                            $timeout(function() {
-                                $scope.$broadcast('inputfoo0');
-                            }, 0);
-                            seeked = true;
-                            return false;
-                        } else {return true;}
-                    });
-                    if (!seeked) {
+                if (annoServ.seeked) {
+                    vm.curRegion = annoServ.getRegionFromTime(annoServ.seektime);
+                    annoServ.seeked = false;
+                }
+                if (vm.curRegion > -1)  {
+                    if (vm.curRegion == (annoServ.regionList.length -1)) {
                         vm.curRegion = -1;
-                        annoServ.seekToTime(annoServ.playIn+vm.oneMillisecond);
+                        annoServ.seekToTime(annoServ.playIn);
+                    } else {
+                        ++vm.curRegion;
+                        annoServ.seekToTime(annoServ.regionList[vm.curRegion].start);
                     }
-
                 } else {
                     if (annoServ.regionMarked) {
                         annoServ.deleteLastRegion();
@@ -132,24 +128,29 @@
                     annoServ.deleteLastRegion();
                     vm.curRegion = -1;
                 }
+                if (annoServ.seeked) {
+                    vm.curRegion = annoServ.getRegionFromTime(annoServ.seektime);
+                    annoServ.seeked = false;
+                }
                 var thisTime = annoServ.wavesurfer.getCurrentTime();
-                if ((thisTime - vm.skipTimeValue) < annoServ.playIn) {
-                    if (annoServ.regionList.length) {
-                        var lastidx = _.findLastIndex(annoServ.regionList, function (reg) {
-                            if (reg.start < thisTime) {return true;}
-                        });
-                        if (lastidx > -1) {
-                            annoServ.seekToTime(annoServ.regionList[lastidx].start);
-                            vm.curRegion = lastidx;
-                            $timeout(function () {
-                                $scope.$broadcast('inputfoo0');
-                            }, 0);
-                        }
+                // We are in a region so navigate between regions
+                if (vm.curRegion > -1) {
+                    // if we are part way through a region, just go back to the start
+                    if (thisTime > annoServ.regionList[vm.curRegion]) {
+                        annoServ.seekToTime(annoServ.regionList[vm.curRegion].start);
                     } else {
-                        annoServ.seekToTime(0);
+                        if (vm.curRegion == 0) {return;} // if we are at the start, do nothing
+                        --vm.curRegion;
+                        annoServ.seekToTime(annoServ.regionList[vm.curRegion].start);
                     }
                 } else {
-                    annoServ.wavesurfer.skipBackward(vm.skipTimeValue);
+                    // In this case, we are in unmarked territory so change modes to skip back
+                    if ((thisTime - vm.skipTimeValue) < annoServ.playIn) {
+                        annoServ.seekToTime(_.last(annoServ.regionList).start);
+                        vm.curRegion = annoServ.regionList.length - 1;
+                    } else {
+                        annoServ.wavesurfer.skipBackward(vm.skipTimeValue);
+                    }
                 }
                 if (nokey) {$scope.$apply();}
             };
@@ -208,21 +209,25 @@
             var trackIdx = 0;
             vm.respeakings.forEach(function(r, indx){
                 ++trackIdx;
+                var coldat = [120+(indx*5),100];
                 vm.audioSourceList.push({
                     id: r._ID,
                     name: 'RESPEAKING',
                     action: 'USE_RSPK',
-                    color: {color: 'hsl('+(105+(indx*5))+',60%,50%)'},
+                    color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,40%)'},
+                    coldat: coldat,
                     icon: 'mdi:numeric-'+trackIdx+'-box'
                 });
             });
             vm.translations.forEach(function(t, indx){
                 ++trackIdx;
+                var coldat = [210+(indx*5),60];
                 vm.audioSourceList.push({
                     id: t._ID,
                     name: 'ANNO_TRANS',
                     action: 'USE_TRANS',
-                    color: {color: 'hsl('+(180+(indx*5))+',60%,50%)'},
+                    color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,40%)'},
+                    coldat: coldat,
                     icon: 'mdi:numeric-'+trackIdx+'-box'
                 });
             });
@@ -250,6 +255,7 @@
                     vm.escKey(true);
                 });
                 annoServ.switchToAnno(vm.selectedAnno);
+                if (annoServ.regionList.length) {vm.curRegion = 0;}
                 $scope.$apply();
             });
             
@@ -266,9 +272,41 @@
                 vm.annoSettings[annoIdx].hasCopied = false;
             };
 
+            vm.copyTrackConf = function(ev, annoIdx, trackIdx) {
+                if (vm.annoSettings[annoIdx].hasAnnos) {
+                    var type = 'respeak';
+                    $translate(['ANNO_EXIST', 'ANNO_DELCONF1', 'ANNO_DELCONF2', 'ANNO_DELNO', 'USE_RSPK', 'USE_TRANS']).then(function (translations) {
+                        var okaytext;
+                        switch (type) {
+                            case 'respeak':
+                                okaytext = translations.USE_RSPK;
+                                break;
+                            case 'translate':
+                                okaytext = translations.USE_TRANS;
+                                break;
+                        }
+                        var confirm = $mdDialog.confirm()
+                            .title(translations.ANNO_EXIST)
+                            .textContent(translations.ANNO_DELCONF1)
+                            .ariaLabel('Delete annotations')
+                            .targetEvent(ev)
+                            .ok(okaytext)
+                            .cancel(translations.ANNO_DELNO);
+                        $mdDialog.show(confirm).then(function () {
+                            vm.copyTrack(annoIdx, trackIdx);
+                            vm.curRegion = 0;
+                            annoServ.wavesurfer.seekTo(0);
+                        });
+                    });
+                } else {
+                    vm.copyTrack(annoIdx, trackIdx);
+                    vm.curRegion = 0;
+                    annoServ.wavesurfer.seekTo(0);
+                }
+            };
+            
             vm.copyTrack = function(annoIdx, trackIdx) {
-                console.log(annoIdx, trackIdx);
-                annoServ.copySegment(annoIdx, vm.audioSourceList[trackIdx].id);
+                annoServ.copySegment(annoIdx, vm.audioSourceList[trackIdx].id, vm.audioSourceList[trackIdx].coldat);
                 vm.annoSettings[annoIdx].selectedTrack = trackIdx;
                 vm.annoSettings[annoIdx].enabled = true;
                 vm.selectedAnno = annoIdx;
