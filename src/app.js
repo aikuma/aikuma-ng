@@ -72,6 +72,7 @@
                 .iconSet('image','img/icons/sets/image-icons.svg', 24)
                 .iconSet('editor','img/icons/sets/editor-icons.svg', 24)
                 .iconSet('communication','img/icons/sets/communication-icons.svg', 24)
+                .iconSet('mdi','img/icons/sets/mdi-icons.svg', 24)
                 .defaultIconSet('img/icons/sets/core-icons.svg', 24);
         }])
         .config(['$mdThemingProvider', function ($mdThemingProvider) {

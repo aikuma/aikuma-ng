@@ -43,7 +43,7 @@
             //
             vm.toggleAnnoSetting = function(annoIdx, setting) {
                 vm.annoSettings[annoIdx][setting] = !vm.annoSettings[annoIdx][setting];
-                annoServ.restoreFocus(vm.selectedAnno);
+                vm.restoreFocus();
             };
 
             //
@@ -69,8 +69,6 @@
                             anno.annos[vm.curRegion] = '';
                         });
                         annoServ.playIn = thisTime;
-                        $scope.$apply();
-                        vm.restoreFocus(vm.selectedAnno);
                         annoServ.wavesurfer.play();
                     }
                 }
@@ -148,10 +146,10 @@
                             }, 0);
                         }
                     } else {
-                        seekToTime(0);
+                        annoServ.seekToTime(0);
                     }
                 } else {
-                    annoServ.wavesurfer.skipBackward(skipTimeValue);
+                    annoServ.wavesurfer.skipBackward(vm.skipTimeValue);
                 }
                 if (nokey) {$scope.$apply();}
             };
@@ -170,28 +168,69 @@
             });
             aikumaService.getLanguages(function (langs) {
                 $scope.annotationObjList.forEach(function (anno, annoIdx) {
+                    var hasA = false;
+                    var hasC = false;
+                    if ('annotations' in anno.data.segment && anno.data.segment.annotations.length > 0) {hasA = true;}
+                    if ('copied_from' in anno.data.segment) {hasA = true;}
                     vm.annoSettings[annoIdx] = {
                         loop: false,
-                        enabled: false,
-                        playAudio: ['source']
+                        enabled: anno.data._ID === $scope.selectedAnno,
+                        playAudio: ['source'],
+                        selectedTrack: 0,
+                        hasAnnos: hasA,
+                        hasCopied: hasC
                     };
                     vm.annoList = vm.annotations.map(function(anno) {
                         return {
                             _ID: anno.data._ID,
                             name: aikumaService.lookupLanguage(anno.data.source.langIds[0], langs),
                             type: angular.uppercase(anno.data.type),
-                            enabled: anno.data._ID === $scope.selectedAnno,
-                            loop: false,
                             annos: {}
                         };
                     });
-                });
+                    // 
+                 });
                 vm.annoSettings[vm.selectedAnno].enabled = true;
             });
 
+            // Find secondary audio and build a source list that will be used in the UI as 'tracks'
+
+            vm.translations = $scope.secondaryList.filter(function(secData) { return secData.type === 'translate'; });
+            vm.respeakings = $scope.secondaryList.filter(function(secData) { return secData.type === 'respeak'; });
+            vm.audioSourceList = [];
+            // In this case we don't use any segmentation, this may be the only option if there are no other recordings
+            vm.audioSourceList.push({
+                action: 'MANUAL',
+                color: {color: 'hsl(0,0%,50%)'},
+                icon: 'mdi:plus-box'
+                });
+ 
+            var trackIdx = 0;
+            vm.respeakings.forEach(function(r, indx){
+                ++trackIdx;
+                vm.audioSourceList.push({
+                    id: r._ID,
+                    name: 'RESPEAKING',
+                    action: 'USE_RSPK',
+                    color: {color: 'hsl('+(105+(indx*5))+',60%,50%)'},
+                    icon: 'mdi:numeric-'+trackIdx+'-box'
+                });
+            });
+            vm.translations.forEach(function(t, indx){
+                ++trackIdx;
+                vm.audioSourceList.push({
+                    id: t._ID,
+                    name: 'ANNO_TRANS',
+                    action: 'USE_TRANS',
+                    color: {color: 'hsl('+(180+(indx*5))+',60%,50%)'},
+                    icon: 'mdi:numeric-'+trackIdx+'-box'
+                });
+            });
+
+
             // Set up wavesurfer
-            // callback registers hotkeys
-            annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, function() {
+            // callback registers hotkeys and switches to the selected annotation
+            annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, $scope.secondaryList, function() {
                 keyService.regKey(vm.playKeyCode, 'keydown', function () {
                     vm.playKeyDown(true);
                 });
@@ -211,27 +250,37 @@
                     vm.escKey(true);
                 });
                 annoServ.switchToAnno(vm.selectedAnno);
+                $scope.$apply();
             });
             
-            //annoServ.restoreAnnotations();
-            // This will populate wavesurfer with this annotation
-            //annoServ.switchToAnno(vm.selectedAnno);
-            //vm.curRegion = -1;
 
-            //shitty restore
-/*
-            if (vm.annotations[0].data.segment.annotations) {
-                var segmentId = vm.annotations[0].data.segment.sourceSegId;
-                makeWSRegions($scope.sessionObj.data.segments[segmentId]);
-                console.log(vm.annoList);
-                vm.annoList[0].annos = vm.annotations[0].data.segment.annotations;
-            }
-*/
-//
+
+            //
             // FUNCTIONS BOUND TO VIEW MODEL
             //
-            vm.selectAnno = function(annoIdx) {
+            // nuclear option, user wishes to clear all annotation data
+            vm.clearAnno = function(annoIdx) {
+                annoServ.clearAnno(annoIdx);
+                vm.curRegion = -1;
+                vm.annoSettings[annoIdx].hasAnnos = false;
+                vm.annoSettings[annoIdx].hasCopied = false;
+            };
+
+            vm.copyTrack = function(annoIdx, trackIdx) {
+                console.log(annoIdx, trackIdx);
+                annoServ.copySegment(annoIdx, vm.audioSourceList[trackIdx].id);
+                vm.annoSettings[annoIdx].selectedTrack = trackIdx;
+                vm.annoSettings[annoIdx].enabled = true;
                 vm.selectedAnno = annoIdx;
+                vm.restoreFocus();
+            };
+            
+            vm.selectAnno = function(annoIdx) {
+                if (annoIdx != vm.selectedAnno) {
+                    vm.selectedAnno = annoIdx;
+                    annoServ.switchToAnno(vm.selectedAnno);
+                    vm.curRegion = annoServ.getRegionFromTime();
+                }
             };
             vm.openMenu = function($mdOpenMenu, ev) {
                 $mdOpenMenu(ev);
@@ -260,10 +309,10 @@
             //
             // Utility horseshit
             //
-            vm.restoreFocus = function(focusId) {
+            vm.restoreFocus = function() {
                 $timeout(function() {
-                    console.log('inputfoo'+focusId);
-                    $scope.$broadcast('inputfoo'+focusId);
+                    console.log('inputfoo'+vm.selectedAnno);
+                    $scope.$broadcast('inputfoo'+vm.selectedAnno);
                 }, 0);
             };
             // on navigating away, clean up the key events, wavesurfer instances

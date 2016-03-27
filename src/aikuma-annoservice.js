@@ -12,9 +12,10 @@
             asx.regionMarked = false;
 
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
-            asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, callback) {
+            asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, callback) {
                 asx.annoObjList = annoObjList;
                 asx.sessionObj = sessionObj;
+                asx.secondaryObjList = secondaryObjList;
                 //
                 // Set up Wavesurfer
                 //
@@ -59,10 +60,28 @@
             };
 
             asx.switchToAnno = function(annoIdx) {
-                var segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
-                var seglist = asx.sessionObj.data.segments[segmentId];
-                asx.makeWSRegions(seglist);
+                asx.wavesurfer.clearRegions();
+                asx.regionList = [];
+                asx.regionMarked = false;
+
+                if ('annotations' in asx.annoObjList[annoIdx].data.segment) {
+                    var segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
+                    var seglist = asx.sessionObj.data.segments[segmentId];
+                    asx.makeWSRegions(seglist);
+                    asx.playIn = _.last(asx.regionList).end+0.001;
+                }
             };
+
+            asx.getRegionFromTime = function() {
+                var thistime = asx.wavesurfer.getCurrentTime();
+                asx.regionList.forEach(function(reg,idx){
+                    if (thistime >= reg.start && thistime <= reg.end) {
+                        return idx;
+                    }
+                });
+                return -1;
+            };
+
             // make a new region list out of an array of millisecond segments
             asx.makeWSRegions = function(segMsec) {
                 asx.regionList = [];
@@ -140,6 +159,34 @@
             asx.restoreRegions = function() {
 
             };
+            
+            asx.clearAnno = function(annoIdx) {
+                asx.regionList = [];
+                asx.playIn = 0;
+                asx.wavesurfer.clearRegions();
+                asx.wavesurfer.seekTo(0);
+                var segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
+                asx.sessionObj.setSrcSegment(segmentId, []);
+                asx.annoObjList[annoIdx].data.segment.annotations = [];
+                asx.regionMarked = false;
+            };
+            
+            asx.copySegment = function(annoIdx, secondaryId) {
+                var secondary = asx.secondaryObjList.filter(function(secData) { return secData._ID === secondaryId; });
+                var sourceSegId = secondary[0].segment.sourceSegId;
+                var segList = asx.sessionObj.data.segments[sourceSegId];
+                var AnnoSegmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
+                asx.sessionObj.setSrcSegment(AnnoSegmentId, segList);
+                asx.annoObjList[annoIdx].data.segment.copied_from = {
+                    secondarySegId: secondaryId,
+                    length: segList.length
+                };
+                asx.makeWSRegions(segList);
+                asx.playIn = _.last(asx.regionList).end + 0.001;
+                asx.annoObjList[annoIdx].data.segment.annotations = [];
+            };
+            
+            
             // Pass index of annotation to save
             asx.saveAnnotation = function(annoIdx) {
                 //asx.annoObjList

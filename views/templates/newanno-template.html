@@ -4,19 +4,19 @@
         <div id="annotatePlayback"></div>
 
         <div layout="row" layout-align="start center">
+
+            <md-icon md-svg-src="img/icons/technology.svg" style="width:24px;height:24px;margin-left:8px;" aria-label="Recordings"></md-icon>
+
+            <md-button ng-repeat="source in annoC.audioSourceList.slice(1)" aria-label="{{source.name}}">
+                <md-icon class="imgsvgicon" ng-style="source.color" md-svg-icon="{{source.icon}}"></md-icon>
+                <span>{{source.name | translate}}</span>
+            </md-button>
+
+            <span flex></span>
+
             <md-button class="md-icon-button" aria-label="Use translation" ng-click="annoC.help($event)">
                 <md-tooltip class="md-body-2">{{"ACTIVITY_HELP" | translate}}</md-tooltip>
                 <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
-            </md-button>
-
-            <md-button ng-if="annoC.hasRespeaking && !annoC.importedSegmentation" aria-label="Use respeaking" ng-click="annoC.useRspkTrans($event,'respeak')">
-                <md-icon class="imgsvgicon" md-svg-icon="av:repeat"></md-icon>
-                <span>{{"USE_RSPK" | translate}}</span>
-            </md-button>
-
-            <md-button ng-if="annoC.hasTranslation && !annoC.importedSegmentation" aria-label="Use translation" ng-click="annoC.useRspkTrans($event,'translate')">
-                <md-icon class="imgsvgicon" md-svg-icon="action:translate"></md-icon>
-                <span>{{"USE_TRANS" | translate}}</span>
             </md-button>
 
         </div>
@@ -77,15 +77,30 @@
                     </md-switch>
                 </md-input-container>
 
-                <md-input-container>
-                    <md-select class="md-body-1" ng-model="annoC.track[$index]">
-                        <md-option ng-repeat="track in annoC.tracks" value="{{track}}">
-                            <span >{{track}}</span>
-                        </md-option>
-                    </md-select>
-                </md-input-container>
+                <md-menu>
+                    <md-button class="md-icon-button" aria-label="Track menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
+                        <md-tooltip class="md-body-2">Track</md-tooltip>
+                        <md-icon md-menu-origin class="imgsvgicon"
+                                 ng-style="annoC.audioSourceList[annoC.annoSettings[$index].selectedTrack].color" md-svg-icon="{{annoC.audioSourceList[annoC.annoSettings[$index].selectedTrack].icon}}"></md-icon>
+                    </md-button>
+                    <md-menu-content width="3" ng-init="aIdx = $index">
+                        <md-menu-item ng-repeat="source in annoC.audioSourceList">
+                            <md-button ng-click="annoC.copyTrack(aIdx, $index)">
+                                <md-icon class="imgsvgicon" ng-style="source.color" md-svg-icon="{{source.icon}}"></md-icon>
+                                <span class="md-body-2">{{source.action | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="annoC.clearAnno(aIdx)">
+                            <md-icon class="imgsvgicon md-warn" md-svg-icon="content:clear"></md-icon>
+                            <span class="md-body-2">{{"CLEAR_ALL" | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
 
             </div>
+            {{annoC.annoSettings}}
         </section>
 
     </section>
