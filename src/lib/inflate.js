@@ -33,7 +33,7 @@
  * and contributors of zlib.
  */
 
-(function(global) {
+var inflator = (function(global) {
 	"use strict";
 
 	// Global
@@ -2152,4 +2152,5 @@
 	// 'zip' may not be defined in z-worker and some tests
 	var env = global.zip || global;
 	env.Inflater = env._jzlib_Inflater = Inflater;
-})(this);
+});
+inflator(this);

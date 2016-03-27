@@ -873,6 +873,21 @@
 		deflater: ['z-worker.js', 'deflate.js'],
 		inflater: ['z-worker.js', 'inflate.js']
 	};
+    
+    function getWorker(workerType) {
+        var zipString = '(' + zipWorker.toString() + ')(this);'
+        switch(workerType) {
+            case 'deflate.js':
+                zipString += ('(' + deflator.toString() + ')(this);');
+                break;
+            case 'inflate.js':
+                zipString += ('(' + inflator.toString() + ')(this);');
+                break;
+        }
+        var url = window.URL.createObjectURL(new Blob([zipString], {type: 'application/javascript'}));
+        return new Worker(url);
+    }
+    
 	function createWorker(type, callback, onerror) {
 		if (obj.zip.workerScripts !== null && obj.zip.workerScriptsPath !== null) {
 			onerror(new Error('Either zip.workerScripts or zip.workerScriptsPath may be set, not both.'));
@@ -890,9 +905,11 @@
 			scripts = DEFAULT_WORKER_SCRIPTS[type].slice(0);
 			scripts[0] = (obj.zip.workerScriptsPath || '') + scripts[0];
 		}
-		var worker = new Worker(scripts[0]);
-		// record total consumed time by inflater/deflater/crc32 in this worker
+		//var worker = new Worker(scripts[0]);
+		var worker = getWorker(scripts[1]);
+        // record total consumed time by inflater/deflater/crc32 in this worker
 		worker.codecTime = worker.crcTime = 0;
+        /*
 		worker.postMessage({ type: 'importScripts', scripts: scripts.slice(1) });
 		worker.addEventListener('message', onmessage);
 		function onmessage(ev) {
@@ -907,13 +924,14 @@
 				worker.removeEventListener('error', errorHandler);
 				callback(worker);
 			}
-		}
+		}*/
 		// catch entry script loading error and other unhandled errors
 		worker.addEventListener('error', errorHandler);
 		function errorHandler(err) {
 			worker.terminate();
 			onerror(err);
 		}
+        callback(worker);
 	}
 
 	function onerror_default(error) {

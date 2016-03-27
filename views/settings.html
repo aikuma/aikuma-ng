@@ -1,7 +1,7 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
 <md-content class="md-padding">
     
-    <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" href="{{seCtrl.dataUri}}">
+    <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" href="{{seCtrl.dataUri}}">
         <md-icon md-svg-icon="file:file_download"></md-icon>
         Download backup file  
     </md-button>

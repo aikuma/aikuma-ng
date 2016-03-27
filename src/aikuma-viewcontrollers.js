@@ -90,12 +90,27 @@
                 }
             });
             
-            
-            fileService.getBackupFile().then(function(uri) {
-                console.log(uri);
-                vm.dataPrepared = true;
-                vm.dataUri = uri;
-            });   
+              
+            if(window.chrome && chrome.fileSystem) {
+                fileService.getBackupFile('blob').then(function(blob) {   
+                    vm.export = function() {
+                        chrome.fileSystem.chooseFile({type: 'saveFile', suggestedName: 'Backup.zip'}, function(fileEntry) {
+                            fileService.writeFileToEntry(fileEntry, blob).then(function(){
+                                aikumaDialog.toast('Backup.zip is exported');
+                            });
+                        });
+                    };
+                    vm.dataUri = 'views/settings.html'; // dummy Uri
+                    vm.dataPrepared = true;
+                });
+                
+            } else {
+                fileService.getBackupFile('uri').then(function(uri) {
+                    console.log(uri);
+                    vm.dataUri = uri;
+                    vm.dataPrepared = true;
+                }); 
+            }
             
             
             vm.wipeData = function() {

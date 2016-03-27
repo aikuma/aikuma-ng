@@ -676,6 +676,37 @@
                         break;
                 }
             };
+            service.writeFileToEntry = function(fileEntry, file, step, pos) {
+                var fileDefer = $q.defer();
+                
+                fileEntry.createWriter(function(fileWriter) {
+                    fileWriter.onwriteend = function() {
+                        if(pos) {
+                            fileWriter.seek(pos);
+                            pos = 0;
+                            fileWriter.write(file);
+                        } else if(step) {
+                            postprocessFuncs[file.type](fileWriter, step--, wavHeaderBuf);
+                        } else {
+                            fileDefer.resolve(fileEntry.toURL());
+                        }
+                    };
+
+                    fileWriter.onerror = function(err) {
+                        fileDefer.reject(err);
+                    };
+
+                    if(pos) {
+                        fileWriter.truncate(pos);
+                    } else {
+                        fileWriter.write(file);
+                    }
+                }, function(err) {
+                    fileDefer.reject(err);
+                });
+                
+                return fileDefer.promise;
+            }
             service.writeFile = function(url, file, pos) {
                 var fileDefer = $q.defer();
                 var step = 0;
@@ -690,31 +721,9 @@
                 }
                 
                 service.getFileEntry(url).then(function(fileEntry) {
-                    fileEntry.createWriter(function(fileWriter) {
-                        fileWriter.onwriteend = function() {
-                            if(pos) {
-                                fileWriter.seek(pos);
-                                pos = 0;
-                                fileWriter.write(file);
-                            } else if(step) {
-                                postprocessFuncs[file.type](fileWriter, step--, wavHeaderBuf);
-                            } else {
-                                fileDefer.resolve(fileEntry.toURL());
-                            }
-                        };
-
-                        fileWriter.onerror = function(err) {
-                            fileDefer.reject(err);
-                        };
-                        
-                        if(pos) {
-                            fileWriter.truncate(pos);
-                        } else {
-                            fileWriter.write(file);
-                        }
-                    }, function(err) {
-                        fileDefer.reject(err);
-                    });
+                    return service.writeFileToEntry(fileEntry, file, step, pos);
+                }).then(function(url){
+                    fileDefer.resolve(url);
                 }).catch(function(err) {
                     fileDefer.reject(err);
                 });
@@ -779,7 +788,7 @@
             // Get indexedDB backup
             // Import zip
             zip.workerScriptsPath = "src/lib/";
-            service.getBackupFile = function() {
+            service.getBackupFile = function(type) {
                 var zipDefer = $q.defer();
                 var backupFile = new zip.fs.FS();
                 var jsonDb;
@@ -788,9 +797,18 @@
                     return rootFs.promise;
                 }).then(function(fs) {
                     var onsuccess = function() {
-                        backupFile.exportData64URI(function(uri) {
-                            zipDefer.resolve(uri);
-                        }, null, function() { zipDefer.reject('no uri'); } );
+                        switch(type) {
+                            case 'uri':
+                                backupFile.exportData64URI(function(uri) {
+                                    zipDefer.resolve(uri);
+                                }, null, function() { zipDefer.reject('no uri'); });
+                                break;
+                            case 'blob':
+                                backupFile.exportBlob(function(blob) {
+                                    zipDefer.resolve(blob);
+                                }, null, function() { zipDefer.reject('no blob'); });
+                                break;
+                        }
                     };
 
                     var onerror = function() { 

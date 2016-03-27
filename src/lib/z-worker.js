@@ -1,5 +1,5 @@
 /* jshint worker:true */
-(function main(global) {
+var zipWorker = (function main(global) {
 	"use strict";
 
 	if (global.zWorkerInitialized)
@@ -150,4 +150,5 @@
 		return bytes;
 	};
 	NOOP.prototype.flush = function flush() {};
-})(this);
+});
+zipWorker(this);
