@@ -209,6 +209,18 @@
                         this.data[metaKey][id] = metaObj;
                     }; 
                 },
+                getMetaWithId: function(metaKey, prop) {
+                    return function(id) {
+                        if(this.data[metaKey]) {
+                            if(prop && this.data[metaKey][id])
+                                return this.data[metaKey][id][prop];
+                            else
+                                return this.data[metaKey][id];
+                        } else {
+                            return undefined;
+                        }
+                    };
+                },
                 pushMeta: function(metaKey) {
                     return function(metaObj) {
                         if(!this.data[metaKey])
@@ -326,6 +338,7 @@
                     }).then(function(data) {
                         var wrapper = {data: data};
                         if(type === USER_TYPE) {
+                            wrapper.getFileUrl = dataMethods.getMetaWithId('files', 'url').bind(wrapper);
                             wrapper.addUserTag = dataMethods.addUserMeta('tags').bind(wrapper);
                             wrapper.addUserPerson = dataMethods.addUserMeta('people').bind(wrapper);
                             wrapper.addUserFile = dataMethods.addUserMeta('files').bind(wrapper);
@@ -706,7 +719,7 @@
                 });
                 
                 return fileDefer.promise;
-            }
+            };
             service.writeFile = function(url, file, pos) {
                 var fileDefer = $q.defer();
                 var step = 0;
