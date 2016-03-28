@@ -5,18 +5,20 @@
     'use strict';
     angular
         .module('aikuma-anno-service', [])
-        .service('annoServ', ['$timeout', 'keyService', '$mdDialog', '$translate', function($timeout, keyService, $mdDialog, $translate) {
+        .service('annoServ', ['$timeout', 'keyService', '$mdDialog', '$translate', 'audioService', function($timeout, keyService, $mdDialog, $translate, audioService) {
             var asx = this;
 
             asx.regionList = [];     // regions for the currently active wavesurfer view (e.g. particular annotation selected)
-            asx.regionMarked = false;
+            asx.reg = {};
+            asx.reg.regionMarked = false;
             asx.seeked = false;
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
-            asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, callback) {
+            asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
                 asx.annoObjList = annoObjList;
                 asx.sessionObj = sessionObj;
                 asx.secondaryObjList = secondaryObjList;
+                asx.userObj = userObj;
                 //
                 // Set up Wavesurfer
                 //
@@ -43,8 +45,18 @@
                 });
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
+                    // so simple, but this solution was a long time coming
+                    // When the user seeks in wavesurfer, you only get a float, and getRegionFromTime() is wrong
+                    // So what we do is hook into seek, immediately trigger play(), set this variable and on the very first
+                    // audioprocess callback, get the valid time, pause wavesurfer and turn the flag off
+                    if (asx.seeked) {
+                        asx.seeked = false;
+                        asx.wavesurfer.pause();
+                        asx.reg.curRegion = asx.getRegionFromTime();
+                    }
                     var currentPos = asx.wavesurfer.getCurrentTime();
-                    if (asx.regionMarked) {
+                    currentPos = Math.round(currentPos*1000)/1000;
+                    if (asx.reg.regionMarked) {
                         _.last(asx.regionList).update({end: currentPos});
                     }
                 });
@@ -58,34 +70,61 @@
                     );
                     callback();
                 });
-                asx.wavesurfer.on('seek', function (seekval) {
+                asx.wavesurfer.on('pause', function () {
+                    if (asx.regionPlayback) {
+                        asx.regionPlayback = false;
+                        asx.seekToTime(asx.regionList[asx.reg.curRegion].start);
+                    }
+
+                });
+                asx.wavesurfer.on('seek', function () {
                     asx.seeked = true;
-                    asx.seektime = asx.wavesurfer.getDuration()*seekval;
-                    if (asx.regionMarked) {asx.deleteLastRegion();}
+                    asx.wavesurfer.play();
+                    if (asx.reg.regionMarked) {asx.deleteLastRegion();}
                 });
 
             };
 
-            asx.switchToAnno = function(annoIdx) {
+
+            asx.switchToAnno = function(annoIdx, audioSourceList) {
                 asx.wavesurfer.clearRegions();
                 asx.regionList = [];
-                asx.regionMarked = false;
+                asx.reg.regionMarked = false;
 
-                if ('annotations' in asx.annoObjList[annoIdx].data.segment) {
-                    var segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
-                    var seglist = asx.sessionObj.data.segments[segmentId];
-                    asx.makeWSRegions(seglist);
-                    asx.playIn = _.last(asx.regionList).end+0.001;
+                if (!('annotations' in asx.annoObjList[annoIdx].data.segment)) {
+                    console.log('initialized new annotation');
+                    var segmentId = asx.sessionObj.addSrcSegment([]);
+                    asx.annoObjList[annoIdx].data.segment.sourceSegId = segmentId;
+                    asx.annoObjList[annoIdx].data.segment.annotations = [];
+                    asx.annoObjList[annoIdx].save();
+                    asx.sessionObj.save();
+                }
+
+                var color = [0,0]; // if we've copied data from a source, we need to fetch the color
+                if ('copiedFrom' in asx.annoObjList[annoIdx].data.segment) {
+                    var cfid = asx.annoObjList[annoIdx].data.segment.copiedFrom.secondarySegId;
+                    color = _.find(audioSourceList, function(src) {
+                        return src.id === cfid;
+                    }).coldat;
+                }
+
+                if ('annotations' in asx.annoObjList[annoIdx].data.segment && asx.annoObjList[annoIdx].data.segment.annotations.length) {
+                    asx.makeWSRegions2(asx.annoObjList[annoIdx].data, color, [0,0]);
+                    asx.playIn = _.last(asx.regionList).end + 0.001;
                 }
             };
-
+            
+            asx.playtest = function(context, fsUri, start, end) {
+                audioService.playbackLocalFile(context, fsUri, start, end, function() {
+                    console.log('finished');
+                });
+            };
+            
             asx.getRegionFromTime = function(seektime) {
                 if (seektime === undefined) {seektime = asx.wavesurfer.getCurrentTime();}
-                var fidx = -1;
-                asx.regionList.forEach(function(reg,idx){
-                    if (seektime >= reg.start && seektime <= reg.end) {
-                        fidx = idx;
-                    }
+                seektime = Math.round(seektime*1000)/1000;
+                var fidx = _.findIndex(asx.regionList, function(reg){
+                    return ((seektime >= reg.start) && (seektime < reg.end));
                 });
                 return fidx;
             };
@@ -120,7 +159,7 @@
                     } else {
                         segcol = defaultCol;
                     }
-                    asx.makeCopyRegion(stime, etime, segcol);
+                    asx.regionList.push(asx.makeCopyRegion(stime, etime, segcol));
                 });
             };
 
@@ -139,7 +178,7 @@
                 var hue = color[0] + (colidx*5);
                 var sat = color[1];
                 var vol = 50 + (colidx*25);
-                var reg = asx.wavesurfer.addRegion({
+                var rego = asx.wavesurfer.addRegion({
                     start: starttime,
                     end: endtime,
                     color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.20)',
@@ -147,7 +186,7 @@
                     resize: false,
                     data: col
                 });
-                asx.regionList.push(reg);
+                return rego;
             };
 
             asx.makeNewRegion = function(starttime) {
@@ -188,7 +227,7 @@
                         data: {colidx:colidx}
                     }
                 );
-                asx.playIn = _.last(asx.regionList).end;
+                asx.playIn = _.last(asx.regionList).end + 0.001;
             };
 
             asx.restoreAnnotations = function() {
@@ -199,9 +238,9 @@
             asx.deleteLastRegion = function() {
                 var reg = asx.regionList.pop();
                 reg.remove();
-                asx.regionMarked = false;
+                asx.reg.regionMarked = false;
                 if (asx.regionList.length) {
-                    asx.playIn = _.last(asx.regionList).end;
+                    asx.playIn = _.last(asx.regionList).end + 0.001;
                 } else {
                     asx.playIn = 0;
                 }
@@ -212,10 +251,16 @@
                 asx.timeline.destroy();
                 asx.wavesurfer.destroy();
             };
-
-            asx.restoreRegions = function() {
-
+            
+            asx.availAudio = function(annoIdx, segIdx) {
+                if ('copiedFrom' in asx.annoObjList[annoIdx].data.segment) {
+                    if (segIdx < asx.annoObjList[annoIdx].data.segment.copiedFrom.length) {
+                        return asx.annoObjList[annoIdx].data.segment.copiedFrom.secondarySegId;
+                    }
+                }
+                return null;
             };
+            
             
             asx.clearAnno = function(annoIdx) {
                 asx.regionList = [];
@@ -225,9 +270,11 @@
                 var segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
                 asx.sessionObj.setSrcSegment(segmentId, []);
                 asx.annoObjList[annoIdx].data.segment.annotations = [];
-                asx.regionMarked = false;
+                asx.reg.regionMarked = false;
+                delete asx.annoObjList[annoIdx].data.segment.copiedFrom;
+                asx.annoObjList[annoIdx].save();
             };
-            
+
             asx.copySegment = function(annoIdx, secondaryId, color) {
                 asx.clearAnno(annoIdx);
                 var secondary = asx.secondaryObjList.filter(function(secData) { return secData._ID === secondaryId; });
@@ -242,7 +289,9 @@
                 //asx.makeWSRegions(segList);
                 asx.makeWSRegions2(asx.annoObjList[annoIdx].data, color, [0,0]);
                 asx.playIn = _.last(asx.regionList).end + 0.001;
-                asx.annoObjList[annoIdx].data.segment.annotations = [];
+                var emptyAnno = [];
+                asx.regionList.forEach(function(){emptyAnno.push('');});
+                asx.annoObjList[annoIdx].data.segment.annotations = emptyAnno;
             };
             
             
@@ -255,13 +304,8 @@
                     seglist.push([Math.round(reg.start * 1000),Math.round(reg.end * 1000)]);
                 });
                 var segmentId;
-                if (asx.annoObjList[annoIdx].data.segment.hasOwnProperty('"sourceSegId"')) {
-                    segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
-                    asx.sessionObj.setSrcSegment(segmentId, seglist);
-                } else {
-                    segmentId = asx.sessionObj.addSrcSegment(seglist);
-                    asx.annoObjList[annoIdx].data.segment['sourceSegId'] = segmentId;
-                }
+                segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
+                asx.sessionObj.setSrcSegment(segmentId, seglist);
                 asx.annoObjList[annoIdx].save();
                 asx.sessionObj.save();
             };
@@ -274,17 +318,18 @@
                 var floatpos = time / length;
                 asx.wavesurfer.seekTo(floatpos);
             };
+            asx.seekToTime_new = function(time) {
+                asx.seeked = true;
+                asx.wavesurfer.play(time);
+            };
+
             asx.seekRegion = function(idx) {
-                if (asx.regionMarked) {
+                if (asx.reg.regionMarked) {
                     asx.deleteLastRegion();
-                    //vm.curRegion = -1;
                 }
                 asx.seekToTime(asx.regionList[idx].start);
-
                 asx.regionList[idx].play();
             };
-            asx.playAudio = function(annoIdx, region) {
-                asx.regionList[region].play();
-            };
+           
         }]);
 })();

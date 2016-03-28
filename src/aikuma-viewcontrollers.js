@@ -106,7 +106,6 @@
                 
             } else {
                 fileService.getBackupFile('uri').then(function(uri) {
-                    console.log(uri);
                     vm.dataUri = uri;
                     vm.dataPrepared = true;
                 }); 
