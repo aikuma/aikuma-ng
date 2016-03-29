@@ -4,113 +4,80 @@
         <div id="annotatePlayback"></div>
 
         <div layout="row" layout-align="start center">
-
             <md-icon md-svg-src="img/icons/technology.svg" style="width:24px;height:24px;margin-left:8px;" aria-label="Recordings"></md-icon>
-
-            <md-button ng-repeat="source in annoC.audioSourceList.slice(1)" aria-label="{{source.name}}" ng-class="{'animated flash infinite': annoC.playCSS[$index+1]}">
-                <md-icon class="imgsvgicon" ng-style="source.color" md-svg-icon="{{source.icon}}"></md-icon>
-                <span>{{source.name | translate}}</span>
+            <md-button ng-repeat="atrack in annoC.tracks.audio" aria-label="{{annoC.tracks[atrack].name}}" ng-class="{'animated flash infinite': annoC.playCSS[atrack]}">
+                <md-icon class="imgsvgicon" ng-style="annoC.tracks[atrack].color" md-svg-icon="{{annoC.tracks[atrack].icon}}"></md-icon>
+                <span>{{annoC.tracks[atrack].name | translate}}</span>
             </md-button>
-
             <span flex></span>
-
             <md-button class="md-icon-button" aria-label="Use translation" ng-click="annoC.help($event)">
                 <md-tooltip class="md-body-2">{{"ACTIVITY_HELP" | translate}}</md-tooltip>
                 <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
             </md-button>
-
         </div>
 
+            <div flex ng-repeat="track in annoC.tracks.list" layout="row">
+                <div flex ng-if="annoC.tracks[track].annos.length > 0" ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
+                <div  flex ng-repeat="anno in annoC.tracks[track].annos" layout="row" layout-align="start center">
+                    <md-menu>
+                        <md-button class="md-icon-button" ng-disabled="annoC.r.tk !== track" aria-label="Playback menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
+                            <md-tooltip class="md-body-2">{{"PLAY_SRC" | translate}}</md-tooltip>
+                            <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                        </md-button>
+                        <md-menu-content width="4">
+                            <md-menu-item>
+                                <md-button ng-click="annoC.toggleAnnoCfg(track, $index, 'playSrc')">
+                                    <md-icon ng-if="anno.cfg.playSrc" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                                    <md-icon ng-if="!anno.cfg.playSrc" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
+                                    <span class="md-body-2">{{"PLAY_SRC" | translate}}</span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="annoC.tracks[track].hasAudio">
+                                <md-button ng-click="annoC.toggleAnnoCfg(track, $index, 'playSec')">
+                                    <md-icon ng-if="anno.cfg.playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
+                                    <md-icon ng-if="!anno.cfg.playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
+                                    <md-icon class="imgsvgicon" ng-style="annoC.tracks[track].color" md-svg-icon="{{annoC.tracks[track].icon}}"></md-icon>
+                                    <span class="md-body-2">{{annoC.tracks[track].name | translate}}</span>
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
 
-        <section>
-            <div ng-repeat="anno in annoC.annoList" layout="row" layout-align="start center">
-
-                <md-menu>
-                    <md-button class="md-icon-button" ng-disabled="!annoC.annoSettings[$index].enabled" aria-label="Playback menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
-                        <md-tooltip class="md-body-2">{{"PLAY_SRC" | translate}}</md-tooltip>
-                        <md-icon md-menu-origin class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                    </md-button>
-                    <md-menu-content width="4">
-                        <md-menu-item>
-                            <md-button ng-click="annoC.toggleAnnoSetting($index, 'playSrc')">
-                                <md-icon ng-if="annoC.annoSettings[$index].playSrc" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                                <md-icon ng-if="!annoC.annoSettings[$index].playSrc" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
-                                <span class="md-body-2">{{"PLAY_SRC" | translate}}</span>
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item ng-if="annoC.audioAvail($index)">
-                            <md-button ng-click="annoC.toggleAnnoSetting($index, 'playSec')" ng-init="audioSec = annoC.audioSourceList[annoC.audioAvail($index)]">
-                                <md-icon ng-if="annoC.annoSettings[$index].playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
-                                <md-icon ng-if="!annoC.annoSettings[$index].playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
-                                <md-icon class="imgsvgicon" ng-style="audioSec.color" md-svg-icon="{{audioSec.icon}}"></md-icon>
-                                <span class="md-body-2">{{audioSec.name | translate}}</span>
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="annoC.toggleAnnoSetting($index, 'loop')">
-                                <span ng-if="annoC.annoSettings[$index].loop" class="md-body-2"><md-icon class="imgsvgicon" md-svg-icon="av:loop"></md-icon> {{"PLAY_LOOP" | translate}}</span>
-                                <span ng-if="!annoC.annoSettings[$index].loop" class="md-body-2"><md-icon class="imgsvgicon" md-svg-icon="av:play_arrow"></md-icon> {{"PLAY_ONCE" | translate}}</span>
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-
-
-                <md-input-container flex class="md-block1">
-                    <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.name}}</label>
-                    <input class="md-body-1" focus-on="{{'inputfoo'+$index}}" ng-model="annoC.annotations[$index].data.segment.annotations[annoC.reg.curRegion]"
-                           ng-focus="annoC.selectAnno($index)"
-                           ng-disabled="!annoC.annoSettings[$index].enabled || annoC.reg.curRegion < 0"
+                    <md-input-container flex class="md-block1">
+                        <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.lang}}</label>
+                    <input flex class="md-body-1" ng-model="anno.text[annoC.cursor[track]]"
                            ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)">
-                </md-input-container>
+                    </md-input-container>
 
+                    <md-menu>
+                        <md-button class="bigsvgicon" aria-label="Track menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
+                            <md-tooltip class="md-body-2">Track</md-tooltip>
+                            <md-icon md-menu-origin style="width:40px;height:40px;"
+                                     ng-style="annoC.tracks[track].color" md-svg-icon="{{annoC.tracks[track].icon}}"></md-icon>
 
-                <md-input-container>
-                    <md-tooltip class="md-body-2">{{"ANNO_TOG" | translate}}</md-tooltip>
-                    <md-switch ng-model="annoC.annoSettings[$index].enabled" aria-label="Enable disable">
-                    </md-switch>
-                </md-input-container>
+                        </md-button>
+                        <md-menu-content width="3" ng-init="aIdx = $index">
+                            <md-menu-item ng-if="strack !== track" ng-repeat="strack in annoC.tracks.list">
+                                <md-button  ng-click="annoC.joinTrackConf($event, track, aIdx, strack)">
+                                    <md-icon class="imgsvgicon" ng-style="annoC.tracks[strack].color" md-svg-icon="{{annoC.tracks[strack].icon}}"></md-icon>
+                                    <span class="md-body-2"> {{annoC.tracks[strack].type | translate}}</span>
+                                </md-button>
+                            </md-menu-item>
+                       </md-menu-content>
+                    </md-menu>
 
-                <md-menu>
-                    <md-button class="md-icon-button" aria-label="Track menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
-                        <md-tooltip class="md-body-2">Track</md-tooltip>
-                        <md-icon ng-if="!annoC.hasSecondaryAudio($index)" md-menu-origin class="imgsvgicon"
-                                 ng-style="annoC.audioSourceList[0].color" md-svg-icon="{{annoC.audioSourceList[0].icon}}"></md-icon>
-                        <md-icon ng-if="annoC.hasSecondaryAudio($index)" md-menu-origin class="imgsvgicon"
-                                 ng-style="annoC.audioSourceList[annoC.annoSettings[$index].selectedTrack].color" md-svg-icon="{{annoC.audioSourceList[annoC.annoSettings[$index].selectedTrack].icon}}"></md-icon>
-                    </md-button>
-                    <md-menu-content width="3" ng-init="aIdx = $index">
-                        <md-menu-item ng-repeat="source in annoC.audioSourceList.slice(1)">
-                            <md-button ng-disabled="annoC.annoSettings[aIdx].hasCopied" ng-click="annoC.copyTrackConf($event, aIdx, $index+1)">
-                                <md-icon class="imgsvgicon" ng-style="source.color" md-svg-icon="{{source.icon}}"></md-icon>
-                                <span class="md-body-2">{{source.action | translate}}</span>
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="annoC.clearAnno(aIdx)">
-                            <md-icon class="imgsvgicon md-warn" md-svg-icon="content:clear"></md-icon>
-                            <span class="md-body-2">{{"CLEAR_ALL" | translate}}</span>
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-
+                </div>
+            </div>
             </div>
 
-            curRegion: {{annoC.reg.curRegion}}<br/>
-            selectedAnno: {{annoC.selectedAnno}}<br/>
-            RL: {{annoC.getRL()}}<br/>
-
-
-
-        </section>
 
     </section>
     <md-content flex layout="column" class="md-whiteframe-3dp md-padding" style="width:40%;overflow-y: scroll">
         <div ng-if="!annoC.annotations[annoC.selectedAnno].data.segment.annotations" class="md-body-2"><i>{{"NONE" | translate}}</i></div>
         <div ng-repeat="anno in annoC.annotations[annoC.selectedAnno].data.segment.annotations track by $index"
              ng-class="($index == annoC.reg.curRegion) ? 'transcript-highlight' : 'transcript-normal'"
-             ng-click="annoC.seekRegion($index)">
+             ng-click="annoC.selectRegion($index)"
+             class="noclicky">
             <span ng-if="anno==''" class="md-body-1">&nbsp;</span>
             <span ng-if="anno!=''" class="md-body-1">{{anno}}</span>
         </div>

@@ -109,6 +109,7 @@
   "USE_TRANS": "Use translation",
   "ANNO_EXIST": "You have annotations",
   "MANUAL": "New (manual)",
-  "CLEAR_ALL": "Clear all"
+  "CLEAR_ALL": "Clear all",
+  "TRACK_NEW": "New Track"
 }
 
