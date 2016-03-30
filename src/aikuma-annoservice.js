@@ -62,9 +62,8 @@
                         //asx.reg.curRegion = asx.getRegionFromTime();
                         asx.cursor[asx.r.tk] = asx.getRegionFromTime();
                     }
-                    var currentPos = asx.wavesurfer.getCurrentTime();
-                    currentPos = Math.round(currentPos*1000)/1000;
                     if (asx.r.regionMarked) {
+                        var currentPos = Math.round(asx.wavesurfer.getCurrentTime()*1000)/1000;
                         // update this wavesurfer region on the fly and...
                         _.last(asx.regionList).update({end: currentPos});
                         // update the backend region on the fly
