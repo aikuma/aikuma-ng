@@ -191,6 +191,7 @@
                 annoServ.switchToTrack(vm.r.tk);
                 if (annoServ.regionList.length) {
                     vm.cursor[vm.r.tk] = 0;
+                    annoServ.seekRegion(0);
                     vm.restoreFocus();
                 } else {
                     vm.cursor[vm.r.tk] = -1;
@@ -213,20 +214,70 @@
                 $mdOpenMenu(ev);
             };
             vm.inputReturn = function(annoIdx) {
+                annoServ.saveAnnotation(annoIdx);
+                // if this is a brand new region, then just complete it
                 if (vm.r.regionMarked) {
                     annoServ.markLastRegionComplete();
                     vm.r.regionMarked = false;
+                    annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].end + 0.001);
+                    vm.cursor[vm.r.tk] = -1;
+                    return;
+                }
+                // If it's not a new region, we have some complex behavior depending on position
+                // and enabled annotations. First, search for next active annotations
+                // Change focus to the next enabled annotation
+                var alen = vm.tracks[vm.r.tk].annos.length;
+                var spos = annoIdx;
+                var found = false;
+                var cycled = false;
+                while (!found) {
+                    ++spos;
+                    if (spos === alen) {
+                        spos = 0;
+                        cycled = true;
+                    }
+                    if (spos === vm.selAnno[vm.r.tk]) {break;}
+                    if (vm.tracks[vm.r.tk].annos[spos].cfg.enabled) {found = true;}
+                }
+                // If there's an annotation at this position, just go to that one
+                if (found && !cycled) {
+                    vm.selAnno[vm.r.tk] = spos;
+                    vm.restoreFocus();
+                    return;
+                }
+                // In all following cases, we are advancing the region
+                if (vm.cursor[vm.r.tk] === (annoServ.regionList.length -1)) {
+                    // but in this case there are no more regions so move to new space
+                    annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].end + 0.001);
                     vm.cursor[vm.r.tk] = -1;
                 } else {
-                    if (vm.cursor[vm.r.tk] === (annoServ.regionList.length -1)) {
-                        annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].end + 0.001);
-                        vm.cursor[vm.r.tk] = -1;
-                    } else {
-                        ++vm.cursor[vm.r.tk];
-                        annoServ.seekRegion(vm.cursor[vm.r.tk]);
-                    }
+                    // just move on
+                    ++vm.cursor[vm.r.tk];
+                    annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
                 }
-                annoServ.saveAnnotation(annoIdx);
+                // finally, if we advanced but found a different active anno, then switch to that one
+                if (found && cycled) {
+                    vm.selAnno[vm.r.tk] = spos;
+                    vm.restoreFocus();
+                }
+            };
+
+            vm.getNextAnno = function(annoIdx) {
+                // Change focus to the next enabled annotation
+                var alen = vm.tracks[vm.r.tk].annos.length;
+                var spos = annoIdx;
+                var found = false;
+                var cycled = false;
+                while (!found) {
+                    ++spos;
+                    if (spos === alen) {
+                        spos = 0;
+                        cycled = true;
+                    }
+                    if (spos === vm.selAnno[vm.r.tk]) {break;}
+                    if (vm.tracks[vm.r.tk].annos[spos].cfg.enabled) {found = true;}
+                }
+
             };
 
             vm.help = function(ev) {
@@ -240,6 +291,7 @@
             vm.selectRegion = function(region) {
                 vm.cursor[vm.r.tk] = region;
                 vm.playAudio();
+                vm.restoreFocus();
             };
 
             vm.playAudio = function() {
@@ -291,12 +343,11 @@
                 });
             };
             vm.selectTrack = function(track) {
-                console.log('press track');
                 if (vm.r.tk !== track) {
-                    console.log('moving track');
                     vm.r.tk = track;
                     if (!vm.selAnno[vm.r.tk]) {vm.selAnno[vm.r.tk]=0;}
                     annoServ.switchToTrack(track);
+                    annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
                     vm.restoreFocus();
                 }
             };

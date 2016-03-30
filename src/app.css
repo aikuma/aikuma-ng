@@ -235,7 +235,7 @@ div.noclicky:focus {
 }
 
 .activeannotation {
-    border: 2px solid #4fc3f7;
+    border: 3px solid #4fc3f7;
     border-radius: 15px;
     margin-bottom: 20px;
 }
@@ -244,7 +244,7 @@ div.noclicky:focus {
 }
 
 .inactiveannotation {
-    border: 2px solid #d0d0d0;
+    border: 3px solid #d0d0d0;
     border-radius: 15px;
     margin-bottom: 20px;
 }

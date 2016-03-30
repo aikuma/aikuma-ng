@@ -110,6 +110,7 @@
   "ANNO_EXIST": "You have annotations",
   "MANUAL": "New (manual)",
   "CLEAR_ALL": "Clear all",
-  "TRACK_NEW": "Split to new track"
+  "TRACK_NEW": "Split to new track",
+  "TRACK_SELECT": "Select track"
 }
 

@@ -109,19 +109,19 @@
                             hasAudio: true,
                             audioFile: secondary.source.recordFileId,
                             segMsec: secondary.segment.segMsec,
-                            type: angular.uppercase(secondary.type),
                             color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,30%)'},
                             coldat: coldat,
                             icon: 'mdi:numeric-'+trackidx+'-box',
                             annos: []
                         };
+                         console.log('st',secondary.type);
                         if (secondary.type == 'respeak') {
-                            asx.tracks[segid].name = 'RESPEAKING';
-                            asx.tracks[segid].name = 'USE_RSPK';
+                            asx.tracks[segid].type = 'RESPEAKING';
+                            asx.tracks[segid].action = 'USE_RSPK';
                         }
                         if (secondary.type == 'translate') {
-                            asx.tracks[segid].name = 'ANNO_TRANS';
-                            asx.tracks[segid].name = 'USE_TRANS';
+                            asx.tracks[segid].type = 'ANNO_TRANS';
+                            asx.tracks[segid].action = 'USE_TRANS';
                         }
                         asx.tracks.audio.push(segid); // a record of audio tracks for buttons etc
                         asx.tracks.list.push(segid);
@@ -141,7 +141,7 @@
                     }
                     var thisAnnoObj = {
                         text: secondary.data.segment.annotations,
-                        cfg: {playSrc: true, playSec: true},
+                        cfg: {playSrc: true, playSec: true, enabled: true},
                         id: secondary.data._ID,
                         type: angular.uppercase(secondary.data.type),
                         lang: aikumaService.lookupLanguage(secondary.data.source.langIds[0], languages)
@@ -362,7 +362,7 @@
                     asx.deleteLastRegion();
                 }
                 asx.seekToTime(asx.regionList[idx].start);
-                asx.regionList[idx].play();
+                //asx.regionList[idx].play();
             };
            
         }]);
