@@ -415,6 +415,32 @@
                 });
             };
             
+            service.getSecondaryDict = function(userId, sessionId, secType, transformFunc) {
+                return $indexedDB.openStore(SECONDARY_TYPE, function(store) {
+                    return store.eachBy('user_session_idx', {beginKey: [userId, sessionId], endKey: [userId, sessionId]});
+                }).then(function(secList) {
+                    var secDict = {};
+                    secList.forEach(function(secData) {
+                        if(!secType || secData.type.indexOf(secType) === 0) {
+                            if(transformFunc) {
+                                secDict[secData._ID] = transformFunc(secData);
+                            } else {
+                                secDict[secData._ID] = secData;
+                            }
+                        }
+                    });
+                    return secDict;
+                });
+            };
+            
+            service.getAnnotationObjDict = function(userId, sessionId) {
+                return service.getSecondaryDict(userId, sessionId, 'anno_', function(secData) {
+                    var wrapper = {data: secData};
+                    wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
+                    return wrapper;
+                });
+            };
+            
             // Temporary metadata
             
             var getTempStorageKey = function(userId, sessionId, type) {
