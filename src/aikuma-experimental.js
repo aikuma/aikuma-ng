@@ -71,7 +71,7 @@
                     console.log(vm.cursor[vm.r.tk]);
                     if (vm.cursor[vm.r.tk] > -1) {
                         // the service works out what audio is appropriate to play (which is why we pass the settings object
-                        vm.playAudio(vm.selectedAnno, vm.cursor[vm.r.tk]);
+                        vm.playAudio();
                     } else {
                         console.log('start new region');
                         var thisTime = annoServ.wavesurfer.getCurrentTime();
@@ -198,7 +198,8 @@
                 //annoServ.switchToAnno(vm.selectedAnno, vm.audioSourceList);
                 var axn = $scope.annotationObjList.filter(function(an){return an.data._ID === $scope.selectedAnno;});
                 vm.r.tk = axn[0].data.segment.sourceSegId;
-                vm.selectTrack(vm.r.tk);
+                console.log('sa', vm.r.tk);
+                annoServ.switchToTrack(vm.r.tk);
                 if (annoServ.regionList.length) {
                     annoServ.seekToTime(annoServ.regionList[0].start);
                 } else {
@@ -260,8 +261,7 @@
             vm.selectAnno = function(annoIdx) {
                 if (annoIdx != vm.selectedAnno) {
                     vm.selectedAnno = annoIdx;
-                    annoServ.switchToAnno(vm.selectedAnno, vm.audioSourceList);
-                    vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
+                    //vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
                 }
             };
             vm.openMenu = function($mdOpenMenu, ev) {
@@ -294,35 +294,29 @@
             
             vm.selectRegion = function(region) {
                 vm.cursor[vm.r.tk] = region;
-                vm.playAudio(vm.selectedAnno, region);
+                vm.playAudio();
             };
 
-            vm.playAudio = function(annoIdx, region) {
+            vm.playAudio = function() {
                 var timerval = 0;
-                if (vm.annoSettings[annoIdx].playSrc) {
+                var region =  vm.cursor[vm.r.tk];
+                if (vm.tracks[vm.r.tk].annos[vm.selectedAnno].cfg.playSrc) {
                     annoServ.regionList[region].play();
                     annoServ.regionPlayback = true;
                     timerval = (annoServ.regionList[region].end - annoServ.regionList[region].start) + 0.2;
                 }
-                console.log(timerval);
-                if (vm.annoSettings[annoIdx].playSec) {
+                if (vm.tracks[vm.r.tk].annos[vm.selectedAnno].cfg.playSrc && vm.tracks[vm.r.tk].hasAudio) {
                     $timeout(function(){
-                        var pooid = annoServ.availAudio(annoIdx, region);
-                        if (pooid) {
-                            var secObj = $scope.secondaryList.filter(function (secData) {
-                                return secData._ID === pooid;
-                            });
-                            var audiofid = secObj[0].source.recordFileId;
-                            var seglist = secObj[0].segment.segMsec;
-                            var fileh = $scope.userObj.getFileUrl(audiofid);
-                            vm.playCSS[1] = true;
+                        var seglist = vm.tracks[vm.r.tk].segMsec;
+                        var fileh = $scope.userObj.getFileUrl(vm.tracks[vm.r.tk].audioFile);
+                        vm.playCSS[vm.r.tk] = true;
+                        $scope.$apply();
+                        audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
+                            console.log('finished');
+                            vm.playCSS[vm.r.tk] = false;
                             $scope.$apply();
-                            audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
-                                console.log('finished');
-                                vm.playCSS[1] = false;
-                                $scope.$apply();
-                            });
-                        }
+                        });
+
                     }, timerval*1000);
                 }
             };
@@ -378,18 +372,20 @@
                             .cancel(translations.ANNO_DELNO);
                         $mdDialog.show(confirm).then(function () {
                             annoServ.joinTrack(track, aIdx, strack);
+                            $scope.$apply();
                         });
                     });
                 } else {
                     annoServ.joinTrack(track, aIdx, strack);
+                    $scope.$apply();
                 }
 
             };
             
             vm.restoreFocus = function() {
                 $timeout(function() {
-                    console.log('inputfoo'+vm.selectedAnno);
-                    $scope.$broadcast('inputfoo'+vm.selectedAnno);
+                    console.log(vm.tracks[vm.r.tk].annos[vm.selectedAnno].id);
+                    $scope.$broadcast(vm.tracks[vm.r.tk].annos[vm.selectedAnno].id);
                 }, 0);
             };
             // on navigating away, clean up the key events, wavesurfer instances

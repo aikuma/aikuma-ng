@@ -78,7 +78,7 @@
                 asx.wavesurfer.on('pause', function () {
                     if (asx.regionPlayback) {
                         asx.regionPlayback = false;
-                        asx.seekToTime(asx.regionList[asx.reg.curRegion].start);
+                        asx.seekToTime(asx.regionList[asx.cursor[asx.r.tk]].start);
                     }
 
                 });
@@ -102,6 +102,8 @@
                         var coldat = [0+(trackidx*35),100];
                         asx.tracks[segid] = {
                             hasAudio: true,
+                            audioFile: secondary.source.recordFileId,
+                            segMsec: secondary.segment.segMsec,
                             type: angular.uppercase(secondary.type),
                             color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,35%)'},
                             coldat: coldat,

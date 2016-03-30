@@ -16,8 +16,8 @@
             </md-button>
         </div>
 
-            <div flex ng-repeat="track in annoC.tracks.list" layout="row">
-                <div flex ng-if="annoC.tracks[track].annos.length > 0" ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
+        <div flex ng-repeat="track in annoC.tracks.list" layout="row">
+            <div flex ng-if="annoC.tracks[track].annos.length > 0" ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
                 <div  flex ng-repeat="anno in annoC.tracks[track].annos" layout="row" layout-align="start center">
                     <md-menu>
                         <md-button class="md-icon-button" ng-disabled="annoC.r.tk !== track" aria-label="Playback menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
@@ -45,8 +45,8 @@
 
                     <md-input-container flex class="md-block1">
                         <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.lang}}</label>
-                    <input flex class="md-body-1" ng-model="anno.text[annoC.cursor[track]]"
-                           ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)">
+                        <input flex class="md-body-1" ng-model="anno.text[annoC.cursor[track]]" focus-on="{{anno.id}}"
+                               ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)">
                     </md-input-container>
 
                     <md-menu>
@@ -63,12 +63,18 @@
                                     <span class="md-body-2"> {{annoC.tracks[strack].type | translate}}</span>
                                 </md-button>
                             </md-menu-item>
-                       </md-menu-content>
+                        </md-menu-content>
                     </md-menu>
 
                 </div>
             </div>
-            </div>
+        </div>
+
+        <span class="md-body-1">
+            <pre>
+                cursor: {{annoC.cursor[annoC.r.tk]}}
+            </pre>
+        </span>
 
 
     </section>
@@ -78,8 +84,8 @@
              ng-class="($index == annoC.reg.curRegion) ? 'transcript-highlight' : 'transcript-normal'"
              ng-click="annoC.selectRegion($index)"
              class="noclicky">
-            <span ng-if="anno==''" class="md-body-1">&nbsp;</span>
-            <span ng-if="anno!=''" class="md-body-1">{{anno}}</span>
+            <span ng-if="anno=='' || anno == null" class="md-body-1">&nbsp;</span>
+            <span ng-if="!(anno=='' || anno == null)" class="md-body-1">{{anno}}</span>
         </div>
     </md-content>
 
