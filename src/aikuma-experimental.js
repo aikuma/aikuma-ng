@@ -34,6 +34,7 @@
             vm.playKeyDownStat = false;
             vm.ffKeyDownStat = false;
             vm.isPlaying = false;
+            vm.selAnno = {};
 
             // More view model settings
             vm.annoSettings = {};   // what source audio to play, looping, enabled or disabled etc
@@ -189,7 +190,7 @@
                 vm.tracks.list = annoServ.tracks.list;
                 var axn = $scope.annotationObjList.filter(function(an){return an.data._ID === $scope.selectedAnno;});
                 vm.r.tk = axn[0].data.segment.sourceSegId;
-                vm.selectedAnno = _.findIndex(annoServ.tracks[vm.r.tk].annos, function(a) {return a.id === $scope.selectedAnno;});
+                vm.selAnno[vm.r.tk] = _.findIndex(annoServ.tracks[vm.r.tk].annos, function(a) {return a.id === $scope.selectedAnno;});
                 annoServ.switchToTrack(vm.r.tk);
                 if (annoServ.regionList.length) {
                     vm.cursor[vm.r.tk] = 0;
@@ -240,8 +241,9 @@
             };
 
             vm.selectAnno = function(annoIdx) {
-                if (annoIdx != vm.selectedAnno) {
-                    vm.selectedAnno = annoIdx;
+                if (annoIdx !== vm.selAnno[vm.r.tk]) {
+                    console.log('selected anno');
+                    vm.selAnno[vm.r.tk] = annoIdx;
                     //vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
                 }
             };
@@ -280,13 +282,14 @@
 
             vm.playAudio = function() {
                 var timerval = 0;
+                var selAnno = vm.selAnno[vm.r.tk];
                 var region =  vm.cursor[vm.r.tk];
-                if (vm.tracks[vm.r.tk].annos[vm.selectedAnno].cfg.playSrc) {
+                if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
                     annoServ.regionList[region].play();
                     annoServ.regionPlayback = true;
                     timerval = (annoServ.regionList[region].end - annoServ.regionList[region].start) + 0.2;
                 }
-                if (vm.tracks[vm.r.tk].annos[vm.selectedAnno].cfg.playSrc && vm.tracks[vm.r.tk].hasAudio) {
+                if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc && vm.tracks[vm.r.tk].hasAudio) {
                     $timeout(function(){
                         var seglist = vm.tracks[vm.r.tk].segMsec;
                         var fileh = $scope.userObj.getFileUrl(vm.tracks[vm.r.tk].audioFile);
@@ -326,10 +329,12 @@
             };
             vm.selectTrack = function(track) {
                 if (vm.r.tk !== track) {
+                    console.log('moving track');
                     vm.r.tk = track;
+                    if (!vm.selAnno[vm.r.tk]) {vm.selAnno[vm.r.tk]=0;}
                     annoServ.switchToTrack(track);
+                    vm.restoreFocus();
                 }
-                vm.restoreFocus();
             };
             vm.joinTrackConf = function(ev, track, aIdx, strack) {
                 if (vm.tracks[track].annos[aIdx].text.length > 0) {
@@ -353,21 +358,19 @@
                             .cancel(translations.ANNO_DELNO);
                         $mdDialog.show(confirm).then(function () {
                             annoServ.joinTrack(track, aIdx, strack);
-                            $scope.$apply();
                         });
                     });
                 } else {
                     annoServ.joinTrack(track, aIdx, strack);
-                    $scope.$apply();
                 }
 
             };
             
             vm.restoreFocus = function() {
                 $timeout(function() {
-                    console.log(vm.r.tk, vm.selectedAnno);
-                    console.log(vm.tracks[vm.r.tk].annos[vm.selectedAnno].id);
-                    $scope.$broadcast(vm.tracks[vm.r.tk].annos[vm.selectedAnno].id);
+                    var selAnno = vm.selAnno[vm.r.tk];
+                    console.log('restore focus');
+                    $scope.$broadcast(vm.tracks[vm.r.tk].annos[selAnno].id);
                 }, 0);
             };
             // on navigating away, clean up the key events, wavesurfer instances

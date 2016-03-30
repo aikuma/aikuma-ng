@@ -62,7 +62,10 @@
                     var currentPos = asx.wavesurfer.getCurrentTime();
                     currentPos = Math.round(currentPos*1000)/1000;
                     if (asx.r.regionMarked) {
+                        // update this wavesurfer region on the fly and...
                         _.last(asx.regionList).update({end: currentPos});
+                        // update the backend region on the fly
+                        _.last(asx.sessionObj.data.segments[asx.r.tk])[1] = Math.floor(currentPos*1000);
                     }
                 });
                 asx.wavesurfer.on('ready', function () {
@@ -164,34 +167,6 @@
                 });
             };
 
-            asx.switchToAnno = function(annoIdx, audioSourceList) {
-                asx.wavesurfer.clearRegions();
-                asx.regionList = [];
-                asx.r.regionMarked = false;
-
-                if (!('annotations' in asx.annoObjList[annoIdx].data.segment)) {
-                    console.log('initialized new annotation');
-                    var segmentId = asx.sessionObj.addSrcSegment([]);
-                    asx.annoObjList[annoIdx].data.segment.sourceSegId = segmentId;
-                    asx.annoObjList[annoIdx].data.segment.annotations = [];
-                    asx.annoObjList[annoIdx].save();
-                    asx.sessionObj.save();
-                }
-
-                var color = [0,0]; // if we've copied data from a source, we need to fetch the color
-                if ('copiedFrom' in asx.annoObjList[annoIdx].data.segment) {
-                    var cfid = asx.annoObjList[annoIdx].data.segment.copiedFrom.secondarySegId;
-                    color = _.find(audioSourceList, function(src) {
-                        return src.id === cfid;
-                    }).coldat;
-                }
-
-                if ('annotations' in asx.annoObjList[annoIdx].data.segment && asx.annoObjList[annoIdx].data.segment.annotations.length) {
-                    asx.makeWSRegions2(asx.annoObjList[annoIdx].data, color, [0,0]);
-                    asx.playIn = _.last(asx.regionList).end + 0.001;
-                }
-            };
-            
             asx.switchToTrack = function(track) {
                 asx.r.regionMarked = false;
                 asx.makeWSRegions3(track);
@@ -200,7 +175,6 @@
                 } else {
                     asx.playIn = 0;
                 }
-
             };
 
             
@@ -277,6 +251,12 @@
                     data: col
                 });
                 asx.regionList.push(reg);
+                asx.sessionObj.data.segments[asx.r.tk].push(
+                    [
+                        Math.floor(starttime*1000),
+                        Math.floor(starttime*1000)
+                    ]
+                );
             };
 
             asx.markLastRegionComplete = function() {
@@ -304,6 +284,8 @@
                 } else {
                     asx.playIn = 0;
                 }
+                // push to real data
+                asx.sessionObj.segments[asx.r.tk].pop();
             };
             
             asx.destroyAll = function() {
@@ -319,7 +301,7 @@
                 var oldseg = annoData.data.segment.sourceSegId;
                 asx.tracks[strack].annos.push(movedAnno);
                 annoData.data.segment.sourceSegId = strack; // because a track key is basically a sourcesegid
-                annoData.data.segment.annotations = ['ffs']; // wipe them, don't need to init to length of seg map
+                annoData.data.segment.annotations = []; // wipe them, don't need to init to length of seg map
 
                 annoData.save();
 
@@ -346,16 +328,12 @@
 
             // Pass index of annotation to save
             asx.saveAnnotation = function(annoIdx) {
-                //asx.annoObjList
-                //asx.sessionObj
-                var seglist = [];
-                asx.regionList.forEach(function(reg){
-                    seglist.push([Math.round(reg.start * 1000),Math.round(reg.end * 1000)]);
-                });
-                var segmentId;
-                segmentId = asx.annoObjList[annoIdx].data.segment.sourceSegId;
-                asx.sessionObj.setSrcSegment(segmentId, seglist);
-                asx.annoObjList[annoIdx].save();
+
+                var aid = asx.tracks[asx.r.tk].annos[annoIdx].id;
+
+                var thisanno = asx.annoObjList.filter(function(ao) {return ao.data._ID === aid;});
+                console.log(annoIdx,aid, asx.annoObjList);
+                thisanno[0].save();
                 asx.sessionObj.save();
             };
             
