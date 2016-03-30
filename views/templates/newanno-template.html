@@ -4,7 +4,7 @@
         <div id="annotatePlayback"></div>
 
         <div layout="row" layout-align="start center">
-            <md-icon md-svg-src="img/icons/technology.svg" style="width:24px;height:24px;margin-left:8px;" aria-label="Recordings"></md-icon>
+            <md-icon md-svg-src="img/icons/technology.svg" style="width:32px;height:32px;margin-left:8px;" aria-label="Recordings"></md-icon>
             <md-button ng-disabled="!annoC.hasAudio(atrack)"
                     ng-repeat="atrack in annoC.tracks.audio" aria-label="{{annoC.tracks[atrack].type | translate}}" ng-class="{'animated flash infinite': annoC.playCSS[atrack]}">
                 <md-icon class="imgsvgicon" ng-style="annoC.tracks[atrack].color" style="width:40px;height:40px;" md-svg-icon="{{annoC.tracks[atrack].icon}}"></md-icon>
@@ -38,7 +38,7 @@
                                     <md-icon ng-if="anno.cfg.playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
                                     <md-icon ng-if="!anno.cfg.playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_off.svg"></md-icon>
                                     <md-icon class="imgsvgicon" ng-style="annoC.tracks[track].color" md-svg-icon="{{annoC.tracks[track].icon}}"></md-icon>
-                                    <span class="md-body-2">{{annoC.tracks[track].name | translate}}</span>
+                                    <span class="md-body-2">{{annoC.tracks[track].type | translate}}</span>
                                 </md-button>
                             </md-menu-item>
                         </md-menu-content>
@@ -86,10 +86,7 @@
         </div>
 
         <span class="md-body-1">
-            <pre>
-{{annoC.cursor[annoC.r.tk]}}
-
-            </pre>
+            <pre></pre>
         </span>
 
 

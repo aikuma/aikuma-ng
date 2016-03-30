@@ -56,6 +56,9 @@
                 vm.restoreFocus();
             };
 
+
+
+
             //
             // KEY HANDLING
             //
@@ -373,7 +376,11 @@
                             .cancel(translations.ANNO_DELNO);
                         $mdDialog.show(confirm).then(function () {
                             vm.joinAndMove(track, aIdx, strack);
+                        }, function() {
+                            var mySound = new Audio('media/chickenout.wav');
+                            mySound.play();
                         });
+
                     });
                 } else {
                     vm.joinAndMove(track, aIdx, strack);
@@ -386,6 +393,26 @@
                 vm.selAnno[vm.r.tk] = annoServ.joinTrack(track, aIdx, strack);
                 annoServ.switchToTrack(vm.r.tk);
                 vm.restoreFocus();
+            };
+            //
+            vm.splitTrack = function(ev, track, aIdx) {
+                $translate(['TRACK_NEWCONF', 'TRACK_NEW', 'ANNO_DELNO', 'TRACK_SPLITCONF']).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.TRACK_SPLITCONF)
+                        .textContent(translations.TRACK_NEWCONF)
+                        .ariaLabel('Switch to new track')
+                        .targetEvent(ev)
+                        .ok(translations.TRACK_NEW)
+                        .cancel(translations.ANNO_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        //
+                        annoServ.trackSplit(track, aIdx);
+                        vm.selAnno[vm.r.vt] = 0;
+                    }, function() {
+                        var mySound = new Audio('media/chickenout.wav');
+                        mySound.play();
+                    });
+                });
             };
 
             vm.hasAudio = function(track) {

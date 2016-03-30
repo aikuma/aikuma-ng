@@ -16,6 +16,9 @@
             asx.tracks = {};
             asx.tracks.audio = [];
             asx.tracks.list = [];
+            // for making colours for tracks
+            asx.startHue = 120;
+            asx.stepHue = 60;
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
             asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
@@ -104,7 +107,7 @@
                      if ('segMsec' in secondary.segment) {
                         ++trackidx;
                         var segid = secondary.segment.sourceSegId;
-                        var coldat = [70+(trackidx*60),100];
+                        var coldat = asx.getHue(trackidx);
                         asx.tracks[segid] = {
                             hasAudio: true,
                             audioFile: secondary.source.recordFileId,
@@ -114,7 +117,6 @@
                             icon: 'mdi:numeric-'+trackidx+'-box',
                             annos: []
                         };
-                         console.log('st',secondary.type);
                         if (secondary.type == 'respeak') {
                             asx.tracks[segid].type = 'RESPEAKING';
                             asx.tracks[segid].action = 'USE_RSPK';
@@ -151,7 +153,7 @@
                         asx.tracks[segmentId].annos.push(thisAnnoObj);
                     } else {
                         ++trackidx;
-                        var coldat = [0+(trackidx*35),100];
+                        var coldat = asx.getHue(trackidx);
                         // this one seems to be stand alone
                         asx.tracks[segmentId] = {
                             hasAudio: false,
@@ -161,6 +163,7 @@
                             icon: 'mdi:numeric-'+trackidx+'-box',
                             annos: [thisAnnoObj]
                         };
+                        asx.tracks[segmentId].action = angular.uppercase(secondary.data.type);
                         asx.tracks.list.push(segmentId);
                         asx.cursor[segmentId] = 0;
                     }
@@ -336,7 +339,37 @@
                 return asx.tracks[strack].annos.indexOf(movedAnno);
 
             };
-            
+
+            // split an annotation from a track. This can only happen if it was assigned to a track with audio
+            // So we don't need to worry about orphaning anything. We just create a new segment id, copy relevant data
+            // and make a new track. This will not wipe the annotations and will copy the segments from the prior track
+            asx.trackSplit = function(track, aIdx) {
+                var movedAnno = asx.tracks[track].annos.splice(aIdx, 1)[0];
+                var thisanno = asx.annoObjList.filter(function(ao) {return ao.data._ID === movedAnno.id;})[0];
+                var copyseg = asx.sessionObj.data.segments[track];
+                var newsegid = asx.sessionObj.addSrcSegment(copyseg);
+                thisanno.data.segment.sourceSegId = newsegid;
+                // We need a new colour, and a new icon, otherwise copy stuff from old track
+                var coldat = asx.getHue(asx.tracks.list.length);
+                asx.tracks[newsegid] = {
+                    hasAudio: false,
+                    type: asx.tracks[track].type,
+                    color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,35%)'},
+                    coldat: coldat,
+                    icon: 'mdi:numeric-'+(asx.tracks.list.length+1)+'-box',
+                    annos: [movedAnno]
+                };
+                asx.tracks[newsegid].action = angular.uppercase(asx.tracks[track].type);
+                asx.tracks.list.push(newsegid);
+                asx.cursor[newsegid] = asx.cursor[track]; // set the cursor on this track to the same as where it came from
+                asx.sessionObj.save();
+                thisanno.save();
+                asx.r.vt = newsegid;
+            };
+
+            asx.getHue = function(index) {
+                return [asx.startHue + (asx.tracks.list.length*asx.stepHue), 100];
+            };
 
             // Pass index of annotation to save
             asx.saveAnnotation = function(annoIdx) {

@@ -111,6 +111,8 @@
   "MANUAL": "New (manual)",
   "CLEAR_ALL": "Clear all",
   "TRACK_NEW": "Split to new track",
-  "TRACK_SELECT": "Select track"
+  "TRACK_SELECT": "Select track",
+  "TRACK_SPLITCONF": "Split this annotation to a new track?",
+  "TRACK_NEWCONF": "You will only be able to hear the source audio for this annotation."
 }
 
