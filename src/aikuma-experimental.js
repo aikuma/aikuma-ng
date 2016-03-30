@@ -52,7 +52,6 @@
             };
 
             vm.toggleAnnoCfg = function(trackKey, idx, setting) {
-                console.log(trackKey, idx);
                 vm.tracks[trackKey].annos[idx].cfg[setting] = !vm.tracks[trackKey].annos[idx].cfg[setting];
                 vm.restoreFocus();
             };
@@ -62,14 +61,12 @@
             //
             vm.playKeyDown = function(nokey) {
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
-                console.log('play key');
                 vm.playKeyDownStat = true;
                 vm.isPlaying = true;
                 // if we have been making a region (we can assume this is repeat press) then re-play
                 if (vm.r.regionMarked) {
                     annoServ.wavesurfer.play(annoServ.playIn);
                 } else {
-                    console.log(vm.cursor[vm.r.tk]);
                     if (vm.cursor[vm.r.tk] > -1) {
                         // the service works out what audio is appropriate to play (which is why we pass the settings object
                         vm.playAudio();
@@ -204,41 +201,6 @@
             //
             // FUNCTIONS BOUND TO VIEW MODEL
             //
-            // nuclear option, user wishes to clear all annotation data
-
-            vm.copyTrackConf = function(ev, annoIdx, trackIdx) {
-                if (vm.annoSettings[annoIdx].hasAnnos) {
-                    var type = 'respeak';
-                    $translate(['ANNO_EXIST', 'ANNO_DELCONF1', 'ANNO_DELCONF2', 'ANNO_DELNO', 'USE_RSPK', 'USE_TRANS']).then(function (translations) {
-                        var okaytext;
-                        switch (type) {
-                            case 'respeak':
-                                okaytext = translations.USE_RSPK;
-                                break;
-                            case 'translate':
-                                okaytext = translations.USE_TRANS;
-                                break;
-                        }
-                        var confirm = $mdDialog.confirm()
-                            .title(translations.ANNO_EXIST)
-                            .textContent(translations.ANNO_DELCONF1)
-                            .ariaLabel('Delete annotations')
-                            .targetEvent(ev)
-                            .ok(okaytext)
-                            .cancel(translations.ANNO_DELNO);
-                        $mdDialog.show(confirm).then(function () {
-                            vm.copyTrack(annoIdx, trackIdx);
-                            vm.cursor[vm.r.tk] = 0;
-                            annoServ.wavesurfer.seekTo(0);
-                            $scope.$apply();
-                        });
-                    });
-                } else {
-                    vm.copyTrack(annoIdx, trackIdx);
-                    vm.cursor[vm.r.tk] = 0;
-                    annoServ.wavesurfer.seekTo(0);
-                }
-            };
 
             vm.selectAnno = function(annoIdx) {
                 if (annoIdx !== vm.selAnno[vm.r.tk]) {
@@ -357,19 +319,26 @@
                             .ok(okaytext)
                             .cancel(translations.ANNO_DELNO);
                         $mdDialog.show(confirm).then(function () {
-                            annoServ.joinTrack(track, aIdx, strack);
+                            vm.joinAndMove(track, aIdx, strack);
                         });
                     });
                 } else {
-                    annoServ.joinTrack(track, aIdx, strack);
+                    vm.joinAndMove(track, aIdx, strack);
                 }
+            };
 
+            // Execute the join track and then switch track to the track we joined
+            vm.joinAndMove = function(track, aIdx, strack) {
+                vm.r.tk = strack;
+                vm.selAnno[vm.r.tk] = annoServ.joinTrack(track, aIdx, strack);
+                annoServ.switchToTrack(vm.r.tk);
+                vm.restoreFocus();
             };
             
             vm.restoreFocus = function() {
                 $timeout(function() {
                     var selAnno = vm.selAnno[vm.r.tk];
-                    console.log('restore focus');
+                    console.log('restore focus', selAnno, vm.r.tk);
                     $scope.$broadcast(vm.tracks[vm.r.tk].annos[selAnno].id);
                 }, 0);
             };

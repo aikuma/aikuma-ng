@@ -300,11 +300,10 @@
                 var annoData = asx.annoObjList.filter(function(sec){ return sec.data._ID === movedAnno.id;})[0];
                 var oldseg = annoData.data.segment.sourceSegId;
                 asx.tracks[strack].annos.push(movedAnno);
+                
                 annoData.data.segment.sourceSegId = strack; // because a track key is basically a sourcesegid
                 annoData.data.segment.annotations = []; // wipe them, don't need to init to length of seg map
-
                 annoData.save();
-
 
                 // If the track we moved from has no more annos... remove it from the tracks list
                 if (asx.tracks[track].annos.length === 0) {
@@ -316,23 +315,22 @@
                 // now let's see if we've orphaned a source seg
                 var foundsec = asx.secondaryObjList.filter(function(sec) { return sec.segment.sourceSegId === oldseg;});
                 // yep, so let's delete that shit
-                console.log('fs',foundsec);
                 if (foundsec.length === 0) {
                     console.log('no more seg found, deleting '+oldseg);
                     delete asx.sessionObj.data.segments[oldseg];
                     asx.sessionObj.save();
                 }
 
+                // returns the annotation index for focus purposes
+                return asx.tracks[strack].annos.indexOf(movedAnno);
+
             };
             
 
             // Pass index of annotation to save
             asx.saveAnnotation = function(annoIdx) {
-
                 var aid = asx.tracks[asx.r.tk].annos[annoIdx].id;
-
                 var thisanno = asx.annoObjList.filter(function(ao) {return ao.data._ID === aid;});
-                console.log(annoIdx,aid, asx.annoObjList);
                 thisanno[0].save();
                 asx.sessionObj.save();
             };

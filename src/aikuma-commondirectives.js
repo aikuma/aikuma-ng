@@ -843,7 +843,6 @@
                         },
                         segment: {}
                     };
-                    console.log('v',annotationData);
 
                     var promise = dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionId, annotationData);
                     promises.push(promise);
