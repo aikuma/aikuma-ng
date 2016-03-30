@@ -95,6 +95,8 @@
 
             asx.buildTracks = function(languages) {
                 var trackidx = 0;
+                asx.tracks.list = [];
+                asx.tracks.audio = [];
                 asx.secondaryObjList.forEach( function(secondary) {
                      if ('segMsec' in secondary.segment) {
                         ++trackidx;

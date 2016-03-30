@@ -45,7 +45,7 @@
 
                     <md-input-container flex class="md-block1">
                         <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.lang}}</label>
-                        <input flex class="md-body-1" ng-model="anno.text[annoC.cursor[track]]" focus-on="{{anno.id}}"
+                        <input flex class="md-body-1" ng-model="anno.text[annoC.cursor[track]]" focus-on="{{anno.id}}" ng-focus="annoC.selectAnno($index)"
                                ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)">
                     </md-input-container>
 
@@ -73,6 +73,7 @@
         <span class="md-body-1">
             <pre>
                 cursor: {{annoC.cursor[annoC.r.tk]}}
+                selectedAnno: {{annoC.selectedAnno}}
             </pre>
         </span>
 

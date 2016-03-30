@@ -180,14 +180,6 @@
             //
             // START UP
             //
-            // Selected annotation is what we will start on, also enable that annotation
-
-            vm.selectedAnno = _.findIndex($scope.annotationObjList, function(anno) {
-                return anno.data._ID === $scope.selectedAnno;
-            });
-
-            // Find secondary audio and build a source list that will be used in the UI as 'tracks'
-
             // Set up wavesurfer
             // callback registers hotkeys and switches to the selected annotation
             annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, $scope.secondaryList, $scope.userObj, function() {
@@ -195,18 +187,17 @@
                 vm.tracks = annoServ.tracks;
                 vm.tracks.audio = annoServ.tracks.audio;
                 vm.tracks.list = annoServ.tracks.list;
-                //annoServ.switchToAnno(vm.selectedAnno, vm.audioSourceList);
                 var axn = $scope.annotationObjList.filter(function(an){return an.data._ID === $scope.selectedAnno;});
                 vm.r.tk = axn[0].data.segment.sourceSegId;
-                console.log('sa', vm.r.tk);
+                vm.selectedAnno = _.findIndex(annoServ.tracks[vm.r.tk].annos, function(a) {return a.id === $scope.selectedAnno;});
                 annoServ.switchToTrack(vm.r.tk);
                 if (annoServ.regionList.length) {
-                    annoServ.seekToTime(annoServ.regionList[0].start);
+                    vm.cursor[vm.r.tk] = 0;
+                    vm.restoreFocus();
                 } else {
                     vm.cursor[vm.r.tk] = -1;
                 }
-                vm.restoreFocus();
-                $scope.$apply();
+                 $scope.$apply();
             });
 
             //
@@ -246,16 +237,6 @@
                     vm.cursor[vm.r.tk] = 0;
                     annoServ.wavesurfer.seekTo(0);
                 }
-            };
-
-            vm.copyTrack = function(annoIdx, trackIdx) {
-                annoServ.copySegment(annoIdx, vm.audioSourceList[trackIdx].id, vm.audioSourceList[trackIdx].coldat);
-                vm.annoSettings[annoIdx].selectedTrack = trackIdx;
-                vm.annoSettings[annoIdx].enabled = true;
-                vm.annoSettings[annoIdx].hasCopied = true;
-                vm.annoSettings[annoIdx].hasAnnos = true;
-                vm.selectedAnno = annoIdx;
-                vm.restoreFocus();
             };
 
             vm.selectAnno = function(annoIdx) {
@@ -384,6 +365,7 @@
             
             vm.restoreFocus = function() {
                 $timeout(function() {
+                    console.log(vm.r.tk, vm.selectedAnno);
                     console.log(vm.tracks[vm.r.tk].annos[vm.selectedAnno].id);
                     $scope.$broadcast(vm.tracks[vm.r.tk].annos[vm.selectedAnno].id);
                 }, 0);
