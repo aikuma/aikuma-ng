@@ -5,7 +5,8 @@
 
         <div layout="row" layout-align="start center">
             <md-icon md-svg-src="img/icons/technology.svg" style="width:24px;height:24px;margin-left:8px;" aria-label="Recordings"></md-icon>
-            <md-button ng-repeat="atrack in annoC.tracks.audio" aria-label="{{annoC.tracks[atrack].name}}" ng-class="{'animated flash infinite': annoC.playCSS[atrack]}">
+            <md-button ng-disabled="!annoC.hasAudio(atrack)"
+                    ng-repeat="atrack in annoC.tracks.audio" aria-label="{{annoC.tracks[atrack].name}}" ng-class="{'animated flash infinite': annoC.playCSS[atrack]}">
                 <md-icon class="imgsvgicon" ng-style="annoC.tracks[atrack].color" md-svg-icon="{{annoC.tracks[atrack].icon}}"></md-icon>
                 <span>{{annoC.tracks[atrack].name | translate}}</span>
             </md-button>
@@ -17,8 +18,8 @@
         </div>
 
         <div flex ng-repeat="track in annoC.tracks.list" layout="row">
-            <div flex ng-if="annoC.tracks[track].annos.length > 0" ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
-                <div flex ng-repeat="anno in annoC.tracks[track].annos" layout="row" layout-align="start center">
+            <div flex ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
+                <div ng-repeat="anno in annoC.tracks[track].annos" layout="row" layout-align="start center">
                     <md-menu>
                         <md-button class="md-icon-button" ng-disabled="annoC.r.tk !== track" aria-label="Playback menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
                             <md-tooltip class="md-body-2">{{"PLAY_SRC" | translate}}</md-tooltip>
@@ -43,9 +44,9 @@
                         </md-menu-content>
                     </md-menu>
 
-                    <md-input-container flex class="md-block1">
+                    <md-input-container flex class="md-block1" style="height:32px;">
                         <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.lang}}</label>
-                        <input flex class="md-body-1"
+                        <input class="md-body-1"
                                ng-disabled="annoC.r.tk !== track"
                                ng-model="anno.text[annoC.cursor[track]]" focus-on="{{anno.id}}"
                                ng-focus="annoC.selectAnno($index)"
@@ -67,6 +68,12 @@
                                     <span class="md-body-2"> {{annoC.tracks[strack].type | translate}}</span>
                                 </md-button>
                             </md-menu-item>
+                            <md-menu-item ng-if="annoC.tracks[annoC.r.tk].hasAudio">
+                                <md-button  ng-click="annoC.splitTrack($event, track, aIdx)">
+                                    <md-icon class="imgsvgicon" md-svg-icon="mdi:plus-box"></md-icon>
+                                    <span class="md-body-2"> {{"TRACK_NEW" | translate}}</span>
+                                </md-button>
+                            </md-menu-item>
                         </md-menu-content>
                     </md-menu>
 
@@ -76,9 +83,7 @@
 
         <span class="md-body-1">
             <pre>
-                cursor: {{annoC.cursor[annoC.r.tk]}}
-                selectedAnno: {{annoC.selAnno[annoC.r.tk]}}
-                annoC.r.tk: {{annoC.r.tk}}
+
 
             </pre>
         </span>

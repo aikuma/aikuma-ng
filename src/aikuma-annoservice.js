@@ -104,13 +104,13 @@
                      if ('segMsec' in secondary.segment) {
                         ++trackidx;
                         var segid = secondary.segment.sourceSegId;
-                        var coldat = [0+(trackidx*35),100];
+                        var coldat = [70+(trackidx*60),100];
                         asx.tracks[segid] = {
                             hasAudio: true,
                             audioFile: secondary.source.recordFileId,
                             segMsec: secondary.segment.segMsec,
                             type: angular.uppercase(secondary.type),
-                            color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,35%)'},
+                            color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,30%)'},
                             coldat: coldat,
                             icon: 'mdi:numeric-'+trackidx+'-box',
                             annos: []
@@ -214,6 +214,11 @@
                 var hue = color[0] + (colidx*5);
                 var sat = color[1];
                 var vol = 50 + (colidx*25);
+                // some colour indication if this is a region out of bounds of secondary audio
+                var thistrack = asx.tracks[asx.r.tk];
+                if (thistrack.hasAudio && (asx.regionList.length >= thistrack.segMsec.length)) {
+                    sat = sat * 0.2;
+                }
                 var rego = asx.wavesurfer.addRegion({
                     start: starttime,
                     end: endtime,
@@ -260,11 +265,17 @@
             };
 
             asx.markLastRegionComplete = function() {
+                var thistrack = asx.tracks[asx.r.tk];
+                var color = thistrack.coldat;
                 var colidx = _.last(asx.regionList).data.colidx;
-                var color = asx.tracks[asx.r.tk].coldat;
                 var hue = color[0] + (colidx*5);
                 var sat = color[1];
                 var vol = 50 + (colidx*25);
+                // some colour indication if this is a region out of bounds of secondary audio
+                if (thistrack.hasAudio && (asx.regionList.length > thistrack.segMsec.length)) {
+                    sat = sat * 0.2;
+                    //vol = vol * 1.2;
+                }
                 _.last(asx.regionList).update(
                     {
                         color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.20)',

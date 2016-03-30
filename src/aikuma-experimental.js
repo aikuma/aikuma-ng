@@ -246,15 +246,16 @@
                 var timerval = 0;
                 var selAnno = vm.selAnno[vm.r.tk];
                 var region =  vm.cursor[vm.r.tk];
+                var thisTrack = vm.tracks[vm.r.tk];
                 if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
                     annoServ.regionList[region].play();
                     annoServ.regionPlayback = true;
                     timerval = (annoServ.regionList[region].end - annoServ.regionList[region].start) + 0.2;
                 }
-                if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc && vm.tracks[vm.r.tk].hasAudio) {
+                if (thisTrack.annos[selAnno].cfg.playSrc && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
                     $timeout(function(){
-                        var seglist = vm.tracks[vm.r.tk].segMsec;
-                        var fileh = $scope.userObj.getFileUrl(vm.tracks[vm.r.tk].audioFile);
+                        var seglist = thisTrack.segMsec;
+                        var fileh = $scope.userObj.getFileUrl(thisTrack.audioFile);
                         vm.playCSS[vm.r.tk] = true;
                         $scope.$apply();
                         audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
@@ -290,6 +291,7 @@
                 });
             };
             vm.selectTrack = function(track) {
+                console.log('press track');
                 if (vm.r.tk !== track) {
                     console.log('moving track');
                     vm.r.tk = track;
@@ -334,7 +336,14 @@
                 annoServ.switchToTrack(vm.r.tk);
                 vm.restoreFocus();
             };
-            
+
+            vm.hasAudio = function(track) {
+                var thisT = vm.tracks[track];
+                if (!thisT.hasAudio || track !== vm.r.tk) {return false;}
+                if (vm.cursor[vm.r.tk] > (thisT.segMsec.length - 1)) {return false;}
+                return true;
+            };
+
             vm.restoreFocus = function() {
                 $timeout(function() {
                     var selAnno = vm.selAnno[vm.r.tk];
