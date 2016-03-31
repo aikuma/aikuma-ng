@@ -100,8 +100,10 @@
 
             asx.buildTracks = function(languages) {
                 var trackidx = 0;
-                asx.tracks.list = [];
+                asx.tracks = {};
                 asx.tracks.audio = [];
+                asx.tracks.list = [];
+                
                 asx.secondaryObjList.forEach( function(secondary) {
                      if ('segMsec' in secondary.segment) {
                         ++trackidx;
@@ -307,6 +309,7 @@
                 asx.wavesurfer.destroy();
             };
 
+            var reusableIdx = [];
             asx.joinTrack = function(track, aIdx, strack) {
                 // move the anno object (text, cfg etc) from old track to new track
                 var movedAnno = asx.tracks[track].annos.splice(aIdx, 1)[0];
@@ -319,16 +322,24 @@
                 annoData.save();
 
                 // If the track we moved from has no more annos... remove it from the tracks list
-                if (asx.tracks[track].annos.length === 0) {
-                    console.log('track has no more annotations, deleting it');
+                if (asx.tracks[track].annos.length === 0 && !asx.tracks[track].hasAudio) {
+                    console.log('track has no more annotations and is not an audioTrack, deleting it');
                     var idx = asx.tracks.list.indexOf(track);
                     asx.tracks.list.splice(idx,1);
                     delete asx.tracks[track];
+                    for(var i = 0; i < reusableIdx.length; i++) {
+                        if(idx > reusableIdx[i]) {
+                            reusableIdx.splice(i, 0, idx);
+                        }
+                    }
+                    if(reusableIdx.length === 0 || i == reusableIdx.length) {
+                        reusableIdx.push(idx);
+                    }
                 }
                 // now let's see if we've orphaned a source seg
                 var foundsec = asx.secondaryObjList.filter(function(sec) { return sec.segment.sourceSegId === oldseg;});
                 // yep, so let's delete that shit
-                if (foundsec.length === 0) {
+                if (foundsec.length === 0) {    // If nothing refers to the sourceSegment
                     console.log('no more seg found, deleting '+oldseg);
                     delete asx.sessionObj.data.segments[oldseg];
                     asx.sessionObj.save();
@@ -349,17 +360,19 @@
                 var newsegid = asx.sessionObj.addSrcSegment(copyseg);
                 thisanno.data.segment.sourceSegId = newsegid;
                 // We need a new colour, and a new icon, otherwise copy stuff from old track
-                var coldat = asx.getHue(asx.tracks.list.length);
+                var idx = reusableIdx.pop();
+                if(!idx) idx = asx.tracks.list.length;
+                var coldat = asx.getHue(idx+1);
                 asx.tracks[newsegid] = {
                     hasAudio: false,
                     type: asx.tracks[track].type,
                     color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,35%)'},
                     coldat: coldat,
-                    icon: 'mdi:numeric-'+(asx.tracks.list.length+1)+'-box',
+                    icon: 'mdi:numeric-'+(idx+1)+'-box',
                     annos: [movedAnno]
                 };
                 asx.tracks[newsegid].action = angular.uppercase(asx.tracks[track].type);
-                asx.tracks.list.push(newsegid);
+                asx.tracks.list.splice(idx,0,newsegid);
                 asx.cursor[newsegid] = asx.cursor[track]; // set the cursor on this track to the same as where it came from
                 asx.sessionObj.save();
                 thisanno.save();
@@ -367,7 +380,8 @@
             };
 
             asx.getHue = function(index) {
-                return [asx.startHue + (asx.tracks.list.length*asx.stepHue), 100];
+                return [asx.startHue + ((index-1)*asx.stepHue), 100];
+                //return [asx.startHue + (asx.tracks.list.length*asx.stepHue), 100];
             };
 
             // Pass index of annotation to save

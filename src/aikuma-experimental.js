@@ -207,12 +207,12 @@
             // callback registers hotkeys and switches to the selected annotation
             annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, $scope.secondaryList, $scope.userObj, function() {
                 vm.setupKeys();
-                vm.tracks = annoServ.tracks;
+                vm.tracks = annoServ.tracks;                // array of objects per respeak/translate
                 vm.tracks.audio = annoServ.tracks.audio;
                 vm.tracks.list = annoServ.tracks.list;
                 var axn = $scope.annotationObjList.filter(function(an){return an.data._ID === $scope.selectedAnno;});
-                vm.r.tk = axn[0].data.segment.sourceSegId;
-                vm.selAnno[vm.r.tk] = _.findIndex(annoServ.tracks[vm.r.tk].annos, function(a) {return a.id === $scope.selectedAnno;});
+                vm.r.tk = axn[0].data.segment.sourceSegId;  // initial selected anno's sourceSegment
+                vm.selAnno[vm.r.tk] = _.findIndex(annoServ.tracks[vm.r.tk].annos, function(a) {return a.id === $scope.selectedAnno;});  // index of anno in a track
                 annoServ.switchToTrack(vm.r.tk);
                 if (annoServ.regionList.length) {
                     vm.cursor[vm.r.tk] = 0;
@@ -374,7 +374,10 @@
                     vm.r.tk = track;
                     if (!vm.selAnno[vm.r.tk]) {vm.selAnno[vm.r.tk]=0;}
                     annoServ.switchToTrack(track);
-                    annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
+                    if(annoServ.regionList && annoServ.regionList.length > 0)
+                        annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
+                    else
+                        annoServ.seekToTime(0);
                     vm.restoreFocus(100); // this takes a while so let's chillax on setting focus for 100ms
                 }
             };

@@ -72,7 +72,7 @@
                                     <span class="md-body-2"> {{annoC.tracks[strack].action | translate}}</span>
                                 </md-button>
                             </md-menu-item>
-                            <md-menu-item ng-if="annoC.tracks[annoC.r.tk].hasAudio">
+                            <md-menu-item ng-if="annoC.tracks[annoC.r.tk].hasAudio || annoC.tracks[annoC.r.tk].annos.length > 1">
                                 <md-button  ng-click="annoC.splitTrack($event, track, aIdx)">
                                     <md-icon class="imgsvgicon" md-svg-icon="mdi:plus-box"></md-icon>
                                     <span class="md-body-2"> {{"TRACK_NEW" | translate}}</span>
