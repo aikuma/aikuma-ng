@@ -27,6 +27,9 @@
             vm.ffKeyCode = 39;     // right arrow
             vm.rwKeyCode = 37;     // left arrow
             vm.escKeyCode = 27;    // escape
+            vm.switchTrackCode = 9; // tab
+            vm.prevAnnoCode = 38;  // up arrow
+            vm.nextAnnoCode = 40;  // down arrow
             vm.ffPlaybackRate = 2.5; // playback speed in FF mode
             vm.skipTimeValue = 3;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;
@@ -55,9 +58,6 @@
                 vm.tracks[trackKey].annos[idx].cfg[setting] = !vm.tracks[trackKey].annos[idx].cfg[setting];
                 vm.restoreFocus();
             };
-
-
-
 
             //
             // KEY HANDLING
@@ -178,6 +178,28 @@
                 annoServ.deleteLastRegion();
             };
 
+            vm.switchAnnoKey = function(reverse) {
+                var spos = vm.getNextAnno(vm.selAnno[vm.r.tk], reverse);
+                if (spos > -1) {
+                    vm.selAnno[vm.r.tk] = spos;
+                    vm.restoreFocus();
+                }
+            };
+
+
+            // cycle to next track (on tab)
+            vm.switchTrackKey = function(nokey) {
+                var numtracks = vm.tracks.list.length;
+                var tpos = vm.tracks.list.indexOf(vm.r.tk);
+                ++tpos;
+                if (tpos === numtracks) {tpos = 0;}
+                if (tpos === vm.tracks.list.indexOf(vm.r.tk)) {return;}
+                vm.selectTrack(vm.tracks.list[tpos]);
+            };
+            
+            
+            
+
             //
             // START UP
             //
@@ -229,19 +251,9 @@
                 // If it's not a new region, we have some complex behavior depending on position
                 // and enabled annotations. First, search for next active annotations
                 // Change focus to the next enabled annotation
-                var alen = vm.tracks[vm.r.tk].annos.length;
-                var spos = annoIdx;
-                var found = false;
-                var cycled = false;
-                while (!found) {
-                    ++spos;
-                    if (spos === alen) {
-                        spos = 0;
-                        cycled = true;
-                    }
-                    if (spos === vm.selAnno[vm.r.tk]) {break;}
-                    if (vm.tracks[vm.r.tk].annos[spos].cfg.enabled) {found = true;}
-                }
+                var spos = vm.getNextAnno(annoIdx);
+                var found = spos > -1;
+                var cycled = spos < annoIdx;
                 // If there's an annotation at this position, just go to that one
                 if (found && !cycled) {
                     vm.selAnno[vm.r.tk] = spos;
@@ -265,32 +277,33 @@
                 }
             };
 
-            vm.getNextAnno = function(annoIdx) {
+            vm.getNextAnno = function(annoIdx, reverse = false) {
                 // Change focus to the next enabled annotation
                 var alen = vm.tracks[vm.r.tk].annos.length;
                 var spos = annoIdx;
                 var found = false;
                 var cycled = false;
                 while (!found) {
-                    ++spos;
-                    if (spos === alen) {
+                    if (reverse) {--spos;}
+                    else {++spos;}
+                    if (reverse && (spos < 0)) {
+                        spos = alen -1;
+                        cycled = true;
+                    }
+                    if (!reverse && (spos === alen)) {
                         spos = 0;
                         cycled = true;
                     }
                     if (spos === vm.selAnno[vm.r.tk]) {break;}
-                    if (vm.tracks[vm.r.tk].annos[spos].cfg.enabled) {found = true;}
+                    if (vm.tracks[vm.r.tk].annos[spos].cfg.enabled) {return spos;}
                 }
-
+                return -1;
             };
 
             vm.help = function(ev) {
                 aikumaDialog.help(ev, 'annotate');
             };
-
-            vm.getRL = function() {
-                return annoServ.regionList.length;
-            };
-            
+            // Handle clicks on transcript line
             vm.selectRegion = function(region) {
                 vm.cursor[vm.r.tk] = region;
                 vm.playAudio();
@@ -344,6 +357,16 @@
                 keyService.regKey(vm.escKeyCode, 'keydown', function () {
                     vm.escKey(true);
                 });
+                keyService.regKey(vm.prevAnnoCode, 'keydown', function () {
+                    vm.switchAnnoKey(true); // search in reverse
+                });
+                keyService.regKey(vm.nextAnnoCode, 'keydown', function () {
+                    vm.switchAnnoKey(false); // search forwards
+                });
+                keyService.regKey(vm.switchTrackCode, 'keydown', function () {
+                    vm.switchTrackKey(true);
+                });
+                
             };
             vm.selectTrack = function(track) {
                 if (vm.r.tk !== track) {
@@ -351,7 +374,7 @@
                     if (!vm.selAnno[vm.r.tk]) {vm.selAnno[vm.r.tk]=0;}
                     annoServ.switchToTrack(track);
                     annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
-                    vm.restoreFocus();
+                    vm.restoreFocus(100); // this takes a while so let's chillax on setting focus for 100ms
                 }
             };
             vm.joinTrackConf = function(ev, track, aIdx, strack) {
@@ -415,19 +438,31 @@
                 });
             };
 
+            // used in the UI for greying out audio track button
             vm.hasAudio = function(track) {
                 var thisT = vm.tracks[track];
                 if (!thisT.hasAudio || track !== vm.r.tk) {return false;}
                 if (vm.cursor[vm.r.tk] > (thisT.segMsec.length - 1)) {return false;}
                 return true;
             };
+            // used for simple loop in trnscript
+            vm.getRegions = function() {
+                return new Array(annoServ.regionList.length);
+            };
+            //
+            vm.padOut = function(annotext) {
+              if (annotext == null || annotext == '') {
+                  annotext = ' ';
+              }
+                return annotext;
+            };
 
-            vm.restoreFocus = function() {
+
+            vm.restoreFocus = function(delay=0) {
                 $timeout(function() {
                     var selAnno = vm.selAnno[vm.r.tk];
-                    console.log('restore focus', selAnno, vm.r.tk);
                     $scope.$broadcast(vm.tracks[vm.r.tk].annos[selAnno].id);
-                }, 0);
+                }, delay);
             };
             // on navigating away, clean up the key events, wavesurfer instances
             $scope.$on('$destroy', function() {

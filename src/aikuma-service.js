@@ -75,8 +75,8 @@
                 var flang = _.find(langList, function(lang) {
                     return lang.Id === id;
                 });
-                if (!flang) return id;
-                return flang.Ref_Name + ' (' + id + ')';
+                if (!flang) {return {short: id, full: id};}
+                return {short: flang.Ref_Name, full: flang.Ref_Name + ' (' + id + ')'};
             };
 
             ser.mockannotations = [
