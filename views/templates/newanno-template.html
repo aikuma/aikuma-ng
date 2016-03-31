@@ -112,7 +112,7 @@
 
             <div ng-if="annoC.tracks[annoC.r.tk].annos.length > 1" layout="column" layout-align="end end">
                 <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos"  style="margin-right:5px;height:22px;">
-                    <span flex class="md-caption" style="color:#aaa">{{anno.lang.short}}</span>
+                    <span flex class="md-caption" style="color:#aaa">{{anno.type | translate}}</span>
                 </div>
             </div>
 

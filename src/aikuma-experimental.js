@@ -324,11 +324,12 @@
                     $timeout(function(){
                         var seglist = thisTrack.segMsec;
                         var fileh = $scope.userObj.getFileUrl(thisTrack.audioFile);
+                        var playtrack = vm.r.tk; // keep this in case it changes when we try to unset
                         vm.playCSS[vm.r.tk] = true;
                         $scope.$apply();
                         audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
                             console.log('finished');
-                            vm.playCSS[vm.r.tk] = false;
+                            vm.playCSS[playtrack] = false;
                             $scope.$apply();
                         });
 
