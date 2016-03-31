@@ -47,7 +47,7 @@
                     <md-input-container flex class="md-block1" style="height:32px;">
                         <label class="md-subhead"><span style="text-transform: uppercase">{{anno.type | translate}}</span>: {{anno.lang.full}}</label>
                         <input class="md-body-1" autocomplete="off"
-                               ng-disabled="annoC.r.tk !== track || !annoC.tracks[track].annos[$index].cfg.enabled"
+                               ng-disabled="annoC.r.tk !== track || !annoC.tracks[track].annos[$index].cfg.enabled || annoC.cursor[annoC.r.tk] === -1"
                                ng-model="anno.text[annoC.cursor[track]]" focus-on="{{anno.id}}"
                                ng-focus="annoC.selectAnno($index)"
                                ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)">
