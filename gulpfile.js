@@ -1,17 +1,16 @@
 /**
  * Created by Mat on 28/01/2016.
  */
-var wiredep = require('wiredep').stream,
+var gulp = require('gulp'),
+    wiredep = require('wiredep').stream,
     inject = require('gulp-inject'),
-    gulp = require('gulp'),
-    uglify = require('gulp-uglify'),
     gulpif = require('gulp-if'),
     minifyCss = require('gulp-minify-css'),
-    gutil = require('gulp-util'),
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     clean = require('gulp-clean'),
     useref = require('gulp-useref'),
+    closure = require('gulp-closure-compiler-service'),
     debug = require('gulp-debug'),
     zip = require('gulp-zip');
 
@@ -77,11 +76,12 @@ gulp.task('copyfiles', ['cleandist'], function () {
 gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
         .pipe(useref({'noconcat':false}))
-        .pipe(gulpif('*.js', uglify().on('error', gutil.log)))
+        .pipe(gulpif('*.js', closure({language: 'ECMASCRIPT6_STRICT', compilation_level: 'SIMPLE_OPTIMIZATIONS'})))
         .pipe(gulpif('*.css', minifyCss()))
         .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));
 });
+
 
 gulp.task('zip', ['deploy'], function () {
     return gulp.src('./dist/**/*', {base: './dist'})
