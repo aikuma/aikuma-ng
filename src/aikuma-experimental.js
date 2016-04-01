@@ -460,7 +460,26 @@
               }
                 return annotext;
             };
-
+            // Test to see if there's something to export
+            vm.canExport = function() {
+                if (!vm.r.tk) {return false;}
+                return vm.tracks[vm.r.tk].annos.some(function(thisanno){
+                    return (thisanno.cfg.enabled && (thisanno.text.length > 0));
+                });
+            };
+            
+            // Send the segmentation and an array of annotations to the WebVTT exporter
+            vm.export = function() {
+                var segs = $scope.sessionObj.data.segments[vm.r.tk];
+                var annolist = [];
+                var trackannos = vm.tracks[vm.r.tk].annos;
+                trackannos.forEach(function(thisanno){
+                    if (thisanno.cfg.enabled) {
+                        annolist.push(thisanno.text);
+                    }
+                });
+                vm.vtt = aikumaService.exportAnno(segs, annolist);
+            };
 
             vm.restoreFocus = function(delay=0) {
                 $timeout(function() {

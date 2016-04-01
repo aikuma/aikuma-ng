@@ -113,6 +113,9 @@
   "TRACK_NEW": "Split to new track",
   "TRACK_SELECT": "Select track",
   "TRACK_SPLITCONF": "Split this annotation to a new track?",
-  "TRACK_NEWCONF": "You will only be able to hear the source audio for this annotation."
+  "TRACK_NEWCONF": "You will only be able to hear the source audio for this annotation.",
+  "EXPORT_SAVE": "Download captions",
+  "EXPORT_VTT": "Export as WebVTT file format",
+  "NO_DISPLAY": "Nothing to display!"
 }
 

@@ -127,6 +127,47 @@
 
 
 
+            ser.exportAnno = function(segList, annoList) {
+                var vtt = ['WEBVTT \n\n'];
+                segList.forEach(function(seg, idx) {
+                    vtt.push((idx + 1)+'\n');
+                    var st_str = msToVtt(seg[0]);
+                    var en_str = msToVtt(seg[1]);
+                    vtt.push(st_str + ' --> ' + en_str + '\n');
+                    annoList.forEach(function(anno){
+                        if (anno[idx] !== undefined ) {
+                            vtt.push(anno[idx] + '\n');
+                        }
+                    });
+                    vtt.push('\n');
+                });
+                var blob = new Blob(vtt, {type: "text/plain;charset=utf-8"});
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                var url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = 'annotation.vtt';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                return vtt;
+            };
+
+            function msToVtt(ms) {
+                var milliseconds = parseInt(ms%1000);
+                var seconds = parseInt((ms/1000)%60);
+                var minutes = parseInt((ms/(1000*60))%60);
+                var hours = parseInt((ms/(1000*60*60))%24);
+                return pad(hours,2) + ':' + pad(minutes,2) + ':' + pad(seconds,2) + '.' + pad(milliseconds % 1000,3);
+            }
+
+            function pad(n, width, z) {
+                z = z || '0';
+                n = n + '';
+                return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+            }
+
+
             return ser;
         }]);
 

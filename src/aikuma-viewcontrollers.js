@@ -479,6 +479,26 @@
                 sessionObj.save();
             };
             
+            vm.getTopLine = function() {
+                var displayfields = ["META_LOC"];
+                var topLineList = [];
+                displayfields.forEach(function(df){
+                    var metadata = sessionObj.data.details.filter(function(d){return d.name === df;});
+                    if (metadata.length > 0) {
+                        if (metadata[0].data !== '') {
+                            topLineList.push({
+                                icon: metadata[0].icon,
+                                text: metadata[0].data
+                            });
+                        }
+                    }
+                });
+                return topLineList;
+            };
+
+            // this is terrible because it wont update when we change metadata
+            vm.TopLineMetadata = vm.getTopLine();
+
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.
         .controller('respeakController', ['type', 'dataObj', function(type, dataObj) {
