@@ -16,7 +16,7 @@
   "NAV_SHARE": "Share",
   "NAV_SETTINGS": "Settings",
   "NAV_CHANGES": "Changes",
-  "NAV_BUGREP": "Report Bug",
+  "NAV_BUGREP": "Report Issue",
   "ANONYMOUS": "Anonymous",
   "HOME_ADDNEW": "Add new session",
   "HOME_CREATEUSER": "Add new user",
@@ -116,6 +116,9 @@
   "TRACK_NEWCONF": "You will only be able to hear the source audio for this annotation.",
   "EXPORT_SAVE": "Download captions",
   "EXPORT_VTT": "Export as WebVTT file format",
-  "NO_DISPLAY": "Nothing to display!"
+  "NO_DISPLAY": "Nothing to display!",
+  "BUGREP_INSTR": "You can report issues on the GitHub issue tracker. Please list steps required to reproduce the issue. Languages supported: English, Chinese.",
+  "DEV_TEAM": "development team",
+  "BETA": "beta",
+  "ABOUT": "About Aikuma"
 }
-

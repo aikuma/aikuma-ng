@@ -172,7 +172,7 @@
         };
         topbarController.$inject = ['$scope', '$translate', 'config', 'loginService', 'aikumaDialog'];
 
-        var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService) {
+        var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService, aikumaDialog) {
             var vm = this;
             vm.languages = config.languages;
             
@@ -237,12 +237,6 @@
                     icon: 'action:change_history',
                     state: 'changes'
                 },
-                //{
-                //    class : '',
-                //    title: 'VIDEO',
-                //    icon: 'av:videocam',
-                //    state: 'video'
-                //},
                 {
                     class : '',
                     title: 'NAV_BUGREP',
@@ -257,6 +251,10 @@
                     $location.path('/'+statename);
                 }
             };
+
+            vm.openAbout = function(ev) {
+                aikumaDialog.help(ev, 'about');
+            };
             // When 'Open File' is pressed
             $scope.$watch('file', function (file) {
                 if (file && file.type.match('^audio/')) { 
@@ -266,7 +264,7 @@
             });
 
         };
-    navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService'];
+    navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog'];
 
     var userSelectorController = function ($scope, loginService, dataService) {
         var vm = this;

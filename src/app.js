@@ -14,15 +14,14 @@
             'aikuma-commondirectives', // common directives including the nav bar
             'aikuma-audio',            // respeaking, recording
             'aikuma-audioService',     // resampling and audio format conversion
-            'cfp.hotkeys',             // hotkey controller system (deprecated due to lack of key-hold support)
             'angularResizable',        // used by annotation controller, Angular Material doesn't usually resize
             'indexedDB',               // used by dataservice to store metadata
             'aikuma-dataservice',      // data service dealing with metadata and files
             'ngPrettyJson'             // for debugging
         ])
         .constant('config', {
-            appName: 'Aikuma-ng',
-            appVersion: 'beta 1',
+            appName: 'AikumaNG',
+            appVersion: '1',
             sampleRate: 48000,
             fileStorageMB: 1000,
             languages: [
@@ -247,13 +246,12 @@
                     .when('/help', {
                         templateUrl: 'views/help.html'
                     })
+                    .when('/reportbug', {
+                        templateUrl: 'views/reportbug.html'
+                    })
                     .when('/settings', {
                         templateUrl: 'views/settings.html',
                         controller: 'settingsController as seCtrl'
-                    })
-                    .when('/video', {
-                        templateUrl: 'views/video.html',
-                        controller: 'videoController as vCtrl'
                     })
                     .otherwise({
                         redirectTo: '/'
@@ -300,7 +298,7 @@
                         userObj.data.preferences.langCode = data.language;
                         return userObj.save();
                     }).then(function() {
-                        console.log('Language preference is saved');
+                        //console.log('Language preference is saved');
                     });
                 }
             });

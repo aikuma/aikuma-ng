@@ -1,7 +1,6 @@
 <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
     <header class="nav-header">
-        <div layout="column" layout-align="center center">
-
+        <div layout="column" layout-align="center center" ng-click="navCtrl.openAbout()">
             <img class="animated rollIn" flex width="200" height="200" src="img/worldvoices.svg"/>
             <md-tooltip class="md-subhead" md-direction="top">{{"AIKUMA" | translate}}-<i>NG</i></md-tooltip>
             <span flex class="md-body-2 inset animated slideInLeft" style="color:black">{{"NAV_LOGAS" | translate}} <i>{{navCtrl.currentUserName()}}</i></span>
@@ -22,7 +21,7 @@
     </label>
 
     <div style="position: absolute;bottom: 10px;padding-left: 10px;">
-        <span class="md-caption"><i>{{'AIKUMA' | translate}}-<i>NG</i> {{navCtrl.versionString}}</i></span>
+        <span class="md-caption"><i>{{'AIKUMA' | translate}}<i>NG</i> {{'BETA' | translate}} {{navCtrl.versionString}}</i></span>
     </div>
     <input id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >
 </md-sidenav>

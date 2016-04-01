@@ -277,7 +277,8 @@
                 }
             };
 
-            vm.getNextAnno = function(annoIdx, reverse = false) {
+            vm.getNextAnno = function(annoIdx, reverse) {
+                reverse = typeof reverse !== 'undefined' ? reverse : false;
                 // Change focus to the next enabled annotation
                 var alen = vm.tracks[vm.r.tk].annos.length;
                 var spos = annoIdx;
@@ -481,7 +482,8 @@
                 vm.vtt = aikumaService.exportAnno(segs, annolist);
             };
 
-            vm.restoreFocus = function(delay=0) {
+            vm.restoreFocus = function(delay) {
+                delay = typeof delay !== 'undefined' ? delay : 0;
                 $timeout(function() {
                     var selAnno = vm.selAnno[vm.r.tk];
                     $scope.$broadcast(vm.tracks[vm.r.tk].annos[selAnno].id);

@@ -40,8 +40,6 @@ Our tools may be of use to linguists undertaking language documentation, particu
 However a major goal of the Aikuma project is to develop a new class of socially-connected tool language activities interested in documenting, preserving and/or revitalising
 their own language.
 
-
-
 ### Project Dependencies ###
 
 > Aikuma-*ng* would not be possible without the wealth of high quality open source projects upon which it depends:

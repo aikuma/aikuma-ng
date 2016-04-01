@@ -1,0 +1,49 @@
+<md-dialog aria-label="Help: Annotate" ng-cloak style="max-width:800px">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{"ABOUT" | translate}}<i>NG</i></h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+        <div class="md-dialog-content">
+            <p class="md-body-2">Aikuma<i>NG</i> is the result if an international research project to develop tools to help communities document, maintain and revive their 'treasure' languages.</p>
+
+            <p class="md-body-2">This software is the evolution of Aikuma, an Android mobile-phone app described in detail at the <A HREF="http://www.aikuma.org/">Aikuma Project</A>. The Aikuma name Aikuma means "meeting place" in Usarufa, the language where this software was first used.
+                Usarufa is spoken in the Eastern Highlands Province of Papua New Guinea.</p>
+
+            <p class="md-body-2">This software uses web technologies exclusively. This beta version offers the modest capability to respeak, translate and annotate speech but there is must more to do. If you are interested in helping, you can do so in a number of ways. We welcome
+            high quality feedback such as <A HREF="https://github.com/aikuma/Annoweb">reporting of issues</A> and suggesting improve features. Additionally we would be greatly appreciative of assistance in development. Fork Aikuma<i>NG</i> on GitHub and contribute back PRs!</p>
+
+            <p class="md-body-2">Aikuma<i>NG</i> would not be possible without the wealth of high quality open source projects upon which it depends:</p>
+
+            <p class="md-body-1">
+            <A HREF="https://angularjs.org">Angular</A><br/>
+            <A HREF="https://material.angularjs.org/latest/">Angular Material</A><br/>
+            <A HREF="http://underscorejs.org/">Underscore</A><br/>
+            <A HREF="http://gildas-lormeau.github.io/zip.js/">ZipJS</A><br/>
+            <A HREF="https://github.com/mattdiamond/Recorderjs">RecorderJS</A><br/>
+            <A HREF="http://wavesurfer-js.org/">WavesurferJS</A> <A HREF="https://creativecommons.org/licenses/by/3.0/deed.en_US">CC3.0</A><br/>
+            PapaParse, Angular-indexedDB, Angular-resizable, Angular-route, Angular-translate, Ng-prettyjson, Keypress, Any-resize-event<br/>
+            </p>
+
+            <p class="md-body-2">&mdash; <i>AikumaNG development team: Steven Bird, Mat Bettinson & Sang Yeop Lee.</i></p>
+
+            <p></p>
+            <p class="md-caption"><i>Audio: The indigenous Saisiyat tribe of North Western Taiwan, giving thanks through dance and song to their ancestors of their oral history. Dabajian (大霸尖山) mountain, 17/9/2015.</i></p>
+
+            <audio src="media/saisiyat.ogg" autoplay></audio>
+
+        </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="hide()" style="margin-right:20px;">
+            {{"BUTTON_OK" | translate}}
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>
