@@ -42,6 +42,14 @@ their own language.
 
 
 
+### Project Dependencies ###
 
+> Aikuma-*ng* would not be possible without the wealth of high quality open source projects upon which it depends:
 
-
+- [AngularJS](https://angularjs.org/)
+- [Angular Material](https://material.angularjs.org/latest/)
+- [UnderscoreJS](http://underscorejs.org/)
+- [ZipJS](http://gildas-lormeau.github.io/zip.js/)
+- [RecorderJS](https://github.com/mattdiamond/Recorderjs)
+- [WavesurferJS](http://wavesurfer-js.org/) (copyright: [CC3.0 BY](https://creativecommons.org/licenses/by/3.0/deed.en_US))
+- PapaParse, Angular-indexedDB, Angular-resizable, Angular-route, Angular-translate, Ng-prettyjson, Keypress, Any-resize-event
