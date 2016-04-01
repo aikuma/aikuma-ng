@@ -275,6 +275,7 @@
                     var promises = [];
                     for(var i in mockSessionData) {
                         console.log(mockSessionData[i]);
+                        mockSessionData[i].source.created = Date.now();
                         promises.push(dataService.setSession(userId, mockSessionData[i]));
                     }
                     return $q.all(promises);
