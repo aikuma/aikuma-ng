@@ -337,9 +337,11 @@
                     }
                 }
                 // now let's see if we've orphaned a source seg
-                var foundsec = asx.secondaryObjList.filter(function(sec) { return sec.segment.sourceSegId === oldseg;});
+                var foundsecLen = asx.secondaryObjList.filter(function(sec) { return sec.type.indexOf('anno_') !== 0 && sec.segment.sourceSegId === oldseg;}).length;
+                foundsecLen += asx.annoObjList.filter(function(annoObj) { return annoObj.data.segment.sourceSegId === oldseg; }).length;
+                
                 // yep, so let's delete that shit
-                if (foundsec.length === 0) {    // If nothing refers to the sourceSegment
+                if (foundsecLen === 0) {    // If nothing refers to the sourceSegment
                     console.log('no more seg found, deleting '+oldseg);
                     delete asx.sessionObj.data.segments[oldseg];
                     asx.sessionObj.save();
