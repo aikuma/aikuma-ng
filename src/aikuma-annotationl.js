@@ -242,6 +242,9 @@
                 annoServ.saveAnnotation(annoIdx);
                 // if this is a brand new region, then just complete it
                 if (vm.r.regionMarked) {
+                    for(var i = 0; i < vm.tracks[vm.r.tk].annos.length; i++) {
+                        annoServ.saveAnnotation(i);
+                    }
                     annoServ.markLastRegionComplete();
                     vm.r.regionMarked = false;
                     annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].end + 0.001);
@@ -464,9 +467,13 @@
             // Test to see if there's something to export
             vm.canExport = function() {
                 if (!vm.r.tk) {return false;}
-                return vm.tracks[vm.r.tk].annos.some(function(thisanno){
-                    return (thisanno.cfg.enabled && (thisanno.text.length > 0));
-                });
+                if(vm.tracks) {
+                    return vm.tracks[vm.r.tk].annos.some(function(thisanno){
+                        return (thisanno.cfg.enabled && (thisanno.text.length > 0));
+                    });
+                } else {
+                    return false;
+                }
             };
             
             // Send the segmentation and an array of annotations to the WebVTT exporter

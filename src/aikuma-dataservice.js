@@ -54,23 +54,25 @@
                     loginStatus = true;
                     currentUserData = userObj.data;
                     $translate.use(userObj.data.preferences.langCode);
-                    if(window.sessionStorage) {
+                    if(window.sessionStorage)
                         window.sessionStorage.currentUserData = JSON.stringify(currentUserData);
                     if(window.chrome && chrome.storage)
                         chrome.storage.local.set({userId: currentUserData._ID});
                     else
                         localStorage.setItem('userId', currentUserData._ID);
-                        
-                    }
+                    
                 });
             };
             
             service.logout = function() {
                 loginStatus = false;
                 currentUserData = null;
-                if(window.sessionStorage) {
+                if(window.sessionStorage)
                     window.sessionStorage.removeItem('currentUserData');
-                }
+                if(window.chrome && chrome.storage)
+                    chrome.storage.local.remove('userId');
+                else
+                    localStorage.removeItem('userId');
             };
             
             service.getLoginStatus = function() {
