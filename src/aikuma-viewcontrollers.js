@@ -483,6 +483,7 @@
             vm.getTopLine = function() {
                 var displayfields = ["META_LOC"];
                 var topLineList = [];
+                if (!sessionObj.data.details) {return topLineList;}
                 displayfields.forEach(function(df){
                     var metadata = sessionObj.data.details.filter(function(d){return d.name === df;});
                     if (metadata.length > 0) {

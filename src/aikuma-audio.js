@@ -228,6 +228,8 @@
             if(rec)
                 rec.clear();
             fileService.setTempObject(null);
+            vm.wsRecord.destroy();
+            vm.context.close();
         });
         
         $window.onbeforeunload = function() {
@@ -274,6 +276,7 @@
                 return results;
             };
         });
+
 
     };
     newRecordDirectiveController.$inject = ['config', '$scope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
@@ -928,6 +931,7 @@
             wsPlayback.destroy();
             microphone.destroy();
             wsRecord.destroy();
+            respeakAudioContext.close();
             if(recorder) 
                 recorder.clear();
         });

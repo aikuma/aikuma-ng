@@ -492,6 +492,7 @@
             // on navigating away, clean up the key events, wavesurfer instances
             $scope.$on('$destroy', function() {
                 annoServ.destroyAll();
+                annotateAudioContext.close();
             });
 
         };
