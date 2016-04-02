@@ -74,7 +74,6 @@
                         // the service works out what audio is appropriate to play (which is why we pass the settings object
                         vm.playAudio();
                     } else {
-                        console.log('start new region');
                         var thisTime = annoServ.wavesurfer.getCurrentTime();
                         thisTime = Math.round(thisTime*1000)/1000;
                         annoServ.makeNewRegion(thisTime);

@@ -396,7 +396,6 @@
             // Wavesurfer nonsense
             //
             asx.seekToTime = function(time) {
-                console.log('seek to', time);
                 asx.r.regionMarked = false;
                 var length = asx.wavesurfer.getDuration();
                 var floatpos = time / length;
