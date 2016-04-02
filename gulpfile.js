@@ -13,6 +13,7 @@ var gulp = require('gulp'),
     closure = require('gulp-closure-compiler-service'),
     debug = require('gulp-debug'),
     zip = require('gulp-zip');
+var closureCompiler = require('google-closure-compiler').gulp();
 
 gulp.task('wavesurfer', function () {
     // We need to build wavesurfer since the package only deploys minified files
@@ -76,7 +77,12 @@ gulp.task('copyfiles', ['cleandist'], function () {
 gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
         .pipe(useref({'noconcat':false}))
-        .pipe(gulpif('*.js', closure({language: 'ECMASCRIPT6_STRICT', compilation_level: 'SIMPLE_OPTIMIZATIONS'})))
+        .pipe(gulpif('*.js', closureCompiler({
+        compilation_level: 'WHITESPACE_ONLY',
+        language_in: 'ECMASCRIPT6_STRICT',
+        language_out: 'ECMASCRIPT5_STRICT',
+        js_output_file: 'scripts/combined.js'
+        })))
         .pipe(gulpif('*.css', minifyCss()))
         .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));

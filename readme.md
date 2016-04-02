@@ -5,7 +5,9 @@ A web-app (and Chrome packaged app) for recording and annotating speech. Aikuma-
 Aikuma-*ng* differs from the Aikuma native Android mobile app in that Aikuma-*ng* is based on web technologies. The *-ng* suffix can be interpreted as 'next-generation' or Angular. Aikuma-*ng* is intended to be the successor
 to the Aikuma Android app with a responsive UI to target platforms from desktop to tablet and mobile.
 
-Current status: Alpha. Several components are functional but it cannot currently be used to do meaningful work. A mobile-capable version is further away than a working desktop version, so those looking for a mobile
+Current status: Beta. App records and imports audio files. Allows the user to respeak or translate by making additional recordings. The user may annotate the
+the source recording, using respeaking and translation audio if available. The user may export the annotations as a basic WebVTT file, e.g. supported by
+YouTube. A mobile-capable version is further away than a working desktop version, so those looking for a mobile
 solution should continue to use Aikuma.
 
 Aikuma-*ng* design goals are:

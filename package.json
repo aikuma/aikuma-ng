@@ -14,8 +14,10 @@
     "url": "git://github.com/lingomat/repository.git"
   },
   "devDependencies": {
+    "google-closure-compiler": "^20160315.2.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.1",
+    "gulp-closure-compiler": "^0.4.0",
     "gulp-closure-compiler-service": "^0.6.0",
     "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.1.2",

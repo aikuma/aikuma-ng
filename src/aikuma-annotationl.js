@@ -4,7 +4,7 @@
 (function(){
     'use strict';
     angular
-        .module('aikuma-experimental', [])
+        .module('aikuma-annotation', [])
         .directive("aikumaAnno", function() {
             return {
                 restrict: "E",
