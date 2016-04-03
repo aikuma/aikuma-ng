@@ -145,12 +145,15 @@
         vm.toggleRecord = function () {
             if (!vm.isrecording) {
                 console.log('starting record');
-                rec.record();
-                $scope.recordClass = 'activerecord';
-                vm.isrecording=true;
+                audioService.playBeep(function() {
+                    rec.record();
+                    $scope.recordClass = 'activerecord';
+                    vm.isrecording=true;
+                });
             } else {
                 console.log('stopping record');
                 rec.stop();
+                audioService.playBeep();
                 vm.hasrecdata = true; // used for review/play button status
                 vm.wsRecord.empty();
                 $scope.recordClass = 'activespeaker';
@@ -175,7 +178,7 @@
 
         // This might not work right. Errors observed on querying length of unset variables.
         vm.isMetaEmpty = function() {
-            return !vm.hasrecdata || vm.selectedLanguages.length === 0 || vm.selectedTitles.length === 0;
+            return !vm.hasrecdata || vm.selectedLanguages.length === 0 || !vm.selectedTitle;// vm.selectedTitles.length === 0;
         };
         
         vm.save = function() {
@@ -193,13 +196,15 @@
                 $scope.userObj.save().then(function() {
                     // Create new session metadata
                     var sessionData = {};
+                    vm.selectedTitles.push(vm.selectedTitle);
                     sessionData.names = vm.selectedTitles;
                     sessionData.creatorId = loginService.getLoggedinUserId();
                     sessionData.source = {
                         recordFileId: fileObjId,
                         created: Date.now(),
                         duration: vm.recordDurMsec,
-                        langIds: vm.selectedLanguages.map(function(lang) { return lang.id; })
+                        langIds: vm.selectedLanguages
+                        //langIds: vm.selectedLanguages.map(function(lang) { return lang.id; })
                     };
 
                     return dataService.setSession(loginService.getLoggedinUserId(), sessionData);
@@ -229,6 +234,7 @@
                 rec.clear();
             fileService.setTempObject(null);
             vm.wsRecord.destroy();
+            microphone.destroy();
             vm.context.close();
         });
         
@@ -248,35 +254,14 @@
         
         vm.selectedTitles = [];
         vm.selectedLanguages = [];
-        vm.langFilterOn = true;
         
-        vm.langPlaceholder = "Add languages";
-        vm.langSecPlaceholder = "Add more";
         vm.titlePlaceholder = "Add titles";
         vm.titleSecPlaceholder = "Add more";
         
         // Language input interface for session
-        dataService.getLanguages().then(function(langObjList) {
-            var langList = langObjList.map(function(langObj) {
-                return {
-                    id: langObj.Id,
-                    name: langObj.Ref_Name,
-                    value: langObj.Ref_Name.toLowerCase()
-                };
-            });
-            
-            vm.langQuerySearch = function(query) {
-                var results = [];
-                query = query.toLowerCase();
-                if(query) {
-                    results = langList.filter(function(lang) {
-                        return lang.value.indexOf(query) === 0;
-                    });
-                }
-                return results;
-            };
-        });
-
+        vm.saveLangs = function(langIds) {
+            vm.selectedLanguages = langIds;
+        };
 
     };
     newRecordDirectiveController.$inject = ['config', '$scope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];

@@ -570,20 +570,24 @@
         var vm = this;
         // list of `language` value/display objects
         vm.languages = loadAllx();
-        vm.selectedLanguages = $scope.langIdList.map(function(id) {
-            var langStr = $scope.langIdNameMap[id];
-            if(langStr) {
-                return {
-                    langStr: langStr,
-                    langISO: id
-                };
-            } else {
-                return {
-                    langStr: id,
-                    langISO: ''
-                };
-            }
-        });
+        if($scope.langIdList) {
+            vm.selectedLanguages = $scope.langIdList.map(function(id) {
+                var langStr = $scope.langIdNameMap[id];
+                if(langStr) {
+                    return {
+                        langStr: langStr,
+                        langISO: id
+                    };
+                } else {
+                    return {
+                        langStr: id,
+                        langISO: ''
+                    };
+                }
+            });   
+        } else {
+            vm.selectedLanguages = [];
+        }
 
         vm.querySearch = querySearch;
         vm.selectedItemChange = selectedItemChange;

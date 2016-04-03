@@ -1,19 +1,12 @@
 <div layout="row">
     <div layout="column" flex="50" >
-        <md-chips ng-model="nrCtrl.selectedTitles"
-                  placeholder="{{nrCtrl.titlePlaceholder}}"
-                  secondary-placeholder="{{nrCtrl.titleSecPlaceholder}}">
-        </md-chips>
-        <md-contact-chips ng-model="nrCtrl.selectedLanguages"
-                          md-contacts="nrCtrl.langQuerySearch($query)"
-                          md-contact-name="name"
-                          md-contact-email="id"
-                          md-require-match="true"
-                          md-highlight-flags="i"
-                          filter-selected="nrCtrl.langFilterOn"
-                          placeholder="{{nrCtrl.langPlaceholder}}"
-                          secondary-placeholder="{{nrCtrl.langSecPlaceholder}}">
-        </md-contact-chips>
+        <md-input-container style="height:32px;">
+            <label></label>
+            <input ng-model="nrCtrl.selectedTitle" placeholder="{{nrCtrl.titlePlaceholder}}" class="md-subhead" >
+        </md-input-container>
+        
+        <ng-language-selector on-change="nrCtrl.saveLangs(langIds)"></ng-language-selector>
+        
         <md-button ng-if="!nrCtrl.externalRecord" ng-disabled="nrCtrl.recordUrl" class="md-raised ng-class:{'nowrecording': nrCtrl.isrecording}" aria-label="Save" ng-click="nrCtrl.toggleRecord()" >
             <md-icon md-svg-icon="av:mic"></md-icon>
             <span flex>Record</span>
