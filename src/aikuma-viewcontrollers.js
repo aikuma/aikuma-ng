@@ -6,7 +6,7 @@
     angular
         .module('aikuma-viewcontrollers', [])
 
-        .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', function(config, $timeout, $scope, $location, dataService, loginService, $route) {
+        .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', 'aikumaDialog', function(config, $timeout, $scope, $location, dataService, loginService, $route, aikumaDialog) {
             var vm = this;
             vm.speedDial = false;
 
@@ -37,18 +37,14 @@
             };
             
             vm.createNewUser = function() {
-                var mockUserData = {
-                    names: ['Anonymous'],
-                    email: 'foo@gmail.com',
-                    preferences: {
-                        langCode: 'en'
+                aikumaDialog.profile().then(function(userData) {
+                    if(!userData.data) {
+                        dataService.setUser(userData).then(function(data) {
+                            return dataService.getUserList();
+                        }).then(function(userList){
+                            vm.userList = userList;
+                        });
                     }
-                };
-                
-                dataService.setUser(mockUserData).then(function(data) {
-                    return dataService.getUserList();
-                }).then(function(userList){
-                    vm.userList = userList;
                 });
             };
             

@@ -30,7 +30,7 @@
                 );
             };
             factory.profile = function(ev) {
-                $mdDialog.show({
+                return $mdDialog.show({
                     controller: profileController,
                     controllerAs: 'pdCtrl',
                     templateUrl: 'views/templates/dialog-profile.html',
@@ -39,7 +39,11 @@
                     clickOutsideToClose: true,
                     resolve: {
                         userObj: ['loginService', 'dataService', function(loginService, dataService) {
-                            return dataService.get('user', loginService.getLoggedinUserId());
+                            var userId = loginService.getLoggedinUserId();
+                            if(userId)
+                                return dataService.get('user', userId);
+                            else
+                                return null;
                         }]
                     }
                 });
@@ -69,18 +73,44 @@
 
     var profileController = function($mdDialog, $scope, $translate, userObj) {
         var vm = this;
-        vm.namePlaceholder = 'Add names';
-        vm.nameSecPlaceholder = 'Add more';
-        vm.emailPlaceholder = 'Email';
         
-        vm.userNames = userObj.data.names.slice();
-        vm.userEmail = userObj.data.email;
+        if(userObj) {
+            vm.userNames = userObj.data.names.map(function(nameStr){return {name: nameStr};});
+            vm.userEmail = userObj.data.email;
+        } else {
+            vm.userNames = [{name: ''}];
+            vm.userEmail = '';
+        }
+        
+        vm.addNewNameField = function() {
+            vm.userNames.push({name: ''});
+        };
+        
+        vm.lastFilled = function() {
+            var lastName = _.last(vm.userNames);
+            if (lastName.name.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        };
         
         vm.save = function() {
-            userObj.data.names = vm.userNames;
-            userObj.data.email = vm.userEmail;
-            userObj.save();
-            $mdDialog.hide();
+            var names = _.pluck(vm.userNames, 'name');
+            if(userObj) {
+                userObj.data.names = names;
+                userObj.data.email = vm.userEmail;
+                userObj.save();
+            } else {
+                userObj = {
+                    names: names,
+                    email: vm.userEmail,
+                    preferences: {
+                        langCode: 'en'
+                    }
+                };
+            }
+            $mdDialog.hide(userObj);
         };
         
         vm.close = function() {$mdDialog.cancel();};
