@@ -124,5 +124,7 @@
   "SESSION_NAME": "錄音時段的名字",
   "DATE": "日期",
   "ADD_MORE": "添加更多",
-  "EXPORT_SRT": "导出为SRT插入文件格式"
+  "EXPORT_SRT": "导出为SRT插入文件格式",
+  "NAME_ADD": "添加一個名字",
+  "META_EMAIL": "電郵地址"
 }
