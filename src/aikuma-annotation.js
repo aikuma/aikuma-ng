@@ -476,7 +476,7 @@
             };
             
             // Send the segmentation and an array of annotations to the WebVTT exporter
-            vm.export = function() {
+            vm.export = function(format) {
                 var segs = $scope.sessionObj.data.segments[vm.r.tk];
                 var annolist = [];
                 var trackannos = vm.tracks[vm.r.tk].annos;
@@ -485,7 +485,7 @@
                         annolist.push(thisanno.text);
                     }
                 });
-                vm.vtt = aikumaService.exportAnno(segs, annolist);
+                vm.vtt = aikumaService.exportAnno(segs, annolist, format);
             };
 
             vm.restoreFocus = function(delay) {

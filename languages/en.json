@@ -115,7 +115,7 @@
   "TRACK_SPLITCONF": "Split this annotation to a new track?",
   "TRACK_NEWCONF": "You will only be able to hear the source audio for this annotation.",
   "EXPORT_SAVE": "Download captions",
-  "EXPORT_VTT": "Export as WebVTT file format",
+  "EXPORT_VTT": "Save as WebVTT",
   "NO_DISPLAY": "Nothing to display!",
   "BUGREP_INSTR": "You can report issues on the GitHub issue tracker. Please list steps required to reproduce the issue. Languages supported: English, Chinese.",
   "DEV_TEAM": "development team",
@@ -123,5 +123,6 @@
   "ABOUT": "About Aikuma",
   "SESSION_NAME": "Session name",
   "DATE": "Date",
-  "ADD_MORE": "More"
+  "ADD_MORE": "More",
+  "EXPORT_SRT": "Save as SRT"
 }

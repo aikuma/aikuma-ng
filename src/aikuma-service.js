@@ -125,14 +125,19 @@
                 return ser.mocksegMap[id];
             };
 
-
-
-            ser.exportAnno = function(segList, annoList) {
-                var vtt = ['WEBVTT \n\n'];
+            ser.exportAnno = function(segList, annoList, fileformat='webvtt') {
+                var vtt = [];
+                var fileExt;
+                if (fileformat==='webvtt') {
+                    vtt = ['WEBVTT \n\n'];
+                    fileExt = 'vtt';
+                } else {
+                    fileExt = 'srt';
+                }
                 segList.forEach(function(seg, idx) {
                     vtt.push((idx + 1)+'\n');
-                    var st_str = msToVtt(seg[0]);
-                    var en_str = msToVtt(seg[1]);
+                    var st_str = msToVtt(seg[0], fileformat);
+                    var en_str = msToVtt(seg[1], fileformat);
                     vtt.push(st_str + ' --> ' + en_str + '\n');
                     annoList.forEach(function(anno){
                         if (anno[idx] !== undefined ) {
@@ -147,18 +152,24 @@
                 a.style = "display: none";
                 var url = window.URL.createObjectURL(blob);
                 a.href = url;
-                a.download = 'annotation.vtt';
+                a.download = 'annotation.' + fileExt;
                 a.click();
                 window.URL.revokeObjectURL(url);
                 return vtt;
             };
 
-            function msToVtt(ms) {
+            function msToVtt(ms, fileformat) {
+                var dotcomma;
+                if (fileformat==='webvtt') {
+                    dotcomma = '.';
+                } else {
+                    dotcomma = ',';
+                }
                 var milliseconds = parseInt(ms%1000);
                 var seconds = parseInt((ms/1000)%60);
                 var minutes = parseInt((ms/(1000*60))%60);
                 var hours = parseInt((ms/(1000*60*60))%24);
-                return pad(hours,2) + ':' + pad(minutes,2) + ':' + pad(seconds,2) + '.' + pad(milliseconds % 1000,3);
+                return pad(hours,2) + ':' + pad(minutes,2) + ':' + pad(seconds,2) + dotcomma + pad(milliseconds % 1000,3);
             }
 
             function pad(n, width, z) {

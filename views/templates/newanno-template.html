@@ -97,11 +97,23 @@
                     <md-icon class="imgsvgicon" ng-style="annoC.tracks[annoC.r.tk].color" style="width:40px;height:40px;" md-svg-icon="{{annoC.tracks[annoC.r.tk].icon}}"></md-icon>
                     <span>{{annoC.tracks[annoC.r.tk].type | translate}}</span>
                 </md-button>
-                <md-button ng-disabled="!annoC.canExport()" ng-click="annoC.export()">
-                    <md-tooltip class="md-body-2">{{"EXPORT_VTT" | translate}}</md-tooltip>
-                    <md-icon md-svg-icon="file:file_download"></md-icon>
-                    <span>{{"EXPORT_SAVE" | translate}}</span>
-                </md-button>
+                 <md-menu>
+                    <md-button md-menu-origin ng-disabled="!annoC.canExport()" ng-click="annoC.openMenu($mdOpenMenu, $event)">
+                        <md-icon md-svg-icon="file:file_download"></md-icon>
+                        <span>{{"EXPORT_SAVE" | translate}}</span>
+                    </md-button>
+                     <md-menu-content width="3">
+                         <md-menu-item>
+                             <md-button ng-click="annoC.export('srt')">
+                                 <md-icon md-svg-icon="file:file_download"></md-icon>
+                                 {{"EXPORT_SRT" | translate}}</md-button>
+                         </md-menu-item>
+                         <md-menu-item>
+                             <md-button ng-click="annoC.export('webvtt')">
+                                 <md-icon md-svg-icon="file:file_download"></md-icon>
+                                 {{"EXPORT_VTT" | translate}}</md-button>
+                         </md-menu-item>
+                 </md-menu>
             </div>
         </md-subheader>
 
