@@ -10,18 +10,25 @@
             </div>
         </md-toolbar>
         <md-dialog-content>
-            <md-chips ng-model="pdCtrl.userNames"
-                      placeholder="{{pdCtrl.namePlaceholder}}"
-                      secondary-placeholder="{{pdCtrl.nameSecPlaceholder}}">
-            </md-chips>
+            <div layout="row" ng-repeat="nameModel in pdCtrl.userNames">
+                <md-input-container flex md-no-float style="height:32px;">
+                    <input ng-model="nameModel.name" required 
+                           placeholder="{{'META_NAME' | translate}}">
+                </md-input-container>
+
+                <md-button ng-if="$last" ng-disabled="nameModel.name.length === 0" ng-click="pdCtrl.addNewNameField()" >
+                    <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> <span class="md-body-2">{{"NAME_ADD" | translate}}</span>
+                </md-button>
+            </div>
+            
             
             <md-input-container md-no-float class="md-block">
                 <input name="email" ng-model="pdCtrl.userEmail" required 
-                       placeholder="{{pdCtrl.emailPlaceholder}}"
+                       placeholder="{{'META_EMAIL' | translate}}"
                        minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
                 <div ng-messages="userForm.email.$error" role="alert">
                     <div ng-show="userForm.email.$invalid">
-                        Your email must be between 10 and 100 characters long and look like an e-mail address.
+                        Your email must be between 10 and 100 characters long and look like <br> an e-mail address.
                     </div>
                 </div>
             </md-input-container>

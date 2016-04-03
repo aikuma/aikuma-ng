@@ -123,5 +123,7 @@
   "ABOUT": "About Aikuma",
   "SESSION_NAME": "Session name",
   "DATE": "Date",
-  "ADD_MORE": "More"
+  "ADD_MORE": "More",
+  "NAME_ADD": "Add a name",
+  "META_EMAIL": "Email"
 }
