@@ -62,7 +62,7 @@
   "ANNO_NOEXIST": "没有注释呢！",
   "ANNO_DEL": "删除注释",
   "ADD_NEW": "增加新的",
-  "SESSION_ADD": "A增加新的录音时段",
+  "SESSION_ADD": "增加新的录音时段",
   "ANNO_DELCONF1": "您确定要删除这个注解？",
   "ANNO_DELCONF2": "这无法撤销",
   "ANNO_DELNO": "没办法",
@@ -120,5 +120,9 @@
   "BUGREP_INSTR": "在GitHub的问题跟踪你可以报告的问题。请列出重现该问题所需的步骤。支持语言：英语，中文。",
   "DEV_TEAM": "开发团队",
   "BETA": "beta测试",
-  "ABOUT": "关于爱库码"
+  "ABOUT": "关于爱库码",
+  "SESSION_NAME": "录音时段的名字",
+  "DATE": "日期",
+  "ADD_MORE": "添加更多",
+  "EXPORT_SRT": "导出为SRT插入文件格式"
 }

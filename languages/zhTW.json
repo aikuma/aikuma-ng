@@ -120,5 +120,9 @@
   "BUGREP_INSTR": "在GitHub的問題跟踪你可以報告的問題。請列出重現該問題所需的步驟。支持語言：英語，中文。",
   "DEV_TEAM": "开发团队",
   "BETA": "beta測試",
-  "ABOUT": "關於愛庫碼"
+  "ABOUT": "關於愛庫碼",
+  "SESSION_NAME": "錄音時段的名字",
+  "DATE": "日期",
+  "ADD_MORE": "添加更多",
+  "EXPORT_SRT": "导出为SRT插入文件格式"
 }

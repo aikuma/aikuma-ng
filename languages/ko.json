@@ -120,5 +120,9 @@
   "BUGREP_INSTR": "You can report issues on the GitHub issue tracker. Please list steps required to reproduce the issue. Languages supported: English, Chinese.",
   "DEV_TEAM": "development team",
   "BETA": "beta",
-  "ABOUT": "About Aikuma"
+  "ABOUT": "About Aikuma",
+  "SESSION_NAME": "Session name",
+  "DATE": "Date",
+  "ADD_MORE": "More",
+  "EXPORT_SRT": "Save as SRT"
 }
