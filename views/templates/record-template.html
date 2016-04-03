@@ -1,28 +1,28 @@
-<div layout="row">
+<div flex layout="row" layout-align="start center">
     <div layout="column" flex="50" >
         <md-input-container style="height:32px;">
             <label></label>
-            <input ng-model="nrCtrl.selectedTitle" placeholder="{{nrCtrl.titlePlaceholder}}" class="md-subhead" >
+            <input ng-model="nrCtrl.selectedTitle" placeholder="{{'SESSION_NAME' | translate}}" class="md-subhead" >
         </md-input-container>
         
         <ng-language-selector on-change="nrCtrl.saveLangs(langIds)"></ng-language-selector>
         
         <md-button ng-if="!nrCtrl.externalRecord" ng-disabled="nrCtrl.recordUrl" class="md-raised ng-class:{'nowrecording': nrCtrl.isrecording}" aria-label="Save" ng-click="nrCtrl.toggleRecord()" >
             <md-icon md-svg-icon="av:mic"></md-icon>
-            <span flex>Record</span>
+            <span flex>{{"RECORD" | translate}}</span>
         </md-button>
     </div>
     <div flex="50" ng-class="recordClass" class="respeakwavesurfer" id="respeakRecord"></div>
 </div>
 <md-button ng-if="!nrCtrl.externalRecord" ng-disabled="!nrCtrl.hasrecdata" class="md-raised" ng-class="playbackClass" aria-label="Check" ng-click="nrCtrl.play()" >
     <md-icon md-svg-icon="av:play_arrow"></md-icon>
-    <span class="buttontext">Review</span>
+    <span class="buttontext">{{"PLAY" | translate}}</span>
 </md-button>
 <md-button ng-if="!nrCtrl.externalRecord" class="md-raised" aria-label="Reset" ng-click="nrCtrl.reset()" >
     <md-icon md-svg-icon="action:delete"></md-icon>
-    <span class="buttontext">Clear</span>
+    <span class="buttontext">{{"RESET" | translate}}</span>
 </md-button>
 <md-button ng-disabled="nrCtrl.isMetaEmpty()" class="md-raised" aria-label="Save" ng-click="nrCtrl.save()" >
     <md-icon md-svg-icon="content:save"></md-icon>
-    <span class="buttontext">Save</span>
+    <span class="buttontext">{{"SAVE" | translate}}</span>
 </md-button>

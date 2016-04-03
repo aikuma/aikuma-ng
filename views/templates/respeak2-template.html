@@ -6,7 +6,7 @@
 <div layout="row">
 
     <div layout="column" flex="50">
-        <ng-language-selector ng-if="type === 'translate'" lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;"></ng-language-selector>
+        <ng-language-selector ng-if="type === 'translate'" lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;height:22px"></ng-language-selector>
         <div layout="row" flex="50" >
             <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
                 <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>

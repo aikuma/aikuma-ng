@@ -1,0 +1,50 @@
+Aikuma-NG Beta is aimed at people wishing to enrich recordings of speech by means of recording speech-based annotations or translations and/or producing written transcriptions. 
+
+Our goal is to create a tool which is useful for communities with lesser resourced (endangered) languages. Providing an easy-to-use alternative to complex software, enabling interested people to produce basic records of language for their goals. Goals which may include producing captioned video recordings for language maintainance, teaching and revitalization. 
+
+Outside of our intended use case, Aikuma-NG may be broadly useful for anyone wishing to annotate speech and where there is some reason to avoid excellent but complicated native software such as ELAN. We use the term annotation broadly to mean any addition to a source or primary recording. 
+
+Aikuma-NG beta allows the user to do the following:
+
+1. Record audio from a computer with a microphone or import audio from a WAV or MP3 file (such as from a mobile phone).
+2. Produce a 'respeaking' audio annotations, where the user may record repeated speech for the purposes of making it clear for transcription.
+3. Produce a 'translation' audio annotation, by the same mechanism but also specifying the translation language.
+4. Record details (or metadata as it's sometimes called) for a given source recording 'session', such as participants, genres of speech and any number of user definable fields, uploading of images and so on.
+5. Create any number of annotations for the given source recording and perform these annotations, based on source and optional audio annotations.
+6. Export the annotations to the WebVTT file format suitable for uploading to YouTube etc.
+7. Back up and restore data recorded in the app.
+
+The annotation (transcription) UI offers the ability to either create an annotation from scratch, using a simple control-key to play, cursor keys to navigate audio and marked regions, control scheme. Alternatively Aikuma-NG can import audio annotation 'tracks' recorded in the app, thereby assisting with producing written transcripts based on audio respeaking/translation recordings or audio annotations as we call them.
+
+Users may safely ignore audio annotations and the session metadata features if all they wish to acccomplish is produce captions for audio, previously extracted from video and so on.
+
+Controls and instructions
+
+Respeaking/translation view: Left shift to play, right-shift to record. Press left-shift again to replay from previous point. Escape deletes the last recorded region. You can return to the respeaking/translation views to continue working UNLESS you have imported these in the annotation view.
+
+Annotation view: There are two basis modes, annotating as you go, or working within regions. The instuctions below may seem complicated but are actually quite intuitive. You may prefer to experiment; the main keys are CTRL to play, cursor keys to navigate, return key, escape (undo). The keys behave a little differently depending on what you're doing. A fuller explanation as follows:
+
+Mode 1: Annotating when there is no region, or annotate-as-you-go such as annotating from scratch. You can use the cursor keys or click on the waveform to quickly navigate back and forth. Press and HOLD control to play. You will see a green region being marked, you can lift off and type an annotation, hit return to save it and continue directly by holding control again. You can also use right cursor to skip. You may also use the back cursor to go back to previous regions, in which case keys behave like mode 2. 
+
+Mode 2: If the waveform cursor is within an existing span of regions, keys behave differently. You only need to tap CTRL to play the current region. Note that the speaker icon allows you to change playback preferences, such as playing the source or a spoken annotation, or both. 
+
+If you have recorded a respeaking/transation, you will see these as tracks. Just click on the track button on the right of any given annotation to join a track if you wish. If you have joined a track, you will see regions appear on the waveform which have been copied from the audio. This also provides the ability to play spoken annotations. Note that you can continue annotating AFTER the availability of spoken annotations if you wish.
+
+Note: If there is more than one annotation in a track, enable/disable buttons appear for each annotation. The reason is two-fold. 1. It selects which annotatons to export via the save captions feature. 2. Sets the behavior when you press return to enter an annotation. For example, disable all but one annotation and hitting return will advance to the next region, rather than the next enabled annotation. So you can decide if you want to, for example, annotate all of the source in one go, or alternate between writing source annotations and a translation.
+
+Aikuma-NG is offered localised into English and Chinese (simplified and traditional), additional contributions of localisation are most welcome! The language of the app may be switched instantly by the top right drop-down menu.
+
+The Aikuma Project
+
+Aikuma-NG is the result if an international research project to develop tools to help communities document, maintain and revive their 'treasure' languages. This software is the evolution of Aikuma, an Android mobile-phone app described in detail at www.aikuma.org. The name Aikuma means "meeting place" in Usarufa, the language where the mobile app Aikuma was first used. Usarufa is spoken in the Eastern Highlands Province of Papua New Guinea.
+
+(NG might mean next-generation or the common shortcut for Angular, a web framework employed in this software)
+
+If you are interested in helping, you can do so in a number of ways. We welcome feedback and bug reports:
+https://github.com/aikuma/aikuma-ng/
+We would also welcome contributions from developers.
+
+Aikuma-NG development team: Steven Bird, Mat Bettinson, Sang Yeop Lee.
+
+
+

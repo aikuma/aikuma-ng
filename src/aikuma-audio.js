@@ -87,7 +87,7 @@
                     rec = new Recorder(vm.streamsource, {numChannels: 1});
                 })
                 .catch(function (feh) {
-                    console.log('audio spaz', feh);
+                    console.log('audio spaz out', feh);
                 });
 
         }
@@ -100,9 +100,7 @@
             } else {
                 rec.getBuffer(function(buf){
                     vm.recordDurMsec = Math.floor(buf[0].length / (microphone.micContext.sampleRate/1000));
-                    console.log('rt', vm.recordDurMsec);
                     audioService.resampleAudioBuffer(microphone.micContext,buf,targetSampleRate,function(thinggy){
-                        //var blob = thinggy.getFile();
                         var audioBuf = thinggy.getAudioBuffer();
                         var blob = audioService.arrayToBlob(audioBuf.getChannelData(0), 1, audioBuf.sampleRate);
                         fileService.createFile(loginService.getLoggedinUserId(), blob).then(function(url) {
@@ -144,20 +142,18 @@
 
         vm.toggleRecord = function () {
             if (!vm.isrecording) {
-                console.log('starting record');
+                $scope.recordClass = 'activerecord';
+                vm.isrecording=true;
                 audioService.playBeep(function() {
                     rec.record();
-                    $scope.recordClass = 'activerecord';
-                    vm.isrecording=true;
                 });
             } else {
-                console.log('stopping record');
+                $scope.recordClass = 'activespeaker';
+                vm.isrecording = false;
                 rec.stop();
                 audioService.playBeep();
                 vm.hasrecdata = true; // used for review/play button status
                 vm.wsRecord.empty();
-                $scope.recordClass = 'activespeaker';
-                vm.isrecording = false;
             }
         };
 
@@ -254,10 +250,7 @@
         
         vm.selectedTitles = [];
         vm.selectedLanguages = [];
-        
-        vm.titlePlaceholder = "Add titles";
-        vm.titleSecPlaceholder = "Add more";
-        
+
         // Language input interface for session
         vm.saveLangs = function(langIds) {
             vm.selectedLanguages = langIds;
@@ -280,7 +273,6 @@
         var escKeyCode = 27;    // escape
         var skipTimeValue = 1;  // amount of time to skip backwards for rewind
         var ffPlaybackRate = 2; // playback speed in FF mode
-        var minRegionLength = 1;
         var respeakAudioContext = new AudioContext();
         // Variables that record playin position, array of wavesurfer regions, segmentation map and more
         var recordedAudioBuffer = null;
@@ -403,12 +395,12 @@
             $scope.$apply(restoreState);
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
-                if (ev.location === 1) {leftKeyDown();}
-                if (ev.location === 2) {rightKeyDown();}
+                if (ev.location === 1) {leftKeyDown(true);}
+                if (ev.location === 2) {rightKeyDown(true);}
             });
             keyService.regKey(ctrlKeyCode,'keyup', function(ev) {
-                    if (ev.location === 1) {leftKeyUp();}
-                    if (ev.location === 2) {rightKeyUp();}
+                    if (ev.location === 1) {leftKeyUp(true);}
+                    if (ev.location === 2) {rightKeyUp(true);}
             });
             keyService.regKey(ffKeyCode,'keydown',  function(ev) {ffKeyDown(true);});
             keyService.regKey(ffKeyCode,'keyup',    function(ev) {ffKeyUp(true);});
@@ -483,7 +475,7 @@
         // Most of these key handling functions will silently return if the user is holding another key
         // Note the order of setting the keydown status. We allow for people releasing keys before return, but we will not register keys down under simultaneous keypress conditions.
         // left key actions for playback
-        function leftKeyDown(nokey) {
+        function leftKeyDown(waskey) {
             if (vm.rightKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.leftKeyDown = true;
             disableRecording();
@@ -504,9 +496,9 @@
             lastAction = 'play';
             vm.isPlaying = true;
             recorder.clear();
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
-        function leftKeyUp(nokey) {
+        function leftKeyUp(waskey) {
             vm.leftKeyDown = false;
             if (vm.rightKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             wsPlayback.pause();
@@ -520,7 +512,7 @@
             }
             vm.recordClass = 'activespeaker';
             updateHelpText();
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
         vm.playDown = function() {
             leftKeyDown(false);
@@ -529,7 +521,7 @@
             leftKeyUp(false);
         };
         // right key actions for playback
-        function rightKeyDown(nokey) {
+        function rightKeyDown(waskey) {
             if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.rightKeyDown = true;
             if (vm.recordDisabled) {return;}               // do nothing if record is disabled
@@ -541,9 +533,9 @@
             vm.recordClass = 'activerecord';
             recorder.record();                  // begin recorder.js
             vm.isRecording = true;
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
-        function rightKeyUp(nokey) {
+        function rightKeyUp(waskey) {
             vm.rightKeyDown = false;
             if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.isRecording = false;
@@ -554,7 +546,7 @@
             // Now let's update the UI
             vm.recordClass = 'activespeaker';
             updateHelpText();
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
         vm.recDown = function() {
             rightKeyDown(false);
@@ -564,7 +556,7 @@
         };
         // fast forward key triggers playback at ffPlaybackRate times normal speed
         // We can also use this to create different region entry points, e.g. skip content we don't wish to respeak.
-        function ffKeyDown(nokey) {
+        function ffKeyDown(waskey) {
             if (vm.leftKeyDown || vm.rightKeyDown) {return;}  // Block multiple keys
             vm.ffKeyDown = true;
             vm.hasSeeked = true;
@@ -576,16 +568,16 @@
             wsPlayback.setPlaybackRate(ffPlaybackRate);
             wsPlayback.play();
             updateHelpText();
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
-        function ffKeyUp(nokey) {
+        function ffKeyUp(waskey) {
             vm.ffKeyDown = false;
             if (vm.leftKeyDown || vm.rightKeyDown) {return;}  // Block multiple keys
             wsPlayback.pause();
             wsPlayback.setPlaybackRate(1);
         }
         // rewind key just jumps the cursor back 1 second each time. No playback.
-        function rwKey(nokey) {
+        function rwKey(waskey) {
             disableRecording();
             var thistime =  wsPlayback.getCurrentTime();
             console.log('tt',thistime,vm.playIn);
@@ -594,7 +586,7 @@
             } else {
                 wsPlayback.skipBackward(skipTimeValue);
             }
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
 
         //
@@ -602,10 +594,10 @@
         //
         // escape key to undo last region - currently infinite length
         // after removing a region, update the UI
-        function escKey(nokey) {
+        function escKey(waskey) {
             deleteLastRegion();
             updateHelpText();
-            if (nokey) {$scope.$apply();}
+            if (waskey) {$scope.$apply();}
         }
 
         // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
