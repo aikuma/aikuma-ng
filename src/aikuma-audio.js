@@ -229,8 +229,8 @@
             if(rec)
                 rec.clear();
             fileService.setTempObject(null);
-            vm.wsRecord.destroy();
             microphone.destroy();
+            vm.wsRecord.destroy();
             vm.context.close();
         });
         

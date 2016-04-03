@@ -13,19 +13,6 @@
                 controllerAs: 'navCtrl'
             };
         })
-        .directive("ngUserSelector", function() {
-            return {
-                restrict: "E",
-                scope: {
-                    userObj: '=',
-                    sessionObj: '=',
-                    role: '@'
-                },
-                templateUrl: "views/templates/user-selector-template.html",
-                controller: userSelectorController,
-                controllerAs: 'usCtrl'
-            };
-        })
         .directive("ngTagSelector", function() {
             return {
                 restrict: "E",
@@ -242,7 +229,6 @@
                     title: 'NAV_BUGREP',
                     icon: 'action:bug_report',
                     state: 'reportbug',
-                    tooltip: 'NOT_IMPLEMENTED'
                 }
             ];
             
@@ -265,81 +251,6 @@
 
         };
     navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog'];
-
-    var userSelectorController = function ($scope, loginService, dataService) {
-        var vm = this;
-        
-        // load all user data from the service and create an array of contacts needed for md-contact-chips
-        var userdata = $scope.userObj.data;
-        vm.allPeople = loadPeople(userdata.people);
-        vm.personQuerySearch = function(query) {
-            var results = query ?
-                vm.allPeople.filter(createFilterForPerson(query)) : [];
-            return results;
-        };
-
-        // load the requested session from the service and get the current users
-        var sessionObj = $scope.sessionObj,
-            selectedIds = [];
-        if(sessionObj.data.roles) {
-            selectedIds = sessionObj.data.roles[$scope.role];
-        }
-
-        // onload populate the chips selector with existing (based on ids)
-        $scope.selectedPeople = _.map(selectedIds, function(id) {
-            return makePersonObj(userdata.people,id);
-        });
-
-        // ordinary watch and ng-change don't work.
-        $scope.$watchCollection('selectedPeople', function() {
-            var idList = _.pluck($scope.selectedPeople, 'id');
-            if(!sessionObj.data.roles)
-                sessionObj.data.roles = {};
-            sessionObj.data.roles[$scope.role] = idList;
-            sessionObj.save();
-        });
-        
-
-        vm.placeholder = "Add speakers";
-        vm.secondaryPlaceholder = "Add more";
-        vm.filterSelectedPeople = true;
-
-        function makePersonObj(users,id) {
-            // make a string from all of the user's names - we use this for search
-            var fnames = angular.lowercase(users[id].names.join(' '));
-            // make a pretty string from all of the user's names - we use this for display
-            var pname = users[id].names[0];
-            if (users[id].names.length > 1) {
-                pname += ' (' + users[id].names.slice(1).join() + ')';
-            }
-            
-            // create a contact object out of these constructed details
-            var personObj = {
-                'id': id,
-                'pname': pname,
-                'fnames': fnames,
-                'email': users[id].email,
-                'image': userdata.files[users[id].imageFileId].url
-            };
-            return personObj;
-        }
-
-        function createFilterForPerson(query) {
-            var lowercaseQuery = angular.lowercase(query);
-            return function filterFn(contact) {
-                return (contact.fnames.indexOf(lowercaseQuery) != -1);
-            };
-        }
-        function loadPeople(people) {
-            var contacts = [];
-            _.each(_.keys(people), function (id) {
-                contacts.push(makePersonObj(people,id));
-            });
-            return contacts;
-        }
-
-    };
-    userSelectorController.$inject = ['$scope', 'loginService', 'dataService'];
 
     var tagSelectorController = function ($scope, loginService, dataService) {
         var vm = this;
@@ -672,20 +583,15 @@
         vm.selectedPeople = _.map(vm.selectedIds, function(id) {
             return makePersonObj(vm.userObj.data.people,id);
         });
-
-        vm.placeholder = "Add speakers";
-        vm.secondaryPlaceholder = "Add more";
+        
         vm.filterSelectedPeople = true;
         vm.autocompleteDemoRequireMatch = false;
         vm.selectedItem = null;
-        vm.searchText = null;
 
         vm.add = function() {
-            console.log('add');
             updateSession();
         };
         vm.rem = function() {
-            console.log('remove');
             updateSession();
         };
         vm.sel = function() {console.log('select');};

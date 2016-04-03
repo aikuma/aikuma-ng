@@ -4,7 +4,7 @@
     <div flex layout="row" layout="space-between">
         <div flex>
             <div layout="row" layout-align="start end">
-                <span class="md-body-2"><md-datepicker ng-model="sCtrl.myDate" md-placeholder="Enter date"></md-datepicker></span>
+                <span class="md-body-2"><md-datepicker ng-model="sCtrl.myDate" md-placeholder="{{'DATE' | translate}}"></md-datepicker></span>
                 <span class="md-body-2" ng-repeat="meta in sCtrl.TopLineMetadata">
                     <md-icon disabled class="statusicon" md-svg-icon="{{meta.icon}}"></md-icon>{{meta.text}}</span>
                 </span>

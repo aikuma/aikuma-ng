@@ -340,8 +340,6 @@
                 }
             ];
 
-            vm.location = 'MPI, Netherlands.';
-
             // For directives in status.html
             vm.userId = loginService.getLoggedinUserId();
             vm.sessionId = $routeParams.sessionId;
@@ -462,7 +460,7 @@
                 $location.path('/session/'+vm.sessionId+'/annotate'+'/'+index);
             };
 
-            vm.olac = sessionObj.data.olac || 'drama';
+            vm.olac = sessionObj.data.olac;
             vm.clickOlac = function(clickwhat) {
                 vm.olac = clickwhat;
                 sessionObj.data.olac = clickwhat;

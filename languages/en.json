@@ -33,7 +33,7 @@
   "ACTIVITY_RECORD": "Record New",
   "PLAY": "Play",
   "RECORD": "Record",
-  "REDO": "Redo",
+  "REDO": "Undo",
   "SAVE": "Save",
   "RESET": "Reset",
   "RSPK_HELP1": "First play the source by holding left-shift",
@@ -70,7 +70,7 @@
   "ANNO_DO": "Perform annotation",
   "HOME_LOGREQ": "You are not logged in, please select a user",
   "LANG_WHAT": "What language?",
-  "LANG_ADD": "Add a language",
+  "LANG_ADD": "Language",
   "OLAC1": "dialogue",
   "OLAC2": "drama",
   "OLAC3": "formulaic",
@@ -93,8 +93,8 @@
   "RECORD_NTRANS": "Record New Translation",
   "EDIT_RESPEAK": "Edit Respeaking",
   "EDIT_TRANS": "Edit Translation",
-  "ADD_PERSON": "Add people",
-  "ADD_TAG": "Add tags",
+  "ADD_PERSON": "Speaker",
+  "ADD_TAG": "Tags",
   "NOT_IMPLEMENTED": "Not yet implemented",
   "NONE": "None",
   "META_EDIT": "Edit details",
@@ -121,5 +121,7 @@
   "DEV_TEAM": "development team",
   "BETA": "beta",
   "ABOUT": "About Aikuma",
-  "SESSION_NAME": "Session name"
+  "SESSION_NAME": "Session name",
+  "DATE": "Date",
+  "ADD_MORE": "More"
 }
