@@ -474,6 +474,12 @@
                 sessionObj.save();
             };
             
+            vm.myDate = new Date(sessionObj.data.source.created);
+            vm.saveDate = function() {
+                sessionObj.data.source.created = vm.myDate.getTime();
+                sessionObj.save();
+            }
+            
             vm.getTopLine = function() {
                 var displayfields = ["META_LOC"];
                 var topLineList = [];
