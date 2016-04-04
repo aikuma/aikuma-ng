@@ -88,6 +88,7 @@ md-sidenav {
 .statusicon {
     width:24px;
     height:24px;
+    margin-top:0px;
     padding-right:10px;
     padding-left:10px;
 }
@@ -270,4 +271,15 @@ div.noclicky:focus {
 }
 .inactiveannotation:focus {
     outline: none;
+}
+
+.md-datepicker-input {
+    font-weight: 500;
+    min-width: 80px;
+}
+.md-datepicker-input-container {
+    border-bottom-width: 0px;
+}
+.md-datepicker-button {
+    width: 36px;
 }
