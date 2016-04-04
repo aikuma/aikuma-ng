@@ -190,14 +190,18 @@
             vm.switchTrackKey = function(nokey) {
                 var numtracks = vm.tracks.list.length;
                 var tpos = vm.tracks.list.indexOf(vm.r.tk);
-                ++tpos;
-                if (tpos === numtracks) {tpos = 0;}
-                if (tpos === vm.tracks.list.indexOf(vm.r.tk)) {return;}
-                vm.selectTrack(vm.tracks.list[tpos]);
+                var found = false;
+                while (!found) {
+                    ++tpos;
+                    if (tpos === numtracks) {tpos = 0;}
+                    if (tpos === vm.tracks.list.indexOf(vm.r.tk)) {return;}
+                    if (vm.tracks[vm.tracks.list[tpos]].hasAnno) {found=true;}
+                }
+                if (found) {
+                    vm.selectTrack(vm.tracks.list[tpos]);
+                }
             };
-            
-            
-            
+   
 
             //
             // START UP

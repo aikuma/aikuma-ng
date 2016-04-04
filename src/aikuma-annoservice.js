@@ -110,7 +110,9 @@
                         var segid = secondary.segment.sourceSegId;
                         var coldat = asx.getHue(trackidx);
                         asx.tracks[segid] = {
-                            hasAudio: true,
+                            trackNum: trackidx,
+                            hasAudio: true,                             // When this is true, it means we have a respeaking or translation
+                            hasAnno: false,                             // When this is true, we have at east one annotation (e.g. display the track)
                             audioFile: secondary.source.recordFileId,
                             segMsec: secondary.segment.segMsec,
                             color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,30%)'},
@@ -126,7 +128,7 @@
                             asx.tracks[segid].type = 'ANNO_TRANS';
                             asx.tracks[segid].action = 'USE_TRANS';
                         }
-                        asx.tracks.audio.push(segid); // a record of audio tracks for buttons etc
+                        asx.tracks.audio.push(segid); // a record of audio tracks used for buttons underneath the waveform
                         asx.tracks.list.push(segid);
                         asx.cursor[segid] = 0;
                     }
@@ -151,6 +153,7 @@
                     };
                     // This annotation uses the segmap from one of the audio files
                     if (segmentId in asx.tracks) {
+                        asx.tracks[segmentId].hasAnno = true;
                         asx.tracks[segmentId].annos.push(thisAnnoObj);
                     } else {
                         ++trackidx;
@@ -158,6 +161,8 @@
                         // this one seems to be stand alone
                         asx.tracks[segmentId] = {
                             hasAudio: false,
+                            trackNum: trackidx,
+                            hasAnno: true,
                             type: angular.uppercase(secondary.data.type),
                             color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,35%)'},
                             coldat: coldat,
@@ -309,17 +314,22 @@
                 asx.wavesurfer.destroy();
             };
 
-            var reusableIdx = [];
             asx.joinTrack = function(track, aIdx, strack) {
                 // move the anno object (text, cfg etc) from old track to new track
                 var movedAnno = asx.tracks[track].annos.splice(aIdx, 1)[0];
                 var annoData = asx.annoObjList.filter(function(sec){ return sec.data._ID === movedAnno.id;})[0];
                 var oldseg = annoData.data.segment.sourceSegId;
                 asx.tracks[strack].annos.push(movedAnno);
+                asx.tracks[strack].hasAnno = true;
                 
                 annoData.data.segment.sourceSegId = strack; // because a track key is basically a sourcesegid
                 annoData.data.segment.annotations = []; // wipe them, don't need to init to length of seg map
                 annoData.save();
+
+                // We have slit from a track but the track has audio, so set the hasAnno flag false so it doesn't show up in the UI
+                if (asx.tracks[track].annos.length === 0 && asx.tracks[track].hasAudio) {
+                    asx.tracks[track].hasAnno = false;
+                }
 
                 // If the track we moved from has no more annos... remove it from the tracks list
                 if (asx.tracks[track].annos.length === 0 && !asx.tracks[track].hasAudio) {
@@ -327,15 +337,8 @@
                     var idx = asx.tracks.list.indexOf(track);
                     asx.tracks.list.splice(idx,1);
                     delete asx.tracks[track];
-                    for(var i = 0; i < reusableIdx.length; i++) {
-                        if(idx > reusableIdx[i]) {
-                            reusableIdx.splice(i, 0, idx);
-                        }
-                    }
-                    if(reusableIdx.length === 0 || i == reusableIdx.length) {
-                        reusableIdx.push(idx);
-                    }
                 }
+
                 // now let's see if we've orphaned a source seg
                 var foundsecLen = asx.secondaryObjList.filter(function(sec) { return sec.type.indexOf('anno_') !== 0 && sec.segment.sourceSegId === oldseg;}).length;
                 foundsecLen += asx.annoObjList.filter(function(annoObj) { return annoObj.data.segment.sourceSegId === oldseg; }).length;
@@ -357,20 +360,33 @@
             // and make a new track. This will not wipe the annotations and will copy the segments from the prior track
             asx.trackSplit = function(track, aIdx) {
                 var movedAnno = asx.tracks[track].annos.splice(aIdx, 1)[0];
+                if (asx.tracks[track].annos.length === 0) {
+                    asx.tracks[track].hasAnno = false;
+                }
                 var thisanno = asx.annoObjList.filter(function(ao) {return ao.data._ID === movedAnno.id;})[0];
                 var copyseg = asx.sessionObj.data.segments[track];
                 var newsegid = asx.sessionObj.addSrcSegment(copyseg);
                 thisanno.data.segment.sourceSegId = newsegid;
                 // We need a new colour, and a new icon, otherwise copy stuff from old track
-                var idx = reusableIdx.pop();
-                if(!idx) idx = asx.tracks.list.length;
+
+                var idx = 0;
+                var found = false;
+                while (!found) {
+                    ++idx;
+                    if (!_.findWhere(asx.tracks, {trackNum: idx})) {
+                        found=true;
+                    }
+                }
+
                 var coldat = asx.getHue(idx+1);
                 asx.tracks[newsegid] = {
+                    trackNum: idx,
                     hasAudio: false,
+                    hasAnno: true,
                     type: asx.tracks[track].type,
                     color: {color: 'hsl('+coldat[0]+','+coldat[1]+'%,35%)'},
                     coldat: coldat,
-                    icon: 'mdi:numeric-'+(idx+1)+'-box',
+                    icon: 'mdi:numeric-'+(idx)+'-box',
                     annos: [movedAnno]
                 };
                 asx.tracks[newsegid].action = angular.uppercase(asx.tracks[track].type);

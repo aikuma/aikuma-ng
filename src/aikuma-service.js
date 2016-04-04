@@ -8,7 +8,7 @@
         .factory('keyService', [function () {
             var ser = {};
             var subscribers = [];
-            ser.regKey= function(keypress,keypresstype, callback) {
+            ser.regKey= function(keypress, keypresstype, callback) {
                 subscribers.push({'keypress':keypress,'keypresstype':keypresstype, 'callback': callback});
             };
             ser.clearKey = function(keypress, keypresstype) {
@@ -23,8 +23,8 @@
             ser.handleKey = function(ev) {
                 subscribers.forEach(function(sub){
                     if (ev.type === sub.keypresstype && ev.keyCode === sub.keypress) {
-                        sub.callback(ev);
                         ev.preventDefault();
+                        sub.callback(ev);
                     }
                 });
             };
