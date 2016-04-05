@@ -245,13 +245,17 @@
             
             vm.toggleDebug = function() {
                 config.debug = !config.debug;
-            }
+            };
             
             // When 'Open File' is pressed
             $scope.$watch('file', function (file) {
-                if (file && file.type.match('^audio/')) { 
-                    fileService.setTempObject(file);
-                    $location.path('/new');
+                if (file) {
+                    if (!file.type.match('^audio/')) {
+                        aikumaDialog.toast('Not an audio file!');
+                    } else {
+                        fileService.setTempObject(file);
+                        $location.path('/new');
+                    }
                 }
             });
 

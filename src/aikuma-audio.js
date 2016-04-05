@@ -37,7 +37,7 @@
     //
     // RECORD DIRECTIVE
     //
-    var newRecordDirectiveController = function (config, $scope, $location, $window, loginService, audioService, dataService, fileService, $sce) {
+    var newRecordDirectiveController = function (config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce) {
         var vm = this;
         var rec;
 
@@ -226,13 +226,22 @@
             $scope.recording = '';
         };
 
+        $rootScope.$on('$routeChangeStart', function() {
+            if (!vm.externalRecord) {
+                microphone.stopDevice();
+                microphone.destroy();
+                vm.wsRecord.destroy();
+            }
+        });
+
         $scope.$on('$destroy', function() {
-            if(rec)
-                rec.clear();
-            fileService.setTempObject(null);
-            microphone.destroy();
-            vm.wsRecord.destroy();
-            vm.context.close();
+            if (!vm.externalRecord) {
+                if(rec)
+                    rec.clear();
+                vm.context.close();
+            } else {
+                fileService.setTempObject(null);
+            }
         });
         
         $window.onbeforeunload = function() {
@@ -258,7 +267,7 @@
         };
 
     };
-    newRecordDirectiveController.$inject = ['config', '$scope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    newRecordDirectiveController.$inject = ['config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
 
 
     //

@@ -285,9 +285,10 @@
             };
         }])
 
-        .controller('newSessionController', ['$location', 'loginService', 'userObj', function($location, loginService, userObj) {
+        .controller('newSessionController', ['$location', 'loginService', 'userObj', 'fileService', function($location, loginService, userObj, fileService) {
             // For now, new.html is just a container of ngRecord directive
             var vm = this;
+            vm.externalRecord = fileService.getTempObject();
             
             vm.userObj = userObj;
         }])
