@@ -20,7 +20,7 @@
         <span flex>{{item.title | translate}}</span>
     </label>
 
-    <div style="position: absolute;bottom: 10px;padding-left: 10px;">
+    <div style="position: absolute;bottom: 10px;padding-left: 10px;" ng-click="navCtrl.toggleDebug()">
         <span class="md-caption"><i>{{'AIKUMA' | translate}}-<i>NG</i> {{'BETA' | translate}} {{navCtrl.versionString}}</i></span>
     </div>
     <input id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >

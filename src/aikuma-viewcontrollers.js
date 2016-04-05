@@ -59,6 +59,7 @@
 
         .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
             var vm = this;
+            vm.debug = function() { return config.debug; };
 
             dataService.getJsonBackup().then(function(db) {
                 vm.db = db;

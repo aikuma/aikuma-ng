@@ -242,6 +242,11 @@
             vm.openAbout = function(ev) {
                 aikumaDialog.help(ev, 'about');
             };
+            
+            vm.toggleDebug = function() {
+                config.debug = !config.debug;
+            }
+            
             // When 'Open File' is pressed
             $scope.$watch('file', function (file) {
                 if (file && file.type.match('^audio/')) { 

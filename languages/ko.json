@@ -127,5 +127,8 @@
   "EXPORT_SRT": "SRT 포맷 다운로드",
   "NAME_ADD": "이름 추가하기",
   "META_EMAIL": "이메일",
-  "ABOUT_AIKUMA": "About Aikuma"
+  "ABOUT_AIKUMA": "Aikuma에 관하여",
+  "ERROR_SESSION_TITLE": "세션이름이 필요합니다",
+  "ERROR_SESSION_LANG": "세션언어가 필요합니다",
+  "ERROR_SESSION_REC": "아무것도 녹음되지 않았습니다"
 }
