@@ -127,5 +127,8 @@
   "EXPORT_SRT": "Save as SRT",
   "NAME_ADD": "Add a name",
   "META_EMAIL": "Email",
-  "ABOUT_AIKUMA": "About Aikuma"
+  "ABOUT_AIKUMA": "About Aikuma",
+  "ERROR_SESSION_TITLE": "Session name is required",
+  "ERROR_SESSION_LANG": "At lest one language is required",
+  "ERROR_SESSION_REC": "Nothing is recorded"
 }

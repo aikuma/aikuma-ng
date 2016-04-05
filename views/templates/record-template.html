@@ -6,7 +6,12 @@
         </md-input-container>
         
         <ng-language-selector on-change="nrCtrl.saveLangs(langIds)"></ng-language-selector>
-        
+        <ng-messages for="nrCtrl.noMeta" style="font-size: 12px; color:rgb(221,44,0)" role="alert">
+            <ng-message when="title">{{ "ERROR_SESSION_TITLE" | translate }}</ng-message>
+            <ng-message when="langs">{{ "ERROR_SESSION_LANG" | translate }}</ng-message>
+            <ng-message when="rec">{{ "ERROR_SESSION_REC" | translate }}</ng-message>
+        </ng-messages>
+
         <md-button ng-if="!nrCtrl.externalRecord" ng-disabled="nrCtrl.recordUrl" class="md-raised ng-class:{'nowrecording': nrCtrl.isrecording}" aria-label="Save" ng-click="nrCtrl.toggleRecord()" >
             <md-icon ng-if="!nrCtrl.isrecording" md-svg-icon="av:mic"></md-icon>
 <!--            <span ng-if="!nrCtrl.isrecording" flex>{{"RECORD" | translate}}</span>-->
@@ -14,6 +19,7 @@
 <!--            <span ng-if="nrCtrl.isrecording" flex>{{"STOP" | translate}}</span>-->
         </md-button>
     </div>
+    
     <div flex="50" ng-class="recordClass" class="respeakwavesurfer" id="respeakRecord"></div>
 </div>
 <md-button ng-if="!nrCtrl.externalRecord" ng-disabled="!nrCtrl.hasrecdata" class="md-raised" ng-class="playbackClass" aria-label="Check" ng-click="nrCtrl.play()" >

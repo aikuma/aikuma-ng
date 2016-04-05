@@ -127,5 +127,8 @@
   "EXPORT_SRT": "导出为SRT插入文件格式",
   "NAME_ADD": "添加一個名字",
   "META_EMAIL": "電郵地址",
-  "ABOUT_AIKUMA": "關於愛庫碼"
+  "ABOUT_AIKUMA": "關於愛庫碼",
+  "ERROR_SESSION_TITLE": "Session name is required",
+  "ERROR_SESSION_LANG": "At lest one language is required",
+  "ERROR_SESSION_REC": "Nothing is recorded"
 }

@@ -25,6 +25,7 @@
             <md-input-container md-no-float class="md-block">
                 <input name="email" ng-model="pdCtrl.userEmail" required 
                        placeholder="{{'META_EMAIL' | translate}}"
+                       autocomplete="off"
                        minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
             </md-input-container>
         </md-dialog-content>
