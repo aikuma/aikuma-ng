@@ -322,7 +322,25 @@
 
     var metadataController = function ($scope, loginService, dataService, $mdDialog) {
         var vm = this;
+        vm.defaultdisplay = ["META_DESC", "META_LOC"];
+        if (!('details' in $scope.sessionObj.data)) {$scope.sessionObj.data.details = [];}
+        if ($scope.sessionObj.data.details.length === 0) {
+            $scope.sessionObj.data.details.push(
+            {
+                name: 'META_DESC',
+                icon: 'action:description',
+                data: ''
+            });
+            $scope.sessionObj.data.details.push(
+            {
+                name: 'META_LOC',
+                icon: 'communication:location_on',
+                data: ''
+            });
+            $scope.sessionObj.save();
+        }
         vm.details = $scope.sessionObj.data.details;
+        
         vm.addMetadata = function(ev) {
             $mdDialog.show({
                 controller: newMetaDialogController,
@@ -335,7 +353,7 @@
                     sessionObj: $scope.sessionObj
                 }
             });
-        }
+        };
         vm.editMetadata = function(ev, idx) {
             $mdDialog.show({
                 controller: editMetaDialogController,
@@ -350,7 +368,7 @@
                 }
             });
         };
-        vm.defaultdisplay = ['Description','Location'];
+        
     };
     metadataController.$inject = ['$scope', 'loginService', 'dataService', '$mdDialog'];
 
