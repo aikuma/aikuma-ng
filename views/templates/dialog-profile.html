@@ -26,11 +26,6 @@
                 <input name="email" ng-model="pdCtrl.userEmail" required 
                        placeholder="{{'META_EMAIL' | translate}}"
                        minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
-                <div ng-messages="userForm.email.$error" role="alert">
-                    <div ng-show="userForm.email.$invalid">
-                        Your email must be between 10 and 100 characters long and look like <br> an e-mail address.
-                    </div>
-                </div>
             </md-input-container>
         </md-dialog-content>
         <md-dialog-actions layout="row">

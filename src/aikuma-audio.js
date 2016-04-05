@@ -284,6 +284,7 @@
         vm.playrecturn = 'play';
         vm.begunrecording = false;
         vm.recordDisabled = true;
+        vm.undoDisabled = false;
         vm.clickPlaybackOn = false;
 
         // used to block multiple key presses
@@ -322,6 +323,10 @@
                 
                 var sourceSeg = $scope.sessionObj.data.segments[prevState.srcSegId];
                 var respeakSeg = $scope.respeakObj.data.segment.segMsec;
+                if(sourceSeg.length !== respeakSeg.length) {
+                    vm.recordDisabled = true;
+                    vm.undoDisabled = true;
+                }
                 var respeakSegSample = $scope.respeakObj.data.segment.segSample;
                 vm.segMap = _.zip(sourceSeg, respeakSeg, respeakSegSample).map(function(arr) {
                     return {
@@ -395,17 +400,21 @@
             $scope.$apply(restoreState);
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
-                if (ev.location === 1) {leftKeyDown(true);}
-                if (ev.location === 2) {rightKeyDown(true);}
+                if($scope.type !== 'translate' || vm.srcLangIds.length > 0) {
+                    if (ev.location === 1) {leftKeyDown(true);}
+                    if (ev.location === 2) {rightKeyDown(true);}
+                }
             });
             keyService.regKey(ctrlKeyCode,'keyup', function(ev) {
+                if($scope.type !== 'translate' || vm.srcLangIds.length > 0) {
                     if (ev.location === 1) {leftKeyUp(true);}
                     if (ev.location === 2) {rightKeyUp(true);}
+                }
             });
-            keyService.regKey(ffKeyCode,'keydown',  function(ev) {ffKeyDown(true);});
-            keyService.regKey(ffKeyCode,'keyup',    function(ev) {ffKeyUp(true);});
-            keyService.regKey(rwKeyCode,'keydown',  function(ev) {rwKey(true);});
-            keyService.regKey(escKeyCode,'keydown', function(ev) {escKey(true);});
+            keyService.regKey(ffKeyCode,'keydown',  function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) ffKeyDown(true);});
+            keyService.regKey(ffKeyCode,'keyup',    function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) ffKeyUp(true);});
+            keyService.regKey(rwKeyCode,'keydown',  function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) rwKey(true);});
+            keyService.regKey(escKeyCode,'keydown', function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) escKey(true);});
         });
         wsPlayback.on('seek', function() {
             vm.hasSeeked = true;
@@ -595,6 +604,7 @@
         // escape key to undo last region - currently infinite length
         // after removing a region, update the UI
         function escKey(waskey) {
+            if (vm.undoDisabled) {return;}               // do nothing if undo is disabled
             deleteLastRegion();
             updateHelpText();
             if (waskey) {$scope.$apply();}
@@ -893,11 +903,10 @@
         }
         
         vm.saveLangs = function(langIds) {
+            vm.srcLangIds = langIds;
             if($scope.type === 'translate' && $scope.respeakObj) {
-                $scope.respeakObj.data.source.langIds = langIds;
+                $scope.respeakObj.data.source.langIds = vm.srcLangIds;
                 $scope.respeakObj.save();
-            } else {
-                vm.srcLangIds = langIds;   
             }
         };
 

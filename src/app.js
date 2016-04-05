@@ -16,7 +16,8 @@
             'angularResizable',        // used by annotation controller, Angular Material doesn't usually resize
             'indexedDB',               // used by dataservice to store metadata
             'aikuma-dataservice',      // data service dealing with metadata and files
-            'ngPrettyJson'             // for debugging
+            'ngPrettyJson',            // for debugging
+            'ngMessages'               // for validation messages
         ])
         .constant('config', {
             appName: 'AikumaNG',
