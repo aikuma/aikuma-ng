@@ -448,6 +448,8 @@
                     ++vm.playindex;
                     if (vm.playindex === vm.playregions.length) {
                         vm.wavesurfer.un('pause', wscallback);
+                        vm.wavesurfer.clearRegions();
+                        vm.wavesurfer.stop();
                         
                     } else {
                         vm.playregions[vm.playindex].play();
