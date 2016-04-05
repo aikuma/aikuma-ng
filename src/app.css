@@ -82,7 +82,7 @@ md-sidenav {
     text-transform: uppercase;
     font-weight: 500;
     font-size: 14px;
-    color: #757575;
+    color: #656565;
 }
 
 .statusicon {
@@ -318,4 +318,20 @@ kbd.menu kbd {
 .detailscard {
     width:200px;
     height:300px;
+}
+
+.sectionbox {
+    background: #f7f7f7;
+    border-radius: 3px;
+    margin: 1em;
+    position: relative !important;
+    padding-bottom: 10px;
+}
+
+.sectionboxlabel {
+    position: absolute;
+    bottom: 5px;
+    left: 7px;
+    font-size: 14px;
+    opacity: 0.54;
 }

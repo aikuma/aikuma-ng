@@ -3,7 +3,7 @@
     <p class="animated md-title bounceInRight md-title">{{"ANNO_NOEXIST" | translate}}</p>
 </div>
 
-<div layout="row" flex align="start end">
+<div layout="column" flex align="start end">
     <md-list id="annotationList">
         <md-list-item class="md-2-line animated bounceInRight" ng-repeat="anno in annoCtrl.annotations" layout="row" ng-click="annoCtrl.editAnno($index)">
             <md-icon md-svg-icon="image:filter_{{$index+1}}" class="md-avatar-icon" style="width:32px;height:32px;"></md-icon>

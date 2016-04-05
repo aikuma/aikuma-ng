@@ -40,7 +40,8 @@
             return {
                 restrict: "E",
                 scope: {
-                    source: '@'
+                    source: '@',
+                    wavesurfer: '='
                 },
                 templateUrl: "views/templates/player-template.html",
                 controller: playerController,
@@ -437,6 +438,7 @@
     var playerController = function ($scope, $attrs) {
         var vm = this;
         vm.wsPlayback = Object.create(WaveSurfer);
+        $scope.wavesurfer = vm.wsPlayback;
 
         var wsdefaults = {
             container: "#sessionPlayer",
