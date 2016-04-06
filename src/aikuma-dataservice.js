@@ -90,6 +90,7 @@
         }])
         .factory('dataService', ['$q', '$indexedDB', 'aikumaUtils', function($q, $indexedDB, aikumaUtils){
             // id, lastModified is automatically created
+            var typeList = [USER_TYPE, SESSION_TYPE, SECONDARY_TYPE];
             var dataModel = {
                 user: {
                     _ID: true,
@@ -289,7 +290,7 @@
                 data['userId'] = userId;
                 data['sessionId'] = sessionId;
                 
-                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                return $indexedDB.openStores(typeList, function(store0, store1, store2) {
                     return dbOps.get(null, userId, store0).then(function() {    // validation
                         return dbOps.get(null, sessionId, store1);
                     }).then(function() {
@@ -321,18 +322,81 @@
                 });
             };
             
-            service.remove = function(type, id) {
-                return $indexedDB.openStore(type, function(store) {
-                   return dbOps.remove(null, id, store); 
+            service.removeData = function(type, id) {
+                var removeDefer = $q.defer(),
+                    data = {}, 
+                    fileIds = [], fileUrls = [];
+                
+                $indexedDB.openStores(typeList, function(store0, store1, store2) {
+                    var stores = [store0, store1, store2],
+                        storeIdx = typeList.indexOf(type);
+                    
+                    return stores[storeIdx].find(id).then(function(tempData){
+                        data = tempData;
+                        return stores[storeIdx].delete(id);
+                    }).then(function(){
+                        delete cachedWrappers[type + id];
+                        if(data.segment && data.segment.sourceSegId) {
+                            return store2.eachBy('user_session_idx', {beginKey: [data.userId, data.sessionId], endKey: [data.userId, data.sessionId]});       
+                        }
+                        return;
+                    }).then(function(secList) {
+                        if(secList) {
+                            var cnt = secList.filter(function(sec) { 
+                                return sec.segment && sec.segment.sourceSegId && sec.segment.sourceSegId === data.segment.sourceSegId ;
+                            }).length;
+                            if(cnt === 0) {
+                                return store1.find(data.sessionId);
+                            }
+                        }
+                        return;
+                    }).then(function(sessionData){
+                        if(sessionData) {
+                            delete sessionData.segments[data.segment.sourceSegId];
+                            delete cachedWrappers[SESSION_TYPE + data.sessionId];
+                            return store1.upsert(sessionData);
+                        }
+                        return;
+                    }).then(function(){
+                        if((data.imageIds && data.imageIds.length > 0) || (data.source && data.source.recordFileId)) {
+                            if(data.imageIds)
+                                fileIds = data.imageIds;
+                            if(data.source && data.source.recordFileId)
+                                fileIds.push(data.source.recordFileId);
+                            
+                            return store0.find(data.userId);
+                        }
+                        return;
+                    }).then(function(userData){
+                        if(userData) {
+                            for(var i in fileIds) {
+                                var url = userData.files[fileIds[i]].url;
+                                if(url)
+                                    fileUrls.push(url);
+                                delete userData.files[fileIds[i]];
+                            }
+                            delete cachedWrappers[USER_TYPE + data.userId];
+                            return store0.upsert(userData);
+                        }
+                        return;
+                    }).then(function(){
+                        removeDefer.resolve(fileUrls);
+                    }).catch(function(err){
+                        removeDefer.reject(err);
+                    }); 
+                    
                 });
+                
+                return removeDefer.promise;
             };
             
             var cachedWrappers = {};
-            service.get = function(type, id) {
+            
+            service.get = function(type, id, refresh) {
                 var dataDefer = $q.defer();
                 
                 var cacheKey = type + id;
-                if(cacheKey in cachedWrappers) {
+                if(!refresh && cacheKey in cachedWrappers) {
                     dataDefer.resolve(cachedWrappers[cacheKey]);
                 } else {
                     $indexedDB.openStore(type, function(store) {
@@ -360,7 +424,7 @@
                             //other secondary
                         }
 
-                        if(!cachedWrappers[cacheKey])
+                        if(refresh || !cachedWrappers[cacheKey])
                             cachedWrappers[cacheKey] = wrapper;
                         dataDefer.resolve(cachedWrappers[cacheKey]);
                     }).catch(function(err) {
@@ -404,6 +468,12 @@
             };
             
             service.getAnnotationObjList = function(userId, sessionId) {
+                Object.keys(cachedWrappers).forEach(function(key) {
+                    var dataType = cachedWrappers[key].data.type;
+                    if(dataType && dataType.indexOf('anno_') === 0)
+                        delete cachedWrappers[key];
+                });
+                
                 return service.getSecondaryList(userId, sessionId).then(function(secList) {
                     return secList.filter(function(secData){
                         return secData.type.indexOf('anno_') === 0;
@@ -436,6 +506,12 @@
             };
             
             service.getAnnotationObjDict = function(userId, sessionId) {
+                Object.keys(cachedWrappers).forEach(function(key) {
+                    var dataType = cachedWrappers[key].data.type;
+                    if(dataType && dataType.indexOf('anno_') === 0)
+                        delete cachedWrappers[key];
+                });
+                
                 return service.getSecondaryDict(userId, sessionId, 'anno_', function(secData) {
                     var wrapper = {data: secData};
                     wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
@@ -494,7 +570,7 @@
             // Backup/Import DB
             service.getJsonBackup = function() {
                 var backup = {};
-                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                return $indexedDB.openStores(typeList, function(store0, store1, store2) {
                     return store0.getAll().then(function(userData) {
                         backup[USER_TYPE] = userData;
                         return store1.getAll();
@@ -509,7 +585,7 @@
             };
             
             service.clear = function() {
-                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                return $indexedDB.openStores(typeList, function(store0, store1, store2) {
                     return store0.clear().then(function() {
                         return store1.clear();
                     }).then(function() {
@@ -536,7 +612,7 @@
                 });
                 
                 // Import DB
-                return $indexedDB.openStores([USER_TYPE, SESSION_TYPE, SECONDARY_TYPE], function(store0, store1, store2) {
+                return $indexedDB.openStores(typeList, function(store0, store1, store2) {
                     return store0.upsert(dbObj[USER_TYPE]).then(function() {
                         return store1.upsert(dbObj[SESSION_TYPE]);
                     }).then(function() {
@@ -808,6 +884,19 @@
                 });
 
                 return fileDefer.promise;
+            };
+            
+            service.removeData = function(type, id) {
+                var removeDefer = $q.defer();
+                dataService.removeData(type, id).then(function(urls){
+                    return $q.all(urls.map(function(url){ return service.deleteFile(url); }));
+                }).then(function() {
+                    removeDefer.resolve('deleted');
+                }).catch(function(err) {
+                    removeDefer.reject(err);
+                });
+                
+                return removeDefer.promise;
             };
 
             service.deleteFile = function(url) {
