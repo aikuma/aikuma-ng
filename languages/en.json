@@ -132,5 +132,8 @@
   "ERROR_SESSION_LANG": "At least one language is required",
   "ERROR_SESSION_REC": "Nothing is recorded",
   "ACTIVITY_IMPORT": "Import New",
-  "HOME_NOSESSION": "No sessions yet!"
+  "HOME_NOSESSION": "No sessions yet!",
+  "DELETE_RESPK": "Delete respeaking",
+  "DELETE_TRANS": "Delete translation",
+  "DELETE_CONF": "Delete your work?"
 }

@@ -273,7 +273,7 @@
     //
     // RESPEAK2 DIRECTIVE
     //
-    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $sce) {
+    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $mdDialog, $translate) {
         var vm = this;
         vm.playBoxesEnabled = false;    //playSegment will not work
         var recorder;           // recorder.js
@@ -367,15 +367,6 @@
                     vm.regionList.push(reg);
                 });
                 vm.playIn = _.last(vm.regionList).end;
-                /*
-                var fileReader = new FileReader();
-                fileReader.onload = function() {
-                    recordedAudioBuffer = new Float32Array(this.result);
-                    console.log(recordedAudioBuffer.length, ' == ', prevState.sampleLength);
-                };
-                fileService.getFile(prevState.fileObj.url).then(function(prevFile) {
-                    fileReader.readAsArrayBuffer(prevFile); 
-                });*/
                 recordedAudioBuffer = new Float32Array(prevState.sampleLength);
             }
         }
@@ -410,21 +401,30 @@
             $scope.$apply(restoreState);
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
-                if($scope.type !== 'translate' || vm.srcLangIds.length > 0) {
-                    if (ev.location === 1) {leftKeyDown(true);}
+                    if (ev.location === 1) {
+                        leftKeyDown(true);}
                     if (ev.location === 2) {rightKeyDown(true);}
-                }
             });
             keyService.regKey(ctrlKeyCode,'keyup', function(ev) {
-                if($scope.type !== 'translate' || vm.srcLangIds.length > 0) {
-                    if (ev.location === 1) {leftKeyUp(true);}
-                    if (ev.location === 2) {rightKeyUp(true);}
-                }
+                    if (ev.location === 1) {
+                        leftKeyUp(true);
+                    }
+                    if (ev.location === 2) {
+                        rightKeyUp(true);
+                    }
             });
-            keyService.regKey(ffKeyCode,'keydown',  function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) ffKeyDown(true);});
-            keyService.regKey(ffKeyCode,'keyup',    function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) ffKeyUp(true);});
-            keyService.regKey(rwKeyCode,'keydown',  function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) rwKey(true);});
-            keyService.regKey(escKeyCode,'keydown', function(ev) {if($scope.type !== 'translate' || vm.srcLangIds.length > 0) escKey(true);});
+            keyService.regKey(ffKeyCode,'keydown',  function() {
+                ffKeyDown(true);
+            });
+            keyService.regKey(ffKeyCode,'keyup',    function() {
+                ffKeyUp(true);
+            });
+            keyService.regKey(rwKeyCode,'keydown',  function() {
+                rwKey(true);
+            });
+            keyService.regKey(escKeyCode,'keydown', function() {
+                escKey(true);
+            });
         });
         wsPlayback.on('seek', function() {
             vm.hasSeeked = true;
@@ -487,7 +487,6 @@
                 var startpos = vm.segMap[regidx].child_samp[0];
                 var endpos = vm.segMap[regidx].child_samp[1];
                 audioService.playbackBuffer(respeakAudioContext, recordedAudioBuffer, startpos, endpos);
-                //playbackAudio(reg.data.audio);
             });
         };
 
@@ -796,33 +795,18 @@
             } else {
                 $location.path('session/' + $scope.sessionObj.data._ID);
             }
-            
-            
-            //var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
-            //var fileURL = URL.createObjectURL(newBlob);
-            //vm.recordingFile=$sce.trustAsResourceUrl(fileURL);
-            //vm.hasRecording = true;
         }
-
         //
         // This is called every time there is data to be saved
         //
         vm.isTempObjsaving = false;
         var fileProcessPromise;
         function saveToBackend() {
-            //var newBlob = audioService.arrayToBlob(recordedAudioBuffer,1,config.sampleRate);
-            //var fileURL = URL.createObjectURL(newBlob);
-            // 1. do something with this fileURL
-            // 2. do something with vm.segMap
-            
             if(prevState && prevState.sampleRate && prevState.sampleRate !== resampledRate) {
                 // error
                 return;
             }
-            
-            if(vm.isTempObjsaving) 
-                return;
-            
+            if(vm.isTempObjsaving) {return;}
             vm.isTempObjsaving = true;
             var newBlob;
             if(prevState) {
@@ -920,6 +904,38 @@
             }
         };
 
+        vm.cancelDelete = function(ev) {
+            if (vm.segMap.length > 0) {
+                $translate(['DELETE_CONF', 'ANNO_DELCONF2', 'DELETE_TRANS', 'DELETE_RESPK', 'ANNO_DELNO']).then(function (translations) {
+                    var okaytext;
+                    switch ($scope.type) {
+                        case 'respeak':
+                            okaytext = translations.DELETE_RESPK;
+                            break;
+                        case 'translate':
+                            okaytext = translations.DELETE_TRANS;
+                            break;
+                    }
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.DELETE_CONF)
+                        .textContent(translations.ANNO_DELCONF2)
+                        .ariaLabel('Delete')
+                        .targetEvent(ev)
+                        .ok(okaytext)
+                        .cancel(translations.ANNO_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        $location.path('session/' + $scope.sessionObj.data._ID);
+                    }, function () {
+                        //
+                    });
+                });
+            } else {
+                $location.path('session/' + $scope.sessionObj.data._ID);
+            }
+
+        };
+
+
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {
             keyService.clearAll();
@@ -932,6 +948,6 @@
                 recorder.clear();
         });
     };
-    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$mdDialog', '$translate'];
 
 })();

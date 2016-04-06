@@ -6,7 +6,10 @@
 <div layout="row">
 
     <div layout="column" flex="50">
-        <ng-language-selector ng-if="type === 'translate'" class="animated bounceInRight" lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;height:22px"></ng-language-selector>
+        <div ng-if="type === 'translate'">
+        <ng-language-selector  lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;height:22px"></ng-language-selector>
+        <span ng-show="rCtrl.srcLangIds.length === 0" class="md-caption">{{ "ERROR_SESSION_LANG" | translate }}</span>
+        </div>
         <div layout="row" flex="50" >
             <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
                 <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
@@ -43,7 +46,11 @@
     </md-grid-list>
 </md-content>
 
-<md-button ng-disabled="rCtrl.isTempObjsaving" class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
-    <md-icon md-svg-icon="content:save"></md-icon>
-<!--    {{"FINISH" | translate}}-->
+<md-button class="md-raised" aria-label="Cancel" ng-click="rCtrl.cancelDelete($event)" >
+    <md-icon md-svg-icon="action:delete"></md-icon>
 </md-button>
+
+<md-button ng-disabled="rCtrl.srcLangIds.length === 0 || rCtrl.segMap.length === 0" class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
+    <md-icon md-svg-icon="content:save"></md-icon>
+</md-button>
+

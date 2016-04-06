@@ -128,7 +128,12 @@
   "NAME_ADD": "添加一个名字",
   "META_EMAIL": "电邮地址",
   "ABOUT_AIKUMA": "关于爱库码",
-  "ERROR_SESSION_TITLE": "Session name is required",
-  "ERROR_SESSION_LANG": "At lest one language is required",
-  "ERROR_SESSION_REC": "Nothing is recorded"
+  "ERROR_SESSION_TITLE": "录音时段名称是必需的",
+  "ERROR_SESSION_LANG": "至少一种语言是必需",
+  "ERROR_SESSION_REC": "没有记录",
+  "ACTIVITY_IMPORT": "导入新",
+  "HOME_NOSESSION": "还没有录音时段!",
+  "DELETE_RESPK": "删除重复说话记录",
+  "DELETE_TRANS": "删除翻译记录",
+  "DELETE_CONF": "删除你的工作？"
 }

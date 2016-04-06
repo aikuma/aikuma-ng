@@ -577,7 +577,7 @@
             vm.langIdNameMap = _.object(dataObj[0].map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
             vm.userObj = dataObj[1];
             vm.sessionObj = dataObj[2];
-            if(dataObj.length == 4)
+            if(dataObj.length === 4)
                 vm.respeakObj = dataObj[3];
             vm.userData = vm.userObj.data;
             vm.sessionData = vm.sessionObj.data;

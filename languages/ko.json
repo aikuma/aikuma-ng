@@ -130,5 +130,10 @@
   "ABOUT_AIKUMA": "Aikuma에 관하여",
   "ERROR_SESSION_TITLE": "세션이름이 필요합니다",
   "ERROR_SESSION_LANG": "세션언어가 필요합니다",
-  "ERROR_SESSION_REC": "아무것도 녹음되지 않았습니다"
+  "ERROR_SESSION_REC": "아무것도 녹음되지 않았습니다",
+  "ACTIVITY_IMPORT": "Import New",
+  "HOME_NOSESSION": "No sessions yet!",
+  "DELETE_RESPK": "Delete respeaking",
+  "DELETE_TRANS": "Delete translation",
+  "DELETE_CONF": "Delete your work?"
 }

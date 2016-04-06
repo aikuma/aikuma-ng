@@ -190,6 +190,12 @@
             vm.menu = [
                 {
                     class : '',
+                    title: 'HOME',
+                    icon: 'action:home',
+                    state: 'home'
+                },
+                {
+                    class : '',
                     title: 'NAV_HELP',
                     icon: 'action:help',
                     state: 'help'
