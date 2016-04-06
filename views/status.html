@@ -33,12 +33,12 @@
                                      <md-icon md-svg-src="img/icons/technology.svg" style="width:32px;height:32px;margin-left:8px;" aria-label="Recordings"></md-icon>
                                 </div>-->
                 <div flex="50" layout="column">
-                    <md-button class="md-raised" flex ng-if="!sCtrl.hasRespeaking" aria-label="Record respeaking" class="" ng-click="sCtrl.newRespeaking()" >
+                    <md-button class="md-raised" ng-if="!sCtrl.hasRespeaking" aria-label="Record respeaking" class="" ng-click="sCtrl.newRespeaking()" >
                         <md-icon md-svg-icon="mdi:repeat"></md-icon>
                         {{"RECORD_RESPEAK" | translate}}
                     </md-button>
                     <md-menu flex ng-if="sCtrl.hasRespeaking" layout="column">
-                        <md-button class="md-raised" flex aria-label="Respeaking menu" ng-click="sCtrl.openRspMenu($mdOpenMenu, $event)" ng-class="{'animated flash infinite': sCtrl.pcss.respeak}">
+                        <md-button class="md-raised" aria-label="Respeaking menu" ng-click="sCtrl.openRspMenu($mdOpenMenu, $event)" ng-class="{'animated flash infinite': sCtrl.pcss.respeak}">
                             <md-icon md-menu-origin md-svg-icon="mdi:repeat"></md-icon>
                             <span>{{"RESPEAKING" | translate}} ({{sCtrl.numRespeaking}})</span>
                         </md-button>
@@ -50,7 +50,7 @@
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item ng-repeat-start="respk in sCtrl.respeakings">
-                                <md-button flex ng-click="sCtrl.editRespeaking($index)">
+                                <md-button ng-click="sCtrl.editRespeaking($index)">
                                     <md-icon md-menu-align-target md-svg-icon="mdi:repeat"></md-icon>
                                 <span class="headtext">{{"EDIT_RESPEAK" | translate}} {{$index+1}}</span>
                                     <!--                                    <i>{{respk.source.created | date:'dd/MM/yyyy'}}</i></span>-->
@@ -70,12 +70,12 @@
 
                 <!--Translation button or menu-->
                 <div flex="50" layout="column">
-                    <md-button class="md-raised" flex ng-if="!sCtrl.hasTranslation" aria-label="Record translation" ng-click="sCtrl.newTranslation()" >
+                    <md-button class="md-raised" ng-if="!sCtrl.hasTranslation" aria-label="Record translation" ng-click="sCtrl.newTranslation()" >
                         <md-icon md-svg-icon="action:translate"></md-icon>
                         {{"RECORD_TRANS" | translate}}
                     </md-button>
                     <md-menu ng-if="sCtrl.hasTranslation" layout="column">
-                        <md-button class="md-raised" flex aria-label="Translation menu" ng-click="sCtrl.openTrnMenu($mdOpenMenu, $event)" ng-class="{'animated flash infinite': sCtrl.pcss.translate}">
+                        <md-button class="md-raised" aria-label="Translation menu" ng-click="sCtrl.openTrnMenu($mdOpenMenu, $event)" ng-class="{'animated flash infinite': sCtrl.pcss.translate}">
                             <md-icon md-menu-origin md-svg-icon="action:translate"></md-icon>
                             <span>{{"ANNO_TRANS" | translate}} ({{sCtrl.numTranslation}})</span>
                         </md-button>

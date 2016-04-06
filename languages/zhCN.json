@@ -135,5 +135,6 @@
   "HOME_NOSESSION": "还没有录音时段!",
   "DELETE_RESPK": "删除重复说话记录",
   "DELETE_TRANS": "删除翻译记录",
-  "DELETE_CONF": "删除你的工作？"
+  "DELETE_CONF": "删除你的工作？",
+  "DELETE_RECORD": "删除记录"
 }

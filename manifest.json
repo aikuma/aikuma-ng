@@ -17,10 +17,15 @@
         "audio": {
             "types": [
                 "audio/mpeg",
+                "audio/mp4",
+                "audio/ogg",
                 "audio/vnd.wav"
             ],
             "extensions": [
                 "mp3",
+                "mp4",
+                "aac",
+                "ogg",
                 "wav"
             ]
         }

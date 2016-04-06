@@ -36,11 +36,13 @@
     <md-icon md-svg-icon="av:play_arrow"></md-icon>
 <!--    <span class="buttontext">{{"PLAY" | translate}}</span>-->
 </md-button>
-<md-button ng-if="!nrCtrl.externalRecord" class="md-raised" aria-label="Reset" ng-click="nrCtrl.reset()" >
-    <md-icon md-svg-icon="action:delete"></md-icon>
-<!--    <span class="buttontext">{{"RESET" | translate}}</span>-->
+<md-button ng-if="!nrCtrl.externalRecord" class="md-raised" aria-label="Reset" ng-click="nrCtrl.cancelDelete()" >
+    <md-tooltip ng-if="nrCtrl.hasrecdata" class="md-body-2">{{"META_DEL" | translate}}</md-tooltip>
+    <md-tooltip ng-if="!nrCtrl.hasrecdata" class="md-body-2">{{"BUTTON_CANCEL" | translate}}</md-tooltip>
+    <md-icon ng-if="!nrCtrl.hasrecdata" md-svg-icon="nav:cancel"></md-icon>
+    <md-icon ng-if="nrCtrl.hasrecdata" md-svg-icon="action:delete"></md-icon>
 </md-button>
 <md-button ng-disabled="nrCtrl.isMetaEmpty()" class="md-raised" aria-label="Save" ng-click="nrCtrl.save()" >
-    <md-icon md-svg-icon="content:save"></md-icon>
-<!--    <span class="buttontext">{{"SAVE" | translate}}</span>-->
+    <md-tooltip class="md-body-2">{{"SAVE" | translate}}</md-tooltip>
+    <md-icon md-svg-icon="action:done"></md-icon>
 </md-button>

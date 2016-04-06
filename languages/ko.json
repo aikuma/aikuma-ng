@@ -135,5 +135,6 @@
   "HOME_NOSESSION": "No sessions yet!",
   "DELETE_RESPK": "Delete respeaking",
   "DELETE_TRANS": "Delete translation",
-  "DELETE_CONF": "Delete your work?"
+  "DELETE_CONF": "Delete your work?",
+  "DELETE_RECORD": "Delete recording"
 }

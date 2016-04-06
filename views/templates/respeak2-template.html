@@ -47,10 +47,15 @@
 </md-content>
 
 <md-button class="md-raised" aria-label="Cancel" ng-click="rCtrl.cancelDelete($event)" >
-    <md-icon md-svg-icon="action:delete"></md-icon>
+    <md-tooltip class="md-body-2">{{"META_DEL" | translate}}</md-tooltip>
+    <md-tooltip ng-if="rCtrl.segMap.length > 0" class="md-body-2">{{"META_DEL" | translate}}</md-tooltip>
+    <md-tooltip ng-if="rCtrl.segMap.length === 0" class="md-body-2">{{"BUTTON_CANCEL" | translate}}</md-tooltip>
+    <md-icon ng-if="rCtrl.segMap.length === 0" md-svg-icon="nav:cancel"></md-icon>
+    <md-icon ng-if="rCtrl.segMap.length > 0" md-svg-icon="action:delete"></md-icon>
 </md-button>
 
 <md-button ng-disabled="rCtrl.srcLangIds.length === 0 || rCtrl.segMap.length === 0" class="md-raised" aria-label="Save" ng-click="rCtrl.saveFile()" >
-    <md-icon md-svg-icon="content:save"></md-icon>
+    <md-tooltip class="md-body-2">{{"SAVE" | translate}}</md-tooltip>
+    <md-icon md-svg-icon="action:done"></md-icon>
 </md-button>
 

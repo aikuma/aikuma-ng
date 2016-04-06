@@ -37,7 +37,7 @@
     //
     // RECORD DIRECTIVE
     //
-    var newRecordDirectiveController = function (config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce) {
+    var newRecordDirectiveController = function (config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce, $mdDialog, $translate) {
         var vm = this;
         var rec;
 
@@ -216,14 +216,31 @@
 
         };
 
-        vm.reset = function() {
+        vm.cancelDelete = function(ev) {
             if(rec) {
                 rec.stop();
                 rec.clear();   
             }
-            vm.hasrecdata = false;
             $scope.recordClass = 'inactivespeaker';
             $scope.recording = '';
+            if (vm.hasrecdata) {
+                $translate(['DELETE_CONF', 'ANNO_DELCONF2', 'DELETE_RECORD', 'ANNO_DELNO']).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.DELETE_CONF)
+                        .textContent(translations.ANNO_DELCONF2)
+                        .ariaLabel('Delete')
+                        .targetEvent(ev)
+                        .ok(translations.DELETE_RECORD)
+                        .cancel(translations.ANNO_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        $location.path('/');
+                    }, function () {
+                        //
+                    });
+                });
+            } else {
+                $location.path('/');
+            }
         };
 
         $rootScope.$on('$routeChangeStart', function() {
@@ -267,7 +284,7 @@
         };
 
     };
-    newRecordDirectiveController.$inject = ['config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce'];
+    newRecordDirectiveController.$inject = ['config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce', '$mdDialog', '$translate'];
 
 
     //
@@ -367,6 +384,7 @@
                     vm.regionList.push(reg);
                 });
                 vm.playIn = _.last(vm.regionList).end;
+                console.log('pi',vm.playIn);
                 recordedAudioBuffer = new Float32Array(prevState.sampleLength);
             }
         }
@@ -924,6 +942,7 @@
                         .ok(okaytext)
                         .cancel(translations.ANNO_DELNO);
                     $mdDialog.show(confirm).then(function () {
+                        fileService.removeData('secondary', $scope.respeakObj.data._ID);
                         $location.path('session/' + $scope.sessionObj.data._ID);
                     }, function () {
                         //
