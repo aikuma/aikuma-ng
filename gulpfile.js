@@ -83,7 +83,7 @@ gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
         language_out: 'ECMASCRIPT5_STRICT',
         js_output_file: 'scripts/combined.js'
         })))
-        .pipe(gulpif('*.css', minifyCss()))
+        //.pipe(gulpif('*.css', minifyCss()))
         .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));
 });
