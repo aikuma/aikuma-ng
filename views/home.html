@@ -3,7 +3,7 @@
 <md-content class="md-padding">
     <div ng-if="hCtrl.getLoginStatus()">
     <p class="md-title inset">{{'WELCOME' | translate}} <i>{{hCtrl.currentUserName()}}.</i></p>
-        <span ng-if="hCtrl.sessionList.length === 0" class="md-title inset"><i>{{"HOME_NOSESSION" | translate }}</i></span>
+        <span ng-if="hCtrl.sessionList.length === 0" class="md-title inset">{{"HOME_NOSESSION" | translate }}</span>
         <md-list ng-if="hCtrl.sessionList.length > 0">
             <md-list-item class="md-3-line" ng-repeat="session in hCtrl.sessionList" ng-click="hCtrl.goStatus($index)">
                     <div ng-style="{ 'background-image': 'url(' + hCtrl.currentUser.files[session.imageIds[0]].url +')' }" class="roundedthumbnails"> </div>
@@ -17,7 +17,7 @@
     </div>
 
     <md-fab-speed-dial ng-if="hCtrl.getLoginStatus()" md-open="hCtrl.speedDial" md-direction="right"
-                       class="md-scale" style="margin-left:20px;margin-top:10px;">
+                       class="md-scale" style="margin-left:20px;margin-top:10px;" >
         <md-fab-trigger>
             <md-button aria-label="menu" class="md-fab md-warn">
                 <md-tooltip md-direction="bottom" class="md-body-1">{{"SESSION_ADD" | translate}}</md-tooltip>

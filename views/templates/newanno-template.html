@@ -57,6 +57,12 @@
                         <md-tooltip class="md-body-2">{{"ANNO_TOG" | translate}}</md-tooltip>
                     </md-switch>
 
+                    <md-button class="md-icon-button" ng-click="annoC.setVoiceRecogLang($event,track,$index)"
+                               ng-class="{'animated flash infinite': (annoC.voiceRecogActive && annoC.selAnno[track] === $index && annoC.r.tk === track)}">
+                        <md-tooltip class="md-body-2">{{"VOICE_CFG" | translate}}</md-tooltip>
+                        <md-icon md-svg-icon="action:settings_voice"></md-icon>
+                    </md-button>
+
                     <md-menu>
                         <md-button ng-disabled="annoC.r.tk !== track"
                                    class="bigsvgicon" aria-label="Track menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">

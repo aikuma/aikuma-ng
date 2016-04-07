@@ -8,6 +8,7 @@
         .factory('audioService', ['config', 'fileService', function (config, fileService) {
             var service = {};
 
+
             service.playbackLocalFile = function(audioContext, fsUri, start, end, callback) {
                 fileService.getFile(fsUri).then(function(file) {
                     service.playbackFile(audioContext, file, start, end, callback);
@@ -164,6 +165,53 @@
             service.playBeep = function(callback) {
                 beep.onended = callback;
                 beep.play();
+            };
+
+            service.initVoiceRecog = function() {
+                service.recognition = new webkitSpeechRecognition();
+                service.recognition.continuous = false;
+                service.recognition.interimResults = true;
+                service.recognition.onstart = function() {
+                    service.playBeep();
+                };
+                service.recognition.onerror = function(event) {
+                    if (event.error === 'no-speech') {
+                        console.log('info_no_speech');
+                    }
+                    if (event.error === 'audio-capture') {
+                        console.log('info_no_microphone');
+                    }
+                    if (event.error === 'not-allowed') {
+                        if (event.timeStamp - service.voice_start_timestamp < 100) {
+                            connsole.log('info_blocked');
+                        } else {
+                            console.log('info_denied');
+                        }
+                    }
+                };
+
+            };
+
+            service.startVoiceRecog = function(langCode, callbackUpdate, callbackFinished) {
+                service.recognition.lang = langCode;
+                service.voice_start_timestamp = Date.now();
+                service.recognition.onresult = function(event) {
+                    service.interim_transcript = '';
+                    for (var i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            service.final_transcript += event.results[i][0].transcript;
+                        } else {
+                            service.interim_transcript += event.results[i][0].transcript;
+                        }
+                    }
+                    callbackUpdate(service.final_transcript, service.interim_transcript);
+                };
+                service.recognition.onend = function() {
+                    callbackFinished(service.final_transcript);
+                    service.playBeep();
+                };
+                service.final_transcript = '';
+                service.recognition.start();
             };
             
             return service;
