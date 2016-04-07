@@ -1,7 +1,7 @@
 <ng-topbar session="{{sCtrl.sessionData.names[0]}}"></ng-topbar>
 
 <md-content class="md-padding">
-    <div flex layout="row" layout="space-between">
+    <div flex layout="row" layout-md="column" layout="space-between">
         <div flex>
             <div layout="row" layout-align="start center">
                 <span class="md-body-2"><md-datepicker class="md-body-2" ng-model="sCtrl.myDate" md-placeholder="{{'DATE' | translate}}" ng-change="sCtrl.saveDate()" ></md-datepicker></span>
