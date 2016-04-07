@@ -30,6 +30,7 @@
             vm.switchTrackCode = 9; // tab
             vm.prevAnnoCode = 38;  // up arrow
             vm.nextAnnoCode = 40;  // down arrow
+            vm.voiceCode = 192;     // ` key
             vm.ffPlaybackRate = 2.5; // playback speed in FF mode
             vm.skipTimeValue = 3;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;
@@ -45,6 +46,7 @@
             vm.annotations = $scope.annotationObjList;
             
             var annotateAudioContext = new AudioContext();
+            audioService.initVoiceRecog();
 
             //
             // Called from View HTML
@@ -200,6 +202,29 @@
                 if (found) {
                     vm.selectTrack(vm.tracks.list[tpos]);
                 }
+            };
+
+            
+            //
+            vm.voiceRecogActive = false;
+            vm.voiceInputKey = function(nokey) {
+                if (vm.cursor[vm.r.tk] !== -1) {
+                    var tt = vm.tracks[vm.r.tk];
+                    var langCode = tt.annos[vm.selAnno[vm.r.tk]].cfg.voice.code;
+                    var recogFinished = function(text_final) {
+                        vm.voiceRecogActive = false;
+                        tt.annos[vm.selAnno[vm.r.tk]].text[vm.cursor[vm.r.tk]] = text_final;
+                        $scope.$apply();
+                    };
+                    var recogUpdate = function(text_final, text_temp) {
+                        tt.annos[vm.selAnno[vm.r.tk]].text[vm.cursor[vm.r.tk]] = text_temp;
+                        $scope.$apply();
+                    };
+                    vm.voiceRecogActive = true;
+                    audioService.startVoiceRecog(langCode, recogUpdate, recogFinished);
+                    if (nokey) {$scope.$apply();}
+                }
+
             };
    
 
@@ -374,6 +399,9 @@
                 keyService.regKey(vm.switchTrackCode, 'keydown', function () {
                     vm.switchTrackKey(true);
                 });
+                keyService.regKey(vm.voiceCode, 'keydown', function () {
+                    vm.voiceInputKey(true);
+                });
                 
             };
             vm.selectTrack = function(track) {
@@ -490,6 +518,14 @@
                     }
                 });
                 vm.vtt = aikumaService.exportAnno(segs, annolist, format);
+            };
+
+            vm.setVoiceRecogLang = function(ev, track, annoidx) {
+                var vcfg = vm.tracks[track].annos[annoidx].cfg.voice;
+                aikumaDialog.voiceCfg(ev, vcfg, function(rcfg) {
+                    console.log('cfg',rcfg);
+                    vm.tracks[track].annos[annoidx].cfg.voice = rcfg;
+                });
             };
 
             vm.restoreFocus = function(delay) {

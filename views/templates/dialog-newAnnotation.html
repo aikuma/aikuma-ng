@@ -2,7 +2,7 @@
     <form>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>Add new annotation</h2>
+                <h2>{{"ANNO_ADD" | translate}}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="dCtrl.cancel()">
                     <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
@@ -28,7 +28,7 @@
                     </md-item-template>
                 </md-autocomplete>
 
-                <md-select required flex ng-model="choice.type"  md-floating-label="{{'LANGUAGE' | translate}}" placeholder="Type">
+                <md-select required flex ng-model="choice.type" md-floating-label="{{'LANGUAGE' | translate}}" placeholder="Type">
                     <md-option ng-repeat="type in dCtrl.types" value="{{type}}">
                         <span class="md-body-2">{{type | translate}}</span>
                     </md-option>

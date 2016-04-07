@@ -57,6 +57,24 @@
                     clickOutsideToClose:true
                 });
             };
+            factory.voiceCfg = function(ev, voicecfg, callback) {
+                $mdDialog.show({
+                    controller: helpDialogController,
+                    templateUrl: 'views/templates/dialog-voice-cfg.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: { voicecfg: voicecfg},
+                    clickOutsideToClose:true,
+                    controller: voiceCfgController,
+                    controllerAs: 'vsCtrl'
+                }).then(function (settings) {
+                    callback(settings);
+                }, function() {
+                    //
+                });
+
+            };
+
             return factory;
         }]);
 
@@ -117,7 +135,42 @@
     };
     profileController.$inject = ['$mdDialog', '$scope', '$translate', 'userObj'];
 
+    var voiceCfgController = function($mdDialog, aikumaService, voicecfg) {
+        "use strict";
+        var vm = this;
+        console.log('i',voicecfg);
+        vm.name = voicecfg.name;
+        vm.initlangcode = voicecfg.code;
+        vm.langCode = voicecfg.code;
 
+        vm.languages = aikumaService.voice_langs;
+        vm.changeLang = function() {
+            if (vm.langCode !== vm.initlangcode) {
+                vm.langCode = vm.languages[vm.selLangGroup][1][0];
+            } else {
+                vm.initlangcode = '';
+            }
+
+        };
+
+        vm.accept = function() {
+            var retvcfg = {
+                name: vm.languages[vm.selLangGroup][0],
+                code: vm.langCode
+            };
+            if (vm.languages[vm.selLangGroup][1].length !== 1) {
+                var thisregion = vm.languages[vm.selLangGroup].slice(1).filter(function(reg){
+                   return  reg[0] === vm.langCode;
+                });
+                retvcfg.region = thisregion[0][1];
+            }
+            console.log(retvcfg);
+            $mdDialog.hide(retvcfg);
+
+        };
+        vm.cancel = function() {$mdDialog.cancel();};
+    };
+    voiceCfgController.$inject = ['$mdDialog', 'aikumaService', 'voicecfg'];
     
 })();
 

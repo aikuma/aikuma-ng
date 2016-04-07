@@ -2,7 +2,7 @@
     "name": "Aikuma NG",
     "short_name": "Aikuma NG",
     "description": "Let's record our treasure language! Aikuma-NG beta is an easy-to-use offline app for speech annotation",
-    "version": "0.905",
+    "version": "0.908",
     "manifest_version": 2,
     "app": {
     "background": {
@@ -17,10 +17,15 @@
         "audio": {
             "types": [
                 "audio/mpeg",
+                "audio/mp4",
+                "audio/ogg",
                 "audio/vnd.wav"
             ],
             "extensions": [
                 "mp3",
+                "mp4",
+                "aac",
+                "ogg",
                 "wav"
             ]
         }

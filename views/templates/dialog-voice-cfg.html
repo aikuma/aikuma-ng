@@ -1,0 +1,47 @@
+<md-dialog>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{"VOICE_CFG" | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="vsCtrl.cancel()">
+                    <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-content style="max-width:500px;min-width:500px;min-height:100px;" layout="row">
+            <div flex="50">
+                <md-input-container class="md-block">
+                    <label>{{"LANGUAGE" | translate}}</label>
+                    <md-select ng-model="vsCtrl.selLangGroup" ng-change="vsCtrl.changeLang()" class="md-body-2">
+                    <md-option ng-repeat="langgroup in vsCtrl.languages" value="{{$index}}" ng-selected="vsCtrl.name===langgroup[0]">
+                        <span class="md-body-2">{{langgroup[0]}}</span>
+                    </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div flex="50">
+                <md-input-container ng-model='vsCtrl.langCode' ng-if="vsCtrl.languages[vsCtrl.selLangGroup][1].length === 1" class="md-block">
+                    <md-select ng-model='vsCtrl.langCode' disabled class="md-body-2">
+                        <md-option value="{{vsCtrl.languages[vsCtrl.selLangGroup][1]}}">
+                            <span class="md-body-2">{{vsCtrl.languages[vsCtrl.selLangGroup][0]}}</span>
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container ng-if="vsCtrl.languages[vsCtrl.selLangGroup][1].length !== 1" class="md-block">
+                    <label>{{"VOICE_VAR" | translate}}</label>
+                    <md-select ng-model='vsCtrl.langCode' class="md-body-2">
+                        <md-option ng-repeat="lang in vsCtrl.languages[vsCtrl.selLangGroup].slice(1)" value="{{lang[0]}}">
+                            <span class="md-body-2">{{lang[1]}}</span>
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+
+        </md-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="vsCtrl.accept()">{{"BUTTON_CONFIRM" | translate}}</md-button>
+            <md-button ng-click="vsCtrl.cancel()" style="margin-right:20px;" > {{"BUTTON_CANCEL" | translate}}</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

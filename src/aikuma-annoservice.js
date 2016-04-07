@@ -146,7 +146,7 @@
                     }
                     var thisAnnoObj = {
                         text: secondary.data.segment.annotations,
-                        cfg: {playSrc: true, playSec: true, enabled: true},
+                        cfg: {playSrc: true, playSec: true, enabled: true, voice: asx.setVoice(secondary.data.source.langIds[0])},
                         id: secondary.data._ID,
                         type: angular.uppercase(secondary.data.type),
                         lang: aikumaService.lookupLanguage(secondary.data.source.langIds[0], languages)
@@ -174,6 +174,22 @@
                         asx.cursor[segmentId] = 0;
                     }
                 });
+            };
+
+            // make a default voice config option based on the language. It should be better than this, there's a lot of languages
+            // which could be correctly mapped. It ought to be in aikumaService
+            asx.setVoice = function(langCode) {
+                var vcfg = {};
+                if (langCode === 'cmn') {
+                    vcfg.name = '中文';
+                    vcfg.region = '中文 (台灣)';
+                    vcfg.code = 'cmn-Hant-TW';
+                    return;
+                }
+                vcfg.name = 'English';
+                vcfg.region = 'United States';
+                vcfg.code = 'en-US';
+                return vcfg;
             };
 
             asx.switchToTrack = function(track) {
@@ -239,6 +255,7 @@
                 return rego;
             };
 
+            // this is used for making regions manually, e.g. keys in the anno UI
             asx.makeNewRegion = function(starttime) {
                 // this stuff just alternates which we use to colour when the region switches to record mode
                 var colidx;
@@ -305,7 +322,7 @@
                     asx.playIn = 0;
                 }
                 // push to real data
-                asx.sessionObj.segments[asx.r.tk].pop();
+                asx.sessionObj.data.segments[asx.r.tk].pop();
             };
             
             asx.destroyAll = function() {

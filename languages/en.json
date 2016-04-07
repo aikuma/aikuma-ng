@@ -136,5 +136,7 @@
   "DELETE_RESPK": "Delete respeaking",
   "DELETE_TRANS": "Delete translation",
   "DELETE_CONF": "Delete your work?",
-  "DELETE_RECORD": "Delete recording"
+  "DELETE_RECORD": "Delete recording",
+  "VOICE_CFG": "Voice Recognition Settings",
+  "VOICE_VAR": "Variety"
 }
