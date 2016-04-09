@@ -136,5 +136,14 @@
   "DELETE_RESPK": "删除重複說話錄",
   "DELETE_TRANS": "删除翻譯記錄",
   "DELETE_CONF": "刪除你的工作？",
-  "DELETE_RECORD": "刪除記錄"
+  "DELETE_RECORD": "刪除記錄",
+  "VOICE_CFG": "語音識別設置",
+  "VOICE_VAR": "地區方言",
+  "PIC_TAKE": "拍照",
+  "PIC_REDO": "重做照片",
+  "PIC_SELECT": "選擇圖片",
+  "PIC_ENABLE": "打開攝像機",
+  "PEOPLE_VALL": "查看所有的人",
+  "PERSON_ADD": "添加新的人物",
+  "PERSON_EDIT": "更改個人詳細信息"
 }
