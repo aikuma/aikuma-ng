@@ -145,6 +145,9 @@
   "PIC_ENABLE": "打开摄像机",
   "PEOPLE_VALL": "查看所有的人",
   "PERSON_ADD": "添加新的人物",
-  "PERSON_EDIT": "更改个人详细信息"
+  "PERSON_EDIT": "更改个人详细信息",
+  "SECONDS": "秒",
+  "ANNOTATIONS": "注释",
+  "PRIVATE": "不共享"
 }
 

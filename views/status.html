@@ -8,9 +8,9 @@
                 <span class="md-body-2" ng-repeat="meta in sCtrl.TopLineMetadata" >
                     <md-icon disabled class="statusicon" md-svg-icon="{{meta.icon}}"></md-icon>{{meta.text}}</span>
                 </span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>{{sCtrl.dur}} seconds</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>{{sCtrl.annotations.length}} annotations</span>
-                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>Private.</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:schedule"></md-icon>{{sCtrl.dur}} {{"SECONDS" | translate}}.</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="communication:comment"></md-icon>{{sCtrl.annotations.length}} {{"ANNOTATIONS" | translate }}.</span>
+                <span class="md-body-2"><md-icon disabled class="statusicon" md-svg-icon="action:visibility_off"></md-icon>{{"PRIVATE" | translate}}.</span>
             </div>
 
             <section class="inset">

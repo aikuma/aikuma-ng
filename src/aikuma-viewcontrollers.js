@@ -527,7 +527,7 @@
             };
 
             var srcDurMsec = sessionObj.data.source.duration;
-            vm.dur = srcDurMsec? srcDurMsec/1000 : 0;
+            vm.dur = srcDurMsec? (srcDurMsec/1000).toFixed(1) : 0;
             
             vm.srcLangIds = sessionObj.data.source.langIds;
             vm.langIdNameMap = _.object(vm.langObjList.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));

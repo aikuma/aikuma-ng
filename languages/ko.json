@@ -145,5 +145,8 @@
   "PIC_ENABLE": "Turn on Camera",
   "PEOPLE_VALL": "View all people",
   "PERSON_ADD": "Add New Person",
-  "PERSON_EDIT": "Change Person Details"
+  "PERSON_EDIT": "Change Person Details",
+  "SECONDS": "seconds",
+  "ANNOTATIONS": "annotations",
+  "PRIVATE": "Not shared"
 }
