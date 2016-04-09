@@ -1,0 +1,51 @@
+
+<div layout="column" style="width:240px;padding-bottom:2px" ng-class="wCtrl.imageSaved ? 'camboxsaved' : 'camboxnormal'">
+    <div ng-if="wCtrl.cameraEnabled" id="my_camera" style="width:240px;height:240px;">
+    </div>
+    <div ng-if="wCtrl.showOptions()" layout-fill layout layout-align="center center" style="width:240px;height:240px;">
+        <md-button  aria-label="Enable Camera" ng-click="wCtrl.enableCamera($event)">
+            <md-tooltip class="md-body-2">{{"PIC_ENABLE" | translate}}</md-tooltip>
+            <md-icon style="width:80px;height:80px;" md-svg-icon="mdi:camera"></md-icon>
+        </md-button>
+        <label class="md-button" aria-label="Upload new image" for="wcimage-input">
+            <md-tooltip class="md-body-2">{{"PIC_SELECT" | translate}}</md-tooltip>
+            <md-icon style="width:80px;height:80px;" md-svg-icon="mdi:file-image"></md-icon>
+        </label>
+    </div>
+
+    <div ng-show="wCtrl.showPreview()" layout-fill ng-style="{ 'background-image': 'url(' + wCtrl.previewImage() +')' }"
+             style="background-repeat:no-repeat;background-size:cover;width:240px;height:240px;">
+    </div>
+
+    <div ng-if="wCtrl.cameraEnabled" layout="row" style="height:46px;">
+        <md-button flex="50" ng-if="!wCtrl.cameraFrozen" flex="50" class="md-raised" aria-label="Take picture" ng-click="wCtrl.toggleFreeze()">
+            <md-tooltip class="md-body-2" md-direction="bottom">{{"PIC_TAKE" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="image:camera"></md-icon>
+        </md-button>
+        <md-button flex="50" ng-if="wCtrl.cameraFrozen && !wCtrl.imageSaved" flex="50" class="md-raised" aria-label="Redo picture" ng-click="wCtrl.toggleFreeze()">
+            <md-tooltip class="md-body-2" md-direction="bottom">{{"PIC_REDO" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="nav:close"></md-icon>
+        </md-button>
+        <md-button flex="50" ng-if="wCtrl.imageSaved" class="md-raised" aria-label="Save" ng-click="wCtrl.deleteImage()">
+            <md-tooltip class="md-body-2">{{"META_DEL" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="action:delete"></md-icon>
+        </md-button>
+        <md-button flex="50" ng-disabled="!wCtrl.cameraFrozen || wCtrl.imageSaved" class="md-raised" aria-label="Save" ng-click="wCtrl.saveImage()">
+            <md-tooltip class="md-body-2">{{"SAVE" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="action:done"></md-icon>
+        </md-button>
+    </div>
+    <div ng-if="!wCtrl.cameraEnabled" layout="row" style="height:46px;">
+        <md-button flex="50" ng-if="wCtrl.imageSaved" class="md-raised" aria-label="Save" ng-click="wCtrl.deleteImage()">
+            <md-tooltip class="md-body-2">{{"META_DEL" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="action:delete"></md-icon>
+        </md-button>
+        <md-button flex="50" ng-if="wCtrl.imageSelected"
+                   ng-disabled="!wCtrl.imageSelected || wCtrl.imageSaved" class="md-raised" aria-label="Save" ng-click="wCtrl.saveImage()">
+            <md-tooltip class="md-body-2">{{"SAVE" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="action:done"></md-icon>
+        </md-button>
+    </div>
+</div>
+
+<input id="wcimage-input" type="file" file-model="wcimageFile" accept="image/*" style="display:none;" >

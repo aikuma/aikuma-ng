@@ -77,12 +77,12 @@ gulp.task('copyfiles', ['cleandist'], function () {
 gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
         .pipe(useref({'noconcat':false}))
-        .pipe(gulpif('*.js', closureCompiler({
-        compilation_level: 'WHITESPACE_ONLY',
-        language_in: 'ECMASCRIPT6_STRICT',
-        language_out: 'ECMASCRIPT5_STRICT',
-        js_output_file: 'scripts/combined.js'
-        })))
+        //.pipe(gulpif('*.js', closureCompiler({
+        //compilation_level: 'WHITESPACE_ONLY',
+        //language_in: 'ECMASCRIPT6_STRICT',
+        //language_out: 'ECMASCRIPT5_STRICT',
+        //js_output_file: 'scripts/combined.js'
+        //})))
         //.pipe(gulpif('*.css', minifyCss()))
         .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));

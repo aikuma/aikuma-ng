@@ -17,11 +17,11 @@
             'indexedDB',               // used by dataservice to store metadata
             'aikuma-dataservice',      // data service dealing with metadata and files
             'ngPrettyJson',            // for debugging
-            'ngMessages'               // for validation messages
+            'ngMessages',              // for validation messages
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.909',
+            appVersion: '0.910',
             sampleRate: 16000,
             fileStorageMB: 1000,
             debug: false,
@@ -278,6 +278,10 @@
                 secondaryStore.createIndex('user_session_idx', ['userId', 'sessionId']);
             });
         }])
+        // the settings just don't work if we call this from within a controller
+        .run(function() {
+
+        })
         .run(['$rootScope', '$location', 'dataService', 'loginService', function($rootScope, $location, dataService, loginService) {
             $rootScope.$on('$routeChangeStart', function(ev, dest) {
                 if(dest.authorize) {

@@ -2,30 +2,32 @@
     <form>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>Add new person</h2>
+                <h2>{{ "PERSON_ADD" | translate }}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon md-svg-src="nav:close" aria-label="Close dialog"></md-icon>
                 </md-button>
             </div>
         </md-toolbar>
-        <md-dialog-content>
-            <div class="md-dialog-content" layout="column" layout-align="start start">
-                <md-input-container ng-repeat="name in names track by $index" class="md-block" style="height:14px">
-                <label>Name</label>
-                <input type="text" ng-model="names[$index]" ng-change="process()"/>
-               </md-input-container>
-           </div>
+        <md-dialog-content style="min-width:500px;" class="md-padding" flex>
+            <div layout="row" flex>
+                <div flex layout="column" layout-align="start start">
+                    <md-input-container ng-repeat="name in names track by $index" class="md-block" style="height:14px">
+                    <label class="md-body-2">{{"META_NAME" | translate}} </label>
+                    <input type="text" ng-model="names[$index]" ng-change="process()" class="md-body-2"/>
+                   </md-input-container>
+               </div>
+               <ng-webcam flex user-obj="userObj" session-obj="sessionObj" image-id="imageId"></ng-webcam>
+            </div>
+
+
         </md-dialog-content>
         <md-dialog-actions layout="row">
             <span flex></span>
-            <md-button ng-click="answer('not useful')">
-                Cancel
-            </md-button>
-            <md-button type="submit" ng-click="answer('useful')" style="margin-right:20px;">
-                OK
-            </md-button>
+                <md-button ng-click="answer()">{{"BUTTON_CONFIRM" | translate}}</md-button>
+                <md-button ng-click="cancel()" style="margin-right:20px;" > {{"BUTTON_CANCEL" | translate}}</md-button>
         </md-dialog-actions>
+
     </form>
 
 </md-dialog>

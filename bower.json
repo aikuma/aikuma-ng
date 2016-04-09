@@ -28,7 +28,8 @@
     "ng-prettyjson": "^0.2.0",
     "angular-translate": "^2.10.0",
     "angular-translate-loader-static-files": "^2.10.0",
-    "any-resize-event": "^1.0.0"
+    "any-resize-event": "^1.0.0",
+    "webcamjs": "^1.0.6"
   },
   "overrides": {
     "wavesurfer.js": {

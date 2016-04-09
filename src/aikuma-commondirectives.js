@@ -61,6 +61,19 @@
                 controllerAs: 'tbCtrl'
             };
         })
+        .directive("ngWebcam", function() {
+            return {
+                restrict: "E",
+                scope: {
+                    userObj: '=',
+                    sessionObj: '=',
+                    imageId: '='
+                },
+                templateUrl: "views/templates/webcam-template.html",
+                controller: webcamController,
+                controllerAs: 'wCtrl'
+            };
+        })
         // This is bound to the <body> element to pass key events to the keyService. Intended for low-level handling so
         // we can detect keys held-down (which angular hotkeys doesn't do) and left/right shift/ctrl which no key library does!
         .directive('keyFocus', ['keyService', function(keyService){
@@ -602,7 +615,7 @@
 
 
 
-    var personSelectorController = function ($scope, dataService, $mdDialog) {
+    var personSelectorController = function ($sce, $scope, dataService, $mdDialog) {
         var vm = this;
         // load all user data from the service and create an array of contacts needed for md-contact-chips
         vm.userObj = $scope.userObj;
@@ -673,7 +686,7 @@
 
             var imageurl = '';
             if (users[id].imageFileId) {
-                imageurl = vm.userObj.data.files[users[id].imageFileId].url;
+                imageurl = $sce.trustAsResourceUrl(vm.userObj.data.files[users[id].imageFileId].url);
             } else {
                 imageurl = 'img/placeholder_avatar.png';
             }
@@ -691,17 +704,20 @@
         vm.newPerson = function(newname) {
             $mdDialog.show({
                 locals: {
-                    name: newname
+                    name: newname,
+                    sessionObj: $scope.sessionObj,
+                    userObj: $scope.userObj,
+                    imageId: $scope.imageId
                 },
                 controller: newPersonDialogController,
                 templateUrl: 'views/templates/person-selector-dialog.html',
                 parent: angular.element(document.querySelector('#personSelector')),
                 clickOutsideToClose: true
-            }).then(function(names) {
+            }).then(function([names, imageId]) {
                 var personObj = {
                     names: names,
                     email: '',
-                    imageFileId: null
+                    imageFileId: imageId
                 };
                 // get a new person id and save it all
                 var pid = vm.userObj.addUserPerson(personObj);
@@ -730,11 +746,14 @@
             vm.sessionObj.save();
         }
     };
-    personSelectorController.$inject = ['$scope', 'dataService', '$mdDialog'];
+    personSelectorController.$inject = ['$sce', '$scope', 'dataService', '$mdDialog'];
 
 
-    function newPersonDialogController($scope, $mdDialog, name) {
+    function newPersonDialogController($scope, $mdDialog, name, sessionObj, userObj, imageId) {
+        $scope.sessionObj = sessionObj;
+        $scope.userObj = userObj;
         $scope.names=[name,''];
+        $scope.imageId = imageId;
         $scope.hide = function() {
             $mdDialog.hide();
         };
@@ -748,10 +767,10 @@
         };
         $scope.answer = function() {
             $scope.names = $scope.names.filter(function(n){ return n != ''; });
-            $mdDialog.hide($scope.names);
+            $mdDialog.hide([$scope.names, $scope.imageId]);
         };
     }
-    newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name'];
+    newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name', 'sessionObj', 'userObj', 'imageId'];
 
     var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
         var vm = this;
@@ -921,5 +940,152 @@
         }
     };
     newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'aikumaService'];
+
+    // image-id variable is passed in: it can be empty, if directive returns successfully a new or different image id will be set
+    var webcamController = function ($scope, $mdDialog, loginService, fileService, $timeout, $q, $log, aikumaService) {
+        var vm = this;
+        vm.cameraEnabled = false;
+        vm.cameraFrozen = false;
+        vm.imageSelected = false;
+        
+        if ($scope.imageId) {
+            vm.imageSaved = true;
+        } else {
+            vm.imageSaved = false;
+        }
+        
+        Webcam.set({
+            // live preview size
+            width: 320,
+            height: 240,
+            // device capture size
+            dest_width: 320,
+            dest_height: 240,
+            // final cropped size
+            crop_width: 240,
+            crop_height: 240,
+            // format and quality
+            image_format: 'jpeg',
+            jpeg_quality: 90
+        });
+
+        vm.enableCamera = function() {
+            vm.cameraEnabled = true;
+            // we have an ng-if statement which inserts the dom element, which is why we are waiting before calling the webcam
+            // This hack was necesssary to stop the webcam from overlaying any other content, even if underlying divs were removed
+            $timeout(function(){
+                Webcam.attach( '#my_camera' );
+            },0);
+        };
+        vm.toggleFreeze = function() {
+            if (vm.cameraFrozen) {
+                if (vm.saved) {
+                    vm.saved = false;
+                }
+                Webcam.unfreeze();
+                vm.cameraFrozen = false;
+            } else {
+                Webcam.freeze();
+                vm.cameraFrozen = true;
+            }
+        };
+
+        vm.saveImage = function() {
+            vm.saved = true;
+            if (vm.cameraEnabled) {
+                Webcam.snap( function(data_uri) {
+                    var imageblob = dataURLtoBlob(data_uri);
+                    vm.writeFile(imageblob);
+                } );
+            } else {
+                vm.writeFile($scope.wcimageFile);
+            }
+        };
+
+        vm.writeFile = function(blobfile) {
+            var fileObjId;
+            fileService.createFile(loginService.getLoggedinUserId(), blobfile).then(function(imageUrl) {
+                var fileObj = {
+                    url: imageUrl,
+                    type: blobfile.type
+                };
+                fileObjId = $scope.userObj.addUserFile(fileObj);
+                return $scope.userObj.save();
+            }).then(function() {
+                if(!$scope.sessionObj.data.imageIds) {
+                    $scope.sessionObj.data.imageIds = [];
+                }
+                $scope.sessionObj.data.imageIds.push(fileObjId);
+                $scope.imageId = fileObjId;
+                return $scope.sessionObj.save();
+            }).then(function() {
+                vm.imageSaved = true;
+                if (vm.cameraEnabled) {
+                    Webcam.freeze();
+                }
+            }).catch(function(err) {
+                if(imageUrl)
+                    fileService.deleteFile(imageUrl);
+            });
+        };
+
+        $scope.$watch('wcimageFile', function(file) {
+            if (file && file.type.match('^image/')) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    vm.imageSrc = e.target.result; // used for a preview
+                    vm.imageSelected = true;
+                    $scope.$apply();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        vm.showOptions = function() {
+            return  (!vm.cameraEnabled && !vm.imageSelected);
+        };
+        vm.showPreview = function() {
+            return (vm.imageSelected && !vm.cameraEnabled);
+        };
+
+        vm.deleteImage = function() {
+            vm.imageSelected = false;
+            vm.imageSaved = false;
+            $scope.imageId = null;
+            vm.cameraFrozen = false;
+            if (vm.cameraEnabled) {
+                vm.cameraEnabled = false;
+                Webcam.reset();
+            }
+        };
+
+        // Return a source image to view depending on how we got the image
+        vm.previewImage = function() {
+            if (vm.imageSaved) {
+                return $scope.userObj.data.files[$scope.imageId].url;
+            }
+            if (vm.imageSelected) {
+                return vm.imageSrc;
+            }
+        };
+
+        //**dataURL to blob**
+        function dataURLtoBlob(dataurl) {
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
+
+        vm.cancel = function() {
+            $mdDialog.cancel();
+        };
+        $scope.$on('$destroy', function() {
+            Webcam.reset();
+        });
+    };
+    webcamController.$inject = ['$scope', '$mdDialog', 'loginService', 'fileService', '$timeout', '$q', '$log', 'aikumaService'];
 
 })();

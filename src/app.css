@@ -339,3 +339,21 @@ kbd.menu kbd {
 .md-autocomplete input {
     background: #f7f7f7;
 }
+
+.camboxnormal {
+    border: 4px solid #d0d0d0;
+    border-radius: 15px;
+    overflow: hidden;
+    -webkit-border-radius: 15px;
+    -webkit-transform: translateZ(0);
+    -webkit-mask-image: -webkit-radial-gradient(circle, white, black);
+}
+
+.camboxsaved {
+    border: 4px solid #4fc3f7;
+    border-radius: 15px;
+    overflow: hidden;
+    -webkit-border-radius: 15px;
+    -webkit-transform: translateZ(0);
+    -webkit-mask-image: -webkit-radial-gradient(circle, white, black);
+}

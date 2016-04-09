@@ -1,30 +1,36 @@
-<md-chips ng-model="psCtrl.selectedPeople" md-autocomplete-snap class="md-contact-chips" id="personSelector"
-          md-transform-chip="psCtrl.transformChip($chip)"
-          md-require-match="psCtrl.autocompleteDemoRequireMatch"
-          md-on-add="psCtrl.add()"
-          md-on-remove="psCtrl.rem()"
-          md-on-select="psCtrl.sel()">
-    <md-autocomplete class="md-body-2"
-            md-selected-item="psCtrl.selectedItem"
-            md-search-text="psCtrl.searchText"
-            md-items="item in psCtrl.personQuerySearch(psCtrl.searchText)"
-            md-item-text="item.pname"
-            placeholder="{{'ADD_PERSON' | translate}}"
-            secondary-placeholder="{{'ADD_MORE' | translate}}">
-        <div class="md-contact-suggestion">
-            <img ng-src="{{item.image}}"/>
-              <span class="md-contact-name" md-highlight-text="psCtrl.searchText" md-highlight-flags="i">
-                <span class="md-body-2">{{item.pname}}</span>
-              </span>
-        </div>
+<div layout="row" layout-align="start center">
+    <md-button class="md-icon-button" aria-label="Edit people" ng-click="psCtrl.editPeople($event)">
+        <md-tooltip class="md-body-2">{{"PEOPLE_VALL" | translate}}</md-tooltip>
+        <md-icon style="width:30px;height:30px" md-svg-icon="mdi:account-multiple"></md-icon>
+    </md-button>
+    <md-chips flex ng-model="psCtrl.selectedPeople" md-autocomplete-snap class="md-contact-chips" id="personSelector"
+              md-transform-chip="psCtrl.transformChip($chip)"
+              md-require-match="psCtrl.autocompleteDemoRequireMatch"
+              md-on-add="psCtrl.add()"
+              md-on-remove="psCtrl.rem()"
+              md-on-select="psCtrl.sel()">
+        <md-autocomplete class="md-body-2"
+                md-selected-item="psCtrl.selectedItem"
+                md-search-text="psCtrl.searchText"
+                md-items="item in psCtrl.personQuerySearch(psCtrl.searchText)"
+                md-item-text="item.pname"
+                placeholder="{{'ADD_PERSON' | translate}}"
+                secondary-placeholder="{{'ADD_MORE' | translate}}">
+            <div class="md-contact-suggestion">
+                <img ng-src="{{item.image}}"/>
+                  <span class="md-contact-name" md-highlight-text="psCtrl.searchText" md-highlight-flags="i">
+                    {{item.pname}}
+                  </span>
+            </div>
 
-    </md-autocomplete>
-    <md-chip-template>
-        <div class="md-contact-avatar">
-            <img ng-src="{{$chip.image}}"/>
-        </div>
-        <div class="md-contact-name">
-          <span class="md-body-2">{{$chip.pname}}</span>
-        </div>
-    </md-chip-template>
-</md-chips>
+        </md-autocomplete>
+        <md-chip-template>
+            <div class="md-contact-avatar">
+                <img ng-src="{{$chip.image}}"/>
+            </div>
+            <div class="md-contact-name">
+              <span class="md-body-2">{{$chip.pname}}</span>
+            </div>
+        </md-chip-template>
+    </md-chips>
+</div>

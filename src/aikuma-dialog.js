@@ -1,6 +1,7 @@
 (function(){
 
     /* This module defines a service for displaying dialogs */
+    "use strict";
     angular
         .module('aikuma-dialog', [])
         .factory('aikumaDialog', ['$document', '$mdDialog', '$mdToast', '$translate', '$templateRequest', '$sce', function ($document, $mdDialog, $mdToast, $translate, $templateRequest, $sce) {
@@ -59,7 +60,6 @@
             };
             factory.voiceCfg = function(ev, voicecfg, callback) {
                 $mdDialog.show({
-                    controller: helpDialogController,
                     templateUrl: 'views/templates/dialog-voice-cfg.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
@@ -72,6 +72,8 @@
                 }, function() {
                     //
                 });
+                
+      
 
             };
 
