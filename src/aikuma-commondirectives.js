@@ -850,7 +850,7 @@
                     .ok(translations.ANNO_DELYES)
                     .cancel(translations.ANNO_DELNO);
                 $mdDialog.show(confirm).then(function () {
-                    dataService.remove('secondary', vm.annotations[annoIdx].id).then(function() {
+                    dataService.removeData('secondary', vm.annotations[annoIdx].id).then(function() {
                         vm.annotations.splice(annoIdx, 1);
                         $scope.annotationList.splice(annoIdx, 1);
                     });
