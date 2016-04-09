@@ -30,7 +30,7 @@
             vm.switchTrackCode = 9; // tab
             vm.prevAnnoCode = 38;  // up arrow
             vm.nextAnnoCode = 40;  // down arrow
-            vm.voiceCode = 192;     // ` key
+            vm.voiceCode = 220;     // backslash key
             vm.ffPlaybackRate = 2.5; // playback speed in FF mode
             vm.skipTimeValue = 3;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;

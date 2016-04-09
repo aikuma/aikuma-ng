@@ -560,7 +560,6 @@
 
         vm.transformChip = function(chip) {
             // If it is an object, it's already a known chip
-            console.log(chip);
             if (angular.isObject(chip)) {
                 return {
                     langStr: chip.display,
@@ -642,7 +641,6 @@
         vm.rem = function() {
             updateSession();
         };
-        vm.sel = function() {console.log('select');};
 
         vm.transformChip = function(chip) {
             // If it is an object, it's already a known chip
@@ -700,41 +698,61 @@
             };
             return personObj;
         }
-
         vm.newPerson = function(newname) {
+            vm.callDialog('new', newname);
+        };
+        vm.editPerson = function(chip) {
+            var imageid = vm.userObj.data.people[chip.id].imageFileId;
+            vm.callDialog('edit', chip.pname, imageid, chip.id);
+        };
+
+        vm.callDialog = function(mode, newname, iid=null, userid=null) {
             $mdDialog.show({
                 locals: {
+                    mode: mode,
                     name: newname,
                     sessionObj: $scope.sessionObj,
                     userObj: $scope.userObj,
-                    imageId: $scope.imageId
+                    imageId: iid
                 },
                 controller: newPersonDialogController,
                 templateUrl: 'views/templates/person-selector-dialog.html',
                 parent: angular.element(document.querySelector('#personSelector')),
                 clickOutsideToClose: true
             }).then(function([names, imageId]) {
-                var personObj = {
-                    names: names,
-                    email: '',
-                    imageFileId: imageId
-                };
-                // get a new person id and save it all
-                var pid = vm.userObj.addUserPerson(personObj);
-                vm.userObj.save();
-                // push the id to the selected ids
-                vm.selectedIds.push(pid);
-                // refresh the entire list of people
-                vm.allPeople = loadPeople(vm.userObj.data.people);
-                vm.selectedPeople = _.map(vm.selectedIds, function(id) {
-                    return makePersonObj(vm.userObj.data.people,id);
-                });
-                // Save the refreshed list of people
-                updateSession();
+                if (mode==='new') {
+                    var personObj = {
+                        names: names,
+                        email: '',
+                        imageFileId: imageId
+                    };
+                    // get a new person id and save it all
+                    var pid = vm.userObj.addUserPerson(personObj);
+                    vm.userObj.save();
+                    // push the id to the selected ids
+                    vm.selectedIds.push(pid);
+                    // refresh the entire list of people
+                    vm.allPeople = loadPeople(vm.userObj.data.people);
+                    vm.selectedPeople = _.map(vm.selectedIds, function(id) {
+                        return makePersonObj(vm.userObj.data.people,id);
+                    });
+                    // Save the refreshed list of people
+                    updateSession();
+                }
+                if (mode ==='edit') {
+                    vm.userObj.data.people[userid].names = names;
+                    vm.userObj.data.people[userid].imageFileId = imageId;
+                    vm.userObj.save();
+                    vm.allPeople = loadPeople(vm.userObj.data.people);
+                    vm.selectedPeople = _.map(vm.selectedIds, function(id) {
+                        return makePersonObj(vm.userObj.data.people,id);
+                    });
+                }
             }, function() {
                 console.log('cancelled');
             });
         };
+
         // gets shit from selected people
         function updateSession() {
             var idList = _.pluck(vm.selectedPeople, 'id');
@@ -742,14 +760,14 @@
                 vm.sessionObj.data.roles = {};
             }
             vm.sessionObj.data.roles[$scope.role] = idList;
-            console.log(vm.sessionObj.data.roles[$scope.role]);
             vm.sessionObj.save();
         }
     };
     personSelectorController.$inject = ['$sce', '$scope', 'dataService', '$mdDialog'];
 
 
-    function newPersonDialogController($scope, $mdDialog, name, sessionObj, userObj, imageId) {
+    function newPersonDialogController($scope, $mdDialog, mode, name, sessionObj, userObj, imageId) {
+        $scope.mode = mode; // 'edit' or 'new'
         $scope.sessionObj = sessionObj;
         $scope.userObj = userObj;
         $scope.names=[name,''];
@@ -766,11 +784,11 @@
             }
         };
         $scope.answer = function() {
-            $scope.names = $scope.names.filter(function(n){ return n != ''; });
+            $scope.names = $scope.names.filter(function(n){ return n !== ''; });
             $mdDialog.hide([$scope.names, $scope.imageId]);
         };
     }
-    newPersonDialogController.$inject = ['$scope', '$mdDialog', 'name', 'sessionObj', 'userObj', 'imageId'];
+    newPersonDialogController.$inject = ['$scope', '$mdDialog', 'mode', 'name', 'sessionObj', 'userObj', 'imageId'];
 
     var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
         var vm = this;
@@ -947,7 +965,7 @@
         vm.cameraEnabled = false;
         vm.cameraFrozen = false;
         vm.imageSelected = false;
-        
+
         if ($scope.imageId) {
             vm.imageSaved = true;
         } else {
@@ -1021,7 +1039,8 @@
             }).then(function() {
                 vm.imageSaved = true;
                 if (vm.cameraEnabled) {
-                    Webcam.freeze();
+                    vm.cameraEnabled = false;
+                    Webcam.reset();
                 }
             }).catch(function(err) {
                 if(imageUrl)
@@ -1042,10 +1061,10 @@
         });
 
         vm.showOptions = function() {
-            return  (!vm.cameraEnabled && !vm.imageSelected);
+            return  (!vm.cameraEnabled && !vm.imageSelected && !vm.imageSaved);
         };
         vm.showPreview = function() {
-            return (vm.imageSelected && !vm.cameraEnabled);
+            return ((vm.imageSelected && !vm.cameraEnabled) || vm.imageSaved);
         };
 
         vm.deleteImage = function() {
