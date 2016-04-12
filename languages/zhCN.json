@@ -149,6 +149,7 @@
   "SECONDS": "秒",
   "ANNOTATIONS": "注释",
   "PRIVATE": "不共享",
-  "OFFLINE_MSG": "离线。语音识别无法使用"
+  "OFFLINE_MSG": "离线。语音识别无法使用",
+  "OLAC_HELP": "话语类型的帮助"
 }
 

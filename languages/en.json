@@ -110,9 +110,9 @@
   "ANNO_EXIST": "You have annotations",
   "MANUAL": "New (manual)",
   "CLEAR_ALL": "Clear all",
-  "TRACK_NEW": "Split to new track",
+  "TRACK_NEW": "Move annotation to new track",
   "TRACK_SELECT": "Select track",
-  "TRACK_SPLITCONF": "Split this annotation to a new track?",
+  "TRACK_SPLITCONF": "Move this annotation to a new track?",
   "TRACK_NEWCONF": "You will only be able to hear the source audio for this annotation.",
   "EXPORT_SAVE": "Download captions",
   "EXPORT_VTT": "Save as WebVTT",
@@ -149,5 +149,6 @@
   "SECONDS": "seconds",
   "ANNOTATIONS": "annotations",
   "PRIVATE": "Not shared",
-  "OFFLINE_MSG": "Offline. Speech recognition disabled"
+  "OFFLINE_MSG": "Offline. Speech recognition disabled",
+  "OLAC_HELP": "Discourse type help"
 }

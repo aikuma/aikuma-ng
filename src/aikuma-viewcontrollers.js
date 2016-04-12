@@ -515,6 +515,10 @@
                 }
             };
 
+            vm.OLAChelp = function(ev) {
+                aikumaDialog.help(ev, 'olac');
+            };
+
             vm.edit = function(index) {
                 $location.path('/session/'+vm.sessionId+'/annotate'+'/'+index);
             };

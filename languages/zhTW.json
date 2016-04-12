@@ -149,5 +149,6 @@
   "SECONDS": "秒",
   "ANNOTATIONS": "註釋",
   "PRIVATE": "不共享",
-  "OFFLINE_MSG": "離線。語音識別無法使用。"
+  "OFFLINE_MSG": "離線。語音識別無法使用",
+  "OLAC_HELP": "話語類型的幫助"
 }

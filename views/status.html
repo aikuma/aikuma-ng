@@ -21,6 +21,11 @@
                             {{type.trans | translate}}
                         </md-tooltip>
                     </div>
+                    <md-button class="md-icon-button" aria-label="Use translation" ng-click="sCtrl.OLAChelp($event)">
+                        <md-tooltip class="md-body-2">{{"OLAC_HELP" | translate}}</md-tooltip>
+                        <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
+                    </md-button>
+
                     <ng-language-selector lang-id-name-map="sCtrl.langIdNameMap" lang-id-list="sCtrl.srcLangIds" on-change="sCtrl.saveLangs(langIds)" flex style="margin-left:8px;"></ng-language-selector>
                 </div>
             </section>

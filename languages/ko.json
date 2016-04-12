@@ -149,5 +149,6 @@
   "SECONDS": "seconds",
   "ANNOTATIONS": "annotations",
   "PRIVATE": "Not shared",
-  "OFFLINE_MSG": "Offline. Speech recognition disabled."
+  "OFFLINE_MSG": "Offline. Speech recognition disabled",
+  "OLAC_HELP": "Discourse type help"
 }
