@@ -17,11 +17,14 @@
 
         var ngAnnoController = function (annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
             var vm = this;
+            $scope.onlineStatus = aikumaService;
+            $scope.$watch('onlineStatus.isOnline()', function(online) {
+                vm.onlineStatus = online;
+            });
             // region status flags
             vm.r = annoServ.r;
             vm.cursor = annoServ.cursor;
             vm.playCSS = {};
-
             // keyboard related constants
             vm.playKeyCode = 17;   // control key (16 is shift)
             vm.ffKeyCode = 39;     // right arrow
@@ -208,6 +211,12 @@
             //
             vm.voiceRecogActive = false;
             vm.voiceInputKey = function(nokey) {
+                if (!vm.onlineStatus) {
+                    $translate('OFFLINE_MSG').then(function (message) {
+                        aikumaDialog.toast(message);
+                    });
+                    return;
+                }
                 if (vm.cursor[vm.r.tk] !== -1) {
                     var tt = vm.tracks[vm.r.tk];
                     var langCode = tt.annos[vm.selAnno[vm.r.tk]].cfg.voice.code;

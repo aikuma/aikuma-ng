@@ -33,7 +33,7 @@
             };
             return ser;
         }])
-        .factory('aikumaService', [function () {
+        .factory('aikumaService', ['$rootScope', '$window', function ($rootScope, $window) {
             var ser = {};
             ser.languages = [];
             ser.langOverrides = [
@@ -242,6 +242,19 @@
                 n = n + '';
                 return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
             }
+
+            ser.onLine = $window.navigator.onLine;
+            ser.isOnline = function() {
+                return ser.onLine;
+            };
+            $window.addEventListener("online", function () {
+                ser.onLine = true;
+                $rootScope.$digest();
+            }, true);
+            $window.addEventListener("offline", function () {
+                ser.onLine = false;
+                $rootScope.$digest();
+            }, true);
 
 
             return ser;

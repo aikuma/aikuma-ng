@@ -148,5 +148,6 @@
   "PERSON_EDIT": "Change Person Details",
   "SECONDS": "seconds",
   "ANNOTATIONS": "annotations",
-  "PRIVATE": "Not shared"
+  "PRIVATE": "Not shared",
+  "OFFLINE_MSG": "Offline. Speech recognition disabled."
 }

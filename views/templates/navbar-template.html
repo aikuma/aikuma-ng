@@ -20,8 +20,13 @@
         <span flex>{{item.title | translate}}</span>
     </label>
 
-    <div style="position: absolute;bottom: 10px;padding-left: 10px;" ng-click="navCtrl.toggleDebug()">
+    <div style="position: absolute;bottom: 10px;padding-left: 10px;width:100%" ng-click="navCtrl.toggleDebug()" layout="row" layout-align="space-between center">
         <span class="md-caption"><i>{{'AIKUMA' | translate}}-<i>NG</i> {{'BETA' | translate}} {{navCtrl.versionString}}</i></span>
+        <md-button class="animated infinite flash md-icon-button" ng-show="!navCtrl.onlineStatus" style="padding-right:10px" arial-label="Offline">
+            <md-tooltip class="md-body-2" md-direction="top">{{"OFFLINE_MSG" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="mdi:close-network"></md-icon>
+        </md-button>
+
     </div>
     <input id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >
 </md-sidenav>

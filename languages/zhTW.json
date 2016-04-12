@@ -148,5 +148,6 @@
   "PERSON_EDIT": "更改個人詳細信息",
   "SECONDS": "秒",
   "ANNOTATIONS": "註釋",
-  "PRIVATE": "不共享"
+  "PRIVATE": "不共享",
+  "OFFLINE_MSG": "離線。語音識別無法使用。"
 }

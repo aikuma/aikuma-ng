@@ -17,7 +17,7 @@
             </md-button>
         </div>
 
-        <div flex ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row">
+        <div flex ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer">
             <div flex ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
                 <div ng-repeat="anno in annoC.tracks[track].annos" layout="row" layout-align="start center">
                     <md-menu>

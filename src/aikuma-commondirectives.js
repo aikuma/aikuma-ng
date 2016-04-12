@@ -173,13 +173,20 @@
         };
         topbarController.$inject = ['$scope', '$translate', 'config', 'loginService', 'aikumaDialog'];
 
-        var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService, aikumaDialog) {
+        var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService, aikumaDialog, aikumaService) {
             var vm = this;
             vm.languages = config.languages;
             
             vm.getLoginStatus = loginService.getLoginStatus;
             vm.versionString = config.appVersion;
-            
+            $scope.onlineStatus = aikumaService;
+
+            $scope.$watch('onlineStatus.isOnline()', function(online) {
+                vm.onlineStatus = online;
+                vm.online_status_string = online ? 'online' : 'offline';
+            });
+
+
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
@@ -279,7 +286,7 @@
             });
 
         };
-    navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog'];
+    navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog', 'aikumaService'];
 
     var tagSelectorController = function ($scope, loginService, dataService) {
         var vm = this;
