@@ -535,7 +535,6 @@
             
             vm.srcLangIds = sessionObj.data.source.langIds;
             vm.langIdNameMap = _.object(vm.langObjList.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
-            vm.srcLangStr = vm.langObjList.filter(function(obj) { return vm.srcLangIds.indexOf(obj.Id) !== -1; }).map(function(obj){ return obj.Ref_Name; }).join(', ');
             vm.saveLangs = function(langIds) {
                 sessionObj.data.source.langIds = langIds;
                 sessionObj.save();

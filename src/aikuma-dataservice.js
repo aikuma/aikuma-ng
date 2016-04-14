@@ -568,10 +568,81 @@
             };
             
             // Backup/Import DB
+            service.setDataVersion = function(version) {
+                if(window.chrome && chrome.storage)
+                    chrome.storage.local.set({dataVersion: version});
+                else
+                    localStorage.setItem('dataVersion', version);
+            }
+            
+            service.getDataVersion = function() {
+                var verDefer = $q.defer();
+                if(window.chrome && chrome.storage)
+                    chrome.storage.local.get('dataVersion', function(obj) { verDefer.resolve(obj.dataVersion); });
+                else
+                    verDefer.resolve(localStorage.getItem('dataVersion'));
+                return verDefer.promise;
+            }
+            
+            var upgradeJsonDB = function(db) {
+                //var dbDefer = $q.defer(),
+                var    currentVersion = db.version? db.version : 0;
+                
+                switch(currentVersion) {
+                    case 0:
+                        db[SESSION_TYPE].forEach(function(sessionData) {
+                            sessionData.source.langIds = sessionData.source.langIds.map(function(langISO) {
+                                return {
+                                    langStr: '',
+                                    langISO: langISO
+                                };
+                            });
+                        });
+                        db[SECONDARY_TYPE].forEach(function(secondaryData) {
+                            secondaryData.source.langIds = secondaryData.source.langIds.map(function(langISO) {
+                                return {
+                                    langStr: '',
+                                    langISO: langISO
+                                };
+                            });
+                        });
+                        db['version'] = currentVersion + 1;
+                    case 1:
+                    case 2:
+                }
+                
+                return db;
+                //return dbDefer.promise;
+            }
+            
+            service.upgradeData = function(currentVersion) {
+                return service.getJsonBackup().then(function(db){
+                    var newDb = upgradeJsonDB(db);
+                    
+                    // Import DB
+                    return $indexedDB.openStores(typeList, function(store0, store1, store2) {
+                        return store0.clear().then(function() {
+                            return store1.clear();
+                        }).then(function() {
+                            return store2.clear();
+                        }).then(function() {
+                            return store0.upsert(newDb[USER_TYPE])  
+                        }).then(function() {
+                            return store1.upsert(newDb[SESSION_TYPE]);
+                        }).then(function() {
+                            return store2.upsert(newDb[SECONDARY_TYPE]);
+                        });
+                    });  
+                })
+            }
+            
             service.getJsonBackup = function() {
                 var backup = {};
                 return $indexedDB.openStores(typeList, function(store0, store1, store2) {
-                    return store0.getAll().then(function(userData) {
+                    return service.getDataVersion().then(function(version) {
+                        backup['version'] = version;
+                        return store0.getAll();
+                    }).then(function(userData) {
                         backup[USER_TYPE] = userData;
                         return store1.getAll();
                     }).then(function(sessionData) {
@@ -594,22 +665,24 @@
                 });
             };
             
-            service.importJsonDb = function(jsonDbStr, fileIdMap) {
-                var dbObj = JSON.parse(jsonDbStr);
-                
+            service.importJsonDb = function(dbObj, fileIdMap) {
+                dbObj = upgradeJsonDB(dbObj);
+                    
                 // Change users' files' urls
-                dbObj[USER_TYPE].forEach(function(userData) {
-                    if(userData.files) {
-                        for(var fileId in userData.files) {
-                            var fileData = userData.files[fileId];
-                            var key = fileData.url.match(/[^/]+\/[^/]+\..+$/i)[0];
-                            if(fileIdMap[key]) {
-                                //console.log(fileData.url, ';', key, '; ', fileIdMap[key]);
-                                fileData.url = fileIdMap[key];
+                if(fileIdMap) {
+                    dbObj[USER_TYPE].forEach(function(userData) {
+                        if(userData.files) {
+                            for(var fileId in userData.files) {
+                                var fileData = userData.files[fileId];
+                                var key = fileData.url.match(/[^/]+\/[^/]+\..+$/i)[0];
+                                if(fileIdMap[key]) {
+                                    //console.log(fileData.url, ';', key, '; ', fileIdMap[key]);
+                                    fileData.url = fileIdMap[key];
+                                }
                             }
                         }
-                    }
-                });
+                    });   
+                }
                 
                 // Import DB
                 return $indexedDB.openStores(typeList, function(store0, store1, store2) {
@@ -898,7 +971,7 @@
                 
                 return removeDefer.promise;
             };
-
+            
             service.deleteFile = function(url) {
                 var fileDefer = $q.defer();
 
@@ -1008,9 +1081,10 @@
                     function importFile(userIndex, fileIndex) {
                         if(!userFileList[userIndex]) {     //Import JSON db after copy finishes
                             var dbFileEntry = backupFile.root.getChildByName('db.json');
-                            dbFileEntry.getText(function(txt) {
+                            dbFileEntry.getText(function(jsonDbStr) {
                                 //console.log(txt);
-                                importDefer.resolve(dataService.importJsonDb(txt, fileIdMap));
+                                var jsonDb = JSON.parse(jsonDbStr);
+                                importDefer.resolve(dataService.importJsonDb(jsonDb, fileIdMap));
                             });
                         } else {    // copy all users' files
                             var fileEntry = userFileList[userIndex][1][fileIndex];

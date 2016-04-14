@@ -22,6 +22,7 @@
         .constant('config', {
             appName: 'AikumaNG',
             appVersion: '0.912',
+            dataVersion: 1,
             sampleRate: 16000,
             fileStorageMB: 1000,
             debug: false,
@@ -278,11 +279,7 @@
                 secondaryStore.createIndex('user_session_idx', ['userId', 'sessionId']);
             });
         }])
-        // the settings just don't work if we call this from within a controller
-        .run(function() {
-
-        })
-        .run(['$rootScope', '$location', 'dataService', 'loginService', function($rootScope, $location, dataService, loginService) {
+        .run(['config', '$rootScope', '$location', 'dataService', 'loginService', '$mdDialog', function(config, $rootScope, $location, dataService, loginService, $mdDialog) {
             $rootScope.$on('$routeChangeStart', function(ev, dest) {
                 if(dest.authorize) {
                     dest.resolve = dest.resolve || {};
@@ -308,6 +305,29 @@
                     });
                 }
             });
+            
+            dataService.getDataVersion().then(function(ver) {
+                ver = ver || 0;
+                if(config.dataVersion > ver) {
+                    console.log(ver);
+                    var ProgressDialogController = function($scope, $mdDialog) {
+                        console.log($mdDialog);
+                        dataService.upgradeData(ver).then(function(){
+                            dataService.setDataVersion(config.dataVersion);
+                            $mdDialog.cancel();
+                        });
+                    }
+                    
+                    $mdDialog.show({
+                        template:
+                            '<md-dialog layout-align="center center">' +
+                            ' <md-progress-circular md-mode="indeterminate" md-diameter="96"></md-progress-circular>'+
+                            '</md-dialog>',
+                        controller: ProgressDialogController
+                    });
+                }
+            });
+            
             
         }]);
 })();

@@ -545,18 +545,13 @@
         // list of `language` value/display objects
         vm.languages = loadAllx();
         if($scope.langIdList) {
-            vm.selectedLanguages = $scope.langIdList.map(function(id) {
-                var langStr = $scope.langIdNameMap[id];
-                if(langStr) {
-                    return {
-                        langStr: langStr,
-                        langISO: id
-                    };
-                } else {
-                    return {
-                        langStr: id,
-                        langISO: ''
-                    };
+            vm.selectedLanguages = $scope.langIdList;
+            vm.selectedLanguages.forEach(function(langData) {
+                if(langData.langISO) {
+                    var defaultLangStr = $scope.langIdNameMap[langData.langISO];
+                    if(!langData.langStr && defaultLangStr) {
+                        langData.langStr = defaultLangStr;
+                    }   
                 }
             });   
         } else {
@@ -590,10 +585,7 @@
 
 
         vm.add = function() {
-            var langIds = vm.selectedLanguages.map(function(langViewModel) {
-                return langViewModel.langISO? langViewModel.langISO : langViewModel.langStr;
-            });
-            $scope.onChange({langIds: langIds});
+            $scope.onChange({langIds: vm.selectedLanguages});
         };
         vm.remove = function() {
             vm.add();
@@ -621,7 +613,7 @@
         function createFilterFor(query) {
             var lowercaseQuery = angular.lowercase(query);
             return function filterFn(language) {
-                return (language.value.indexOf(lowercaseQuery) === 0);
+                return (language.value.indexOf(lowercaseQuery) === 0 || language.id.indexOf(lowercaseQuery) === 0);
             };
         }
     };
@@ -808,11 +800,13 @@
     var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
         var vm = this;
         vm.annotations = $scope.annotationList.map(function(annoData) {
+            if(!annoData.source.langIds[0].langStr)
+                annoData.source.langIds[0].langStr = $scope.langIdNameMap[ annoData.source.langIds[0].langISO ];
             return {
                 id: annoData._ID,
                 type: angular.uppercase(annoData.type),
-                langISO: annoData.source.langIds[0],
-                langStr: $scope.langIdNameMap[ annoData.source.langIds[0] ]
+                langISO: annoData.source.langIds[0].langISO,
+                langStr: annoData.source.langIds[0].langStr
             };
         });
 
@@ -834,7 +828,10 @@
                         creatorId: loginService.getLoggedinUserId(),
                         source: {
                             created: Date.now(),
-                            langIds: [anno.langISO]
+                            langIds: [{
+                                langISO: anno.langISO,
+                                langStr: anno.langStr
+                            }]
                         },
                         segment: {}
                     };
