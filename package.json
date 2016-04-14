@@ -1,7 +1,7 @@
 {
-  "name": "annoweb",
+  "name": "Aikuma-NG",
   "version": "1.0.0",
-  "description": "Web annotation for regular folk",
+  "description": "Speech annotation for regular folk",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

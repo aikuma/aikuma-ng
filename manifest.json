@@ -2,7 +2,7 @@
     "name": "Aikuma NG",
     "short_name": "Aikuma NG",
     "description": "Let's record our treasure language! Aikuma-NG is an easy-to-use offline app to annotate/transcribe speech",
-    "version": "0.911",
+    "version": "0.912",
     "manifest_version": 2,
     "app": {
     "background": {

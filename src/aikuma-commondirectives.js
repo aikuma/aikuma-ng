@@ -271,6 +271,14 @@
             
             vm.toggleDebug = function() {
                 config.debug = !config.debug;
+                $translate(['DEBUG_ON', 'DEBUG_OFF']).then(function (tstring) {
+                    if (config.debug) {
+                        aikumaDialog.toast(tstring.DEBUG_ON);
+                    } else {
+                        aikumaDialog.toast(tstring.DEBUG_OFF);
+                    }
+                });
+                
             };
             
             // When 'Open File' is pressed

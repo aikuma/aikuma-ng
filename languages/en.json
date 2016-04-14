@@ -107,7 +107,7 @@
   "ANNO_TOG": "Toggle annotation",
   "USE_RSPK": "Use respeaking",
   "USE_TRANS": "Use translation",
-  "ANNO_EXIST": "You have annotations",
+  "ANNO_EXIST": "You have made annotations",
   "MANUAL": "New (manual)",
   "CLEAR_ALL": "Clear all",
   "TRACK_NEW": "Move annotation to new track",
@@ -150,5 +150,14 @@
   "ANNOTATIONS": "annotations",
   "PRIVATE": "Not shared",
   "OFFLINE_MSG": "Offline. Speech recognition disabled",
-  "OLAC_HELP": "Discourse type help"
+  "OLAC_HELP": "Discourse type help",
+  "DEBUG_ON": "Debug mode on!",
+  "DEBUG_OFF": "Debug mode off!",
+  "DEBUG_MOCK": "Load mock-data",
+  "DEBUG_WIPE": "Wipe all data",
+  "DEBUG_RESETDB": "Reset Database",
+  "BACKUP_DOWN": "Download backup file",
+  "BACKUP_UP": "Load backup file",
+  "ANNO_REMCONF": "This action will delete your work in this annotation. Are you sure?",
+  "AUDIO_NOSEL": "Please enable an audio source!"
 }

@@ -117,9 +117,12 @@
                         annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk] +1 ].start);
                     }
                 } else {
-
-                    annoServ.wavesurfer.setPlaybackRate(vm.ffPlaybackRate);
-                    annoServ.wavesurfer.play();
+                    if (annoServ.wavesurfer.getCurrentTime() === 0 && annoServ.regionList.length > 0) {
+                        annoServ.seekToTime(annoServ.regionList[0].start);
+                    } else {
+                        annoServ.wavesurfer.setPlaybackRate(vm.ffPlaybackRate);
+                        annoServ.wavesurfer.play();
+                    }
                 }
                 if (nokey) {$scope.$apply();}
             };
@@ -356,12 +359,18 @@
                 var selAnno = vm.selAnno[vm.r.tk];
                 var region =  vm.cursor[vm.r.tk];
                 var thisTrack = vm.tracks[vm.r.tk];
+                if (!vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc && !vm.tracks[vm.r.tk].annos[selAnno].cfg.playSec) {
+                    $translate('AUDIO_NOSEL').then(function (trans) {
+                        aikumaDialog.toast(trans);
+                    });
+                    return;
+                }
                 if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
                     annoServ.regionList[region].play();
                     annoServ.regionPlayback = true;
                     timerval = (annoServ.regionList[region].end - annoServ.regionList[region].start) + 0.2;
                 }
-                if (thisTrack.annos[selAnno].cfg.playSrc && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
+                if (thisTrack.annos[selAnno].cfg.playSec && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
                     $timeout(function(){
                         var seglist = thisTrack.segMsec;
                         var fileh = $scope.userObj.getFileUrl(thisTrack.audioFile);
@@ -428,7 +437,7 @@
             vm.joinTrackConf = function(ev, track, aIdx, strack) {
                 if (vm.tracks[track].annos[aIdx].text.length > 0) {
                     var type = 'respeak';
-                    $translate(['ANNO_EXIST', 'ANNO_DELCONF1', 'ANNO_DELCONF2', 'ANNO_DELNO', 'USE_RSPK', 'USE_TRANS']).then(function (translations) {
+                    $translate(['ANNO_EXIST', 'ANNO_REMCONF', 'ANNO_DELNO', 'USE_RSPK', 'USE_TRANS']).then(function (translations) {
                         var okaytext;
                         switch (type) {
                             case 'respeak':
@@ -440,7 +449,7 @@
                         }
                         var confirm = $mdDialog.confirm()
                             .title(translations.ANNO_EXIST)
-                            .textContent(translations.ANNO_DELCONF1)
+                            .textContent(translations.ANNO_REMCONF)
                             .ariaLabel('Delete annotations')
                             .targetEvent(ev)
                             .ok(okaytext)
@@ -448,8 +457,7 @@
                         $mdDialog.show(confirm).then(function () {
                             vm.joinAndMove(track, aIdx, strack);
                         }, function() {
-                            var mySound = new Audio('media/chickenout.wav');
-                            mySound.play();
+                            // no more chicken sound!
                         });
 
                     });
@@ -480,8 +488,7 @@
                         annoServ.trackSplit(track, aIdx);
                         vm.selAnno[vm.r.vt] = 0;
                     }, function() {
-                        var mySound = new Audio('media/chickenout.wav');
-                        mySound.play();
+                        // no more chicken sound!
                     });
                 });
             };

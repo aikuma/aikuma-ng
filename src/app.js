@@ -17,11 +17,11 @@
             'indexedDB',               // used by dataservice to store metadata
             'aikuma-dataservice',      // data service dealing with metadata and files
             'ngPrettyJson',            // for debugging
-            'ngMessages',              // for validation messages
+            'ngMessages'               // for validation messages (can we get rid of this?)
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.911',
+            appVersion: '0.912',
             sampleRate: 16000,
             fileStorageMB: 1000,
             debug: false,

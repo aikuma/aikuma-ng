@@ -1,30 +1,30 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
-<md-content class="md-padding">
+<md-content class="md-padding" id="popupContainer">
     
     <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" href="{{seCtrl.dataUri}}">
         <md-icon md-svg-icon="file:file_download"></md-icon>
-        Download backup file  
+        {{"BACKUP_DOWNLOAD" | translate}}
     </md-button>
     
     <label class="md-button md-raised" for="zip-input">
         <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-        Load backup file
+        {{"BACKUP_UP" | translate}}
     </label>
     <input id="zip-input" type="file" file-model="zipFile" style="display:none;">
     
     <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.loadMockData()">
         <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-        Load mock-data
+        {{"DEBUG_MOCK" | translate}}
     </label>
 
-    <label class="md-button md-raised" ng-click="seCtrl.wipeData()">
+    <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.wipeData()">
         <md-icon md-svg-icon="action:delete"></md-icon>
-        Wipe all data
+        {{"DEBUG_WIPE" | translate}}
     </label>
     
-    <label class="md-button md-raised" ng-click="seCtrl.resetDb()">
+    <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.resetDb()">
         <md-icon md-svg-icon="action:delete"></md-icon>
-        Reset Database
+        {{"DEBUG_RESETDB" | translate}}
     </label>
     
     <div>
