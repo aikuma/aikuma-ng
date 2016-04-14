@@ -19,7 +19,7 @@
 
         <div flex ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer">
             <div flex ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
-                <div ng-repeat="anno in annoC.tracks[track].annos" layout="row" layout-align="start center">
+                <div ng-repeat="anno in annoC.tracks[track].annos track by anno.id" layout="row" layout-align="start center">
                     <md-menu>
                         <md-button class="md-icon-button" ng-disabled="annoC.r.tk !== track || !annoC.tracks[track].annos[$index].cfg.enabled" aria-label="Playback menu" ng-click="annoC.openMenu($mdOpenMenu, $event)">
                             <md-tooltip class="md-body-2"><span translate>PLAY_SRC</span></md-tooltip>
@@ -135,7 +135,7 @@ asx.playIn: {{annoC.getplayin()}}
              ng-if="annoC.canExport()">
 
             <div flex layout="column">
-                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos" style="margin-left:5px;height:22px;">
+                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id" style="margin-left:5px;height:22px;">
                     <span flex ng-class="($index === annoC.selAnno[annoC.r.tk]) ? 'md-body-2' : 'md-body-1'" >
                         {{annoC.padOut(anno.text[r])}}</span>
                 </div>
@@ -143,7 +143,7 @@ asx.playIn: {{annoC.getplayin()}}
             </div>
 
             <div ng-if="annoC.tracks[annoC.r.tk].annos.length > 1" layout="column" layout-align="end end">
-                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos"  style="margin-right:5px;height:22px;">
+                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"  style="margin-right:5px;height:22px;">
                     <span flex class="md-caption" style="color:#aaa" translate>{{anno.type}}</span>
                 </div>
             </div>
