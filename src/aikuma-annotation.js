@@ -15,7 +15,7 @@
             };
         });
 
-        var ngAnnoController = function (annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
+        var ngAnnoController = function (config, annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
             var vm = this;
             $scope.onlineStatus = aikumaService;
             $scope.$watch('onlineStatus.isOnline()', function(online) {
@@ -42,6 +42,7 @@
             vm.ffKeyDownStat = false;
             vm.isPlaying = false;
             vm.selAnno = {};
+            vm.debug = function() { return config.debug; };
 
             // More view model settings
             vm.annoSettings = {};   // what source audio to play, looping, enabled or disabled etc
@@ -70,7 +71,6 @@
             vm.playKeyDown = function(nokey) {
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
                 vm.playKeyDownStat = true;
-                vm.isPlaying = true;
                 // if we have been making a region (we can assume this is repeat press) then re-play
                 if (vm.r.regionMarked) {
                     annoServ.wavesurfer.play(annoServ.playIn);
@@ -79,12 +79,14 @@
                         // the service works out what audio is appropriate to play (which is why we pass the settings object
                         vm.playAudio();
                     } else {
+                        vm.isPlaying = true;
                         var thisTime = annoServ.wavesurfer.getCurrentTime();
                         thisTime = Math.round(thisTime*1000)/1000;
-                        annoServ.makeNewRegion(thisTime);
-                        vm.r.regionMarked = true;
-                        vm.cursor[vm.r.tk] = annoServ.regionList.length - 1;
-                        annoServ.playIn = thisTime;
+                        if (thisTime >= annoServ.playIn) {
+                            annoServ.makeNewRegion(thisTime);
+                            vm.r.regionMarked = true;
+                            vm.cursor[vm.r.tk] = annoServ.regionList.length - 1;
+                        }
                         annoServ.wavesurfer.play();
                         vm.restoreFocus();
                     }
@@ -95,7 +97,7 @@
             vm.playKeyUp = function(nokey) {
                 vm.playKeyDownStat = false;
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
-                if (vm.r.regionMarked) {
+                if (vm.isPlaying) {
                     vm.isPlaying = false;
                     annoServ.wavesurfer.pause();
                 }
@@ -182,7 +184,14 @@
             };
 
             vm.escKey = function(nokey) {
+                if (vm.hasAudio(vm.r.tk)) {
+                    $translate('AUDIO_NODEL').then(function (message) {
+                        aikumaDialog.toast(message);
+                    });
+                    return;
+                }
                 annoServ.deleteLastRegion();
+                vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
             };
 
             vm.switchAnnoKey = function(reverse) {
@@ -359,6 +368,8 @@
                 var selAnno = vm.selAnno[vm.r.tk];
                 var region =  vm.cursor[vm.r.tk];
                 var thisTrack = vm.tracks[vm.r.tk];
+                // someone might trigger play during a FF/RW
+                annoServ.wavesurfer.setPlaybackRate(1);
                 if (!vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc && !vm.tracks[vm.r.tk].annos[selAnno].cfg.playSec) {
                     $translate('AUDIO_NOSEL').then(function (trans) {
                         aikumaDialog.toast(trans);
@@ -427,8 +438,11 @@
                     vm.r.tk = track;
                     if (!vm.selAnno[vm.r.tk]) {vm.selAnno[vm.r.tk]=0;}
                     annoServ.switchToTrack(track);
-                    if(annoServ.regionList && annoServ.regionList.length > 0)
-                        annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
+                    if(annoServ.regionList && annoServ.regionList.length > 0) {
+                        if (vm.cursor[vm.r.tk] > -1) {
+                            annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
+                        }
+                    }
                     else
                         annoServ.seekToTime(0);
                     vm.restoreFocus(100); // this takes a while so let's chillax on setting focus for 100ms
@@ -556,8 +570,13 @@
                 annoServ.destroyAll();
                 annotateAudioContext.close();
             });
+            
+            // debug stuff
+            vm.getplayin = function() {
+                return annoServ.playIn;
+            };
 
         };
-    ngAnnoController.$inject = ['annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
+    ngAnnoController.$inject = ['config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
 
 })();

@@ -150,5 +150,15 @@
   "ANNOTATIONS": "annotations",
   "PRIVATE": "Not shared",
   "OFFLINE_MSG": "Offline. Speech recognition disabled",
-  "OLAC_HELP": "Discourse type help"
+  "OLAC_HELP": "Discourse type help",
+  "DEBUG_ON": "Debug mode on!",
+  "DEBUG_OFF": "Debug mode off!",
+  "DEBUG_MOCK": "Load mock-data",
+  "DEBUG_WIPE": "Wipe all data",
+  "DEBUG_RESETDB": "Reset Database",
+  "BACKUP_DOWN": "Download backup file",
+  "BACKUP_UP": "Load backup file",
+  "ANNO_REMCONF": "This action will delete your work in this annotation. Are you sure?",
+  "AUDIO_NOSEL": "Please enable an audio source!",
+  "AUDIO_NODEL": "Can't delete region with respeaking/translation, split to new track if you want to do this"
 }

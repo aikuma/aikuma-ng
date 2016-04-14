@@ -150,5 +150,15 @@
   "ANNOTATIONS": "註釋",
   "PRIVATE": "不共享",
   "OFFLINE_MSG": "離線。語音識別無法使用",
-  "OLAC_HELP": "話語類型的幫助"
+  "OLAC_HELP": "話語類型的幫助",
+  "DEBUG_ON": "在調試模式！",
+  "DEBUG_OFF": "調試模式關閉！",
+  "DEBUG_MOCK": "負載模擬數據",
+  "DEBUG_WIPE": "擦除所有數據",
+  "DEBUG_RESETDB": "復位數據庫",
+  "BACKUP_DOWN": "下載備份文件",
+  "BACKUP_UP": "加載備份文件",
+  "ANNO_REMCONF": "此操作將刪除這個註解你的工作是否確實!",
+  "AUDIO_NOSEL": "請啟用音頻源",
+  "AUDIO_NODEL": "不能與重複說話刪除區域/翻譯，如果你想這樣做拆分到新軌道"
 }

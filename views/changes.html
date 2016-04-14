@@ -3,8 +3,12 @@
 <md-content class="md-padding">
     <div class="row">
         <h4 class='md-title'>14/4/2016</h4>
-        <p class="md-body-1">0.912. The data destroying buttons in the 'settings' page hidden behind the debug. A toast tells the user when debug is on/off when the click on the beta version logo. Improved message when joining a track when the user has data (doesn't say deleting the annotation). Annotation UI starts in first region automatically. The audio playback preference works correctly. A toast appears if the user tries to play audio after turning off both the source and secondary.
-
+        <p class="md-body-1">0.912. The data wipe/resetbuttons in the 'settings' page hidden behind the debug. A toast tells the user when debug is on/off when the click on the beta version logo.
+            Improved message when joining a track when the user has data (doesn't say deleting the annotation). Annotation UI starts in first region automatically.
+            The audio playback preference works correctly. A toast appears if the user tries to play audio after turning off both the source and secondary.
+            Playing before the end of the last region would erroneously begin marking a region. We now allow the press and hold mode, but do not create a region.
+            Fixed issue where user could delete regions (with escape) for annotations that had joined a respeaking/translation track. This would orphan audio recordings. At the moment this triggers
+            a toast with an overly long message. Regions beyond the availability of secondary audio may be deleted as normal. Fixed invalid seek to region on switching tracks where that track cursor was not in a valid region.
         </p>
     </div>
     <div class="row">

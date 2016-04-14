@@ -323,6 +323,14 @@
                 }
                 // push to real data
                 asx.sessionObj.data.segments[asx.r.tk].pop();
+                // The user may have entered an annotation for the current or other annotations
+                // we need to clear those, otherwise they will mysteriously come back when they mark a new segment
+                var lenseg = asx.sessionObj.data.segments[asx.r.tk].length;
+                asx.tracks[asx.r.tk].annos.forEach(function(anno) {
+                    if (anno.text.length > lenseg) {
+                        anno.text.pop();
+                    }
+                });
             };
             
             asx.destroyAll = function() {
@@ -381,7 +389,7 @@
                     asx.tracks[track].hasAnno = false;
                 }
                 var thisanno = asx.annoObjList.filter(function(ao) {return ao.data._ID === movedAnno.id;})[0];
-                var copyseg = asx.sessionObj.data.segments[track];
+                var copyseg = angular.copy(asx.sessionObj.data.segments[track]);
                 var newsegid = asx.sessionObj.addSrcSegment(copyseg);
                 thisanno.data.segment.sourceSegId = newsegid;
                 // We need a new colour, and a new icon, otherwise copy stuff from old track

@@ -91,7 +91,7 @@
                 $routeProvider
                     .when('/', {
                         templateUrl: 'views/home.html',
-                        controller: 'homeController as hCtrl',
+                        controller: 'homeController as hCtrl'
                     })
                     .when('/new', {
                         templateUrl: 'views/new.html',
