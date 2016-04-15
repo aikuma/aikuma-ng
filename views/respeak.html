@@ -1,6 +1,6 @@
 <ng-topbar session="{{rsCtrl.sessionData.names[0]}}" session-id="{{rsCtrl.sessionData._ID}}" activity="{{rsCtrl.type === 'respeak'? 'ACTIVITY_RESPEAK' : 'ACTIVITY_TRANSLATE'}}"></ng-topbar>
 
-<md-content class="md-padding" md-scroll-y>
+<md-content class="md-padding" md-scroll-y style="padding-bottom:30px">
     <ng-respeak2 type="{{rsCtrl.type}}" source="{{rsCtrl.audioSourceUrl}}" user-obj="rsCtrl.userObj" session-obj="rsCtrl.sessionObj" respeak-obj="rsCtrl.respeakObj" lang-id-name-map="rsCtrl.langIdNameMap"></ng-respeak2>
 </md-content>
 

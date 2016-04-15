@@ -5,10 +5,10 @@ var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     inject = require('gulp-inject'),
     gulpif = require('gulp-if'),
-    minifyCss = require('gulp-minify-css'),
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     clean = require('gulp-clean'),
+    cleanCSS = require('gulp-clean-css'),
     useref = require('gulp-useref'),
     closure = require('gulp-closure-compiler-service'),
     debug = require('gulp-debug'),
@@ -78,13 +78,13 @@ gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
         .pipe(useref({'noconcat':false}))
         .pipe(gulpif('*.js', closureCompiler({
-            //compilation_level: 'WHITESPACE_ONLY',
-            compilation_level: 'SIMPLE_OPTIMIZATIONS',
-            language_in: 'ECMASCRIPT6',
-            language_out: 'ECMASCRIPT6',
-            js_output_file: 'scripts/combined.js'
+            compilation_level: 'WHITESPACE_ONLY',
+            //compilation_level: 'SIMPLE_OPTIMIZATIONS',
+            //language_in: 'ECMASCRIPT6',
+            //language_out: 'ECMASCRIPT6',
+            js_output_file: 'scripts/combined.js',
             })))
-        //.pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulpif('*.css', cleanCSS({debug: true})))
         .pipe(debug({title: 'x:'}))
         .pipe(gulp.dest('dist'));
 });

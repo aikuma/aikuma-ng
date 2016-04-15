@@ -1,6 +1,6 @@
 <ng-topbar session="{{sCtrl.sessionData.names[0]}}"></ng-topbar>
 
-<md-content class="md-padding">
+<md-content class="md-padding" style="padding-bottom:30px">
     <div flex layout="row" layout-md="column" layout="space-between">
         <div flex>
             <div layout="row" layout-align="start center">
@@ -119,12 +119,14 @@
                 <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
 
                 <md-card-actions layout="column" layout-align="center center">
-                    <div layout="row" layout-align="end center">
+                    <div layout="row" layout-align="end">
                         <label class="md-button" aria-label="Upload new image" for="image-input">
-                            <md-icon md-svg-icon="file:file_upload"></md-icon><span class="md-body-2">{{"UPLOAD" | translate}}</span>
+                            <md-icon md-svg-icon="file:file_upload"></md-icon>
+                            <span class="md-body-2">{{"UPLOAD" | translate}}</span>
                         </label>
-                        <label class="md-button" aria-label="Upload new image" ng-click="sCtrl.deleteImage()">
-                            <md-icon md-svg-icon="action:delete"></md-icon><span class="md-body-2">{{"META_DEL" | translate}}</span>
+                        <label class="md-button" aria-label="Delete image" ng-click="sCtrl.deleteImage()">
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                            <span class="md-body-2">{{"META_DEL" | translate}}</span>
                         </label>
                     </div>
                     <div layout="row" layout-align="end center">

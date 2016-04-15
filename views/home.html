@@ -1,6 +1,6 @@
 <ng-topbar></ng-topbar>
 
-<md-content class="md-padding">
+<md-content class="md-padding" style="padding-bottom:30px">
     <div ng-if="hCtrl.getLoginStatus()">
     <p class="md-title inset">{{'WELCOME' | translate}} <i>{{hCtrl.currentUserName()}}.</i></p>
         <span ng-if="hCtrl.sessionList.length === 0" class="md-title inset">{{"HOME_NOSESSION" | translate }}</span>

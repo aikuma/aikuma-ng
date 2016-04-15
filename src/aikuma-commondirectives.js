@@ -540,7 +540,7 @@
     };
     playerController.$inject = ['$scope', '$attrs'];
 
-    var langSelectController = function (aikumaService, $scope, $attrs) {
+    var langSelectController = function (aikumaService, $scope) {
         var vm = this;
         // list of `language` value/display objects
         vm.languages = loadAllx();
@@ -617,7 +617,7 @@
             };
         }
     };
-    langSelectController.$inject = ['aikumaService', '$scope', '$attrs'];
+    langSelectController.$inject = ['aikumaService', '$scope'];
 
 
 

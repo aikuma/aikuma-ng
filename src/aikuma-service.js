@@ -9,7 +9,7 @@
             var ser = {};
             var subscribers = [];
             ser.regKey= function(keypress, keypresstype, callback) {
-                subscribers.push({'keypress':keypress,'keypresstype':keypresstype, 'callback': callback});
+                subscribers.push({'keypress':keypress, 'keypresstype':keypresstype, 'callback': callback});
             };
             ser.clearKey = function(keypress, keypresstype) {
                 var max = subscribers ? subscribers.length : 0;

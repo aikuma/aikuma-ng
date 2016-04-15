@@ -1,3 +1,6 @@
+/*!
+* Aikuma-NG CSS
+ */
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
 body {
@@ -5,8 +8,11 @@ body {
     font-size: 20px;
 }
 
-input {
-    font-family: 'Roboto', 'Noto Sans TC', sans-serif;
+md-autocomplete input {
+    font-family: 'Roboto', 'Noto Sans TC', "Microsoft Yahei", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.010em;
 }
 
 a {
@@ -212,15 +218,15 @@ md-sidenav {
 .centertextbox {
     text-align: center;
     margin: 0;
-    position: absolute;               /* 2 */
-    top: 50%;                         /* 3 */
+    position: absolute;
+    top: 50%;
     transform: translate(0, -50%);
     width:100%;
 }
 
 .transcript-content {
     overflow-y: scroll;
-    height:400px;"
+    height:400px;
 }
 
 .dividerhackfix:focus {
@@ -336,9 +342,7 @@ kbd.menu kbd {
     opacity: 0.54;
 }
 
-.md-autocomplete input {
-    background: #f7f7f7;
-}
+
 
 .camboxnormal {
     border: 4px solid #d0d0d0;

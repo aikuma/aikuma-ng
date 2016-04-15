@@ -18,7 +18,6 @@
                         .textContent(alerttext)
                         .ariaLabel(alerttitle)
                         .ok('Yeah OK')
-                    //.targetEvent(ev)
                 );
             };
             factory.toast = function(toasttext) {
@@ -81,7 +80,6 @@
         }]);
 
     var helpDialogController = function($scope ,$mdDialog) {
-        "use strict";
         $scope.hide = function() {
             $mdDialog.hide();
         };
@@ -138,7 +136,6 @@
     profileController.$inject = ['$mdDialog', '$scope', '$translate', 'userObj'];
 
     var voiceCfgController = function($mdDialog, aikumaService, voicecfg) {
-        "use strict";
         var vm = this;
         console.log('i',voicecfg);
         vm.name = voicecfg.name;
