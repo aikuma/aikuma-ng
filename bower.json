@@ -16,20 +16,20 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.4.9",
-    "angular-material": "~1.0.7",
     "papaparse": "~4.1.2",
-    "wavesurfer.js": "~1.0.58",
+    "wavesurfer.js": "~1.1.1",
     "underscore": "~1.8.3",
     "angular-resizable": "^1.2.0",
     "angular-indexedDB": "angular-indexed-db#^1.1.3",
-    "angular-route": "bower-angular-route#1.4.9",
+    "angular-route": "bower-angular-route#1.5.3",
     "Keypress": "^2.1.3",
     "ng-prettyjson": "^0.2.0",
     "angular-translate": "^2.10.0",
     "angular-translate-loader-static-files": "^2.10.0",
     "any-resize-event": "^1.0.0",
-    "webcamjs": "^1.0.6"
+    "webcamjs": "^1.0.6",
+    "angular": "1.5.4",
+    "angular-material": "master"
   },
   "overrides": {
     "wavesurfer.js": {
@@ -60,6 +60,6 @@
     }
   },
   "resolutions": {
-    "angular": "1.4.9"
+    "angular": "1.5.4"
   }
 }
