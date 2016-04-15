@@ -507,13 +507,27 @@
                 }
             };
             
-            vm.getImage = function() {  
+            vm.getImage = function() {
                 if(vm.userData) {
                     return vm.userData.files[ vm.sessionData.imageIds[ vm.currentImageIdx-1 ] ].url;
                 } else {
                     return null;
                 }
             };
+            
+            vm.deleteImage = function() {
+                if(vm.sessionData && vm.sessionData.imageIds && vm.sessionData.imageIds.length > 0) {
+                    var imageId = sessionObj.data.imageIds.splice(vm.currentImageIdx-1, 1)[0];
+                    vm.currentImageIdx = 1;
+                    vm.ImageCount--;
+                    sessionObj.save().then(function(){
+                        return fileService.deleteFileWithId(loginService.getLoggedinUserId(), imageId);
+                    }).catch(function(err){
+                        console.error(err);
+                    });
+                    
+                }
+            }
 
             vm.OLAChelp = function(ev) {
                 aikumaDialog.help(ev, 'olac');

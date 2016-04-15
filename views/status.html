@@ -29,7 +29,7 @@
                     <ng-language-selector lang-id-name-map="sCtrl.langIdNameMap" lang-id-list="sCtrl.srcLangIds" on-change="sCtrl.saveLangs(langIds)" flex style="margin-left:8px;"></ng-language-selector>
                 </div>
             </section>
-
+        
             <ng-player source="{{sCtrl.audioSourceUrl}}" wave-color="#4FC3F7" progress-color="#33627c" height="120" min_Px_Per_Sec="150" wavesurfer="sCtrl.wavesurfer"></ng-player>
 
             <!--Respeaking button or menu-->
@@ -118,18 +118,25 @@
                 <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" style="width:160px;height:160px;"></md-icon>
                 <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
 
-                <md-card-actions layout="row" layout-align="end center">
-                    <label class="md-button" aria-label="Upload new image" for="image-input">
-                        <md-icon md-svg-icon="file:file_upload"></md-icon><span class="md-body-2">{{"UPLOAD" | translate}}</span>
-                    </label>
-                    <md-button aria-label="Previous image" ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
-                        <md-icon  md-svg-icon="av:skip_previous"></md-icon>
-                    </md-button>
-                    <div ng-if="!sCtrl.ImageCount" class="md-body-2"> - / - </div>
-                    <div ng-if="sCtrl.ImageCount" class="md-body-2"> {{sCtrl.currentImageIdx}} / {{sCtrl.ImageCount}} </div>
-                    <md-button aria-label="Next image" ng-disabled="!sCtrl.hasNextImage()" ng-click="sCtrl.nextImage()">
-                        <md-icon md-svg-icon="av:skip_next" ></md-icon>
-                    </md-button>
+                <md-card-actions layout="column" layout-align="center center">
+                    <div layout="row" layout-align="end center">
+                        <label class="md-button" aria-label="Upload new image" for="image-input">
+                            <md-icon md-svg-icon="file:file_upload"></md-icon><span class="md-body-2">{{"UPLOAD" | translate}}</span>
+                        </label>
+                        <label class="md-button" aria-label="Upload new image" ng-click="sCtrl.deleteImage()">
+                            <md-icon md-svg-icon="action:delete"></md-icon><span class="md-body-2">{{"META_DEL" | translate}}</span>
+                        </label>
+                    </div>
+                    <div layout="row" layout-align="end center">
+                        <md-button aria-label="Previous image" ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
+                            <md-icon  md-svg-icon="av:skip_previous"></md-icon>
+                        </md-button>
+                        <div ng-if="!sCtrl.ImageCount" class="md-body-2"> - / - </div>
+                        <div ng-if="sCtrl.ImageCount" class="md-body-2"> {{sCtrl.currentImageIdx}} / {{sCtrl.ImageCount}} </div>
+                        <md-button aria-label="Next image" ng-disabled="!sCtrl.hasNextImage()" ng-click="sCtrl.nextImage()">
+                            <md-icon md-svg-icon="av:skip_next" ></md-icon>
+                        </md-button>
+                    </div>
                 </md-card-actions>
             </md-card>
 

@@ -689,12 +689,8 @@
 
             // create a contact object out of these constructed details
 
-            var imageurl = '';
-            if (users[id].imageFileId) {
-                imageurl = $sce.trustAsResourceUrl(vm.userObj.data.files[users[id].imageFileId].url);
-            } else {
-                imageurl = 'img/placeholder_avatar.png';
-            }
+            var imageData = vm.userObj.data.files[users[id].imageFileId],
+                imageurl = imageData? $sce.trustAsResourceUrl(imageData.url) : 'img/placeholder_avatar.png';
 
             var personObj = {
                 'id': id,
@@ -709,6 +705,9 @@
             vm.callDialog('new', newname);
         };
         vm.editPerson = function(chip) {
+            if(!vm.userObj.data.files[ vm.userObj.data.people[chip.id].imageFileId ]) {
+                vm.userObj.data.people[chip.id].imageFileId = null;
+            }
             var imageid = vm.userObj.data.people[chip.id].imageFileId;
             vm.callDialog('edit', chip.pname, imageid, chip.id);
         };
@@ -1040,14 +1039,8 @@
                     type: blobfile.type
                 };
                 fileObjId = $scope.userObj.addUserFile(fileObj);
-                return $scope.userObj.save();
-            }).then(function() {
-                if(!$scope.sessionObj.data.imageIds) {
-                    $scope.sessionObj.data.imageIds = [];
-                }
-                $scope.sessionObj.data.imageIds.push(fileObjId);
                 $scope.imageId = fileObjId;
-                return $scope.sessionObj.save();
+                return $scope.userObj.save();
             }).then(function() {
                 vm.imageSaved = true;
                 if (vm.cameraEnabled) {
@@ -1080,6 +1073,10 @@
         };
 
         vm.deleteImage = function() {
+            if(vm.imageSaved) {
+                fileService.deleteFileWithId(loginService.getLoggedinUserId(), $scope.imageId)
+            }
+            
             vm.imageSelected = false;
             vm.imageSaved = false;
             $scope.imageId = null;
@@ -1092,7 +1089,7 @@
 
         // Return a source image to view depending on how we got the image
         vm.previewImage = function() {
-            if (vm.imageSaved) {
+            if (vm.imageSaved && $scope.userObj.data.files[$scope.imageId]) {
                 return $scope.userObj.data.files[$scope.imageId].url;
             }
             if (vm.imageSelected) {

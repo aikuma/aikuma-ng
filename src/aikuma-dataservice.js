@@ -972,6 +972,30 @@
                 return removeDefer.promise;
             };
             
+            service.deleteFileWithId = function(userId, fileId) {
+                var fileDefer = $q.defer();
+                var tempUrl;
+                dataService.get('user', userId).then(function(userObj) {
+                    if(userObj.data.files && userObj.data.files[fileId]) {
+                        tempUrl = userObj.data.files[fileId].url;
+                        delete userObj.data.files[fileId];
+                        return userObj.save();
+                    }
+                    return;
+                }).then(function(){
+                    if(tempUrl) {
+                        return service.deleteFile(tempUrl);
+                    }
+                    return;
+                }).then(function(){
+                    fileDefer.resolve('deleted');
+                }).catch(function(err){
+                    fileDefer.reject(err);
+                });
+                
+                return fileDefer.promise;
+            };
+
             service.deleteFile = function(url) {
                 var fileDefer = $q.defer();
 
