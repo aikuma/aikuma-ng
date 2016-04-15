@@ -618,7 +618,6 @@
             service.upgradeData = function(currentVersion) {
                 return service.getJsonBackup().then(function(db){
                     var newDb = upgradeJsonDB(db);
-                    
                     // Import DB
                     return $indexedDB.openStores(typeList, function(store0, store1, store2) {
                         return store0.clear().then(function() {
@@ -638,21 +637,19 @@
             
             service.getJsonBackup = function() {
                 var backup = {};
-                return $indexedDB.openStores(typeList, function(store0, store1, store2) {
-                    /*return service.getDataVersion().then(function(version) {
-                        backup['version'] = version;
-                        return store0.getAll();
-                    })*/
-                    backup['version'] = 0;
-                    return store0.getAll().then(function(userData) {
-                        backup[USER_TYPE] = userData;
-                        return store1.getAll();
-                    }).then(function(sessionData) {
-                        backup[SESSION_TYPE] = sessionData;
-                        return store2.getAll();
-                    }).then(function(secondaryData) {
-                        backup[SECONDARY_TYPE] = secondaryData;
-                        return backup;
+                return service.getDataVersion().then(function(version) {
+                    backup['version'] = version;
+                    return $indexedDB.openStores(typeList, function(store0, store1, store2) {
+                        return store0.getAll().then(function(userData) {
+                            backup[USER_TYPE] = userData;
+                            return store1.getAll();
+                        }).then(function(sessionData) {
+                            backup[SESSION_TYPE] = sessionData;
+                            return store2.getAll();
+                        }).then(function(secondaryData) {
+                            backup[SECONDARY_TYPE] = secondaryData;
+                            return backup;
+                        });
                     });
                 });
             };
