@@ -573,7 +573,7 @@
                     chrome.storage.local.set({dataVersion: version});
                 else
                     localStorage.setItem('dataVersion', version);
-            }
+            };
             
             service.getDataVersion = function() {
                 var verDefer = $q.defer();
@@ -582,7 +582,7 @@
                 else
                     verDefer.resolve(localStorage.getItem('dataVersion'));
                 return verDefer.promise;
-            }
+            };
             
             var upgradeJsonDB = function(db) {
                 //var dbDefer = $q.defer(),
@@ -606,14 +606,14 @@
                                 };
                             });
                         });
-                        db['version'] = currentVersion + 1;
+                        db.version = currentVersion + 1;
                     case 1:
                     case 2:
                 }
                 
                 return db;
                 //return dbDefer.promise;
-            }
+            };
             
             service.upgradeData = function(currentVersion) {
                 return service.getJsonBackup().then(function(db){
@@ -632,8 +632,8 @@
                             return store2.upsert(newDb[SECONDARY_TYPE]);
                         });
                     });  
-                })
-            }
+                });
+            };
             
             service.getJsonBackup = function() {
                 var backup = {};

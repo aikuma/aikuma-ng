@@ -288,7 +288,7 @@
                         aikumaDialog.toast('Not an audio file!');
                     } else {
                         fileService.setTempObject(file);
-                        $location.path('/new');
+                        $location.path('/import');
                     }
                 }
             });
