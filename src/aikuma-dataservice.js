@@ -639,10 +639,12 @@
             service.getJsonBackup = function() {
                 var backup = {};
                 return $indexedDB.openStores(typeList, function(store0, store1, store2) {
-                    return service.getDataVersion().then(function(version) {
+                    /*return service.getDataVersion().then(function(version) {
                         backup['version'] = version;
                         return store0.getAll();
-                    }).then(function(userData) {
+                    })*/
+                    backup['version'] = 0;
+                    return store0.getAll().then(function(userData) {
                         backup[USER_TYPE] = userData;
                         return store1.getAll();
                     }).then(function(sessionData) {
