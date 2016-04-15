@@ -315,6 +315,9 @@
                         dataService.upgradeData(ver).then(function(){
                             dataService.setDataVersion(config.dataVersion);
                             $mdDialog.cancel();
+                        }).catch(function(err){
+                            console.error(err);
+                            $mdDialog.cancel();
                         });
                     }
                     
