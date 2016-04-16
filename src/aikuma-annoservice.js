@@ -149,7 +149,7 @@
                         cfg: {playSrc: true, playSec: true, enabled: true, voice: asx.setVoice(secondary.data.source.langIds[0])},
                         id: secondary.data._ID,
                         type: angular.uppercase(secondary.data.type),
-                        lang: aikumaService.lookupLanguage(secondary.data.source.langIds[0], languages)
+                        lang: aikumaService.niceLangString(secondary.data.source.langIds[0])
                     };
                     // This annotation uses the segmap from one of the audio files
                     if (segmentId in asx.tracks) {
@@ -180,7 +180,7 @@
             // which could be correctly mapped. It ought to be in aikumaService
             asx.setVoice = function(langCode) {
                 var vcfg = {};
-                if (langCode === 'cmn') {
+                if (langCode.langISO === 'cmn') {
                     vcfg.name = '中文';
                     vcfg.region = '中文 (台灣)';
                     vcfg.code = 'cmn-Hant-TW';

@@ -1,7 +1,7 @@
 (function (){
     'use strict';
     angular
-        .module('annoweb', [
+        .module('aikuma', [
             'ngRoute',
             'ngMaterial',
             'aikuma-dialog',           // dialog and alert service (being deprecated)
@@ -21,7 +21,7 @@
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.912',
+            appVersion: '0.920',
             dataVersion: 1,
             sampleRate: 16000,
             fileStorageMB: 1000,
@@ -51,7 +51,7 @@
                     toolshort: '한글',
                     name: 'KOREAN'
                 }]
-            })
+        })
         .config(['$translateProvider', function ($translateProvider) {
             // add translation table
             $translateProvider.useStaticFilesLoader({
@@ -86,7 +86,7 @@
                     'default': '500'
                 });
         }])
-        // Note that controllers are in aikuma-viewcontrollers.js
+        // Views controllers are in aikuma-viewcontrollers.js
         .config(['$routeProvider',
             function($routeProvider) {
                 $routeProvider
@@ -156,11 +156,11 @@
                                 var promises = [];
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
-                                
+
                                 promises.push(dataService.getLanguages());
                                 promises.push(dataService.get('user', userId));
                                 promises.push(dataService.get('session', sessionId));
-                                
+
                                 return $q.all(promises);
                             }],
                             type: function() { return 'respeak'; }
@@ -176,12 +176,12 @@
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
                                 var respeakId = $route.current.params.respeakId;
-                                
+
                                 promises.push(dataService.getLanguages());
                                 promises.push(dataService.get('user', userId));
                                 promises.push(dataService.get('session', sessionId));
                                 promises.push(dataService.get('secondary', respeakId));
-                                
+
                                 return $q.all(promises);
                             }],
                             type: function() { return 'respeak'; }
@@ -196,11 +196,11 @@
                                 var promises = [];
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
-                                
+
                                 promises.push(dataService.getLanguages());
                                 promises.push(dataService.get('user', userId));
                                 promises.push(dataService.get('session', sessionId));
-                                
+
                                 return $q.all(promises);
                             }],
                             type: function() { return 'translate'; }
@@ -216,12 +216,12 @@
                                 var userId = loginService.getLoggedinUserId();
                                 var sessionId = $route.current.params.sessionId;
                                 var translateId = $route.current.params.translateId;
-                                
+
                                 promises.push(dataService.getLanguages());
                                 promises.push(dataService.get('user', userId));
                                 promises.push(dataService.get('session', sessionId));
                                 promises.push(dataService.get('secondary', translateId));
-                                
+
                                 return $q.all(promises);
                             }],
                             type: function() { return 'translate'; }
@@ -273,24 +273,23 @@
                         redirectTo: '/'
                     });
             }])
-
         .config(['$compileProvider', function($compileProvider) {
-                $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|filesystem|chrome-extension):/);
-                $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data|filesystem|chrome-extension):/);
+            $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|filesystem|chrome-extension):/);
+            $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data|filesystem|chrome-extension):/);
         }])
         .config(['$indexedDBProvider', function($indexedDBProvider) {
             $indexedDBProvider
-            .connection('myIndexedDB')
-            .upgradeDatabase(1, function(event, db, tx){
-                var userStore = db.createObjectStore('user', {keyPath: '_ID'});
-                userStore.createIndex('name_idx', 'name');
-                
-                var itemStore = db.createObjectStore('session', {keyPath: '_ID'});
-                itemStore.createIndex('user_idx', 'userId');
-                
-                var secondaryStore = db.createObjectStore('secondary', {keyPath: '_ID'});
-                secondaryStore.createIndex('user_session_idx', ['userId', 'sessionId']);
-            });
+                .connection('myIndexedDB')
+                .upgradeDatabase(1, function(event, db, tx){
+                    var userStore = db.createObjectStore('user', {keyPath: '_ID'});
+                    userStore.createIndex('name_idx', 'name');
+
+                    var itemStore = db.createObjectStore('session', {keyPath: '_ID'});
+                    itemStore.createIndex('user_idx', 'userId');
+
+                    var secondaryStore = db.createObjectStore('secondary', {keyPath: '_ID'});
+                    secondaryStore.createIndex('user_session_idx', ['userId', 'sessionId']);
+                });
         }])
         .run(['config', '$rootScope', '$location', 'dataService', 'loginService', '$mdDialog', function(config, $rootScope, $location, dataService, loginService, $mdDialog) {
             $rootScope.$on('$routeChangeStart', function(ev, dest) {
@@ -306,7 +305,7 @@
                     }];
                 }
             });
-            
+
             $rootScope.$on('$translateChangeSuccess', function(ev, data) {
                 var userId = loginService.getLoggedinUserId();
                 if(userId) {
@@ -318,32 +317,29 @@
                     });
                 }
             });
-            
+
             dataService.getDataVersion().then(function(ver) {
                 ver = ver || 0;
                 if(config.dataVersion > ver) {
-                    console.log(ver);
                     var ProgressDialogController = function($scope, $mdDialog) {
-                        console.log($mdDialog);
                         dataService.upgradeData(ver).then(function(){
                             dataService.setDataVersion(config.dataVersion);
                             $mdDialog.cancel();
                         }).catch(function(err){
-                            console.error(err);
                             $mdDialog.cancel();
                         });
-                    }
-                    
+                    };
+                    ProgressDialogController.$inject = ['$scope', '$mdDialog'];
                     $mdDialog.show({
                         template:
-                            '<md-dialog layout-align="center center">' +
-                            ' <md-progress-circular md-mode="indeterminate" md-diameter="96"></md-progress-circular>'+
-                            '</md-dialog>',
+                        '<md-dialog layout-align="center center">' +
+                        '<md-progress-circular md-mode="indeterminate" md-diameter="96"></md-progress-circular>'+
+                        '</md-dialog>',
                         controller: ProgressDialogController
                     });
                 }
             });
-            
-            
+
+
         }]);
 })();

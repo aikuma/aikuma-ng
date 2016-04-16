@@ -186,6 +186,19 @@
             ser.getAnnotations = function() {
                 return ser.mockannotations;
             };
+            // make a nice language string eg: English (en)
+            ser.niceLangString = function(langObj) {
+                if (!langObj.langStr) {
+                    return "Unknown";
+                }
+                if (langObj.langISO) {
+                    return langObj.langStr + ' (' + langObj.langISO + ')';
+                }
+                return langObj.langStr;
+            };
+
+
+
             ser.getSegmap = function(id) {
                 return ser.mocksegMap[id];
             };
@@ -212,16 +225,36 @@
                     vtt.push('\n');
                 });
                 var blob = new Blob(vtt, {type: "text/plain;charset=utf-8"});
-                var a = document.createElement("a");
-                document.body.appendChild(a);
-                a.style = "display: none";
-                var url = window.URL.createObjectURL(blob);
-                a.href = url;
-                a.download = 'annotation.' + fileExt;
-                a.click();
-                window.URL.revokeObjectURL(url);
-                return vtt;
+                // if this is running as Chrome Packaged App then let's use the file API
+                if (window.chrome && chrome.app && chrome.app.runtime) {
+                    chromeAppSave('annotation.' + fileExt, blob, function() {
+                        console.log('saved');
+                    });
+                } else {
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    var url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = 'annotation.' + fileExt;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    return vtt;
+                }
             };
+
+            function chromeAppSave(filename, blobby, callback) {
+                var config = {type: 'saveFile', suggestedName: filename};
+                chrome.fileSystem.chooseEntry(config, function(writableEntry) {
+                    writableEntry.createWriter(function (writer) {
+                        writer.onerror = errorHandler;
+                        writer.onwriteend = callback;
+                        writer.truncate(blobby.size);
+                        writer.seek(0);
+                        writer.write(blobby, {type: 'text/plain'});
+                    });
+                });
+            }
 
             function msToVtt(ms, fileformat) {
                 var dotcomma;
@@ -241,6 +274,31 @@
                 z = z || '0';
                 n = n + '';
                 return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+            }
+            function errorHandler(e) {
+                console.error(e);
+            }
+            // from Chrome Packaged App example
+            // https://github.com/GoogleChrome/chrome-app-samples/blob/master/samples/filesystem-access/js/app.js
+            function waitForIO(writer, callback) {
+                // set a watchdog to avoid eventual locking:
+                var start = Date.now();
+                // wait for a few seconds
+                var reentrant = function() {
+                    if (writer.readyState===writer.WRITING && Date.now()-start<4000) {
+                        setTimeout(reentrant, 100);
+                        return;
+                    }
+                    if (writer.readyState===writer.WRITING) {
+                        console.error("Write operation taking too long, aborting!"+
+                            " (current writer readyState is "+writer.readyState+")");
+                        writer.abort();
+                    }
+                    else {
+                        callback();
+                    }
+                };
+                setTimeout(reentrant, 100);
             }
 
             ser.onLine = $window.navigator.onLine;

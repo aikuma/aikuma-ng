@@ -19,6 +19,7 @@ md-autocomplete input {
     letter-spacing: 0.010em;
 }
 
+
 a {
     color: grey;
 }
@@ -326,8 +327,8 @@ kbd.menu kbd {
 }
 
 .detailscard {
-    width:200px;
-    height:300px;
+    width:180px;
+    height:200px;
 }
 
 .sectionbox {

@@ -2,210 +2,78 @@
 
 <md-content class="md-padding" style="padding-bottom:30px">
     <div class="row">
-        <h4 class='md-title'>14/4/2016</h4>
-        <p class="md-body-1">0.912. The data wipe/resetbuttons in the 'settings' page hidden behind the debug. A toast tells the user when debug is on/off when the click on the beta version logo.
+        <h4 class='md-title'>16/4/2016 &mdash; 0.920</h4>
+        <p class="md-body-1">The data wipe/reset buttons in the 'settings' page hidden behind the debug. A toast tells the user when debug is on/off when the click on the beta version logo.
             Improved message when joining a track when the user has data (doesn't say deleting the annotation). Annotation UI starts in first region automatically.
-            The audio playback preference works correctly. A toast appears if the user tries to play audio after turning off both the source and secondary.
-            Playing before the end of the last region would erroneously begin marking a region. We now allow the press and hold mode, but do not create a region.
+        <p class="md-body-1">The audio playback preference works correctly. A toast appears if the user tries to play audio after turning off both the source and secondary.
+            Playing before the end of the last region would erroneously begin marking a region. We now allow the press and hold mode, but do not create a region.</p>
+        <p class="md-body-1">
             Fixed issue where user could delete regions (with escape) for annotations that had joined a respeaking/translation track. This would orphan audio recordings. At the moment this triggers
             a toast with an overly long message. Regions beyond the availability of secondary audio may be deleted as normal.
-            Fixed invalid seek to region on switching tracks where that track cursor was not in a valid region.
+            Fixed invalid seek to region on switching tracks where that track cursor was not in a valid region.</p>
+        <p class="md-body-1">
             Error reporting for audio files. Aikuma will attempt to decode the audio through Web Audio API. If this fails the user is informed. Playback button enabled when importing a file.
+            Export of WebVTT and SRT files is now done through Chrome file API when running as a Chrome Packaged App. This was necessary to open a file selector rather than saving in some unknown location.
+        <p class="md-body-1">
+            New data structure upgrade system. This is necessary for any changes to underlying data. The first use case is a move to record an string for the language selector in addition to the ISO code.
+            How people choose to refer to their languages is not something we should enforce based on ISO codes. Language selector upgrade to new system.
+        <p class="md-body-1">
+            First steps to address performance issues. Underlying dependency versions were rolled up, such as Angular and Angular Material. Angular Translate filters have been moved to directives in key locations (more to do).
+            Google Closure Compiler again enabled in whitespace mode, simple optimisations will need to wait until recorder.js is modified or replaced. Build uses CSS Clean. Culled alpha changes.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>10/4/2016</h4>
-        <p class="md-body-1">0.911. Catch up Chinese localisation. Implemented online/offline detection. An offline icon will flash at the bottom of the navbar when offline. Activating speech recognition in the annotation engine while offline will trigger a pop up warning that this feature is disabled.
+        <h4 class='md-title'>10/4/2016 &mdash; 0.911</h4>
+        <p class="md-body-1">Catch up Chinese localisation. Implemented online/offline detection. An offline icon will flash at the bottom of the navbar when offline. Activating speech recognition in the annotation engine while offline will trigger a pop up warning that this feature is disabled.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>9/4/2016</h4>
-        <p class="md-body-1">0.910. Improvements to layout responsiveness. Session screen usable from very wide to 960 pixels width. Minimum width set. Person selector directive now has edit functionality by clicking on names. Can now take photos directly
+        <h4 class='md-title'>9/4/2016 &mdash; 0.910</h4>
+        <p class="md-body-1">Improvements to layout responsiveness. Session screen usable from very wide to 960 pixels width. Minimum width set. Person selector directive now has edit functionality by clicking on names. Can now take photos directly
             from a computer webcam or upload them via a new ng-webcam directive. Fixed broken names in person selector. Changed key for transcription to <kbd>\</kbd>  because <kbd>`</kbd> is apparently what some people use to type apostrophes. Fixed broken annotation remove.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>7/4/2016</h4>
-        <p class="md-body-1">0.909. Synced up version numbers. Removed CSS minification which was causing multiple subtle issues. Removed up some old files. Use transparent version of icon for 32x32, added 48x48 icon.
+        <h4 class='md-title'>7/4/2016 &mdash; 0.909</h4>
+        <p class="md-body-1">Synced up version numbers. Removed CSS minification which was causing multiple subtle issues. Removed up some old files. Use transparent version of icon for 32x32, added 48x48 icon.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>7/4/2016</h4>
-        <p class="md-body-1">0.908. Fix to annotation UI not removing segments from the backend correctly. Added voice recognition to the annotation UI. Press the <kbd>`</kbd> key in an active annotation box and speak. The speaker/playback menu for the annotation has an option to set the recognition language for the given annotation.
+        <h4 class='md-title'>7/4/2016 &mdash; 0.908</h4>
+        <p class="md-body-1">Fix to annotation UI not removing segments from the backend correctly. Added voice recognition to the annotation UI. Press the <kbd>`</kbd> key in an active annotation box and speak. The speaker/playback menu for the annotation has an option to set the recognition language for the given annotation.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>6/4/2016</h4>
-        <p class="md-body-1">0.907. Fix to poor blocking behavior of language input selector for the translation activity. Translation is no longer impeded but confirming is. A tip informs the user that the language field is obligatory.
+        <h4 class='md-title'>6/4/2016 &mdash; 0.907</h4>
+        <p class="md-body-1">Fix to poor blocking behavior of language input selector for the translation activity. Translation is no longer impeded but confirming is. A tip informs the user that the language field is obligatory.
             Added home link to the nav bar. Reworked icons on respeak/translate and record new activities. Context sensitive cancel/delete button will be used widely, disk save icon replaced with confirm tick.
             Delete of respeaking, translation data implemented with confirmation dialog.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>6/4/2016</h4>
-        <p class="md-body-1">0.906. Validation indicator for email input box. New playback of respeaking and translate on the session page, UI overhaul. Several errors fixed on new file recording and import file. Reworked UI. Added message on home page when there are no sessions. </p>
+        <h4 class='md-title'>6/4/2016 &mdash; 0.906</h4>
+        <p class="md-body-1">Validation indicator for email input box. New playback of respeaking and translate on the session page, UI overhaul. Several errors fixed on new file recording and import file. Reworked UI. Added message on home page when there are no sessions. </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>5/4/2016</h4>
-        <p class="md-body-1">0.905. Validation indicator for email input box. Metadata now properly always displays location and description, new style for metadata add.</p>
+        <h4 class='md-title'>5/4/2016 &mdash; 0.905</h4>
+        <p class="md-body-1">Validation indicator for email input box. Metadata now properly always displays location and description, new style for metadata add.</p>
     </div>
     <div class="row">
-        <h4 class='md-title'>4/4/2016</h4>
-        <p class="md-body-1">0.904. Add new user immediately takes user to the user editor to change their name and email. Extensive fix to annotation UI tracks, correctly only displays when a track has annotations. Some tweaks to project description and About. Fixed date picker style on session view.
+        <h4 class='md-title'>4/4/2016 &mdash; 0.904</h4>
+        <p class="md-body-1">Add new user immediately takes user to the user editor to change their name and email. Extensive fix to annotation UI tracks, correctly only displays when a track has annotations. Some tweaks to project description and About. Fixed date picker style on session view.
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>3/4/2016</h4>
-        <p class="md-body-1">0.903. Record UI improvements: Title is no longer a chips selector which stopped save unless you pressed return. Uses improved language selector. Feedback beeps to indicator record start and stop. Respeaking UI: Fixed play record buttons not having CSS styles. Removed default OLAC discourse type. Changed add user fab icon to av:person_add. Removed old user selector directive. Altered several strings that said "add x" to just "x". SRT caption export implemented, caption save is now a menu allowing user to select format. Added bounds value to manifest so that a reasonably large window size should open on a platform that ignores the maximized state (OSX).
+        <h4 class='md-title'>3/4/2016 &mdash; 0.903</h4>
+        <p class="md-body-1">Record UI improvements: Title is no longer a chips selector which stopped save unless you pressed return. Uses improved language selector. Feedback beeps to indicator record start and stop. Respeaking UI: Fixed play record buttons not having CSS styles. Removed default OLAC discourse type. Changed add user fab icon to av:person_add. Removed old user selector directive. Altered several strings that said "add x" to just "x". SRT caption export implemented, caption save is now a menu allowing user to select format. Added bounds value to manifest so that a reasonably large window size should open on a platform that ignores the maximized state (OSX).
         </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>2/4/2016</h4>
-        <p class="md-body-1">Change version scheme. 0.901. Several fixes: failed to close audio contexts, causing the 6-context limit to be reached. Fixed session view top line summary crash when working with a brand new file with no metadata.  </p>
+        <h4 class='md-title'>2/4/2016 &mdash; 0.901</h4>
+        <p class="md-body-1">Change version scheme.  Several fixes: failed to close audio contexts, causing the 6-context limit to be reached. Fixed session view top line summary crash when working with a brand new file with no metadata.  </p>
     </div>
     <div class="row">
-        <h4 class='md-title'>1/4/2016</h4>
-        <p class="md-body-1">Beta 1. Annotation UI has WebVTT export. Aikuma-NG can now do work! </p>
+        <h4 class='md-title'>1/4/2016 &mdash; Beta 1</h4>
+        <p class="md-body-1">Annotation UI has WebVTT export. Aikuma-NG can now do work! </p>
     </div>
-    <div class="row">
-        <h4 class='md-title'>31/3/2016</h4>
-        <p class="md-body-1">Alpha 22. Anno UI: Added cursor keys for moving through annotations and tab to switch tracks. Improved transcript display, now displays all active annotations. </p>
-    </div>
-    <div class="row">
-    <h4 class='md-title'>30/3/2016</h4>
-    <p class="md-body-1">Alpha 22. Major rework of annotation interface based on a new track-based system. Data import and export.  </p>
-    </div>
-    <div class="row">
-        <h4 class='md-title'>23/3/2016</h4>
-        <p class="md-body-1">Alpha 21. Import and export implemented. New DB reset/wipe features. Localisation virtually complete. </p>
-    </div>
-    <div class="row">
-        <h4 class='md-title'>20/3/2016</h4>
-        <p class="md-body-1">Alpha 20. More localization work. Fonts fixed, new CJK fonts. Many more tooltips, and size increased. Cute CSS animations to appear more responsive (see Aikuma logo roll in on start). Many changes to status page, new respeak/translate status and edit UI. Language UI added to status, pulled out as a reusable directive). Project cleanup, removal of deprecated code, unused libraries, renamed source files to Aikuma.
-        </p>
-    </div>
-    <div class="row">
-        <h4 class='md-title'>17/3/2016</h4>
-        <p class="md-body-1">Alpha 19. Fixed scope errors in respeak. First pass at annotate. Implemented resize of transcript/waveform divider, hack to properly redraw wavesurfer minimap.
-        </p>
-    </div>
-<div class="row">
-    <h4 class='md-title'>12/3/2016</h4>
-    <p class="md-body-1">Alpha 18. Renamed to Aikuma(ng). Top bar directive reused across all views. Placeholder dialog for user profile editor added to toolbar. New much more sophisticated respeaking view based on left-right control for record/play. New keypress service to allow left-right key binding.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>9/3/2016</h4>
-    <p class="md-body-1">Alpha 17. Minimalist redesign of status page. OLAC discourse added. Metadata directive added (not finished). Aikuma logo. Merged Sanga's new session features. Added global configuration for app name and sample rate (set to 16000). Removed keyboard shortcuts from new recording. Rework of recorder based on review, clear and save choices. Review just plays directly instead of embedding audio. Added wavesurfer display to the session view. Fixed bugs with passing audio back from 'new'. New person selector directive that allows for adding unknown people, also fixes bugs with md-contact-chips.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>3/3/2016</h4>
-    <p class="md-body-1">Alpha 16. Respeaking implemented. Audio service introduced, implements sample rate conversion and wav blob output. Respeaking creates segments mapping source and destination.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>2/3/2016</h4>
-    <p class="md-body-1">Alpha 15. Merged Sangas dataService. After a great deal of bug hunting, I found that autocomplete-persistent-window bug was caused by putting ng-csp on the root html, introduced in an earlier change to try fix the chrome app issues.
-    </p>
-</div>
-
-<div class="row">
-    <h4 class='md-title'>1/3/2016</h4>
-    <p class="md-body-1">Alpha 14. Removed ui-router and breadcrumbs. Various fixes to address errors on Chrome Packaged App. Chrome app debug build is now in route so we can now launch Chrome app for debugging. Full screen window. Removed breadcrumbs, more trouble than they're worth. The toolbar is removed from the parent view and placed into each view page. Paths and hyperlinks can be customised from these templates.
-    </p>
-</div>
-
-<div class="row">
-    <h4 class='md-title'>26/2/2016</h4>
-    <p class="md-body-1">Alpha 13. Person and tag selectors are now directives. They act directly on the mockService data. mockService updated to work on actual data structures, added example methods to add tags to user pool etc. Renamed all project and primary references to session and source. Rudimentary thumbnail handling.
-    </p>
-</div>
-
-<div class="row">
-    <h4 class='md-title'>23/2/2016</h4>
-    <p class='md-body-1'>Alpha 12. Removed old keyboard filter in app.js. Moved nav-bar to a directive. Moved view controllers out of directives and into the states as set out in app.src. Home page implemented with mockService. Home page accounts for being logged in and out. Status page. UI routing parameter parsing implemented for status page. Fixed nav bar buttons at last, had to hack with CSS.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>21/2/2016</h4>
-    <p class='md-body-1'>Alpha 11. Firebase removed ;-/ Removed many redundant pages and directives, more to follow. Moved more templates into templates subfolder for clarity. Implemented Facebook login. AWS federated login still requires that you use the FB SDK, so
-        I went ahead and implemented that. It's done purely from the navbar rather than the login page (deprecated). </p>
-</div>
-
-<div class="row">
-    <h4 class='md-title'>17/2/2016</h4>
-    <p class='md-body-1'>Alpha 10. Dist build works again, hooray! Implemented a Firebase service. Inserted a toy chat feature to test. Implemented a Firebase auto service and set up Facebook (more to follows). Reworked nav menu and removed controllers to new annoweb-viewcontrollers.js. Imported some cool CSS animations, using an attractor for the Login icon when the user is not logged in.</p>
-</div>
-<div class="row">
-    <h4 class='md-title'>15/2/2016</h4>
-    <p class='md-body-1'>Alpha 9. Implemented the shell of a full app with a side-nav bar. The side-nav is in the index now. Moved from ng-route to UI Router. Removed menu from edit interface. Implemented a breadcrumb toolbar. </p>
-</div>
-
-<h4 class='md-title'>9/2/2016</h4>
-<p class='md-body-1'>Alpha 8. Further improvements to edit interface. Region colours are gone, now we just use one colour to indicate the current region. Styled the region boxes to show some borders. Mousing over will draw boxes around regions. Clicking on regions will move to the selected region. Implemented the return-key logic,
-    e.g. if there are further active annotations, move focus to the next one. Only create region on hitting enter on the last active annotation. Trimmed start/end times to one decimal place. Implemented split region, but the UI does strange things when you do it.
-</p>
-</div>
-<h4 class='md-title'>5/2/2016</h4>
-<p class='md-body-1'>Alpha 7. Good lord, it looks almost usable! Fixed up the new annotation dialog. Add new button behavior, logic on the options with allowances for conflicting options. Implemented a directive to handle focus, now when annotation starts input is
-    focused, and we will now be able to control focus shifts. Fixed a few bugs in the annotation controller, wired up the region progress bar but I don't like it. How about a circular progress marker on the left?
-    Wired up the repeat button. Implemented an alert scheme in the AnnowebDialog service, both large dialogs and pop up toasts.
-    Added a couple of basic error checks such as trying to add a region without advancing play cursor. Added hotkey for viewing hotkey cheat sheet which works in the text input (the default ? is disabled in the text input). Tell the user this on start with a toast.
-    To do: Implement region split in the middle (currently only do split last).
-</p>
-</div>
-
-<div class="row">
-    <h4 class='md-title'>4/2/2016</h4>
-    <p class='md-body-1'>Alpha 6. Added debug levels for loading file, dummy data (AnnowebService.debuglevel). Provision for at least two editing modes, simple continuous like Simple ELAN and a more complicated mode where the user has finer control over regions.
-        Changed annotation option system to allow for logic on user selects, e.g. disable continuous mode if the user is using autoregions. Moved hotkeys into annotation controller (annotation directive is now ng-if to the annotation tab, moving away from
-        this tab removes the entire element from the DOM and the hotkeys. This will have ramifications as it means the controller is being destroyed and re-created as well. Reorganised annotation into a separate module
-        and added a controller for the edit view with minimal responsibility to set 'editable' status and to offer a button for the new annotation dialog. edit-tab-annotation deleted, new edit-annotation-simple and annoweb-annotation.js module.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>3/2/2016</h4>
-    <p class='md-body-1'>Alpha 5. Made source files minification safe (related to angular), some code cleanup. Dist build now works. Reworded annotation interface, previous and next summary lines now display the annotation which is currently has focus. Simpler parent layout avoids weird content resizing issues. Many JSHint issues fixed. Temporarily dropped in roboto font fetched via the web (we need locally installed). </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>1/2/2016</h4>
-    <p class='md-body-1'>Alpha 4. Implemented first pass at the editing interface. Now full browser screen. Implemented a system for keystroke binding. First pass at behavior when hitting return, will pass to new region. Currently there's no way to create regions, they are just extracted automatically for now. The enable/disable sliders are intended to let the user temporarily disable a type of annotation so that they can streamline moving on to the next segment. Repeat icon inserted, intended to toggle region playback repeating - will probably become multi-modal, such as two-repeats or endlessly-repeat.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>31/01/2016</h4>
-    <p class='md-body-1'> Alpha 3. Implemented ngRoute views. The edit view is the only one fleshed out and serves the edit-main.html. Now all edit view directives and their controllers are in annoweb-edit.js. Removed tab controller and placed mark up directly in the edit-main.html file. Removed placeholder tabs. Tabs relocated to the top of the page, waveform is only displayed in annotation tab. The net result is that the metadata tab will essentially be a full-screen sub-view.
-        Menu bar trimmed to essentials. This may be replaced by a side nav but it will live in the same place for markup purposes. AnnowebService moved into annoweb-service.js. Now there is no general controller for the edit view, only controllers for directives. Removed all in-line controller definitions in favour of the best-practice named functions (at the bottom of annoweb-edit.js). View templates now have a systematic filename of view-type-name such as edit-tab-annotate which describes the annotation tab in the edit view.
-    </p>
-    <p class='md-body-1'>Side note: I looked at UI Route which offers the ability to route states of the app and not just views. This looked promising but complex, so the simpler ngRoute was used for now. UI route may be a better long term solution, particularly for persisting application states across sessions.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>27/01/2016</h4>
-    <p class='md-body-1'>Alpha 2. Reworked project to be handled with a build chain. Removed all left-over libraries, changed directory structure. Some things are ugly because they still depend on bootstrap css which I've removed. New readme.txt to describe project structure. Directory also has dependency source trees for node and bower. Perhaps I can move them to a parent directory?  Also found that wavesurfer's minimap starts to do auto scrolling weird stuff if I enable a flexible layout. The minimap already has other bugs, I think I'll fork it.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>24/01/2016</h4>
-    <p class='md-body-1'>Implemented AnnowebService to handle communications between directives. The model is to call a method on the service to do something, like load a file. The service will broadcast to necessary components. It also holds
-        the common data such as regions and annotations. This provided the solution for how to initialise the app. The wavesurfer directive has a timeout function with 0-time. This is a reasonable way to decide the wavesurfer directive is ready, so we call an AnnowebService method and that handles telling the other components what to do, including the annotation display (shortly to be an editor!). Fixed a bug in the wavesurfer minimap plugin that would not correctly refresh on new file. A good day's work.
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>23/01/2016</h4>
-    <p class='md-body-1'>Dumped bootstrap. Annoweb will now use material design. This is surprisingly difficult but a) looks better and b) is particularly robust for changes in screen size. First major feature is a fully functional
-        menu bar. Not clear if this is better than left-side pull-in menu. Implemented mainly because the example code on Angular Material also showed off snazzy ways to register key shortcuts which seems to be highly desirable.
-        A bit of hacking is required to make file dialog open (you need a hiden input field). The main controller will now handle menu inputs, intialization and so on.</p>
-    </p>
-</div>
-<div class="row">
-    <h4 class='md-title'>22/01/2016</h4>
-    <p class='md-body-1'>It's time to deal with the structure properly, the main app logic should be stated in easy-to-read code which then instructs other modules to do what's required. First step is to transition to
-        best practice according to the AngularJS community style guide.</p>
-</div>
-<div class="row">
-    <h4 class='md-title'>21/01/2016</h4>
-    <p class='md-body-1'>Investigated ui grid, decided I don't like it again and removed it (lol). Implemented bare-bones table-based annotation description. Discovered limitations in wavesurfer regions handling (not possible to iterate over data set). Impetus to move transcription data to a factory. Wavesurfer regions are now merely duplicates of annotation data for the purposes of visualisation only.</p>
-</div>
 </md-content>

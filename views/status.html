@@ -38,9 +38,6 @@
 
             <!--Respeaking button or menu-->
             <section layout="row" layout-align="start center">
-                <!--                <div>
-                                     <md-icon md-svg-src="img/icons/technology.svg" style="width:32px;height:32px;margin-left:8px;" aria-label="Recordings"></md-icon>
-                                </div>-->
                 <div flex="50" layout="column">
                     <md-button class="md-raised" ng-if="!sCtrl.hasRespeaking" aria-label="Record respeaking" class="" ng-click="sCtrl.newRespeaking()" >
                         <md-icon md-svg-icon="mdi:repeat"></md-icon>
@@ -62,17 +59,14 @@
                                 <md-button ng-click="sCtrl.editRespeaking($index)">
                                     <md-icon md-menu-align-target md-svg-icon="mdi:repeat"></md-icon>
                                 <span translate>EDIT_RESPEAK</span>&nbsp;<span>{{$index+1}}</span>
-                                    <!--                                    <i>{{respk.source.created | date:'dd/MM/yyyy'}}</i></span>-->
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item ng-repeat-end="">
                                 <md-button ng-click="sCtrl.playSecondary('respeak',$index)">
                                     <md-icon md-menu-align-target md-svg-src="img/icons/speaker_on.svg"></md-icon>
                                     <span translate>PLAY_RSPK</span>&nbsp;<span>{{$index+1}}</span>
-                                    <!--                                <span> <i>{{respk.source.created | date:'dd/MM/yyyy'}}</i></span>-->
                                 </md-button>
                             </md-menu-item>
-
                         </md-menu-content>
                     </md-menu>
                 </div>
@@ -81,7 +75,7 @@
                 <div flex="50" layout="column">
                     <md-button class="md-raised" ng-if="!sCtrl.hasTranslation" aria-label="Record translation" ng-click="sCtrl.newTranslation()" >
                         <md-icon md-svg-icon="action:translate"></md-icon>
-                        {{"RECORD_TRANS" | translate}}
+                        <span translate>RECORD_TRANS</span>
                     </md-button>
                     <md-menu ng-if="sCtrl.hasTranslation" layout="column">
                         <md-button class="md-raised" aria-label="Translation menu" ng-click="sCtrl.openTrnMenu($mdOpenMenu, $event)" ng-class="{'animated flash infinite': sCtrl.pcss.translate}">
@@ -99,7 +93,6 @@
                                 <md-button ng-click="sCtrl.editTranslation($index)">
                                     <md-icon md-menu-align-target md-svg-icon="action:translate"></md-icon>
                                     <span translate>EDIT_TRANS</span>&nbsp;<span>{{$index+1}}</span>
-<!--                                    <i>{{trans.source.created | date:'dd/MM/yyyy'}}</i>-->
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item ng-repeat-end="">
@@ -108,22 +101,17 @@
                                     <span translate>PLAY_TRANS</span>&nbsp;<span>{{$index+1}}</span>
                                 </md-button>
                             </md-menu-item>
-
                         </md-menu-content>
                     </md-menu>
                 </div>
-
             </section>
-
         </div>
 
 
             <md-card>
                 <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" style="width:160px;height:160px;"></md-icon>
                 <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
-
                 <md-card-actions>
-
                         <label class="md-button" aria-label="Upload new image" for="image-input">
                             <md-icon md-svg-icon="file:file_upload" class="imgsvgicon"></md-icon>
                             <span class="md-body-2" translate>UPLOAD</span>
@@ -132,7 +120,6 @@
                             <md-icon md-svg-icon="action:delete" class="imgsvgicon"></md-icon>
                             <span class="md-body-2" translate>META_DEL</span>
                         </label>
-
                     <div layout="row" layout-align="end center">
                         <md-button aria-label="Previous image" ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
                             <md-icon  md-svg-icon="av:skip_previous"></md-icon>

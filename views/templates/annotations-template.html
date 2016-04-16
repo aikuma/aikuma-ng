@@ -1,24 +1,30 @@
 <!-- This is displayed if we have no regions to edit -->
 <div ng-if="annoCtrl.annotations.length==0" flex>
-    <p class="animated md-title bounceInRight md-title">{{"ANNO_NOEXIST" | translate}}</p>
+    <p class="animated md-title bounceInRight md-title" translate>ANNO_NOEXIST</p>
 </div>
 
 <div layout="column" flex align="start end">
     <md-list id="annotationList">
         <md-list-item class="md-2-line animated bounceInRight" ng-repeat="anno in annoCtrl.annotations" layout="row" ng-click="annoCtrl.editAnno($index)">
-            <md-icon md-svg-icon="image:filter_{{$index+1}}" class="md-avatar-icon" style="width:32px;height:32px;"></md-icon>
-            <md-tooltip md-direction="top" class="md-body-1">{{"ANNO_DO" | translate}}</md-tooltip>
+            <md-icon md-svg-icon="image:filter_{{$index+1}}"  style="width:40px;height:40px;margin-left:7px;"></md-icon>
+            <md-tooltip md-direction="top" class="md-body-1">
+                <span translate>ANNO_DO</span>
+            </md-tooltip>
             <div class="md-list-item-text" layout="column" flex  >
-                <h4 class="md-subhead" style="text-transform: uppercase;">{{anno.type | translate}}</h4>
+                <h4 class="md-subhead" style="text-transform: uppercase;" translate>{{anno.type}}</h4>
                 <p class="md-body-2">{{anno.langStr}} ({{anno.langISO}})</p>
             </div>
-            <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="annoCtrl.deleteAnno($index,$event)" aria-label="Delete"><md-tooltip md-direction="left" class="md-body-1">{{"ANNO_DEL" | translate}}</md-tooltip></md-icon>
+            <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="annoCtrl.deleteAnno($index,$event)" aria-label="Delete"><md-tooltip md-direction="left" class="md-body-1">
+                <span translate>ANNO_DEL</span>
+            </md-tooltip></md-icon>
             <md-divider ></md-divider>
         </md-list-item>
     </md-list>
 
     <md-button ng-class="{'animated infinite pulse' : annoCtrl.annotations.length==0}" class="md-fab" aria-label="Add new" style="margin-left:13px" ng-click="annoCtrl.addAnno($event)">
-        <md-tooltip md-direction="right" class="md-body-1">{{"ANNO_ADD" | translate}}</md-tooltip>
+        <md-tooltip md-direction="right" class="md-body-1">
+            <span translate>ANNO_ADD</span>
+        </md-tooltip>
         <md-icon md-svg-icon="mdi:playlist-plus"></md-icon>
     </md-button>
 
