@@ -8,6 +8,10 @@ body {
     font-size: 20px;
 }
 
+input {
+    font-family: 'Roboto', 'Noto Sans TC', "Microsoft Yahei", sans-serif;
+}
+
 md-autocomplete input {
     font-family: 'Roboto', 'Noto Sans TC', "Microsoft Yahei", sans-serif;
     font-size: 14px;

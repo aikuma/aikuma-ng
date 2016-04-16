@@ -2,14 +2,14 @@
     <form name="userForm">
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>{{"PROFILE_EDIT" | translate}}</h2>
+                <h2 translate>PROFILE_EDIT</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="pdCtrl.close()">
                     <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
                 </md-button>
             </div>
         </md-toolbar>
-        <md-dialog-content>
+        <md-dialog-content class="md-padding">
             <div layout="row" ng-repeat="nameModel in pdCtrl.userNames">
                 <md-input-container flex md-no-float style="height:32px;">
                     <input ng-model="nameModel.name" required 
@@ -20,8 +20,7 @@
                     <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> <span class="md-body-2">{{"NAME_ADD" | translate}}</span>
                 </md-button>
             </div>
-            
-            
+
             <md-input-container md-no-float class="md-block">
                 <input name="email" ng-model="pdCtrl.userEmail" required 
                        placeholder="{{'META_EMAIL' | translate}}"

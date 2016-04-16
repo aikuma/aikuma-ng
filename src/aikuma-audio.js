@@ -44,22 +44,66 @@
         vm.externalRecord = fileService.getTempObject();
         
         vm.wsRecord = Object.create(WaveSurfer);
-        vm.wsRecord.init({
-            container: "#respeakRecord",
-            normalize: false,
-            scrollParent: true,
-            cursorWidth: 0
-        });
-        
+
+        vm.context = new AudioContext();
+
+        vm.loadingStatus = false;
+        vm.isLoading = function() {
+            return vm.loadingStatus;
+        };
         if(vm.externalRecord) {
+            vm.wsRecord.init({
+                container: "#respeakRecord",
+                backend: "WebAudio",
+                normalize: true,
+                hideScrollbar: false,
+                scrollParent: true,
+                progressColor: '#797',
+                waveColor: '#457'
+            });
             vm.wsRecord.on('ready', function() {
                 vm.recordDurMsec = Math.floor(vm.wsRecord.getDuration() * 1000);
                 vm.hasrecdata = true;
+                $scope.$apply();
             });
-            vm.wsRecord.loadBlob(vm.externalRecord);
+
+            vm.loadingStatus = true;
+            //var arrayBuffer;
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+                //arrayBuffer = this.result;
+                vm.context.decodeAudioData(this.result, function (buffer) {
+                        //source.buffer = buffer;
+                        //source.connect(vm.context.destination);
+                        vm.loadingStatus = false;
+                        vm.wsRecord.loadBlob(vm.externalRecord);
+                }).catch( function(err) {
+                    vm.loadingStatus = false;
+                    $scope.$apply();
+                    $translate(['AUDIO_IMPERR', "OHNO"]).then(function (translations) {
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title(translations.AUDIO_IMPERR)
+                                .textContent('' + err)
+                                .ariaLabel('Audio file unsupported')
+                                .ok(translations.OHNO)
+                        ).then(function () {
+                            $location.path('/');
+                        });
+                    });
+                });
+            };
+            fileReader.readAsArrayBuffer(vm.externalRecord);
+
         } else {
-            vm.context = new AudioContext();
-            
+            vm.wsRecord.init({
+                container: "#respeakRecord",
+                normalize: false,
+                scrollParent: true,
+                cursorWidth: 0
+            });
             // Init Microphone plugin
             var microphone = Object.create(WaveSurfer.Microphone);
             microphone.init({
@@ -132,9 +176,13 @@
         }
 
         vm.play = function() {
-            rec.getBuffer(function(buffer) {
-                playbackAudio(buffer);
-            });
+            if (vm.externalRecord) {
+                vm.wsRecord.playPause();
+            } else {
+                rec.getBuffer(function (buffer) {
+                    playbackAudio(buffer);
+                });
+            }
         };
 
         vm.isrecording = false; // used for applying classes to buttons

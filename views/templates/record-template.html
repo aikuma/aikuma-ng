@@ -2,7 +2,9 @@
     <div layout="column" flex="50" style="margin-right:10px;">
 
 
-        <div ng-class="recordClass" class="respeakwavesurfer" id="respeakRecord"></div>
+        <div ng-class="recordClass" class="respeakwavesurfer" id="respeakRecord" layout="column" style="position:relative">
+            <md-progress-linear class="centertextbox" ng-if="nrCtrl.isLoading()" md-mode="indeterminate"></md-progress-linear>
+        </div>
         <md-button flex ng-if="!nrCtrl.externalRecord" ng-disabled="nrCtrl.recordUrl" class="md-raised ng-class:{'nowrecording': nrCtrl.isrecording}" aria-label="Save" ng-click="nrCtrl.toggleRecord()" >
             <md-icon ng-if="!nrCtrl.isrecording" md-svg-icon="av:mic"></md-icon>
             <!--            <span ng-if="!nrCtrl.isrecording" flex>{{"RECORD" | translate}}</span>-->
@@ -13,9 +15,9 @@
     </div>
     
     <div layout="column" flex="50">
-        <md-input-container  class="md-body-2">
-            <label>{{'SESSION_NAME' | translate}}</label>
-            <input ng-model="nrCtrl.selectedTitle"/>
+        <md-input-container class="md-body-2">
+            <label translate>SESSION_NAME</label>
+            <input class="md-body-2" ng-model="nrCtrl.selectedTitle"/>
 
         </md-input-container>
         <ng-messages for="nrCtrl.noMeta" role="alert">
@@ -31,8 +33,9 @@
 
         </div>
 </div>
-<md-button ng-if="!nrCtrl.externalRecord" ng-disabled="!nrCtrl.hasrecdata" class="md-raised" ng-class="playbackClass" aria-label="Check" ng-click="nrCtrl.play()" >
-    <md-icon md-svg-icon="av:play_arrow"></md-icon>
+<md-button ng-disabled="!nrCtrl.hasrecdata" class="md-raised" ng-class="playbackClass" aria-label="Check" ng-click="nrCtrl.play()" >
+    <md-icon ng-if="!nrCtrl.externalRecord || (nrCtrl.externalRecord && !nrCtrl.wsRecord.isPlaying())" md-svg-icon="av:play_arrow"></md-icon>
+    <md-icon ng-if="nrCtrl.externalRecord && nrCtrl.wsRecord.isPlaying()" md-svg-icon="av:pause"></md-icon>
 <!--    <span class="buttontext">{{"PLAY" | translate}}</span>-->
 </md-button>
 <md-button ng-if="!nrCtrl.externalRecord" class="md-raised" aria-label="Reset" ng-click="nrCtrl.cancelDelete()" >

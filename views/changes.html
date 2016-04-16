@@ -8,7 +8,9 @@
             The audio playback preference works correctly. A toast appears if the user tries to play audio after turning off both the source and secondary.
             Playing before the end of the last region would erroneously begin marking a region. We now allow the press and hold mode, but do not create a region.
             Fixed issue where user could delete regions (with escape) for annotations that had joined a respeaking/translation track. This would orphan audio recordings. At the moment this triggers
-            a toast with an overly long message. Regions beyond the availability of secondary audio may be deleted as normal. Fixed invalid seek to region on switching tracks where that track cursor was not in a valid region.
+            a toast with an overly long message. Regions beyond the availability of secondary audio may be deleted as normal.
+            Fixed invalid seek to region on switching tracks where that track cursor was not in a valid region.
+            Error reporting for audio files. Aikuma will attempt to decode the audio through Web Audio API. If this fails the user is informed. Playback button enabled when importing a file.
         </p>
     </div>
     <div class="row">

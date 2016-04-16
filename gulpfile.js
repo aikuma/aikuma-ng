@@ -80,8 +80,8 @@ gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
         .pipe(gulpif('*.js', closureCompiler({
             compilation_level: 'WHITESPACE_ONLY',
             //compilation_level: 'SIMPLE_OPTIMIZATIONS',
-            //language_in: 'ECMASCRIPT6',
-            //language_out: 'ECMASCRIPT6',
+            language_in: 'ECMASCRIPT6',
+            language_out: 'ECMASCRIPT5',
             js_output_file: 'scripts/combined.js',
             })))
         .pipe(gulpif('*.css', cleanCSS({debug: true})))
