@@ -109,9 +109,10 @@
 
 
             <md-card>
-                <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" style="width:160px;height:160px;"></md-icon>
+                <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" class="nobigassroundedthumbnail"></md-icon>
                 <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
                 <md-card-actions>
+                    <div layout="row" layout-align="space-between center">
                         <label class="md-button" aria-label="Upload new image" for="image-input">
                             <md-icon md-svg-icon="file:file_upload" class="imgsvgicon"></md-icon>
                             <span class="md-body-2" translate>UPLOAD</span>
@@ -120,7 +121,8 @@
                             <md-icon md-svg-icon="action:delete" class="imgsvgicon"></md-icon>
                             <span class="md-body-2" translate>META_DEL</span>
                         </label>
-                    <div layout="row" layout-align="end center">
+                    </div>
+                    <div layout="row" layout-align="space-between center">
                         <md-button aria-label="Previous image" ng-disabled="!sCtrl.hasPreviousImage()" ng-click="sCtrl.prevImage()">
                             <md-icon  md-svg-icon="av:skip_previous"></md-icon>
                         </md-button>

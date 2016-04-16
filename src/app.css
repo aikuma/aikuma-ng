@@ -147,6 +147,15 @@ md-sidenav {
     background-size:cover;
 }
 
+.nobigassroundedthumbnail {
+    border-radius: 25px;
+    border: 4px solid #d0d0d0;
+    padding: 0px;
+    width: 320px;
+    height: 240px;
+    margin-right: 0px;
+}
+
 .respeakwavesurfer {
     border-radius: 15px;
 }
