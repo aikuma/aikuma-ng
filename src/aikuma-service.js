@@ -197,8 +197,6 @@
                 return langObj.langStr;
             };
 
-
-
             ser.getSegmap = function(id) {
                 return ser.mocksegMap[id];
             };
@@ -277,28 +275,6 @@
             }
             function errorHandler(e) {
                 console.error(e);
-            }
-            // from Chrome Packaged App example
-            // https://github.com/GoogleChrome/chrome-app-samples/blob/master/samples/filesystem-access/js/app.js
-            function waitForIO(writer, callback) {
-                // set a watchdog to avoid eventual locking:
-                var start = Date.now();
-                // wait for a few seconds
-                var reentrant = function() {
-                    if (writer.readyState===writer.WRITING && Date.now()-start<4000) {
-                        setTimeout(reentrant, 100);
-                        return;
-                    }
-                    if (writer.readyState===writer.WRITING) {
-                        console.error("Write operation taking too long, aborting!"+
-                            " (current writer readyState is "+writer.readyState+")");
-                        writer.abort();
-                    }
-                    else {
-                        callback();
-                    }
-                };
-                setTimeout(reentrant, 100);
             }
 
             ser.onLine = $window.navigator.onLine;
