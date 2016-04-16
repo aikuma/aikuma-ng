@@ -94,6 +94,7 @@
                 });
                 
                 aikumaService.getLanguages(function (languages) {
+                    languages = _.object(languages.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
                     asx.buildTracks(languages);
                 });
             };
@@ -144,6 +145,14 @@
                     } else {
                         segmentId = secondary.data.segment.sourceSegId;
                     }
+                    secondary.data.source.langIds.forEach(function(langData) {
+                        if(langData.langISO) {
+                            var defaultLangStr = languages[langData.langISO];
+                            if(!langData.langStr && defaultLangStr) {
+                                langData.langStr = defaultLangStr;
+                            }   
+                        }  
+                    });
                     var thisAnnoObj = {
                         text: secondary.data.segment.annotations,
                         cfg: {playSrc: true, playSec: true, enabled: true, voice: asx.setVoice(secondary.data.source.langIds[0])},
