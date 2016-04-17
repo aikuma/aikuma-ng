@@ -37,7 +37,7 @@
     //
     // RECORD DIRECTIVE
     //
-    var newRecordDirectiveController = function (config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce, $mdDialog, $translate) {
+    var newRecordDirectiveController = function ($timeout, config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce, $mdDialog, $translate) {
         var vm = this;
         var rec;
 
@@ -193,7 +193,9 @@
                 $scope.recordClass = 'activerecord';
                 vm.isrecording=true;
                 audioService.playBeep(function() {
-                    rec.record();
+                    $timeout(function(){
+                        rec.record();
+                    },250);
                 });
             } else {
                 $scope.recordClass = 'activespeaker';
@@ -332,7 +334,7 @@
         };
 
     };
-    newRecordDirectiveController.$inject = ['config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce', '$mdDialog', '$translate'];
+    newRecordDirectiveController.$inject = ['$timeout','config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce', '$mdDialog', '$translate'];
 
 
     //

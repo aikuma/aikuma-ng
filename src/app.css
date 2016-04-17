@@ -19,7 +19,6 @@ md-autocomplete input {
     letter-spacing: 0.010em;
 }
 
-
 a {
     color: grey;
 }
@@ -242,6 +241,9 @@ md-sidenav {
     overflow-y: scroll;
     height:400px;
 }
+
+input.md-input:focus{ border-color: green; }
+
 
 .dividerhackfix:focus {
     background-color: yellow;
