@@ -162,5 +162,6 @@
   "AUDIO_NOSEL": "Please enable an audio source!",
   "AUDIO_NODEL": "Can't delete region with respeaking/translation, split to new track if you want to do this",
   "AUDIO_IMPERR": "Audio import error!",
-  "OHNO": "Bugger!"
+  "OHNO": "Bugger!",
+  "AUDIO_NOEXIST": "Text only"
 }

@@ -68,13 +68,9 @@
             });
 
             vm.loadingStatus = true;
-            //var arrayBuffer;
             var fileReader = new FileReader();
             fileReader.onload = function() {
-                //arrayBuffer = this.result;
                 vm.context.decodeAudioData(this.result, function (buffer) {
-                        //source.buffer = buffer;
-                        //source.connect(vm.context.destination);
                         vm.loadingStatus = false;
                         vm.wsRecord.loadBlob(vm.externalRecord);
                 }).catch( function(err) {
@@ -110,7 +106,6 @@
                 wavesurfer: vm.wsRecord
             });
             microphone.on('deviceReady', function() {
-                console.info('Device ready!');
                 microphone.play();
                 $scope.$apply(function() {
                     $scope.recordClass = 'activespeaker';
@@ -195,7 +190,7 @@
                 audioService.playBeep(function() {
                     $timeout(function(){
                         rec.record();
-                    },250);
+                    },500);
                 });
             } else {
                 $scope.recordClass = 'activespeaker';

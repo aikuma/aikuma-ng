@@ -293,7 +293,8 @@
             vm.userObj = userObj;
         }])
 
-        .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'aikumaDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', 'audioService', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, aikumaDialog, userObj, sessionObj, langObjList, secondaryList, audioService) {
+        .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'aikumaDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', 'annotationObjList',
+            'audioService', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, aikumaDialog, userObj, sessionObj, langObjList, secondaryList, annotationObjList, audioService) {
             var vm = this;
             vm.olactypes = [
                 {
@@ -345,6 +346,7 @@
             vm.sessionObj = sessionObj;
             vm.langObjList = langObjList;
             vm.secondaryList = secondaryList;
+            vm.annoObjList = annotationObjList;
             
             vm.userData = userObj.data;
             vm.sessionData = sessionObj.data;
@@ -409,67 +411,6 @@
             };
             vm.openTrnMenu = function($mdOpenMenu, ev) {
                 $mdOpenMenu(ev);
-            };
-
-            var statusAudioContext = new AudioContext();
-            vm.pcss = {};
-            vm.pcss.respeak = false;
-            vm.pcss.translate = false;
-            vm.playSecondary = function(type, index) {
-                var secondary;
-                if (type === 'respeak') {
-                    secondary = vm.respeakings[index];
-                }
-                if (type === 'translate') {
-                    secondary = vm.translations[index];
-                }
-                var ssid = secondary.segment.sourceSegId;
-                var srcseg = vm.sessionData.segments[ssid];
-                var sat = 100;
-                vm.wavesurfer.clearRegions();
-                vm.playregions = [];
-                srcseg.forEach(function(seg, idx){
-                    var vol = 60 + ((idx % 2) * 30);
-                    var hue = 200 + ((idx % 2) * 10);
-                    vm.playregions.push(vm.wavesurfer.addRegion(
-                        {
-                            start:seg[0]/1000,
-                            end:seg[1]/1000,
-                            color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.35)'
-                        }
-                    ));
-                });
-
-                var secseg = secondary.segment.segMsec;
-                var fileh = userObj.getFileUrl(secondary.source.recordFileId);
-
-                var ascallback = function() {
-                    vm.pcss[type] = false;
-                    $scope.$apply();
-                    ++vm.playindex;
-                    if (vm.playindex === vm.playregions.length) {
-                        vm.wavesurfer.un('pause', wscallback);
-                        vm.wavesurfer.clearRegions();
-                        vm.wavesurfer.stop();
-                        
-                    } else {
-                        vm.playregions[vm.playindex].play();
-                    }
-                };
-
-                var wscallback = function() {
-                    var start = secseg[vm.playindex][0];
-                    var end = secseg[vm.playindex][1];
-                    console.log('p',start,end);
-                    vm.pcss[type] = true;
-                    $scope.$apply();
-                    audioService.playbackLocalFile(statusAudioContext, fileh, start, end, ascallback);
-                };
-                vm.wavesurfer.on('pause', wscallback);
-
-                vm.playindex = 0;
-                vm.playregions[0].play();
-
             };
 
             // When Image is imported
@@ -581,10 +522,6 @@
             // this is terrible because it wont update when we change metadata
             vm.TopLineMetadata = vm.getTopLine();
 
-            // on navigating away, clean up the key events, wavesurfer instances
-            $scope.$on('$destroy', function() {
-                statusAudioContext.close();
-            });
 
         }])
         // This is a skeletal view controller just for populating the breadcrumbs.

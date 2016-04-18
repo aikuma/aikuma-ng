@@ -126,7 +126,7 @@ md-sidenav {
 
 .roundedthumbnails {
     border-radius: 25px;
-    border: 4px solid #4fc3f7;
+    border: 3px solid #4fc3f7;
     padding: 0px;
     width: 75px;
     height: 75px;
@@ -293,6 +293,41 @@ div.noclicky:focus {
 }
 .inactiveannotation:focus {
     outline: none;
+}
+
+.trackboxinactive {
+    border: 2px solid #d0d0d0;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+.trackboxactive {
+    border: 2px solid #4fc3f7;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.summarytext {
+    font-style: italic;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.010em;
+    color: grey
+}
+
+.summarytextactive {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.010em;
+    color: #4fc3f7
+}
+
+.highlight {
+    font-weight: 500;
+    color: #4fc3f7 !important
+}
+
+.md-virtual-repeat-container.md-autocomplete-suggestions-container {
+    width:400px !important;
 }
 
 .md-datepicker-input {

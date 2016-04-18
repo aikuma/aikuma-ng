@@ -1,4 +1,4 @@
-var aikumaData = {
+var aikumaLangData = {
     localizedLanguages: {
         cmn: ['中文', '漢語', '중국어'],
         nan: ['台語'],

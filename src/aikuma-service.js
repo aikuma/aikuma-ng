@@ -45,9 +45,9 @@
                     complete: function(results) {
                         ser.languages = results.data;
                         
-                        ser.langValueSet = new Set(_.pluck(ser.languages, 'Ref_Name').map(s => s.toLocaleLowerCase()))
-                        for(var langId in aikumaData.localizedLanguages) {
-                            for(var langStr of aikumaData.localizedLanguages[langId]) {
+                        ser.langValueSet = new Set(_.pluck(ser.languages, 'Ref_Name').map(s => s.toLocaleLowerCase()));
+                        for (var langId in aikumaLangData.localizedLanguages) {
+                            for (var langStr of aikumaLangData.localizedLanguages[langId]) {
                                 var langVal = langStr.toLocaleLowerCase()
                                 if(!ser.langValueSet.has(langVal)) {
                                     ser.langOverrides.push({
