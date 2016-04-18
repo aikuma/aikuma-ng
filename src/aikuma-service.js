@@ -36,35 +36,29 @@
         .factory('aikumaService', ['$rootScope', '$window', function ($rootScope, $window) {
             var ser = {};
             ser.languages = [];
-            ser.langOverrides = [
-                {
-                    Ref_Name: '中文',
-                    Id: 'cmn'
-                },
-                {
-                    Ref_Name: '漢語',
-                    Id: 'cmn'
-                },
-                {
-                    Ref_Name: '台語',
-                    Id: 'nan'
-                },
-                {
-                    Ref_Name: '賽夏語',
-                    Id: 'xsy'
-                },
-                {
-                    Ref_Name: '泰雅語',
-                    Id: 'tay'
-                }
-
-            ];
+            ser.langOverrides = [];
+            
             ser.getLanguages = function(callback) {
                 Papa.parse("extdata/iso-639-3_20160115.tab", {
                     header: true,
                     download: true,
                     complete: function(results) {
                         ser.languages = results.data;
+                        
+                        ser.langValueSet = new Set(_.pluck(ser.languages, 'Ref_Name').map(s => s.toLocaleLowerCase()))
+                        for(var langId in aikumaData.localizedLanguages) {
+                            for(var langStr of aikumaData.localizedLanguages[langId]) {
+                                var langVal = langStr.toLocaleLowerCase()
+                                if(!ser.langValueSet.has(langVal)) {
+                                    ser.langOverrides.push({
+                                        Ref_Name: langStr,
+                                        Id: langId
+                                    });
+                                    ser.langValueSet.add(langVal);
+                                }
+                            }
+                        }
+                        
                         angular.extend(ser.languages,ser.langOverrides)
                         callback(results.data);
                     }

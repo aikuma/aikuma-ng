@@ -37,7 +37,7 @@ gulp.task('wavesurfer', function () {
 
 gulp.task('build', ['wavesurfer'], function () {
     // inject all of the js dependencies into the html
-    var sources = gulp.src(['./src/**/*.js', './src/**/*.css'], {read: false, cwd: './'});
+    var sources = gulp.src(['./extdata/*.js', './src/**/*.js', './src/**/*.css'], {read: false, cwd: './'});
     return gulp.src('./src/window.html', {cwd: './'})
         .pipe(inject(sources, {relative: false, addRootSlash: false}))
         .pipe(wiredep({ignorePath: '../'}))
@@ -78,8 +78,8 @@ gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
     return gulp.src('./window.html')
         .pipe(useref({'noconcat':false}))
         .pipe(gulpif('*.js', closureCompiler({
-            compilation_level: 'WHITESPACE_ONLY',
-            //compilation_level: 'SIMPLE_OPTIMIZATIONS',
+            //compilation_level: 'WHITESPACE_ONLY',
+            compilation_level: 'SIMPLE_OPTIMIZATIONS',
             language_in: 'ECMASCRIPT6',
             language_out: 'ECMASCRIPT5',
             js_output_file: 'scripts/combined.js',
