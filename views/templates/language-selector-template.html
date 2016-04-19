@@ -1,33 +1,31 @@
-
-<md-chips ng-model="lsCtrl.selectedLanguages" md-autocomplete-snap
-          md-transform-chip="lsCtrl.transformChip($chip)"
-          md-require-match="false"
-          md-on-add="lsCtrl.add()" 
-          md-on-remove="lsCtrl.remove()"
-         >
-
-    <md-autocomplete
-                     md-input-name="lsCtrl.languageField"
-                     md-selected-item="lsCtrl.selectedItem"
-                     md-search-text="lsCtrl.searchText"
-                     md-selected-item-change="lsCtrl.selectedItemChange(item,$index)"
-                     md-items="item in lsCtrl.querySearch(lsCtrl.searchText)"
-                     md-item-text="item.display"
-                     md-delay="200"
-                     md-min-length="2"
-                     placeholder="{{'LANG_ADD' | translate}}"
-                     secondary-placeholder="{{'LANG_ADD' | translate}}"
-                     class="md-body-2"
-                     style="min-width:150px"
-                     >
-        <md-item-template>
-            <span md-highlight-text="lsCtrl.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
-        </md-item-template>
-
-    </md-autocomplete>
-
-    <md-chip-template>
-        {{$chip.langStr}}<span ng-if="$chip.langISO!=''"> ({{$chip.langISO}})</span>
-    </md-chip-template>
-
-</md-chips>
+<div layout="row" layout-align="start center">
+    <md-button class="md-icon-button" aria-label="Language">
+        <md-icon style="width:30px;height:30px" md-svg-icon="action:language"></md-icon>
+    </md-button>
+    <md-chips flex ng-model="lsCtrl.selectedLanguages" md-autocomplete-snap
+              md-transform-chip="lsCtrl.transformChip($chip)"
+              md-require-match="false"
+              md-on-add="lsCtrl.add()"
+              md-on-remove="lsCtrl.remove()">
+        <md-autocomplete flex
+                md-input-name="lsCtrl.languageField"
+                md-selected-item="lsCtrl.selectedItem"
+                md-search-text="lsCtrl.searchText"
+                md-selected-item-change="lsCtrl.selectedItemChange(item,$index)"
+                md-items="item in lsCtrl.querySearch(lsCtrl.searchText)"
+                md-item-text="item.display"
+                md-delay="200"
+                md-min-length="2"
+                placeholder="{{'LANG_ADD' | translate}}"
+                secondary-placeholder="{{'LANG_ADD' | translate}}"
+                class="md-body-2"
+                style="min-width:150px">
+            <md-item-template>
+                <span md-highlight-text="lsCtrl.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
+            </md-item-template>
+        </md-autocomplete>
+        <md-chip-template>
+            <span class="md-body-2">{{$chip.langStr}}</span><span ng-if="$chip.langISO!=''" class="md-body-2"> ({{$chip.langISO}})</span>
+        </md-chip-template>
+    </md-chips>
+</div>

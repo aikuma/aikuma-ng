@@ -162,5 +162,7 @@
   "AUDIO_NOSEL": "請啟用音頻源",
   "AUDIO_NODEL": "不能與重複說話刪除區域/翻譯，如果你想這樣做拆分到新軌道",
   "AUDIO_IMPERR": "音頻輸入錯誤！",
-  "OHNO": "糟糕了！"
+  "OHNO": "糟糕了！",
+  "AUDIO_NOEXIST": "只有音源錄音",
+  "AUDIO_SRC": "音源錄音"
 }

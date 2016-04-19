@@ -33,10 +33,12 @@
                     if (secondary.type === 'respeak') {
                         track.type = 'RESPEAKING';
                         track.action = 'USE_RSPK';
+                        track.play = 'PLAY_RSPK'
                         track.icon = 'mdi:repeat';
                     } else if (secondary.type === 'translate') {
                         track.type = 'ANNO_TRANS';
                         track.action = 'USE_TRANS';
+                        track.play = 'PLAY_TRANS';
                         track.icon = 'action:translate';
                     }
                     track.hasAudio = true;
@@ -76,14 +78,15 @@
                             annos: [anno],
                             hasAnnos: true,
                             type: 'AUDIO_NOEXIST',
-                            icon: 'av:volume_off'
+                            icon: 'av:volume_off',
+                            secondary: secondary.data,
+                            play: 'PLAY_SRC'
                         };
                         vm.trackList.push(segid);
                         vm.tracks[segid] = track;
                     }
                 }
             });
-            console.log(vm.tracks);
         }
 
         function makeSummary(annotations, index) {
@@ -139,22 +142,18 @@
                         },
                         segment: segObj
                     };
-
                     var promise = dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID, annotationData);
                     promises.push(promise);
-                    //$scope.annotationList.push(annotationData);
-
                 });
-
                 $q.all(promises).then(function(res) {
                     var promise = dataService.getAnnotationObjList(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID);
                     promise.then(function(res){
-                        //$scope.annoObjList = res;
+                        // rebuild the track list
+                        $scope.annoObjList = res;
                         vm.trackList = [];
                         vm.tracks = {};
                         makeTracks();
                     });
-
                 });
 
             }, function() {
@@ -162,7 +161,7 @@
             });
         };
 
-        vm.deleteAnno = function(annoIdx,ev) {
+        vm.deleteAnno = function(ev, track, annoidx) {
             $translate(["ANNO_DELCONF1", "ANNO_DELCONF2", "ANNO_DELNO", "ANNO_DELYES"]).then(function (translations) {
                 var confirm = $mdDialog.confirm()
                     .title(translations.ANNO_DELCONF1)
@@ -171,19 +170,12 @@
                     .ok(translations.ANNO_DELYES)
                     .cancel(translations.ANNO_DELNO);
                 $mdDialog.show(confirm).then(function () {
-                    dataService.removeData('secondary', vm.annotations[annoIdx].id).then(function() {
-                        vm.annotations.splice(annoIdx, 1);
-                        $scope.annotationList.splice(annoIdx, 1);
+                    var annoid = vm.tracks[track].annos[annoidx].id;
+                    dataService.removeData('secondary', annoid).then(function() {
+                        vm.tracks[track].annos.splice(annoidx, 1);
                     });
-
                 }, function () {
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .parent(angular.element( document.querySelector( '#annotationList' ) ))
-                            .hideDelay(2000)
-                            .position("top right")
-                            .textContent('Cluck cluck cluck!')
-                    );
+                    // removed comedy toast
                 });
             });
         };
@@ -204,6 +196,13 @@
                 anno.summary = makeSummary(anno.text, index);
             });
         }
+        
+        vm.trackNumSegs = function(track) {
+            if (!('secondary' in vm.tracks[track])) {return null;}
+            var secondary = vm.tracks[track].secondary;
+            var ssid = secondary.segment.sourceSegId;
+            return $scope.sessionObj.data.segments[ssid].length;
+        };
 
         var audioContext = new AudioContext();
         vm.pcss = {};
@@ -238,17 +237,20 @@
             });
             var secseg = secondary.segment.segMsec;
             var fileh = $scope.userObj.getFileUrl(secondary.source.recordFileId);
+            var stopall = function() {
+                $scope.wavesurfer.un('pause', wscallback);
+                $scope.wavesurfer.clearRegions();
+                $scope.wavesurfer.stop();
+                vm.pcss[track] = false;
+                vm.playingSec = false;
+                vm.playindex = 0;
+            };
             var ascallback = function() {
                 vm.pcssthis[track] = false;
                 $scope.$apply();
                 ++vm.playindex;
                 if (vm.playindex === vm.playregions.length) {
-                    $scope.wavesurfer.un('pause', wscallback);
-                    $scope.wavesurfer.clearRegions();
-                    $scope.wavesurfer.stop();
-                    vm.pcss[track] = false;
-                    vm.playingSec = false;
-                    vm.playindex = 0;
+                    stopall();
                 } else {
                     vm.playregions[vm.playindex].play();
                 }
@@ -256,12 +258,22 @@
                 $scope.$apply();
             };
             var wscallback = function() {
-                var start = secseg[vm.playindex][0];
-                var end = secseg[vm.playindex][1];
-                console.log('p',start,end);
-                vm.pcssthis[track] = true;
+                // If we are only playing the source
+                if (!vm.tracks[track].hasAudio) {
+                    ++vm.playindex;
+                    if (vm.playindex === vm.playregions.length) {
+                        stopall();
+                    } else {
+                        updateAnnoSummary(track, vm.playindex);
+                        vm.playregions[vm.playindex].play();
+                    }
+                } else {
+                    var start = secseg[vm.playindex][0];
+                    var end = secseg[vm.playindex][1];
+                    vm.pcssthis[track] = true;
+                    audioService.playbackLocalFile(audioContext, fileh, start, end, ascallback);
+                }
                 $scope.$apply();
-                audioService.playbackLocalFile(audioContext, fileh, start, end, ascallback);
             };
             $scope.wavesurfer.on('pause', wscallback);
             vm.playindex = 0;

@@ -276,6 +276,9 @@ input.md-input:focus{ border-color: green; }
 div.noclicky:focus {
     outline: none;
 }
+md-card.noclicky:focus {
+    outline: none;
+}
 
 .activeannotation {
     border: 3px solid #4fc3f7;
