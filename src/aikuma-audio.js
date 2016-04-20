@@ -37,7 +37,7 @@
     //
     // RECORD DIRECTIVE
     //
-    var newRecordDirectiveController = function (config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce, $mdDialog, $translate) {
+    var newRecordDirectiveController = function ($timeout, config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce, $mdDialog, $translate) {
         var vm = this;
         var rec;
 
@@ -68,13 +68,9 @@
             });
 
             vm.loadingStatus = true;
-            //var arrayBuffer;
             var fileReader = new FileReader();
             fileReader.onload = function() {
-                //arrayBuffer = this.result;
                 vm.context.decodeAudioData(this.result, function (buffer) {
-                        //source.buffer = buffer;
-                        //source.connect(vm.context.destination);
                         vm.loadingStatus = false;
                         vm.wsRecord.loadBlob(vm.externalRecord);
                 }).catch( function(err) {
@@ -110,7 +106,6 @@
                 wavesurfer: vm.wsRecord
             });
             microphone.on('deviceReady', function() {
-                console.info('Device ready!');
                 microphone.play();
                 $scope.$apply(function() {
                     $scope.recordClass = 'activespeaker';
@@ -193,7 +188,9 @@
                 $scope.recordClass = 'activerecord';
                 vm.isrecording=true;
                 audioService.playBeep(function() {
-                    rec.record();
+                    $timeout(function(){
+                        rec.record();
+                    },500);
                 });
             } else {
                 $scope.recordClass = 'activespeaker';
@@ -332,7 +329,7 @@
         };
 
     };
-    newRecordDirectiveController.$inject = ['config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce', '$mdDialog', '$translate'];
+    newRecordDirectiveController.$inject = ['$timeout','config', '$scope', '$rootScope', '$location', '$window', 'loginService', 'audioService', 'dataService', 'fileService', '$sce', '$mdDialog', '$translate'];
 
 
     //

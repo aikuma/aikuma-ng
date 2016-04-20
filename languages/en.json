@@ -4,7 +4,7 @@
   "CHINESE_TRAD": "Traditional Chinese",
   "CHINESE_SIMP": "Simplified Chinese",
   "TEST": "This is a test!",
-  "LANGUAGE": "Language",
+  "LANGUAGE": "Languages",
   "HOME": "Home",
   "WELCOME": "Welcome back",
   "NAV_LOGAS": "Logged in as",
@@ -93,7 +93,7 @@
   "RECORD_NTRANS": "Record New Translation",
   "EDIT_RESPEAK": "Continue Respeaking",
   "EDIT_TRANS": "Continue Translation",
-  "ADD_PERSON": "Speaker",
+  "ADD_PERSON": "Speakers",
   "ADD_TAG": "Tags",
   "NOT_IMPLEMENTED": "Not yet implemented",
   "NONE": "None",
@@ -146,8 +146,8 @@
   "PEOPLE_VALL": "View all people",
   "PERSON_ADD": "Add New Person",
   "PERSON_EDIT": "Change Person Details",
-  "SECONDS": "seconds",
-  "ANNOTATIONS": "annotations",
+  "SECONDS": "sec",
+  "ANNOTATIONS": "annos",
   "PRIVATE": "Not shared",
   "OFFLINE_MSG": "Offline. Speech recognition disabled",
   "OLAC_HELP": "Discourse type help",
@@ -162,5 +162,7 @@
   "AUDIO_NOSEL": "Please enable an audio source!",
   "AUDIO_NODEL": "Can't delete region with respeaking/translation, split to new track if you want to do this",
   "AUDIO_IMPERR": "Audio import error!",
-  "OHNO": "Bugger!"
+  "OHNO": "Bugger!",
+  "AUDIO_NOEXIST": "Source only",
+  "AUDIO_SRC": "Audio source"
 }

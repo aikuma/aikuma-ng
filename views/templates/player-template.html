@@ -1,13 +1,19 @@
-<md-content flex layout="column" id="popupContainer">
-    <div id="session-timeline" style="height:20px" layout-fill></div>
-    <div id="sessionPlayer"></div>
+
+<md-content flex layout="row" id="popupContainer">
     <md-button class="md-raised" aria-label="Check" ng-click="pCtrl.wsPlayback.playPause()" >
         <div ng-if="!pCtrl.isplaying">
-            <md-icon md-svg-icon="av:play_arrow"></md-icon><span class="buttontext">{{"PLAY" | translate}}</span>
+            <md-icon md-svg-icon="av:play_arrow" style="width:40px;height:40px"></md-icon>
         </div>
         <div ng-if="pCtrl.isplaying">
-            <md-icon md-svg-icon="av:pause"></md-icon><span class="buttontext">{{"PAUSE" | translate}}</span>
+            <md-icon md-svg-icon="av:pause" style="width:40px;height:40px"></md-icon>
         </div>
     </md-button>
+    <div flex layout="column">
+        <div id="session-timeline" style="height:20px" layout-fill></div>
+        <div id="sessionPlayer"></div>
+    </div>
+    <md-tooltip>
+        <span translate class="md-body-2">AUDIO_SRC</span>
+    </md-tooltip>
 </md-content>
 

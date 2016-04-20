@@ -28,7 +28,7 @@
     "angular-translate-loader-static-files": "^2.10.0",
     "any-resize-event": "^1.0.0",
     "webcamjs": "^1.0.6",
-    "angular": "1.5.4",
+    "angular": "1.4.9",
     "angular-material": "master"
   },
   "overrides": {
@@ -60,6 +60,6 @@
     }
   },
   "resolutions": {
-    "angular": "1.5.4"
+    "angular": "1.4.9"
   }
 }

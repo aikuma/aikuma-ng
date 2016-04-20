@@ -1,0 +1,75 @@
+<!-- This is displayed if we have no regions to edit -->
+<md-content style="margin-top:10px;">
+    <div flex class="trackboxinactive" layout="row">
+        <div flex="10" layout="column" layout-align="center center">
+            <span><md-icon md-svg-icon="av:volume_off"></md-icon>
+                <span class="md-body-2" style="text-transform: uppercase" translate>AUDIO_NOEXIST</span>
+            </span>
+        </div>
+        <span layout="column">
+            <span ng-if="!alCtrl.hasAnnotations()" class="md-body-2" translate>ANNO_NOEXIST</span>
+            <md-button ng-class="{'animated rubberBand infinite': !alCtrl.hasAnnotations()}" class="md-icon-button" aria-label="Add new" style="margin-left:13px" ng-click="alCtrl.addAnno($event)">
+                        <md-tooltip md-direction="right" class="md-body-1">
+                            <span translate>ANNO_ADD</span>
+                        </md-tooltip>
+                        <md-icon md-svg-icon="mdi:playlist-plus"></md-icon>
+            </md-button>
+        </span>
+    </div>
+    <div flex ng-repeat="tk in alCtrl.trackList" layout="row" ng-class="alCtrl.pcss[tk] ? 'trackboxactive' : 'trackboxinactive'">
+        <div flex="10" layout="column" layout-align="center center">
+        <span ng-class="{'animated flash infinite': alCtrl.pcssthis[tk]}"><md-icon md-svg-icon="{{alCtrl.tracks[tk].icon}}"></md-icon>
+            <span class="md-body-2" style="text-transform: uppercase" translate>{{alCtrl.tracks[tk].type}}</span>
+        </span>
+            <md-button ng-disabled="(alCtrl.playingSec && !alCtrl.pcss[tk]) || !alCtrl.trackNumSegs(tk)" class="md-raised" ng-click="alCtrl.playSecondary(tk)" >
+                <md-icon ng-if="!alCtrl.pcss[tk]" md-svg-icon="av:play_arrow" style="width:40px;height:40px"></md-icon>
+                <md-icon ng-if="alCtrl.pcss[tk]" md-svg-icon="av:stop" style="width:40px;height:40px"></md-icon>
+                <md-tooltip>
+                    <span class="md-body-2" translate>{{alCtrl.tracks[tk].play}}</span>
+                </md-tooltip>
+            </md-button>
+        </div>
+        <div ng-if="alCtrl.tracks[tk].hasAnnos" flex layout="column">
+            <md-list>
+                <md-list-item class="md-2-line" ng-repeat-start="anno in alCtrl.tracks[tk].annos" ng-click="alCtrl.editAnno(anno.id)" layout="row">
+                    <md-tooltip md-direction="top" class="md-body-1">
+                        <span translate>ANNO_DO</span>
+                    </md-tooltip>
+                    <div style="width:200px;margin-right:10px;" layout="column">
+                        <div class="md-body-2" style="text-transform: uppercase;" translate>{{anno.type}}</div>
+                        <div class="md-body-1">{{anno.lang}}</div>
+                    </div>
+                    <span ng-if="anno.summary[0]" class="summarytext" style="text-overflow: ellipsis;">{{anno.summary[0]}}&nbsp;</span>
+                    <span ng-if="anno.summary[1]" ng-class="(alCtrl.playingSec && alCtrl.pcss[tk]) ? 'summarytextactive' : 'summarytext'" style="text-overflow: ellipsis;">{{anno.summary[1]}}&nbsp;</span>
+                    <span ng-if="anno.summary[2]" class="summarytext" style="text-overflow: ellipsis;">{{anno.summary[2]}}</span>
+                    <span class="summarytext" ng-if="anno.summary[0] || anno.summary[1] || anno.summary[2]">...</span>
+                    <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="alCtrl.deleteAnno($event, tk, $index)" aria-label="Delete annotation">
+                        <md-tooltip md-direction="left">
+                            <span translate class="md-body-1">ANNO_DEL</span>
+                        </md-tooltip>
+                    </md-icon>
+                </md-list-item>
+                <md-divider ng-repeat-end=""></md-divider>
+                <md-list-item>
+                    <md-button class="md-icon-button" aria-label="Add new" style="margin-left:13px" ng-click="alCtrl.addAnno($event, tk)">
+                        <md-tooltip md-direction="right" class="md-body-1">
+                            <span translate>ANNO_ADD</span>
+                        </md-tooltip>
+                        <md-icon md-svg-icon="mdi:playlist-plus"></md-icon>
+                    </md-button>
+                </md-list-item>
+            </md-list>
+        </div>
+        <span ng-if="!alCtrl.tracks[tk].hasAnnos" layout="column">
+            <span class="md-body-2" translate>ANNO_NOEXIST</span>
+            <md-button ng-class="{'animated rubberBand infinite': !alCtrl.hasAnnotations()}" class="md-icon-button" aria-label="Add new" style="margin-left:13px" ng-click="alCtrl.addAnno($event, tk)">
+                        <md-tooltip md-direction="right" class="md-body-1">
+                            <span translate>ANNO_ADD</span>
+                        </md-tooltip>
+                        <md-icon md-svg-icon="mdi:playlist-plus"></md-icon>
+            </md-button>
+        </span>
+
+    </div>
+    </div>
+</md-content>

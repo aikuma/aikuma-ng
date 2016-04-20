@@ -2,25 +2,25 @@
     <md-button class="md-icon-button" aria-label="Tag view not implemented">
         <md-icon style="width:30px;height:30px" md-svg-icon="mdi:tag"></md-icon>
     </md-button>
-    <md-content style="margin-bottom:15px;" flex>
-        <md-chips flex ng-model="selectedTags" md-autocomplete-snap
-                  md-transform-chip="tsCtrl.transformChip($chip)"
-                  md-require-match="false">
-            <md-autocomplete
-                    class="md-body-2"
-                    md-selected-item="tsCtrl.selectedItem"
-                    md-search-text="tsCtrl.searchText"
-                    md-items="item in tsCtrl.tagQuerySearch(tsCtrl.searchText)"
-                    md-item-text="item.name"
-                    placeholder="{{'ADD_TAG' | translate}}">
-                <span md-highlight-text="tsCtrl.searchText">{{item.name}}</span>
-            </md-autocomplete>
-            <md-chip-template>
-                <span>
-                  <strong>{{$chip.name}}</strong>
-                </span>
-            </md-chip-template>
-        </md-chips>
-        <md-divider class="dividerhackfix"></md-divider>
-    </md-content>
+    <div layout="column" flex>
+    <md-chips flex ng-model="selectedTags" md-autocomplete-snap
+              md-transform-chip="tsCtrl.transformChip($chip)"
+              md-require-match="false">
+        <md-autocomplete flex
+                class="md-body-2"
+                md-selected-item="tsCtrl.selectedItem"
+                md-search-text="tsCtrl.searchText"
+                md-items="item in tsCtrl.tagQuerySearch(tsCtrl.searchText)"
+                md-item-text="item.name"
+                placeholder="{{'ADD_TAG' | translate}}">
+            <span md-highlight-text="tsCtrl.searchText">{{item.name}}</span>
+        </md-autocomplete>
+        <md-chip-template>
+            <span>
+              <strong>{{$chip.name}}</strong>
+            </span>
+        </md-chip-template>
+    </md-chips>
+      <!--  <md-divider></md-divider>-->
+    </div>
 </div>

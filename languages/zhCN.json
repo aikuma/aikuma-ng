@@ -162,6 +162,8 @@
   "AUDIO_NOSEL": "请允许音频源！",
   "AUDIO_NODEL": "无法删除与重复说话/翻译区，如果你想这样做拆分到新轨道",
   "AUDIO_IMPERR": "音频输入错误！",
-  "OHNO": "糟糕了！"
+  "OHNO": "糟糕了！",
+  "AUDIO_NOEXIST": "只有音源录音",
+  "AUDIO_SRC": "音源录音"
 }
 

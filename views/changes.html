@@ -2,6 +2,16 @@
 
 <md-content class="md-padding" style="padding-bottom:30px">
     <div class="row">
+        <h4 class='md-title'>19/4/2016 &mdash; 0.925</h4>
+        <p class="md-body-1">Removed a zoom restriction on wavesurfer on session view which had the result that long recordings would appear invisible but would otherwise play fine.
+        The playback beep should no longer be recorded in respeaking and record new activities. Session placeholder image added.</p>
+        <p class="md-body-1">Rework of the annotation list on the session view. Users may add an annotation directly to a 'track', e.g. respeaking or translation. Merged the previous respeaking/translation
+            drop-down menus with the annotation list. Annotations show a short preview.</p>
+        <p class="md-body-1">Playback supported from the annotation/track boxes, will also display current annotations for the playback span. Reorganised session view layout. The 'source only' entry remains
+        regardless of whether audio annotations have been made. This allows creating of stand-alone audio annotations without needing to use the annotation UI 'split' method.</p>
+        <p class="md-body-1">Language overrides for locales so that users may type more familiar names. Chinese and Korean for starters.</p>
+    </div>
+    <div class="row">
         <h4 class='md-title'>16/4/2016 &mdash; 0.920</h4>
         <p class="md-body-1">The data wipe/reset buttons in the 'settings' page hidden behind the debug. A toast tells the user when debug is on/off when the click on the beta version logo.
             Improved message when joining a track when the user has data (doesn't say deleting the annotation). Annotation UI starts in first region automatically.

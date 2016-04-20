@@ -1,5 +1,8 @@
 <md-toolbar style="height:64px;min-height:64px;max-height:64px">
     <div class="md-toolbar-tools" layout="row" layout-align="start center" style="position:absolute">
+        <md-button class="md-icon-button" ng-click="tbCtrl.openMenu()" ng-if="tbCtrl.showMenuButton()" aria-label="Toggle Menu">
+            <md-icon md-svg-icon="nav:menu"></md-icon>
+        </md-button>
         <span ng-if="!session && !activity" class="md-headline" translate>HOME</span>
         <span ng-if="session || activity" class="md-headline"><A HREF="#/"><span translate>HOME</span>&nbsp;&gt;&nbsp</A></span>
         <span ng-if="session && !sessionId" class="md-headline">{{session}}</span>

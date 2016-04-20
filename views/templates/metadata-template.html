@@ -1,6 +1,6 @@
 
-<md-content md-scroll-x layout="row">
-    <md-card class="detailscard" layout-align="space-between" ng-repeat="detail in mCtrl.details">
+<md-content flex md-scroll-x layout="row" layout-wrap>
+    <md-card class="detailscard" style="width:180px;" layout-align="space-between" ng-repeat="detail in mCtrl.details">
         <md-card-content>
             <span class="headtext">
                 <md-icon style="width:32px;height:32px;padding-right:4px;" md-svg-icon="{{detail.icon}}"></md-icon>
@@ -15,7 +15,7 @@
             </md-button>
         </md-card-actions>
     </md-card>
-    <md-card class="detailscard" layout-align="space-between" ng-click="mCtrl.addMetadata()">
+    <md-card class="detailscard noclicky" layout-align="space-between" ng-click="mCtrl.addMetadata()">
         <md-card-content>
             <span class="headtext">
                 <md-icon style="width:32px;height:32px;padding-right:4px;" md-svg-icon="mdi:plus-circle-outline"></md-icon>

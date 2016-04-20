@@ -520,7 +520,7 @@
             };
             //
             vm.padOut = function(annotext) {
-              if (annotext == null || annotext == '') {
+              if (annotext === null || annotext === '') {
                   annotext = ' ';
               }
                 return annotext;

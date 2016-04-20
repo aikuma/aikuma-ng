@@ -8,6 +8,7 @@
             'pascalprecht.translate',  // AKA angular translate
             'aikuma-service',          // Aikuma service (annotations)
             'aikuma-annotation',       // directive and controller for annotation UI
+            'aikuma-experimental',     // experimental directives
             'aikuma-anno-service',     // Annotation UI service helper
             'aikuma-viewcontrollers',  // common controllers for view routes (when we don't have separate files)
             'aikuma-commondirectives', // common directives including the nav bar
@@ -21,7 +22,7 @@
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.920',
+            appVersion: '0.925',
             dataVersion: 1,
             sampleRate: 16000,
             fileStorageMB: 1000,
@@ -141,6 +142,11 @@
                                 if(userId) {
                                     return dataService.getSecondaryList(userId, sessionId);
                                 }
+                            }],
+                            annotationObjList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                return dataService.getAnnotationObjList(userId, sessionId);
                             }],
                             langObjList: ['dataService', function(dataService) {
                                 return dataService.getLanguages();
