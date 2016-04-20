@@ -591,7 +591,7 @@
                 switch(currentVersion) {
                     case 0:
                         db[SESSION_TYPE].forEach(function(sessionData) {
-                            if(sessionData.langIds[0] && !('langISO' in sessionData.langIds[0])) {
+                            if(sessionData.source.langIds[0] && !('langISO' in sessionData.source.langIds[0])) {
                                 sessionData.source.langIds = sessionData.source.langIds.map(function(langISO) {
                                     return {
                                         langStr: '',
@@ -601,7 +601,7 @@
                             }
                         });
                         db[SECONDARY_TYPE].forEach(function(secondaryData) {
-                            if(secondaryData.langIds[0] && !('langISO' in secondaryData.langIds[0])) {
+                            if(secondaryData.source.langIds[0] && !('langISO' in secondaryData.source.langIds[0])) {
                                 secondaryData.source.langIds = secondaryData.source.langIds.map(function(langISO) {
                                     return {
                                         langStr: '',
