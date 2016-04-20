@@ -4,7 +4,7 @@
     <div flex layout="column" layout-gt-md="row" layout="space-between">
         <div flex>
             <div layout-gt-md="row" layout="column" flex layout-align="space-between">
-            <div layout="row" layout-align="start center">
+            <div layout="row" layout-align="start center"  layout-wrap>
                 <span class="md-body-2"><md-datepicker class="md-body-2" ng-model="sCtrl.myDate" md-placeholder="{{'DATE' | translate}}" ng-change="sCtrl.saveDate()" ></md-datepicker></span>
                 <span class="md-body-2" ng-repeat="meta in sCtrl.TopLineMetadata" >
                     <md-icon disabled class="statusicon" md-svg-icon="{{meta.icon}}"></md-icon><span translate>{{meta.text}}</span>
@@ -97,7 +97,9 @@
             </div>
 
         </div>
-        <md-card>
+
+        <div layout="column" layout-align="center center">
+        <md-card flex style="width:328px;">
             <md-icon ng-if="!sCtrl.hasImage()" md-svg-icon="image:image" class="nobigassroundedthumbnail"></md-icon>
             <div ng-if="sCtrl.hasImage()" ng-style="{ 'background-image': 'url(' + sCtrl.getImage() +')' }" class="bigassroundedthumbnail"> </div>
             <md-card-actions>
@@ -123,9 +125,8 @@
                 </div>
             </md-card-actions>
         </md-card>
+        </div>
     </div>
-
-
 
     <ng-anno-list flex secondary-list="sCtrl.secondaryList" session-obj="sCtrl.sessionObj" user-obj="sCtrl.userObj"
                   lang-id-name-map="sCtrl.langIdNameMap" anno-obj-list="sCtrl.annoObjList" wavesurfer="sCtrl.wavesurfer"></ng-anno-list>
