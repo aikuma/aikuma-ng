@@ -159,7 +159,7 @@
             }
         ]);
 
-        var topbarController = function ($scope, $translate, config, loginService, aikumaDialog) {
+        var topbarController = function ($scope, $translate, $mdMedia, $mdSidenav, config, loginService, aikumaDialog) {
             var vm = this;
             vm.languages = config.languages;
             vm.open = false;
@@ -170,8 +170,13 @@
             vm.openProfile = function(ev) {
                 aikumaDialog.profile();
             };
+            vm.showMenuButton = function(){ return !$mdMedia('(min-width: 1024px)'); }
+            vm.openMenu = function() {
+                $mdSidenav('left').open();
+            }
+            
         };
-        topbarController.$inject = ['$scope', '$translate', 'config', 'loginService', 'aikumaDialog'];
+        topbarController.$inject = ['$scope', '$translate', '$mdMedia', '$mdSidenav', 'config', 'loginService', 'aikumaDialog'];
 
         var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService, aikumaDialog, aikumaService) {
             var vm = this;
