@@ -464,9 +464,9 @@
             $scope.$apply(restoreState);
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
-                    if (ev.location === 1) {
+                    if (ev.location === 1 && !vm.isPlaying) {
                         leftKeyDown(true);}
-                    if (ev.location === 2) {rightKeyDown(true);}
+                    if (ev.location === 2 && !vm.isRecording) {rightKeyDown(true);}
             });
             keyService.regKey(ctrlKeyCode,'keyup', function(ev) {
                     if (ev.location === 1) {
@@ -477,7 +477,8 @@
                     }
             });
             keyService.regKey(ffKeyCode,'keydown',  function() {
-                ffKeyDown(true);
+                if(!vm.ffKeyDown)
+                    ffKeyDown(true);
             });
             keyService.regKey(ffKeyCode,'keyup',    function() {
                 ffKeyUp(true);
