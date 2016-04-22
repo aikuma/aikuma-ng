@@ -161,7 +161,7 @@
                 return newBuffer;
             };
 
-            var beep = new Audio("media/beep.mp3");
+            var beep = new Audio("media/beep.wav");
             service.playBeep = function(callback) {
                 beep.onended = callback;
                 beep.play();
