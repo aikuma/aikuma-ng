@@ -11,7 +11,7 @@
         <span ng-show="rCtrl.srcLangIds.length === 0" class="md-caption">{{ "ERROR_SESSION_LANG" | translate }}</span>
         </div>
         <div layout="row" flex="50" >
-            <md-button flex class="md-raised" ng-class="{'nowplaying': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
+            <md-button flex class="md-raised" ng-class="{'md-primary': rCtrl.isPlaying}" aria-label="Play" ng-mousedown="rCtrl.playDown()" ng-mouseup="rCtrl.playUp()">
                 <md-icon md-svg-icon="av:play_arrow" style="width:50px;height:50px"></md-icon>
              <!--   <span flex>{{"PLAY" | translate}}</span>-->
             </md-button>
@@ -19,7 +19,7 @@
                 <md-icon md-svg-icon="av:replay" style="width:50px;height:50px"></md-icon>
                <!-- <span flex>{{"REDO" | translate}}</span>-->
             </md-button>
-            <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'nowrecording': rCtrl.isRecording}" aria-label="Record" ng-mousedown="rCtrl.recDown()" ng-mouseup="rCtrl.recUp()" >
+            <md-button flex ng-disabled="rCtrl.recordDisabled" class="md-raised"  ng-class="{'md-primary': rCtrl.isRecording}" aria-label="Record" ng-mousedown="rCtrl.recDown()" ng-mouseup="rCtrl.recUp()" >
                 <md-icon md-svg-icon="av:mic" style="width:50px;height:50px"></md-icon>
              <!--   <span flex>{{"RECORD" | translate}}</span>-->
             </md-button>
