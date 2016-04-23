@@ -68,7 +68,7 @@
   "ANNO_DELNO": "沒辦法！",
   "ANNO_DELYES": "刪除註釋",
   "ANNO_DO": "執行註解",
-  "HOME_LOGREQ": "您還沒有登錄，請選擇一個用戶",
+  "HOME_LOGREQ": "請選擇一個賬戶或登錄新的帳戶",
   "LANG_WHAT": "哪種語言",
   "LANG_ADD": "加一個語言",
   "OLAC1": "對話",
@@ -164,5 +164,8 @@
   "AUDIO_IMPERR": "音頻輸入錯誤！",
   "OHNO": "糟糕了！",
   "AUDIO_NOEXIST": "只有音源錄音",
-  "AUDIO_SRC": "音源錄音"
+  "AUDIO_SRC": "音源錄音",
+  "BUGREP_ITRACK": "問題跟踪",
+  "HOME_NOUSEREQ": "首先，請登錄新賬戶",
+  "HOME_WELCOME": "歡迎愛庫碼"
 }

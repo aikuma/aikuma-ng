@@ -68,7 +68,7 @@
   "ANNO_DELNO": "No way!",
   "ANNO_DELYES": "Delete annotation",
   "ANNO_DO": "Perform annotation",
-  "HOME_LOGREQ": "You are not logged in, please select a user",
+  "HOME_LOGREQ": "Please select a user or register a new user",
   "LANG_WHAT": "What language?",
   "LANG_ADD": "Language",
   "OLAC1": "dialogue",
@@ -164,5 +164,8 @@
   "AUDIO_IMPERR": "Audio import error!",
   "OHNO": "Bugger!",
   "AUDIO_NOEXIST": "Source only",
-  "AUDIO_SRC": "Audio source"
+  "AUDIO_SRC": "Audio source",
+  "BUGREP_ITRACK": "issue tracker",
+  "HOME_NOUSEREQ": "To begin, please register",
+  "HOME_WELCOME": "Welcome to Aikuma-"
 }

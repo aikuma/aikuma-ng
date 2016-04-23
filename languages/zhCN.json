@@ -68,7 +68,7 @@
   "ANNO_DELNO": "没办法",
   "ANNO_DELYES": "删除注释",
   "ANNO_DO": "执行注解",
-  "HOME_LOGREQ": "您还没有登录，请选择一个用户",
+  "HOME_LOGREQ": "请选择一个账户或登录新的帐户",
   "LANG_WHAT": "哪种语言",
   "LANG_ADD": "添加语言",
   "OLAC1":"对话",
@@ -164,6 +164,9 @@
   "AUDIO_IMPERR": "音频输入错误！",
   "OHNO": "糟糕了！",
   "AUDIO_NOEXIST": "只有音源录音",
-  "AUDIO_SRC": "音源录音"
+  "AUDIO_SRC": "音源录音",
+  "BUGREP_ITRACK": "问题跟踪",
+  "HOME_NOUSEREQ": "首先，请登录新账户",
+  "HOME_WELCOME": "欢迎爱库码"
 }
 
