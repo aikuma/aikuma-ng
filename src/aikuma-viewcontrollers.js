@@ -6,30 +6,42 @@
     angular
         .module('aikuma-viewcontrollers', [])
 
-        .controller('homeController', ['config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', 'aikumaDialog', function(config, $timeout, $scope, $location, dataService, loginService, $route, aikumaDialog) {
+        .controller('homeController', ['$translate', 'config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', 'aikumaDialog', function($translate, config, $timeout, $scope, $location, dataService, loginService, $route, aikumaDialog) {
             var vm = this;
             vm.speedDial = false;
-
+            //vm.annos = {};
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
-            
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
                         vm.currentUser = userObj.data;
                         vm.currentUserName = function() { return userObj.data.names[0]; };
-
                         return dataService.getSessionList(vm.currentUser._ID);
                     }).then(function(sessionList) {
                         vm.sessionList = sessionList;
+                        //sessionList.forEach(function(s){summaryAnno(s);});
                     });
                 } else {
                     vm.currentUserName = function() { return 'Unknown user'; };
-
                     dataService.getUserList().then(function(userList) {
                         vm.userList = userList;
                     });
                 }
             });
+            // am experiment to extract some data from the annotations but this turns out to be very slow
+            function summaryAnno(sesh) {
+                dataService.getAnnotationObjList(vm.currentUser._ID, sesh._ID).then(function(res) {
+                    var annolist = [];
+                    res.forEach(function(anno) {
+                        annolist.push({
+                            type: angular.uppercase(anno.data.type),
+                            lang: anno.data.source.langIds[0].langStr,
+                            text: anno.data.segment.annotations[0] ? anno.data.segment.annotations[0] : ""
+                        });
+                    });
+                    vm.annos[sesh._ID] = annolist;
+                });
+            }
             
             loginService.loginPreviousUser();
             vm.login = function(userIndex) {
@@ -47,6 +59,8 @@
                     }
                 });
             };
+            
+            
             
             vm.goStatus = function(sessionIndex) {
                 $location.path('session/'+vm.sessionList[sessionIndex]._ID);
