@@ -168,7 +168,9 @@
   "BUGREP_ITRACK": "问题跟踪",
   "HOME_NOUSEREQ": "首先，请登录新账户",
   "HOME_WELCOME": "欢迎爱库码",
-  "PLAYBACK_RATE": "Source playback speed in percent",
-  "SETTINGS_TIMESTRETCH": "Preserve pitch in annotation playback rate"
+  "PLAYBACK_RATE": "以百分比源播放速度",
+  "SETTINGS_TIMESTRETCH": "保留源的音频播放音k",
+  "SETHELP_TIMESTRETCH": "音频慢速播放，而不会降低音高（时间伸缩），音频播放可能会过头地区",
+  "PLAY_SRCSTRETCH": "慢源音频播放"
 }
 

@@ -14,7 +14,7 @@
         <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
         <span flex translate>NAV_LOGOUT</span>
     </md-button>
-    <label ng-repeat="item in navCtrl.menu" class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
+    <label ng-disabled="!navCtrl.getLoginStatus()" ng-repeat="item in navCtrl.menu" class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
         <md-tooltip ng-if="item.tooltip" class="md-body-2" md-direction="right"><span translate>{{item.tooltip}}</span></md-tooltip>
         <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
         <span flex translate>{{item.title}}</span>

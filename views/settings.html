@@ -28,7 +28,8 @@
     </label>
 
     <div layout="row inset">
-        <md-switch aria-label="Enable timestretching" ng-model="seCtrl.timeStretching" ng-change="seCtrl.timeStretch()">
+        <md-switch aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
+            <md-tooltip><span class="md-body-2" translate>SETHELP_TIMESTRETCH</span></md-tooltip>
             <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
         </md-switch>
     </div>

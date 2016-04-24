@@ -38,7 +38,7 @@
             
             vm.createNewUser = function() {
                 aikumaDialog.profile().then(function(userData) {
-                    if(!userData.data) {
+                    if (!userData.data) {
                         dataService.setUser(userData).then(function(data) {
                             return dataService.getUserList();
                         }).then(function(userList){
@@ -57,9 +57,10 @@
 
         }])
 
-        .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
+        .controller('settingsController', ['userObj', 'config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(userObj, config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
             var vm = this;
             vm.debug = function() { return config.debug; };
+            vm.preferences = userObj.data.preferences;
             vm.timeStretching = config.timeStretch;
 
             dataService.getJsonBackup().then(function(db) {
@@ -78,6 +79,10 @@
                 config.timeStretch = vm.timeStretching;
             };
             
+            vm.saveSetting = function() {
+                userObj.save();
+            };
+
             $scope.$watch('zipFile', function (file) {
                 if(file) {
                     fileService.clear().then(function() {
@@ -299,7 +304,7 @@
         }])
 
         .controller('statusController', ['$mdDialog', '$location', '$scope', '$routeParams', 'loginService', 'fileService', 'aikumaDialog', 'userObj', 'sessionObj', 'langObjList', 'secondaryList', 'annotationObjList',
-            'audioService', function($mdDialog, $location, $scope, $routeParams, loginService, fileService, aikumaDialog, userObj, sessionObj, langObjList, secondaryList, annotationObjList, audioService) {
+            function($mdDialog, $location, $scope, $routeParams, loginService, fileService, aikumaDialog, userObj, sessionObj, langObjList, secondaryList, annotationObjList) {
             var vm = this;
             vm.olactypes = [
                 {

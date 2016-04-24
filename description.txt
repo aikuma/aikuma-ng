@@ -1,16 +1,16 @@
-Aikuma-NG Beta is aimed at people wishing to enrich recordings of speech by performing speech-based (recorded) and written annotations (transcriptions).
+Aikuma-NG is an easy-to-use offline application for anyone interested in producing annotated and organised records of language. You may import recordings or make new recordings directly, and optionally record speech-based annotations to assist in the production of written annotations (transcriptions). Aikuma-NG also provides the ability to organise sessions with user-configurable details (metadata) such as images, people (speakers etc) and so on.
 
-Our goal is to create a tool which is useful for communities with lesser resourced (endangered) languages. Aikuma is intended to be an easy-to-use alternative to complex software, enabling people to produce basic records of language for their goals. A typical use case may include producing captioned video recordings for language maintenance, teaching and revitalization.
+Our goal is to create a tool which is useful for communities with lesser resourced (endangered) languages. Aikuma is intended to be an easy-to-use alternative to complex software. A typical use case may include producing captioned video recordings for language maintenance, teaching and revitalization.
 
-Outside of our intended use case, Aikuma-NG is useful for anyone wishing to annotate speech. Aikuma-NG beta allows the user to do the following:
+Aikuma-NG beta allows the user to do the following:
 
 1. Record audio from a computer with a microphone or import audio from a WAV, MP3 or M4A file (such as from a mobile phone).
-2. Produce 'respeaking' and 'translation' audio annotations, where the user may record repeated speech for the purposes of making it clear for transcription.
+2. Produce 'respeaking' and 'translation' audio annotations to assist the production of written transcriptions.
 3. Record details (or metadata) for a given 'session', such as participants, genres of speech and any number of user definable fields, uploading of images and so on.
 4. Create any number of written annotations for the given source recording and perform these annotations listening to source and optional audio annotations.
-5. Either type or dictate via speech recognition (must be online) the annotations.
-6. Export the annotations to SRT or WebVTT file formats suitable for uploading to YouTube etc.
-7. Back up and restore data recorded in the app.
+5. Export the annotations to SRT or WebVTT file formats suitable for uploading to YouTube etc.
+
+Further features: Audio files may be played back slower with no reduction in pitch (time stretching). If the user has an online connection they may be dictate annotations using speech-to-text. Back up and restore of all data.
 
 The annotation (transcription) UI offers the ability to either create an annotation from scratch, using a simple control-key to play, cursor keys to navigate audio and marked regions, control scheme. Alternatively Aikuma-NG can adopt audio annotations recorded in the app, assisting with producing written transcripts based on audio respeaking/translation recordings.
 
@@ -28,7 +28,7 @@ Mode 2: If the cursor is within an existing span of annotations, you only need t
 
 If you have recorded a respeaking/translation, you will see these on the session view. Click on the add annotation icon here and the audio will be available while annotating. Alternative you can adopt and split from audio annotations from within the annotation UI.
 
-If there is more than one annotation in a track, enable/disable buttons appear for each annotation. The reason is two-fold. It selects which annotations to export via the save captions feature, and sets the behavior when you press return to enter an annotation. For example, disable all but one annotation and hitting return will advance to the next region, rather than the next enabled annotation. So you can decide if you want to, for example, annotate all of the source in one go, or alternate between writing source annotations and a translation.
+If there is more than one annotation in a track, enable/disable buttons appear for each annotation. This allows selection of which annotations to export via the save captions feature, and also alters the behavior when you press return after typing or speaking an annotation. For example, disable all but one annotation and hitting return will advance directly to the next region.
 
 Aikuma-NG is offered localized into English, Chinese (simplified and traditional) and Korean. Additional contributions of localization are most welcome! The language of the app may be switched instantly by the top right drop-down menu.
 

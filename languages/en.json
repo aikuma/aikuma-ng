@@ -169,5 +169,7 @@
   "HOME_NOUSEREQ": "To begin, please register",
   "HOME_WELCOME": "Welcome to Aikuma-",
   "PLAYBACK_RATE": "Source playback speed in percent",
-  "SETTINGS_TIMESTRETCH": "Preserve pitch in annotation playback rate"
+  "SETTINGS_TIMESTRETCH": "Preserve pitch of source audio playback",
+  "SETHELP_TIMESTRETCH": "Slow playback of audio without lowering pitch (time stretching), audio playback might overshoot regions",
+  "PLAY_SRCSTRETCH": "Slow Source"
 }

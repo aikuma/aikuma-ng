@@ -14,11 +14,11 @@
                 <span translate>{{annoC.tracks[atrack].type}}</span>
             </md-button>
             <span flex></span>
-            <md-button ng-if="annoC.timestretchEnabled()" class="md-icon-button" aria-label="Playback rate">
+            <md-button ng-if="annoC.timestretchEnabled" class="md-icon-button" aria-label="Playback rate">
                 <md-tooltip><span translate class="md-body-2">PLAYBACK_RATE</span></md-tooltip>
-                <md-icon class="imgsvgicon" md-svg-icon="mdi:speedometer"></md-icon>
+                <md-icon class="imgsvgicon" md-svg-icon="image:timer"></md-icon>
             </md-button>
-            <md-slider ng-if="annoC.timestretchEnabled()" md-discrete ng-model="annoC.playRate" step="5" min="50" max="100">
+            <md-slider ng-if="annoC.timestretchEnabled" md-discrete ng-model="annoC.playRate" step="5" min="50" max="100">
             </md-slider>
         </div>
 
@@ -38,6 +38,13 @@
                                     <span class="md-body-2" translate>PLAY_SRC</span>
                                 </md-button>
                             </md-menu-item>
+                            <md-menu-item ng-if="annoC.timestretchEnabled">
+                                <md-button ng-disabled="!anno.cfg.playSrc" ng-click="annoC.toggleAnnoCfg(track, $index, 'timestretchSrc')">
+                                    <md-icon ng-if="anno.cfg.timestretchSrc" class="imgsvgicon" md-svg-icon="image:timer"></md-icon>
+                                    <md-icon ng-if="!anno.cfg.timestretchSrc" class="imgsvgicon" md-svg-icon="image:timer_off"></md-icon>
+                                    <span class="md-body-2" translate>PLAY_SRCSTRETCH</span>
+                                </md-button>
+                            </md-menu-item>
                             <md-menu-item ng-if="annoC.tracks[track].hasAudio">
                                 <md-button ng-click="annoC.toggleAnnoCfg(track, $index, 'playSec')">
                                     <md-icon ng-if="anno.cfg.playSec" class="imgsvgicon" md-svg-src="img/icons/speaker_on.svg"></md-icon>
@@ -46,16 +53,24 @@
                                     <span class="md-body-2" translate>{{annoC.tracks[track].type}}</span>
                                 </md-button>
                             </md-menu-item>
+                            <md-menu-item ng-if="annoC.timestretchEnabled">
+                                <md-button ng-disabled="!anno.cfg.playSec" ng-click="annoC.toggleAnnoCfg(track, $index, 'timestretchSec')">
+                                    <md-icon ng-if="anno.cfg.timestretchSec" class="imgsvgicon" md-svg-icon="image:timer"></md-icon>
+                                    <md-icon ng-if="!anno.cfg.timestretchSec" class="imgsvgicon" md-svg-icon="image:timer_off"></md-icon>
+                                    <md-icon class="imgsvgicon" ng-style="annoC.tracks[track].color" md-svg-icon="{{annoC.tracks[track].icon}}"></md-icon>
+                                    <span class="md-body-2" translate>{{annoC.tracks[track].type}}</span>
+                                </md-button>
+                            </md-menu-item>
                         </md-menu-content>
                     </md-menu>
 
-                    <md-input-container flex class="md-block1" style="height:32px;">
-                        <label class="md-subhead"><span style="text-transform: uppercase" translate>{{anno.type}}</span>: {{anno.lang}}</label>
+                    <md-input-container flex class="md-block1 md-body-1" style="height:32px;">
+                        <label><span class="md-subhead" style="text-transform: uppercase" translate>{{anno.type}}</span>: {{anno.lang}}</label>
                         <input class="md-body-1" autocomplete="off"
                                ng-disabled="annoC.r.tk !== track || !annoC.tracks[track].annos[$index].cfg.enabled || annoC.cursor[annoC.r.tk] === -1"
                                ng-model="anno.text[annoC.cursor[track]]" focus-on="{{anno.id}}"
                                ng-focus="annoC.selectAnno($index)"
-                               ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)">
+                               ng-keyup="$event.keyCode == 13 && annoC.inputReturn($index)"/>
                     </md-input-container>
 
                     <md-switch ng-if="annoC.tracks[track].annos.length > 1" class="md-primary" ng-model="annoC.tracks[track].annos[$index].cfg.enabled" aria-label="Enable disable">

@@ -8,13 +8,17 @@
         .factory('audioService', ['config', 'fileService', function (config, fileService) {
             var service = {};
 
-
-            service.playbackLocalFile = function(audioContext, fsUri, start, end, callback) {
-                fileService.getFile(fsUri).then(function(file) {
-                    service.playbackFile(audioContext, file, start, end, callback);
-                });
+            service.playbackLocalFile = function(audioContext, fsUri, start, end, callback, playrate = 1) {
+                if (playrate !== 1) {
+                    service.playMediaElementFile(fsUri, start, end, callback, playrate);
+                } else {
+                    fileService.getFile(fsUri).then(function(file) {
+                        service.playbackFile(audioContext, file, start, end, callback);
+                    });                    
+                }
             };
-            
+
+            // play using web audio
             service.playbackFile = function(audioContext, file, start, end, callback) {
                 var fileReader = new FileReader();
                 fileReader.onload = function() {
@@ -27,6 +31,26 @@
                     });
                 };
                 fileReader.readAsArrayBuffer(file);
+            };
+
+            // play using HTML media element (needed for time stretching)
+            service.playMediaElementFile = function(file, start, end, callback, playbackrate = 1) {
+                console.log('me playing');
+                var audioElement = new Audio(file);
+                var thisTime;
+                audioElement.ontimeupdate = function() {
+                    thisTime = audioElement.currentTime;
+                    if (thisTime >= (end/1000)) {
+                        audioElement.pause();
+                        callback();
+                    }
+                };
+                audioElement.onended = function() {
+                    callback();
+                };
+                audioElement.play();
+                audioElement.currentTime = start/1000;
+                audioElement.playbackRate = playbackrate;
             };
             
             service.resampleAudioBuffer = function (audiocontext,audioBuffer,targetSampleRate,oncomplete) {

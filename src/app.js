@@ -22,12 +22,12 @@
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.927',
+            appVersion: '0.928',
             dataVersion: 1,
             sampleRate: 16000,
             fileStorageMB: 1000,
             debug: false,
-            timeStretch: false,
+            userMediaElement: false,
             languages: [
                 {
                     code:'en',
@@ -274,7 +274,16 @@
                     })
                     .when('/settings', {
                         templateUrl: 'views/settings.html',
-                        controller: 'settingsController as seCtrl'
+                        controller: 'settingsController as seCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function (loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if (userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }]
+                        }
                     })
                     .otherwise({
                         redirectTo: '/'

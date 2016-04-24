@@ -351,6 +351,15 @@
         var resampledRate = config.sampleRate;
 
         var lastAction = null;
+        
+        // set up play rate defaults based on the user preference for enabling time stretching
+        if ($scope.userObj.data.preferences.timeStretchSrc) {
+            vm.timestretchEnabled = true;
+            vm.playRate = 80;
+        } else {
+            vm.timestretchEnabled = false;
+            vm.playRate = 100;
+        }
         vm.isPlaying = false;
         vm.isRecording = false;
         vm.playrecturn = 'play';
@@ -429,7 +438,6 @@
                     vm.regionList.push(reg);
                 });
                 vm.playIn = _.last(vm.regionList).end;
-                console.log('pi',vm.playIn);
                 recordedAudioBuffer = new Float32Array(prevState.sampleLength);
             }
         }
@@ -438,7 +446,7 @@
         // Set up Wavesurfer
         //
         var wsPlayback = WaveSurfer.create({
-            backend: "WebAudio",
+            backend: vm.timestretchEnabled ? 'MediaElement' : 'WebAudio',
             container: "#respeakPlayback",
             normalize: true,
             hideScrollbar: false,
@@ -507,6 +515,7 @@
         // Note that we run them in parallel because pausing the wavesurfer microphone will disconnect the
         // recorder.js audio node!
         var wsRecord = Object.create(WaveSurfer);
+
         wsRecord.init({
             container: "#respeakRecord",
             normalize: false,
@@ -544,6 +553,7 @@
             wsPlayback.toggleInteraction();
             // segmap and regionlist have elements in the same order, we use the wavesurfer region for playback of the source
             var reg = vm.regionList[regidx];
+            wsPlayback.setPlaybackRate(vm.playRate/100);
             reg.play();
             wsPlayback.once('pause', function(){
                 seekToTime(thisPosition);
@@ -574,6 +584,7 @@
             if (lastAction !== 'play') {
                 makeNewRegion(vm.playIn);
             }
+            wsPlayback.setPlaybackRate(vm.playRate/100);
             wsPlayback.play(vm.playIn);
             lastAction = 'play';
             vm.isPlaying = true;
@@ -662,7 +673,6 @@
         function rwKey(waskey) {
             disableRecording();
             var thistime =  wsPlayback.getCurrentTime();
-            console.log('tt',thistime,vm.playIn);
             if ((thistime-skipTimeValue) < vm.playIn) {
                 seekToPlayin();
             } else {

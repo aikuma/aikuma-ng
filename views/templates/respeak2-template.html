@@ -2,6 +2,15 @@
     <div id="respeak-timeline" style="height:20px" layout-fill></div>
     <div id="respeakPlayback"></div>
 </div>
+<div layout="row" layout-align="start center">
+    <span flex></span>
+    <md-button ng-if="rCtrl.timestretchEnabled" class="md-icon-button" aria-label="Playback rate">
+        <md-tooltip><span translate class="md-body-2">PLAYBACK_RATE</span></md-tooltip>
+        <md-icon class="imgsvgicon" md-svg-icon="image:timer"></md-icon>
+    </md-button>
+    <md-slider ng-if="rCtrl.timestretchEnabled" md-discrete ng-model="rCtrl.playRate" step="5" min="50" max="100" style="min-width:250px">
+    </md-slider>
+</div>
 
 <div layout="row">
 

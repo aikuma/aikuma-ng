@@ -124,7 +124,8 @@
                     names: names,
                     email: vm.userEmail,
                     preferences: {
-                        langCode: 'en'
+                        langCode: 'en',
+                        timeStretchSrc: false
                     }
                 };
             }

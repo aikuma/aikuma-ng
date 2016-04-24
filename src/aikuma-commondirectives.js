@@ -170,11 +170,10 @@
             vm.openProfile = function(ev) {
                 aikumaDialog.profile();
             };
-            vm.showMenuButton = function(){ return !$mdMedia('(min-width: 1024px)'); }
+            vm.showMenuButton = function(){ return !$mdMedia('(min-width: 1024px)'); };
             vm.openMenu = function() {
                 $mdSidenav('left').open();
-            }
-            
+            };
         };
         topbarController.$inject = ['$scope', '$translate', '$mdMedia', '$mdSidenav', 'config', 'loginService', 'aikumaDialog'];
 
@@ -191,9 +190,8 @@
                 vm.online_status_string = online ? 'online' : 'offline';
             });
 
-
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
-                if(isLoggedin) {
+                if (isLoggedin) {
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
                         vm.currentUserName = function() { return userObj.data.names[0]; };
                     });
@@ -203,9 +201,6 @@
                 }
             });
             
-            vm.login = function() {
-                
-            };
             
             vm.logout = function() {
                 loginService.logout();

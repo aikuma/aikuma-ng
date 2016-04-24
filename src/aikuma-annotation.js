@@ -21,6 +21,14 @@
             $scope.$watch('onlineStatus.isOnline()', function(online) {
                 vm.onlineStatus = online;
             });
+            // set up play rate defaults based on the user preference for enabling time stretching
+            if ($scope.userObj.data.preferences.timeStretchSrc) {
+                vm.timestretchEnabled = true;
+                annoServ.timestretechEnabled = true;
+                vm.playRate = 80;
+            } else {
+                vm.playRate = 100;
+            }
             // region status flags
             vm.r = annoServ.r;
             vm.cursor = annoServ.cursor;
@@ -36,9 +44,7 @@
             vm.voiceCode = 220;     // backslash key
             vm.skipTimeValue = 3;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;
-            // playback rates
             vm.ffPlaybackRate = 2.5; // playback speed in FF mode
-            vm.playRate = 100;       // default value for the playback rate slider (if timestretch mode is enabled)
             // used for guarding against multiple key presses
             vm.playKeyDownStat = false;
             vm.ffKeyDownStat = false;
@@ -380,7 +386,9 @@
                     return;
                 }
                 if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
-                    annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
+                    annoServ.wavesurfer.setPlaybackRate(
+                        vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSrc ? (vm.playRate/100) : 1
+                    );
                     annoServ.regionList[region].play();
                     annoServ.regionPlayback = true;
                     timerval = ((annoServ.regionList[region].end - annoServ.regionList[region].start) * (100/vm.playRate)) + 0.2;
@@ -393,11 +401,12 @@
                         var playtrack = vm.r.tk; // keep this in case it changes when we try to unset
                         vm.playCSS[vm.r.tk] = true;
                         $scope.$apply();
+                        var secPlayRate =  vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSec ? (vm.playRate/100) : 1;
                         audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
                             console.log('finished');
                             vm.playCSS[playtrack] = false;
                             $scope.$apply();
-                        });
+                        }, secPlayRate);
                     } else {
                         //
                     }
@@ -562,10 +571,6 @@
                 aikumaDialog.voiceCfg(ev, vcfg, function(rcfg) {
                     vm.tracks[track].annos[annoidx].cfg.voice = rcfg;
                 });
-            };
-
-            vm.timestretchEnabled = function() {
-                return config.timeStretch;
             };
 
             vm.restoreFocus = function(delay) {

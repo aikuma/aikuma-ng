@@ -19,6 +19,7 @@
             // for making colours for tracks
             asx.startHue = 120;
             asx.stepHue = 60;
+            asx.userMediaElement = false;
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
             asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
@@ -30,7 +31,7 @@
                 // Set up Wavesurfer
                 //
                 asx.wavesurfer = WaveSurfer.create({
-                    backend: config.timeStretch ? 'MediaElement' : 'WebAudio',
+                    backend: asx.timestretechEnabled ? 'MediaElement' : 'WebAudio',
                     container: "#annotatePlayback",
                     normalize: true,
                     hideScrollbar: false,
@@ -122,11 +123,11 @@
                             icon: 'mdi:numeric-'+trackidx+'-box',
                             annos: []
                         };
-                        if (secondary.type == 'respeak') {
+                        if (secondary.type === 'respeak') {
                             asx.tracks[segid].type = 'RESPEAKING';
                             asx.tracks[segid].action = 'USE_RSPK';
                         }
-                        if (secondary.type == 'translate') {
+                        if (secondary.type === 'translate') {
                             asx.tracks[segid].type = 'ANNO_TRANS';
                             asx.tracks[segid].action = 'USE_TRANS';
                         }
@@ -154,9 +155,18 @@
                             }   
                         }  
                     });
+                    var annoConfObj = {
+                        playSrc: true, 
+                        playSec: true, 
+                        enabled: true, 
+                        voice: asx.setVoice(secondary.data.source.langIds[0]),
+                        timestretchSrc: true,
+                        timestretchSec: false
+                    };
                     var thisAnnoObj = {
+                        
                         text: secondary.data.segment.annotations,
-                        cfg: {playSrc: true, playSec: true, enabled: true, voice: asx.setVoice(secondary.data.source.langIds[0])},
+                        cfg: annoConfObj,
                         id: secondary.data._ID,
                         type: angular.uppercase(secondary.data.type),
                         lang: aikumaService.niceLangString(secondary.data.source.langIds[0])
