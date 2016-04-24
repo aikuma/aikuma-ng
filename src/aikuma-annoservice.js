@@ -5,7 +5,7 @@
     'use strict';
     angular
         .module('aikuma-anno-service', [])
-        .service('annoServ', ['aikumaService', '$timeout', 'keyService', function(aikumaService, $timeout, keyService) {
+        .service('annoServ', ['config', 'aikumaService', '$timeout', 'keyService', function(config, aikumaService, $timeout, keyService) {
             var asx = this;
 
             asx.regionList = [];     // regions for the currently active wavesurfer view (e.g. particular annotation selected)
@@ -30,7 +30,7 @@
                 // Set up Wavesurfer
                 //
                 asx.wavesurfer = WaveSurfer.create({
-                    backend: "WebAudio",
+                    backend: config.timeStretch ? 'MediaElement' : 'WebAudio',
                     container: "#annotatePlayback",
                     normalize: true,
                     hideScrollbar: false,
@@ -81,6 +81,7 @@
                     callback();
                 });
                 asx.wavesurfer.on('pause', function () {
+                    console.log('firepause');
                     if (asx.regionPlayback) {
                         asx.regionPlayback = false;
                         asx.seekToTime(asx.regionList[asx.cursor[asx.r.tk]].start);

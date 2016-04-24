@@ -60,6 +60,7 @@
         .controller('settingsController', ['config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
             var vm = this;
             vm.debug = function() { return config.debug; };
+            vm.timeStretching = config.timeStretch;
 
             dataService.getJsonBackup().then(function(db) {
                 vm.db = db;
@@ -72,6 +73,10 @@
                         vm.isActive[id] = true;
                 };
             });
+
+            vm.timeStretch = function () {
+                config.timeStretch = vm.timeStretching;
+            };
             
             $scope.$watch('zipFile', function (file) {
                 if(file) {

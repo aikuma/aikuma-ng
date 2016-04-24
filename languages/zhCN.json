@@ -167,6 +167,8 @@
   "AUDIO_SRC": "音源录音",
   "BUGREP_ITRACK": "问题跟踪",
   "HOME_NOUSEREQ": "首先，请登录新账户",
-  "HOME_WELCOME": "欢迎爱库码"
+  "HOME_WELCOME": "欢迎爱库码",
+  "PLAYBACK_RATE": "Source playback speed in percent",
+  "SETTINGS_TIMESTRETCH": "Preserve pitch in annotation playback rate"
 }
 

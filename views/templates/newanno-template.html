@@ -4,17 +4,22 @@
         <div id="annotatePlayback"></div>
 
         <div layout="row" layout-align="start center">
-            <md-icon md-svg-src="img/icons/technology.svg" style="width:32px;height:32px;margin-left:8px;" aria-label="Recordings"></md-icon>
+            <md-button class="md-icon-button" aria-label="Annotation Help" ng-click="annoC.help($event)">
+                <md-tooltip><span translate class="md-body-2">ACTIVITY_HELP</span></md-tooltip>
+                <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
+            </md-button>
             <md-button ng-disabled="!annoC.hasAudio(atrack)"
                     ng-repeat="atrack in annoC.tracks.audio" aria-label="{{annoC.tracks[atrack].type | translate}}" ng-class="{'animated flash infinite': annoC.playCSS[atrack]}">
                 <md-icon class="imgsvgicon" ng-style="annoC.tracks[atrack].color" style="width:40px;height:40px;" md-svg-icon="{{annoC.tracks[atrack].icon}}"></md-icon>
                 <span translate>{{annoC.tracks[atrack].type}}</span>
             </md-button>
             <span flex></span>
-            <md-button class="md-icon-button" aria-label="Annotation Help" ng-click="annoC.help($event)">
-                <md-tooltip><span translate class="md-body-2">ACTIVITY_HELP</span></md-tooltip>
-                <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
+            <md-button ng-if="annoC.timestretchEnabled()" class="md-icon-button" aria-label="Playback rate">
+                <md-tooltip><span translate class="md-body-2">PLAYBACK_RATE</span></md-tooltip>
+                <md-icon class="imgsvgicon" md-svg-icon="mdi:speedometer"></md-icon>
             </md-button>
+            <md-slider ng-if="annoC.timestretchEnabled()" md-discrete ng-model="annoC.playRate" step="5" min="50" max="100">
+            </md-slider>
         </div>
 
         <div flex ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer">
@@ -96,6 +101,7 @@
 vm.r.tk: {{annoC.r.tk}}
 vm.cursor[vm.r.tk]: {{annoC.cursor[annoC.r.tk]}}
 asx.playIn: {{annoC.getplayin()}}
+vm.r.regionMarked: {{annoC.r.regionMarked}}
             </pre>
         </span>
 

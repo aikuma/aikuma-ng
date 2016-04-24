@@ -27,6 +27,7 @@
             sampleRate: 16000,
             fileStorageMB: 1000,
             debug: false,
+            timeStretch: false,
             languages: [
                 {
                     code:'en',

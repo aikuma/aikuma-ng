@@ -26,7 +26,13 @@
         <md-icon md-svg-icon="action:delete"></md-icon>
         {{"DEBUG_RESETDB" | translate}}
     </label>
-    
+
+    <div layout="row inset">
+        <md-switch aria-label="Enable timestretching" ng-model="seCtrl.timeStretching" ng-change="seCtrl.timeStretch()">
+            <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
+        </md-switch>
+    </div>
+
     <div>
     <ul ng-if="seCtrl.debug()" >
         <li ng-repeat="type in seCtrl.keys">

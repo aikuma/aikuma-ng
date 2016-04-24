@@ -34,9 +34,11 @@
             vm.prevAnnoCode = 38;  // up arrow
             vm.nextAnnoCode = 40;  // down arrow
             vm.voiceCode = 220;     // backslash key
-            vm.ffPlaybackRate = 2.5; // playback speed in FF mode
             vm.skipTimeValue = 3;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;
+            // playback rates
+            vm.ffPlaybackRate = 2.5; // playback speed in FF mode
+            vm.playRate = 100;       // default value for the playback rate slider (if timestretch mode is enabled)
             // used for guarding against multiple key presses
             vm.playKeyDownStat = false;
             vm.ffKeyDownStat = false;
@@ -73,10 +75,13 @@
                 vm.playKeyDownStat = true;
                 // if we have been making a region (we can assume this is repeat press) then re-play
                 if (vm.r.regionMarked) {
+                    vm.isPlaying = true;
+                    annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                     annoServ.wavesurfer.play(annoServ.playIn);
                 } else {
                     if (vm.cursor[vm.r.tk] > -1) {
                         // the service works out what audio is appropriate to play (which is why we pass the settings object
+                        annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                         vm.playAudio();
                     } else {
                         vm.isPlaying = true;
@@ -87,6 +92,7 @@
                             vm.r.regionMarked = true;
                             vm.cursor[vm.r.tk] = annoServ.regionList.length - 1;
                         }
+                        annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                         annoServ.wavesurfer.play();
                         vm.restoreFocus();
                     }
@@ -134,7 +140,6 @@
                 if (vm.playKeyDownStat) {return;}  // Block multiple keys
                 if (annoServ.wavesurfer.isPlaying()) {
                     annoServ.wavesurfer.pause();
-                    annoServ.wavesurfer.setPlaybackRate(1);
                     vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
                 }
             };
@@ -279,7 +284,6 @@
 
             vm.selectAnno = function(annoIdx) {
                 if (annoIdx !== vm.selAnno[vm.r.tk]) {
-                    console.log('selected anno');
                     vm.selAnno[vm.r.tk] = annoIdx;
                     //vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
                 }
@@ -369,7 +373,6 @@
                 var region =  vm.cursor[vm.r.tk];
                 var thisTrack = vm.tracks[vm.r.tk];
                 // someone might trigger play during a FF/RW
-                annoServ.wavesurfer.setPlaybackRate(1);
                 if (!vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc && !vm.tracks[vm.r.tk].annos[selAnno].cfg.playSec) {
                     $translate('AUDIO_NOSEL').then(function (trans) {
                         aikumaDialog.toast(trans);
@@ -377,12 +380,14 @@
                     return;
                 }
                 if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
+                    annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                     annoServ.regionList[region].play();
                     annoServ.regionPlayback = true;
-                    timerval = (annoServ.regionList[region].end - annoServ.regionList[region].start) + 0.2;
+                    timerval = ((annoServ.regionList[region].end - annoServ.regionList[region].start) * (100/vm.playRate)) + 0.2;
                 }
-                if (thisTrack.annos[selAnno].cfg.playSec && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
-                    $timeout(function(){
+                // This timeout occurs when playback has finished.
+                $timeout(function(){
+                    if (thisTrack.annos[selAnno].cfg.playSec && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
                         var seglist = thisTrack.segMsec;
                         var fileh = $scope.userObj.getFileUrl(thisTrack.audioFile);
                         var playtrack = vm.r.tk; // keep this in case it changes when we try to unset
@@ -393,12 +398,14 @@
                             vm.playCSS[playtrack] = false;
                             $scope.$apply();
                         });
+                    } else {
+                        //
+                    }
+                }, timerval*1000);
 
-                    }, timerval*1000);
-                }
             };
             //
-            // Utility horseshit
+            // Utility stuff
             //
             vm.setupKeys = function() {
                 keyService.regKey(vm.playKeyCode, 'keydown', function () {
@@ -553,9 +560,12 @@
             vm.setVoiceRecogLang = function(ev, track, annoidx) {
                 var vcfg = vm.tracks[track].annos[annoidx].cfg.voice;
                 aikumaDialog.voiceCfg(ev, vcfg, function(rcfg) {
-                    console.log('cfg',rcfg);
                     vm.tracks[track].annos[annoidx].cfg.voice = rcfg;
                 });
+            };
+
+            vm.timestretchEnabled = function() {
+                return config.timeStretch;
             };
 
             vm.restoreFocus = function(delay) {

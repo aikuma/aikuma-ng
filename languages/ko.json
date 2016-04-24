@@ -167,5 +167,7 @@
   "AUDIO_SRC": "원녹음 오디오",
   "BUGREP_ITRACK": "issue tracker",
   "HOME_NOUSEREQ": "To begin, please register",
-  "HOME_WELCOME": "Welcome to Aikuma-NG!"
+  "HOME_WELCOME": "Welcome to Aikuma-NG!",
+  "PLAYBACK_RATE": "Source playback speed in percent",
+  "SETTINGS_TIMESTRETCH": "Preserve pitch in annotation playback rate"
 }

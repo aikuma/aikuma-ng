@@ -37,7 +37,6 @@
             var ser = {};
             ser.languages = [];
             
-            
             function loadLanguages(callback) {
                 Papa.parse("extdata/iso-639-3_20160115.tab", {
                     header: true,
