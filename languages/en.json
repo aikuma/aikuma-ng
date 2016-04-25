@@ -171,5 +171,9 @@
   "PLAYBACK_RATE": "Source playback speed in percent",
   "SETTINGS_TIMESTRETCH": "Preserve pitch of source audio playback",
   "SETHELP_TIMESTRETCH": "Slow playback of audio without lowering pitch (time stretching), audio playback might overshoot regions",
-  "PLAY_SRCSTRETCH": "Slow Source"
+  "PLAY_SRCSTRETCH": "Slow Source",
+  "SESSION_DELCONF1": "Are you sure you want to delete this session?",
+  "SESSION_DELCONF2": "This cannot be undone!",
+  "SESSION_DELNO": "No way!",
+  "SESSION_DELYES": "Delete session"
 }

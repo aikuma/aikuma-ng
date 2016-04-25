@@ -165,11 +165,15 @@
   "OHNO": "버그!",
   "AUDIO_NOEXIST": "원녹음 전용",
   "AUDIO_SRC": "원녹음 오디오",
-  "BUGREP_ITRACK": "issue tracker",
-  "HOME_NOUSEREQ": "To begin, please register",
-  "HOME_WELCOME": "Welcome to Aikuma-NG!",
-  "PLAYBACK_RATE": "Source playback speed in percent",
-  "SETTINGS_TIMESTRETCH": "Preserve pitch of source audio playback",
-  "SETHELP_TIMESTRETCH": "Slow playback of audio without lowering pitch (time stretching), audio playback might overshoot regions",
-  "PLAY_SRCSTRETCH": "Slow Source"
+  "BUGREP_ITRACK": "이슈 트래커",
+  "HOME_NOUSEREQ": "시작하기 위해서 사용자로 등록해주세요",
+  "HOME_WELCOME": "아이쿠마-NG에 오신것을 환영합니다!",
+  "PLAYBACK_RATE": "재생속도(%)",
+  "SETTINGS_TIMESTRETCH": "재생음 높이 유지하기",
+  "SETHELP_TIMESTRETCH": "재생음 높이 유지하면서 재생속도 늦추기, 오디오 재생화면은 영역을 벗어날 수 있습니다.",
+  "PLAY_SRCSTRETCH": "재생속도 늦추기",
+  "SESSION_DELCONF1": "정말 세션을 삭제하길 원하시나요?",
+  "SESSION_DELCONF2": "되돌릴 수 없습니다",
+  "SESSION_DELNO": "안됩니다",
+  "SESSION_DELYES": "세션 삭제하기"
 }

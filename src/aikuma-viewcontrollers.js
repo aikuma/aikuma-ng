@@ -6,7 +6,7 @@
     angular
         .module('aikuma-viewcontrollers', [])
 
-        .controller('homeController', ['$translate', 'config', '$timeout', '$scope', '$location', 'dataService', 'loginService', '$route', 'aikumaDialog', function($translate, config, $timeout, $scope, $location, dataService, loginService, $route, aikumaDialog) {
+        .controller('homeController', ['config', '$timeout', '$scope', '$location', '$translate', '$mdDialog', 'dataService', 'fileService', 'loginService', '$route', 'aikumaDialog', function(config, $timeout, $scope, $location, $translate, $mdDialog, dataService, fileService, loginService, $route, aikumaDialog) {
             var vm = this;
             vm.speedDial = false;
             //vm.annos = {};
@@ -16,10 +16,10 @@
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
                         vm.currentUser = userObj.data;
                         vm.currentUserName = function() { return userObj.data.names[0]; };
-                        return dataService.getSessionList(vm.currentUser._ID);
+                        return dataService.getSessionObjList(vm.currentUser._ID);
                     }).then(function(sessionList) {
                         vm.sessionList = sessionList;
-                        //sessionList.forEach(function(s){summaryAnno(s);});
+                        //sessionList.forEach(function(s){summaryAnno(s.data);});
                     });
                 } else {
                     vm.currentUserName = function() { return 'Unknown user'; };
@@ -60,10 +60,46 @@
                 });
             };
             
+            vm.deleteAnno = function(ev, track, annoidx) {
+                
+            };
             
+            vm.trashSession = function(ev, sessionIndex) {
+                $translate(["SESSION_DELCONF1", "SESSION_DELCONF2", "SESSION_DELNO", "SESSION_DELYES"]).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.SESSION_DELCONF1)
+                        .textContent(translations.SESSION_DELCONF2)
+                        .targetEvent(ev)
+                        .ok(translations.SESSION_DELYES)
+                        .cancel(translations.SESSION_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        var sessionObj = vm.sessionList[sessionIndex];
+                        sessionObj.data.isTrashed = true;
+                        sessionObj.save();
+                    });
+                });
+            };
+            
+            vm.deleteSession = function(ev, sessionIndex) {
+                $translate(["SESSION_DELCONF1", "SESSION_DELCONF2", "SESSION_DELNO", "SESSION_DELYES"]).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.SESSION_DELCONF1)
+                        .textContent(translations.SESSION_DELCONF2)
+                        .targetEvent(ev)
+                        .ok(translations.SESSION_DELYES)
+                        .cancel(translations.SESSION_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        var sessionId = vm.sessionList[sessionIndex].data._ID;
+                        fileService.removeData('session', sessionId).then(function() {
+                            vm.sessionList.splice(sessionIndex, 1);
+                            console.log('succeed');
+                        });
+                    });
+                });
+            };
             
             vm.goStatus = function(sessionIndex) {
-                $location.path('session/'+vm.sessionList[sessionIndex]._ID);
+                $location.path('session/'+vm.sessionList[sessionIndex].data._ID);
             };
             vm.recordNew = function() {
                 $location.path('/new');
@@ -492,7 +528,7 @@
                     });
                     
                 }
-            }
+            };
 
             vm.OLAChelp = function(ev) {
                 aikumaDialog.help(ev, 'olac');

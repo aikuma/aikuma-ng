@@ -21,7 +21,7 @@
             };
         });
 
-    var annoListController = function ($timeout, audioService, $location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
+    var annoListController = function ($timeout, audioService, $location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService, fileService) {
         var vm = this;
         vm.trackList = [];
         vm.tracks = {};
@@ -171,7 +171,7 @@
                     .cancel(translations.ANNO_DELNO);
                 $mdDialog.show(confirm).then(function () {
                     var annoid = vm.tracks[track].annos[annoidx].id;
-                    dataService.removeData('secondary', annoid).then(function() {
+                    fileService.removeData('secondary', annoid).then(function() {
                         vm.tracks[track].annos.splice(annoidx, 1);
                     });
                 }, function () {
@@ -289,7 +289,7 @@
         makeTracks();
 
     };
-    annoListController.$inject = ['$timeout', 'audioService', '$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast', '$q', 'loginService', 'dataService'];
+    annoListController.$inject = ['$timeout', 'audioService', '$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast', '$q', 'loginService', 'dataService', 'fileService'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
         var vm = this;

@@ -6,13 +6,13 @@
         <span ng-if="hCtrl.sessionList.length === 0" class="md-title inset">{{"HOME_NOSESSION" | translate }}</span>
         <md-list ng-if="hCtrl.sessionList.length > 0">
             <md-list-item class="md-3-line" ng-repeat="session in hCtrl.sessionList" ng-click="hCtrl.goStatus($index)">
-                    <div ng-if="hCtrl.currentUser.files[session.imageIds[0]].url" ng-style="{ 'background-image': 'url(' + hCtrl.currentUser.files[session.imageIds[0]].url +')' }" class="roundedthumbnails"> </div>
-                    <div ng-if="!hCtrl.currentUser.files[session.imageIds[0]].url" ng-style="{ 'background-image': 'url(img/placeholder.png)' }" class="roundedthumbnails"> </div>
+                    <div ng-if="hCtrl.currentUser.files[session.data.imageIds[0]].url" ng-style="{ 'background-image': 'url(' + hCtrl.currentUser.files[session.data.imageIds[0]].url +')' }" class="roundedthumbnails"> </div>
+                    <div ng-if="!hCtrl.currentUser.files[session.data.imageIds[0]].url" ng-style="{ 'background-image': 'url(img/placeholder.png)' }" class="roundedthumbnails"> </div>
                 <div class="md-list-item-text" layout="column">
-                    <span class="md-title">{{ session.names[0] }}</span>
-                    <span class="md-body-2">{{"HOME_LASTMODIFIED" | translate}}: <i>{{ session.lastModified | date:'yyyy/MM/dd &mdash; HH:mm' }}</i></span>
+                    <span class="md-title">{{ session.data.names[0] }}</span>
+                    <span class="md-body-2">{{"HOME_LASTMODIFIED" | translate}}: <i>{{ session.data.lastModified | date:'yyyy/MM/dd &mdash; HH:mm' }}</i></span>
                     <p>
-                        <span ng-repeat="meta in session.details" >
+                        <span ng-repeat="meta in session.data.details" >
                             <md-icon md-svg-icon="{{meta.icon}}" style="width:12px;height:12px"></md-icon>
                             <span class="md-body-2">{{meta.name | translate}}: </span>
                             <span ng-if="meta.data === ''" class="md-body-1"><i>{{"NONE" | translate}}.</i> </span>
@@ -20,7 +20,7 @@
                         </span>
                     </p>
 <!--                    <p>
-                        <span ng-repeat="anno in hCtrl.annos[session._ID]">
+                        <span ng-repeat="anno in hCtrl.annos[session.data._ID]">
                             <span class="md-body-1"><b>{{anno.type | translate}} </b></span>
                             <span class="md-body-1"><b>({{anno.lang}}):</b> </span>
                             <span ng-if="anno.text === ''" class="md-body-1"><i>{{"NONE" | translate}}.</i> </span>
@@ -28,6 +28,16 @@
                         </span>
                     </p>-->
                 </div>
+                <md-icon class="md-secondary" md-svg-icon="action:delete" ng-click="hCtrl.trashSession($event, $index)" aria-label="Trash session">
+                    <md-tooltip md-direction="left">
+                        <span translate class="md-body-1">SESSION_DELYES</span>
+                    </md-tooltip>
+                </md-icon>
+                <md-icon class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="hCtrl.deleteSession($event, $index)" aria-label="Delete session">
+                    <md-tooltip md-direction="left">
+                        <span translate class="md-body-1">SESSION_DELYES</span>
+                    </md-tooltip>
+                </md-icon>
             </md-list-item>
         </md-list>
     </div>

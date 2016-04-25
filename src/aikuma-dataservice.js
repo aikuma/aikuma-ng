@@ -116,6 +116,8 @@
                     imageIds: false,  // object of array
                     segments: false,  // object of array
                     
+                    isTrashed: false,
+                    
                     userId: true,
                 },
                 secondary: {
@@ -127,6 +129,8 @@
                     creatorId: true,
                     segment: true,
                     details: false,
+                    
+                    isTrashed: false,
                     
                     userId: true,
                     sessionId: true
@@ -193,6 +197,43 @@
                 }
             };
             
+            var sessionNames = {};
+            var uniqueSessionNameSet = {};
+            
+            var transformation = {
+                transformDuplicateNames: function(type, id, data) {
+                    if(type === SESSION_TYPE) {
+                        if(!sessionNames[data.userId]) {
+                            sessionNames[data.userId] = {};
+                            uniqueSessionNameSet[data.userId] = new Set();
+                        }
+                        
+                        if(!_.isEqual(data.names, sessionNames[data.userId][id])) {
+                            delete cachedWrappers[SESSION_TYPE + id];
+                            data.names = data.names.map(function(name) {
+                                var tempName = name,
+                                    i = 1;
+                                while(uniqueSessionNameSet[data.userId].has(tempName)) {
+                                    tempName = name + '(' + i + ')';
+                                    i++;
+                                }
+                                uniqueSessionNameSet[data.userId].add(tempName);
+                                return tempName;
+                            });
+                            
+                            // Name-DS(sessionNames, uniqueSessionNameSet) update
+                            if(sessionNames[data.userId] && sessionNames[data.userId][id]) {
+                                var oldNames = sessionNames[data.userId][id];
+                                oldNames.forEach(function(name){
+                                    uniqueSessionNameSet[data.userId].delete(name);
+                                });
+                            }
+                            sessionNames[data.userId][id] = data.names;
+                        }
+                    }
+                }
+            };
+            
             var dataMethods = {
                 addUserMeta: function(metaKey) {
                     return function(metaObj) {
@@ -253,6 +294,8 @@
                     if(msg) {
                         throw 'Validation Error: ' + msg;
                     }
+                    // Mutates data's duplicate names
+                    transformation.transformDuplicateNames(type, id, data);
                     return store.upsert(data);
                 },
                 remove: function(type, id, store) {       
@@ -264,6 +307,21 @@
             };
                
             var service = {};
+            service.init = function() {
+                service.getJsonBackup().then(function(backup) {
+                    backup[SESSION_TYPE].forEach(function(session) {
+                        if(!sessionNames[session.userId]) {
+                            sessionNames[session.userId] = {};
+                            uniqueSessionNameSet[session.userId] = new Set();
+                        }
+                        sessionNames[session.userId][session._ID] = session.names;
+                        session.names.forEach(function(name) {
+                            uniqueSessionNameSet[session.userId].add(name);
+                        });
+                    });
+                });
+            };
+            
             service.setUser = function(data) {
                 //var id = data.email;
                 var id = aikumaUtils.createRandomAlphabets(12);
@@ -334,33 +392,51 @@
                     return stores[storeIdx].find(id).then(function(tempData){
                         data = tempData;
                         return stores[storeIdx].delete(id);
-                    }).then(function(){
+                    }).then(function(){ // Collect all secondaries
                         delete cachedWrappers[type + id];
-                        if(data.segment && data.segment.sourceSegId) {
+                        if(data.type === SESSION_TYPE) {
+                            var oldNames = sessionNames[data.userId][id];
+                            delete sessionNames[data.userId][data._ID];
+                            oldNames.forEach(function(name){
+                                uniqueSessionNameSet[data.userId].delete(name);
+                            });
+                            
+                            return store2.eachBy('user_session_idx', {beginKey: [data.userId, data._ID], endKey: [data.userId, data._ID]});
+                        } else if(data.segment && data.segment.sourceSegId) {
                             return store2.eachBy('user_session_idx', {beginKey: [data.userId, data.sessionId], endKey: [data.userId, data.sessionId]});       
                         }
                         return;
                     }).then(function(secList) {
                         if(secList) {
-                            var cnt = secList.filter(function(sec) { 
-                                return sec.segment && sec.segment.sourceSegId && sec.segment.sourceSegId === data.segment.sourceSegId ;
-                            }).length;
-                            if(cnt === 0) {
-                                return store1.find(data.sessionId);
+                            if(type === SESSION_TYPE) { // Collect fileIds of all secondaries
+                                var promises = secList.map(function(sec) {
+                                    delete cachedWrappers[SECONDARY_TYPE + sec._ID];
+                                    if(sec.source && sec.source.recordFileId)
+                                        fileIds.push(sec.source.recordFileId);
+                                    return stores[2].delete(sec._ID);
+                                });
+                                return $q.all(promises);
+                            } else if (type === SECONDARY_TYPE) {   // Collect secondaries using same segment
+                                var cnt = secList.filter(function(sec) { 
+                                    return sec.segment && sec.segment.sourceSegId && sec.segment.sourceSegId === data.segment.sourceSegId ;
+                                }).length;
+                                if(cnt === 0) {
+                                    return store1.find(data.sessionId);
+                                }    
                             }
                         }
                         return;
-                    }).then(function(sessionData){
-                        if(sessionData) {
+                    }).then(function(sessionData){  // Delete session's segment if there is no secondary using it
+                        if(sessionData && sessionData.type && sessionData.type === SESSION_TYPE) {
                             delete sessionData.segments[data.segment.sourceSegId];
                             delete cachedWrappers[SESSION_TYPE + data.sessionId];
                             return store1.upsert(sessionData);
                         }
                         return;
-                    }).then(function(){
+                    }).then(function(){ // Collect fileIds to delete
                         if((data.imageIds && data.imageIds.length > 0) || (data.source && data.source.recordFileId)) {
                             if(data.imageIds)
-                                fileIds = data.imageIds;
+                                fileIds.push.apply(fileIds, data.imageIds);
                             if(data.source && data.source.recordFileId)
                                 fileIds.push(data.source.recordFileId);
                             
@@ -370,10 +446,12 @@
                     }).then(function(userData){
                         if(userData) {
                             for(var i in fileIds) {
-                                var url = userData.files[fileIds[i]].url;
-                                if(url)
-                                    fileUrls.push(url);
-                                delete userData.files[fileIds[i]];
+                                if(fileIds[i] in userData.files) {
+                                    var url = userData.files[fileIds[i]].url;
+                                    if(url)
+                                        fileUrls.push(url);
+                                    delete userData.files[fileIds[i]];   
+                                }
                             }
                             delete cachedWrappers[USER_TYPE + data.userId];
                             return store0.upsert(userData);
@@ -391,6 +469,13 @@
             };
             
             var cachedWrappers = {};
+            var cleanCache = function(type) {
+                Object.keys(cachedWrappers).forEach(function(key) {
+                    var dataType = cachedWrappers[key].data.type;
+                    if(dataType && dataType.indexOf(type) === 0)
+                        delete cachedWrappers[key];
+                });
+            };
             
             service.get = function(type, id, refresh) {
                 var dataDefer = $q.defer();
@@ -441,16 +526,31 @@
                 });
             };
             
-            service.getSessionList = function(userId) {
+            service.getSessionList = function(userId, trash=false) {
                 return $indexedDB.openStore(SESSION_TYPE, function(store) {
                     return store.eachBy('user_idx', {beginKey: userId, endKey: userId});
                 }).then(function(sessionList) {
                     if(sessionList) {
-                        sessionList.sort(function (a, b) {
+                        sessionList = sessionList.sort(function (a, b) {
                             return new Date(b.lastModified) - new Date(a.lastModified);
+                        }).filter(function(session){
+                            session.isTrashed = !!session.isTrashed;
+                            return session.isTrashed === trash;
                         });
                     }
                     return sessionList;
+                });
+            };
+            
+            service.getSessionObjList = function(userId, trash=false) {
+                cleanCache('session');
+                
+                return service.getSessionList(userId, trash).then(function(sessionList) {
+                    return sessionList.map(function(sessionData) {
+                        var wrapper = {data: sessionData};
+                        wrapper.save = dataMethods.save(SESSION_TYPE).bind(wrapper);
+                        return wrapper;
+                    });
                 });
             };
             
@@ -468,17 +568,11 @@
             };
             
             service.getAnnotationObjList = function(userId, sessionId) {
-                Object.keys(cachedWrappers).forEach(function(key) {
-                    var dataType = cachedWrappers[key].data.type;
-                    if(dataType && dataType.indexOf('anno_') === 0)
-                        delete cachedWrappers[key];
-                });
+                cleanCache('anno_');
                 
                 return service.getSecondaryList(userId, sessionId).then(function(secList) {
                     return secList.filter(function(secData){
                         return secData.type.indexOf('anno_') === 0;
-                    }).sort(function(a, b){
-                        return new Date(a.source.created) - new Date(b.source.created);
                     }).map(function(secData) { 
                         var wrapper = {data: secData};
                         wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
@@ -591,7 +685,7 @@
                 switch(currentVersion) {
                     case 0:
                         db[SESSION_TYPE].forEach(function(sessionData) {
-                            if(sessionData.source.langIds[0] && !('langISO' in sessionData.source.langIds[0])) {
+                            if(sessionData.source.langIds[0] && (typeof sessionData.source.langIds[0] === 'string')) {
                                 sessionData.source.langIds = sessionData.source.langIds.map(function(langISO) {
                                     return {
                                         langStr: '',
@@ -601,7 +695,7 @@
                             }
                         });
                         db[SECONDARY_TYPE].forEach(function(secondaryData) {
-                            if(secondaryData.source.langIds[0] && !('langISO' in secondaryData.source.langIds[0])) {
+                            if(secondaryData.source.langIds[0] && (typeof secondaryData.source.langIds[0] === 'string')) {
                                 secondaryData.source.langIds = secondaryData.source.langIds.map(function(langISO) {
                                     return {
                                         langStr: '',
@@ -629,7 +723,7 @@
                         }).then(function() {
                             return store2.clear();
                         }).then(function() {
-                            return store0.upsert(newDb[USER_TYPE])  
+                            return store0.upsert(newDb[USER_TYPE]); 
                         }).then(function() {
                             return store1.upsert(newDb[SESSION_TYPE]);
                         }).then(function() {

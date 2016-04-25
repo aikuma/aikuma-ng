@@ -171,5 +171,9 @@
   "PLAYBACK_RATE": "以百分比源播放速度",
   "SETTINGS_TIMESTRETCH": "保留源的音頻播放音",
   "SETHELP_TIMESTRETCH": "音頻慢速播放，而不會降低音高（時間伸縮），音頻播放可能會過頭地區",
-  "PLAY_SRCSTRETCH": "慢源音頻播放"
+  "PLAY_SRCSTRETCH": "慢源音頻播放",
+  "SESSION_DELCONF1": "Are you sure you want to delete this session?",
+  "SESSION_DELCONF2": "This cannot be undone!",
+  "SESSION_DELNO": "No way!",
+  "SESSION_DELYES": "Delete session"
 }

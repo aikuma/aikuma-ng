@@ -296,7 +296,7 @@
         .config(['$indexedDBProvider', function($indexedDBProvider) {
             $indexedDBProvider
                 .connection('myIndexedDB')
-                .upgradeDatabase(1, function(event, db, tx){
+                .upgradeDatabase(1, function(event, db, tx){    // Incremental upgrade is only supported with upgradeJsonDB
                     var userStore = db.createObjectStore('user', {keyPath: '_ID'});
                     userStore.createIndex('name_idx', 'name');
 
@@ -340,6 +340,7 @@
                     var ProgressDialogController = function($scope, $mdDialog) {
                         dataService.upgradeData(ver).then(function(){
                             dataService.setDataVersion(config.dataVersion);
+                            dataService.init();
                             $mdDialog.cancel();
                         }).catch(function(err){
                             $mdDialog.cancel();
@@ -353,6 +354,8 @@
                         '</md-dialog>',
                         controller: ProgressDialogController
                     });
+                } else {
+                    dataService.init();
                 }
             });
 
