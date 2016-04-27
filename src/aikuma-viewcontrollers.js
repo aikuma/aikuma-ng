@@ -9,17 +9,15 @@
         .controller('homeController', ['config', '$timeout', '$scope', '$location', '$translate', '$mdDialog', 'dataService', 'fileService', 'loginService', '$route', 'aikumaDialog', function(config, $timeout, $scope, $location, $translate, $mdDialog, dataService, fileService, loginService, $route, aikumaDialog) {
             var vm = this;
             vm.speedDial = false;
-            //vm.annos = {};
+            vm.numberOfSessions = 0; // binding from session list directive
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
+                        $scope.userObj = userObj;
                         vm.currentUser = userObj.data;
                         vm.currentUserName = function() { return userObj.data.names[0]; };
                         return dataService.getSessionObjList(vm.currentUser._ID);
-                    }).then(function(sessionList) {
-                        vm.sessionList = sessionList;
-                        //sessionList.forEach(function(s){summaryAnno(s.data);});
                     });
                 } else {
                     vm.currentUserName = function() { return 'Unknown user'; };
@@ -28,21 +26,7 @@
                     });
                 }
             });
-            // am experiment to extract some data from the annotations but this turns out to be very slow
-            function summaryAnno(sesh) {
-                dataService.getAnnotationObjList(vm.currentUser._ID, sesh._ID).then(function(res) {
-                    var annolist = [];
-                    res.forEach(function(anno) {
-                        annolist.push({
-                            type: angular.uppercase(anno.data.type),
-                            lang: anno.data.source.langIds[0].langStr,
-                            text: anno.data.segment.annotations[0] ? anno.data.segment.annotations[0] : ""
-                        });
-                    });
-                    vm.annos[sesh._ID] = annolist;
-                });
-            }
-            
+
             loginService.loginPreviousUser();
             vm.login = function(userIndex) {
                 loginService.loginUser(vm.userList[userIndex]._ID);
@@ -59,48 +43,7 @@
                     }
                 });
             };
-            
-            vm.deleteAnno = function(ev, track, annoidx) {
-                
-            };
-            
-            vm.trashSession = function(ev, sessionIndex) {
-                $translate(["SESSION_DELCONF1", "SESSION_DELCONF2", "SESSION_DELNO", "SESSION_DELYES"]).then(function (translations) {
-                    var confirm = $mdDialog.confirm()
-                        .title(translations.SESSION_DELCONF1)
-                        .textContent(translations.SESSION_DELCONF2)
-                        .targetEvent(ev)
-                        .ok(translations.SESSION_DELYES)
-                        .cancel(translations.SESSION_DELNO);
-                    $mdDialog.show(confirm).then(function () {
-                        var sessionObj = vm.sessionList[sessionIndex];
-                        sessionObj.data.isTrashed = true;
-                        sessionObj.save();
-                    });
-                });
-            };
-            
-            vm.deleteSession = function(ev, sessionIndex) {
-                $translate(["SESSION_DELCONF1", "SESSION_DELCONF2", "SESSION_DELNO", "SESSION_DELYES"]).then(function (translations) {
-                    var confirm = $mdDialog.confirm()
-                        .title(translations.SESSION_DELCONF1)
-                        .textContent(translations.SESSION_DELCONF2)
-                        .targetEvent(ev)
-                        .ok(translations.SESSION_DELYES)
-                        .cancel(translations.SESSION_DELNO);
-                    $mdDialog.show(confirm).then(function () {
-                        var sessionId = vm.sessionList[sessionIndex].data._ID;
-                        fileService.removeData('session', sessionId).then(function() {
-                            vm.sessionList.splice(sessionIndex, 1);
-                            console.log('succeed');
-                        });
-                    });
-                });
-            };
-            
-            vm.goStatus = function(sessionIndex) {
-                $location.path('session/'+vm.sessionList[sessionIndex].data._ID);
-            };
+
             vm.recordNew = function() {
                 $location.path('/new');
             };
@@ -612,5 +555,44 @@
             if($scope.sessionData.source && $scope.sessionData.source.recordFileId) {
                 $scope.audioSourceUrl = $scope.userData.files[$scope.sessionData.source.recordFileId].url;
             }
+        }])
+        .controller('trashController', ['$scope', 'userObj', '$mdDialog', '$translate', '$mdToast', 'dataService', 'fileService', '$q', function($scope, userObj, $mdDialog, $translate, $mdToast, dataService, fileService, $q) {
+            $scope.userObj = userObj;
+            var vm = this;
+            vm.numberOfSessions = 0;
+            vm.clearTrash = function(ev) {
+                $translate(["TRASH_CLEANCONF1", "TRASH_CLEANCONF2", "ANNO_DELNO", "TRASH_CLEANYES"]).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.TRASH_CLEANCONF1)
+                        .textContent(translations.TRASH_CLEANCONF2)
+                        .targetEvent(ev)
+                        .ok(translations.TRASH_CLEANYES)
+                        .cancel(translations.ANNO_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        // do it!
+                        deleteAll();
+                    }, function () {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .parent(angular.element( document.querySelector( '#deletedItems' ) ))
+                                .hideDelay(1500)
+                                .position("bottom left")
+                                .textContent('Cluck cluck cluck!')
+                        );
+                    });
+                });
+            };
+            function deleteAll() {
+                var promiseArray = [];
+                dataService.getSessionObjList($scope.userObj.data._ID, true).then(function(sessionList) {
+                    sessionList.forEach(function(session){
+                        var promise = fileService.removeData('session', session.data._ID);
+                        promiseArray.push(promise);
+                    });
+                    $q.all(promiseArray).then(function(){
+                        vm.numberOfSessions = 0; // this will trigger a scope watch in the session list directive
+                    });
+                });
+            }
         }]);
-})();
+    })();

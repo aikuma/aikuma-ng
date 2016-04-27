@@ -122,6 +122,19 @@
                             }]
                         }
                     })
+                    .when('/trash', {
+                        templateUrl: 'views/trash.html',
+                        controller: 'trashController as tCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if(userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }]
+                        }
+                    })
                     .when('/session/:sessionId', {
                         templateUrl: 'views/status.html',
                         controller: 'statusController as sCtrl',

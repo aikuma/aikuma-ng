@@ -173,7 +173,15 @@
   "SETHELP_TIMESTRETCH": "Slow playback of audio without lowering pitch (time stretching), audio playback might overshoot regions",
   "PLAY_SRCSTRETCH": "Slow Source",
   "SESSION_DELCONF1": "Are you sure you want to delete this session?",
-  "SESSION_DELCONF2": "This cannot be undone!",
+  "SESSION_DELCONF2": "The session be moved to deleted items.",
   "SESSION_DELNO": "No way!",
-  "SESSION_DELYES": "Delete session"
+  "SESSION_DELYES": "Delete session",
+  "NAV_TRASH": "Deleted Items",
+  "SESSION_RESTORE": "Restore session",
+  "TRASH_CLEAN": "Delete all items",
+  "TRASH_CLEANCONF1": "Are you sure you want to remove all deleted items?",
+  "TRASH_CLEANCONF2": "This cannot be undone!",
+  "TRASH_CLEANYES": "Delete all items now",
+  "TRASH_EXPLAIN": "These deleted items will be removed when space is low. You may restore any items by pressing",
+  "TRASH_NONE": "No deleted items"
 }

@@ -3,7 +3,7 @@
   "authors": [
     "Mat Bettinson <mat@plothatching.com>"
   ],
-  "description": "Prototype web annotation app",
+  "description": "Chrome App for annotating and organising speech",
   "main": "",
   "moduleType": [],
   "license": "MIT",

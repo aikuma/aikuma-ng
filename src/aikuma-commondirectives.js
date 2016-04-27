@@ -157,7 +157,62 @@
                     }
                 };
             }
-        ]);
+        ])
+        .directive("ngSessionList", function() {
+            return {
+                restrict: "E",
+                scope: {
+                    userObj: '=',
+                    deleted: '=',
+                    numberOfSessions: '='
+                },
+                templateUrl: "views/templates/sessionList-template.html",
+                controller: sessionListController,
+                controllerAs: 'slCtrl'
+            };
+        });
+
+        var sessionListController = function($scope, dataService, $mdDialog, $translate, $location) {
+            var vm = this;
+            vm.currentUser = $scope.userObj.data;
+            vm.deleted = $scope.deleted;
+            $scope.$watch('numberOfSessions', function() {
+                updateSessionList();
+            });
+            function updateSessionList() {
+                dataService.getSessionObjList($scope.userObj.data._ID, vm.deleted).then(function(sessionList) {
+                    vm.sessionList = sessionList;
+                    $scope.numberOfSessions = sessionList.length;
+                });
+            }
+            vm.restoreSession = function(sessionIndex) {
+                var sessionObj = vm.sessionList[sessionIndex];
+                sessionObj.data.isTrashed = false;
+                sessionObj.save();
+                vm.sessionList.splice(sessionIndex, 1);
+                $scope.numberOfSessions = $scope.numberOfSessions - 1;
+            };
+            vm.trashSession = function(ev, sessionIndex) {
+                $translate(["SESSION_DELCONF1", "SESSION_DELCONF2", "SESSION_DELNO", "SESSION_DELYES"]).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.SESSION_DELCONF1)
+                        .textContent(translations.SESSION_DELCONF2)
+                        .targetEvent(ev)
+                        .ok(translations.SESSION_DELYES)
+                        .cancel(translations.SESSION_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        var sessionObj = vm.sessionList[sessionIndex];
+                        vm.sessionList.splice(sessionIndex, 1);
+                        sessionObj.data.isTrashed = true;
+                        sessionObj.save();
+                    });
+                });
+            };
+            vm.goStatus = function(sessionIndex) {
+                $location.path('session/'+vm.sessionList[sessionIndex].data._ID);
+            };
+        };
+        sessionListController.$inject = ['$scope', 'dataService', '$mdDialog', '$translate', '$location'];
 
         var topbarController = function ($scope, $translate, $mdMedia, $mdSidenav, config, loginService, aikumaDialog) {
             var vm = this;
@@ -238,6 +293,12 @@
                     icon: 'social:share',
                     state: 'share',
                     tooltip: 'NOT_IMPLEMENTED'
+                },
+                {
+                    class : '',
+                    title: 'NAV_TRASH',
+                    icon: 'action:delete',
+                    state: 'trash',
                 },
                 {
                     class : '',
