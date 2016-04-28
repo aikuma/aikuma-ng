@@ -239,20 +239,12 @@
             });
             var secseg = secondary.segment.segMsec;
             var fileh = $scope.userObj.getFileUrl(secondary.source.recordFileId);
-            var stopall = function() {
-                $scope.wavesurfer.un('pause', wscallback);
-                $scope.wavesurfer.clearRegions();
-                $scope.wavesurfer.stop();
-                vm.pcss[track] = false;
-                vm.playingSec = false;
-                vm.playindex = 0;
-            };
             var ascallback = function() {
                 vm.pcssthis[track] = false;
                 $scope.$apply();
                 ++vm.playindex;
                 if (vm.playindex === vm.playregions.length) {
-                    stopall();
+                    vm.stopPlayingSecondary();
                 } else {
                     vm.playregions[vm.playindex].play();
                 }
@@ -264,7 +256,7 @@
                 if (!vm.tracks[track].hasAudio) {
                     ++vm.playindex;
                     if (vm.playindex === vm.playregions.length) {
-                        stopall();
+                        vm.stopPlayingSecondary();
                     } else {
                         updateAnnoSummary(track, vm.playindex);
                         vm.playregions[vm.playindex].play();

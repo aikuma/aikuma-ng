@@ -37,17 +37,23 @@
             };
 
             // play using HTML media element (needed for time stretching)
-            service.playMediaElementFile = function(file, start, end, callback, playbackrate = 1) {
+            service.playMediaElementFile = function(file, start, end = null, callback, playbackrate = 1) {
                 var audioElement = new Audio(file);
                 var thisTime;
-                audioElement.ontimeupdate = function() {
-                    thisTime = audioElement.currentTime;
-                    if (thisTime >= (end/1000)) {
-                        audioElement.pause();
-                        callback();
-                    }
-                };
+                if (end) {
+                    audioElement.ontimeupdate = function() {
+                        thisTime = audioElement.currentTime;
+                        if (thisTime >= (end/1000)) {
+                            audioElement.pause();
+                            audioElement.ontimeupdate = null;
+                            audioElement.onended = null;
+                            callback();
+                        }
+                    };
+                }
                 audioElement.onended = function() {
+                    audioElement.ontimeupdate = null;
+                    audioElement.onended = null;
                     callback();
                 };
                 audioElement.play();
