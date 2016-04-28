@@ -546,6 +546,7 @@
 
         var wsdefaults = {
             container: "#sessionPlayer",
+            renderer: "MultiCanvas",
             normalize: true,
             hideScrollbar: false,
             scrollParent: true

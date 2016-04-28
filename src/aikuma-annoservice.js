@@ -34,11 +34,14 @@
                 asx.wavesurfer = WaveSurfer.create({
                     backend: asx.timestretchEnabled ? 'MediaElement' : 'WebAudio',
                     container: "#annotatePlayback",
+                    renderer: "MultiCanvas",
                     normalize: true,
                     hideScrollbar: false,
                     scrollParent: true,
-                    progressColor: '#797',
-                    waveColor: '#457'
+                    //progressColor: '#797',
+                    //waveColor: '#457'
+                    progressColor: '#33627c',
+                    waveColor: '#4FC3F7'
                 });
 
                 /* Initialize the time line */
@@ -50,8 +53,8 @@
                 /* Minimap plugin */
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,
-                    waveColor: '#4FC3F7',
-                    progressColor: '#4FC3F7',
+                    waveColor: '#555',
+                    progressColor: '#999',
                 });
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
@@ -288,7 +291,7 @@
                 var rego = asx.wavesurfer.addRegion({
                     start: starttime,
                     end: endtime,
-                    color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.20)',
+                    color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.10)',
                     drag: false,
                     resize: false,
                     data: col
@@ -317,7 +320,7 @@
                 var reg = asx.wavesurfer.addRegion({
                     start: starttime,
                     end: starttime,
-                    color: 'hsla('+hue+', 100%, 30%, 0.15)',
+                    color: 'hsla('+hue+', 100%, 30%, 0.10)',
                     drag: false,
                     resize: false,
                     data: col
@@ -345,7 +348,7 @@
                 }
                 _.last(asx.regionList).update(
                     {
-                        color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.20)',
+                        color: 'hsla('+hue+','+sat+'%,'+vol+'%,0.10)',
                         data: {colidx:colidx}
                     }
                 );

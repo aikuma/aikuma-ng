@@ -51,11 +51,12 @@
             vm.wsRecord.init({
                 container: "#respeakRecord",
                 backend: "WebAudio",
+                renderer: "MultiCanvas",
                 normalize: true,
                 hideScrollbar: false,
                 scrollParent: true,
-                progressColor: '#797',
-                waveColor: '#457'
+                progressColor: '##33627c',
+                waveColor: '#4FC3F7'
             });
             vm.wsRecord.on('ready', function() {
                 vm.recordDurMsec = Math.floor(vm.wsRecord.getDuration() * 1000);
@@ -93,7 +94,9 @@
                 container: "#respeakRecord",
                 normalize: false,
                 scrollParent: true,
-                cursorWidth: 0
+                cursorWidth: 0,
+                progressColor: '##33627c',
+                waveColor: '#4FC3F7'
             });
             // Init Microphone plugin
             var microphone = Object.create(WaveSurfer.Microphone);
