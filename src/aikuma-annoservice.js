@@ -5,7 +5,7 @@
     'use strict';
     angular
         .module('aikuma-anno-service', [])
-        .service('annoServ', ['config', 'aikumaService', '$timeout', 'keyService', function(config, aikumaService, $timeout, keyService) {
+        .service('annoServ', ['$interval', 'config', 'aikumaService', '$timeout', 'keyService', function($interval, config, aikumaService, $timeout, keyService) {
             var asx = this;
 
             asx.regionList = [];     // regions for the currently active wavesurfer view (e.g. particular annotation selected)
@@ -20,6 +20,7 @@
             asx.startHue = 120;
             asx.stepHue = 60;
             asx.userMediaElement = false;
+            asx.mediaElementResolution = 50; // ms value for manual interval check
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
             asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
@@ -31,7 +32,7 @@
                 // Set up Wavesurfer
                 //
                 asx.wavesurfer = WaveSurfer.create({
-                    backend: asx.timestretechEnabled ? 'MediaElement' : 'WebAudio',
+                    backend: asx.timestretchEnabled ? 'MediaElement' : 'WebAudio',
                     container: "#annotatePlayback",
                     normalize: true,
                     hideScrollbar: false,
@@ -39,6 +40,7 @@
                     progressColor: '#797',
                     waveColor: '#457'
                 });
+
                 /* Initialize the time line */
                 asx.timeline = Object.create(asx.wavesurfer.Timeline);
                 asx.timeline.init({
@@ -82,18 +84,29 @@
                     callback();
                 });
                 asx.wavesurfer.on('pause', function () {
+                    $interval.cancel(asx.intervalPromise);
                     console.log('firepause');
                     if (asx.regionPlayback) {
                         asx.regionPlayback = false;
                         asx.seekToTime(asx.regionList[asx.cursor[asx.r.tk]].start);
                     }
-
                 });
                 asx.wavesurfer.on('seek', function () {
                     asx.seeked = true;
                     asx.wavesurfer.play();
                     if (asx.r.regionMarked) {asx.deleteLastRegion();}
                 });
+                asx.wavesurfer.on('play', function () {
+                    if (asx.timestretchEnabled && asx.endTime) {
+                        asx.intervalPromise = $interval(intervalUpdateTime, asx.mediaElementResolution);
+                    }
+                });
+                var intervalUpdateTime = function() {
+                    if (asx.wavesurfer.getCurrentTime() >= asx.endTime) {
+                        console.log('interval pause');
+                        asx.wavesurfer.pause();
+                    }
+                };
                 
                 aikumaService.getLanguages(function (languages) {
                     languages = _.object(languages.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
@@ -221,7 +234,15 @@
                     asx.playIn = 0;
                 }
             };
-
+            
+            asx.playRegion = function(region) {
+                // Needed for interval process of using MediaElement
+                if (asx.timestretchEnabled) {
+                    asx.endTime = asx.regionList[region].end;
+                }
+                asx.regionList[region].play();
+                asx.regionPlayback = true; // flag indicates will seek wavesurfer to start of session at the end.
+            };
             
             asx.getRegionFromTime = function(seektime) {
                 if (seektime === undefined) {seektime = asx.wavesurfer.getCurrentTime();}
@@ -470,7 +491,6 @@
                     asx.deleteLastRegion();
                 }
                 asx.seekToTime(asx.regionList[idx].start);
-                //asx.regionList[idx].play();
             };
            
         }]);

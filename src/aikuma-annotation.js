@@ -24,7 +24,7 @@
             // set up play rate defaults based on the user preference for enabling time stretching
             if ($scope.userObj.data.preferences.timeStretchSrc) {
                 vm.timestretchEnabled = true;
-                annoServ.timestretechEnabled = true;
+                annoServ.timestretchEnabled = true;
                 vm.playRate = 80;
             } else {
                 vm.playRate = 100;
@@ -85,11 +85,12 @@
                     annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                     annoServ.wavesurfer.play(annoServ.playIn);
                 } else {
+                    // if we are within a region then we need to play this region
                     if (vm.cursor[vm.r.tk] > -1) {
-                        // the service works out what audio is appropriate to play (which is why we pass the settings object
                         annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                         vm.playAudio();
                     } else {
+                        // otherwise we're playing in 'virgin' space
                         vm.isPlaying = true;
                         var thisTime = annoServ.wavesurfer.getCurrentTime();
                         thisTime = Math.round(thisTime*1000)/1000;
@@ -374,6 +375,7 @@
             };
 
             vm.playAudio = function() {
+                if (vm.playingSecondary) {return;} // don't let them play again if we already are... it gets difficult then
                 var timerval = 0;
                 var selAnno = vm.selAnno[vm.r.tk];
                 var region =  vm.cursor[vm.r.tk];
@@ -386,32 +388,34 @@
                     return;
                 }
                 if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
+                    vm.playingSecondary = true;
                     annoServ.wavesurfer.setPlaybackRate(
                         vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSrc ? (vm.playRate/100) : 1
                     );
-                    annoServ.regionList[region].play();
-                    annoServ.regionPlayback = true;
+                    annoServ.playRegion(region);
                     timerval = ((annoServ.regionList[region].end - annoServ.regionList[region].start) * (100/vm.playRate)) + 0.2;
                 }
-                // This timeout occurs when playback has finished.
-                $timeout(function(){
+                // Are we going to play secondary audio? Check after the source has finished
+                $timeout(function () {
                     if (thisTrack.annos[selAnno].cfg.playSec && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
+                        // Go and play secondary audio
                         var seglist = thisTrack.segMsec;
                         var fileh = $scope.userObj.getFileUrl(thisTrack.audioFile);
                         var playtrack = vm.r.tk; // keep this in case it changes when we try to unset
                         vm.playCSS[vm.r.tk] = true;
                         $scope.$apply();
-                        var secPlayRate =  vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSec ? (vm.playRate/100) : 1;
+                        var secPlayRate = vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSec ? (vm.playRate / 100) : 1;
                         audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
                             console.log('finished');
+                            vm.playingSecondary = false;
                             vm.playCSS[playtrack] = false;
                             $scope.$apply();
                         }, secPlayRate);
-                    } else {
-                        //
+                    }  else {
+                        // optherwise say we're done
+                        vm.playingSecondary = false;
                     }
-                }, timerval*1000);
-
+                }, timerval * 1000);
             };
             //
             // Utility stuff

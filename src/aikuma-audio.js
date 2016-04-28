@@ -40,13 +40,9 @@
     var newRecordDirectiveController = function ($timeout, config, $scope, $rootScope, $location, $window, loginService, audioService, dataService, fileService, $sce, $mdDialog, $translate) {
         var vm = this;
         var rec;
-
         vm.externalRecord = fileService.getTempObject();
-        
         vm.wsRecord = Object.create(WaveSurfer);
-
         vm.context = new AudioContext();
-
         vm.loadingStatus = false;
         vm.isLoading = function() {
             return vm.loadingStatus;
@@ -92,7 +88,6 @@
                 });
             };
             fileReader.readAsArrayBuffer(vm.externalRecord);
-
         } else {
             vm.wsRecord.init({
                 container: "#respeakRecord",
@@ -114,9 +109,7 @@
             microphone.on('deviceError', function(code) {
                 console.warn('Device error: ' + code);
             });
-
             microphone.start();
-
 
             // start our own audio context for recorder.js. Because calling pause() on the wavesurfer microphone
             // plugin disconnects the node, we'll end up with an empty file!
@@ -128,7 +121,6 @@
                 .catch(function (feh) {
                     console.log('audio spaz out', feh);
                 });
-
         }
 
         function createDownsampledLink(targetSampleRate, callback) {
@@ -150,7 +142,6 @@
                 });
             }
         }
-
 
         function playbackAudio(inputbuffer) {
             var newSource = vm.context.createBufferSource();
@@ -389,9 +380,7 @@
         //
         // This is code which restores from a backend
         //
-        // if we have saved data...
         var prevState = $scope.respeakObj? {} : null;
-        
         vm.playIn = 0;
         vm.regionList = [];
         vm.segMap = [];
@@ -485,8 +474,7 @@
                     }
             });
             keyService.regKey(ffKeyCode,'keydown',  function() {
-                if(!vm.ffKeyDown)
-                    ffKeyDown(true);
+                if (!vm.ffKeyDown) {ffKeyDown(true);}
             });
             keyService.regKey(ffKeyCode,'keyup',    function() {
                 ffKeyUp(true);

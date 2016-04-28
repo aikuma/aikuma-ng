@@ -113,6 +113,7 @@
         }
 
         vm.addAnno = function (ev, track = null) {
+            if (vm.playingSec) {vm.stopPlayingSecondary();}
             $mdDialog.show({
                 controller: newAnnotationController,
                 controllerAs: 'dCtrl',
@@ -162,6 +163,7 @@
         };
 
         vm.deleteAnno = function(ev, track, annoidx) {
+            if (vm.playingSec) {vm.stopPlayingSecondary();}
             $translate(["ANNO_DELCONF1", "ANNO_DELCONF2", "ANNO_DELNO", "ANNO_DELYES"]).then(function (translations) {
                 var confirm = $mdDialog.confirm()
                     .title(translations.ANNO_DELCONF1)
@@ -208,16 +210,16 @@
         vm.pcss = {};
         vm.pcssthis = {};
         vm.playingSec = false;
+        vm.stopPlayingSecondary = function () {
+            $scope.wavesurfer.unAll();
+            $scope.wavesurfer.clearRegions();
+            $scope.wavesurfer.stop();
+            vm.pcss[vm.playingSec] = false;
+            vm.playingSec = false;
+        };
         vm.playSecondary = function(track) {
-            if (vm.playingSec) {
-                $scope.wavesurfer.un('pause', wscallback);
-                $scope.wavesurfer.clearRegions();
-                $scope.wavesurfer.stop();
-                vm.pcss[track] = false;
-                vm.playingSec = false;
-                return;
-            }
-            vm.playingSec = true;
+            if (vm.playingSec) {vm.stopPlayingSecondary();}
+            vm.playingSec = track;
             var secondary = vm.tracks[track].secondary;
             var ssid = secondary.segment.sourceSegId;
             var srcseg = $scope.sessionObj.data.segments[ssid];

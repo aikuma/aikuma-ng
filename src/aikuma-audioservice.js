@@ -9,16 +9,17 @@
             var service = {};
 
             service.playbackLocalFile = function(audioContext, fsUri, start, end, callback, playrate = 1) {
-                if (playrate !== 1) {
+                service.playMediaElementFile(fsUri, start, end, callback, playrate);
+/*                if (playrate !== 1) {
                     service.playMediaElementFile(fsUri, start, end, callback, playrate);
                 } else {
                     fileService.getFile(fsUri).then(function(file) {
                         service.playbackFile(audioContext, file, start, end, callback);
                     });                    
-                }
+                }*/
             };
 
-            // play using web audio
+            // play using web audio (this does not fire the callback reliably, so I'm favouring using the mediaelement version
             service.playbackFile = function(audioContext, file, start, end, callback) {
                 var fileReader = new FileReader();
                 fileReader.onload = function() {
@@ -26,7 +27,9 @@
                         var audioSourceNode = audioContext.createBufferSource();
                         audioSourceNode.buffer = decodedBuffer;
                         audioSourceNode.connect(audioContext.destination);
-                        audioSourceNode.onended = function() { callback(); };
+                        audioSourceNode.onended = function() {
+                            callback();
+                        };
                         audioSourceNode.start(audioContext.currentTime, start/1000, (end-start)/1000);
                     });
                 };
@@ -35,7 +38,6 @@
 
             // play using HTML media element (needed for time stretching)
             service.playMediaElementFile = function(file, start, end, callback, playbackrate = 1) {
-                console.log('me playing');
                 var audioElement = new Audio(file);
                 var thisTime;
                 audioElement.ontimeupdate = function() {
@@ -67,25 +69,10 @@
                         oncomplete({
                             getAudioBuffer: function() {
                                 return resampeledBuffer;
-                            },/*
-                            getFile: function() {
-                                var audioData = {
-                                    sampleRate: resampeledBuffer.sampleRate,
-                                    channelData: []
-                                };
-                                for (var i = 0; i < resampeledBuffer.numberOfChannels; i++) {
-                                    audioData.channelData[i] = resampeledBuffer.getChannelData(i);
-                                }
-                                var blob = new Blob([encodeWAV(audioData.channelData[0],resampeledBuffer.numberOfChannels,resampeledBuffer.sampleRate)], {
-                                    type: "audio/wav"
-                                });
-                                return blob;
-                                //return URL.createObjectURL(blob);
-                            }*/
+                            }
                         });
                     }
                 };
-                //console.log('Starting Offline Rendering');
                 bufferSource_.connect(offlineContext_.destination);
                 bufferSource_.start(0);
                 offlineContext_.startRendering();

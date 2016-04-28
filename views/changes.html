@@ -2,6 +2,14 @@
 
 <md-content class="md-padding" style="padding-bottom:30px">
     <div class="row">
+        <h4 class='md-title'>28/4/2016 &mdash; 0.930</h4>
+        <p class="md-body-1">Fixed overshoot of playback when using time stretching. Fixes some leftover flashing CSS
+            elements after region playback on annotation UI. Annotation UI will not ignore region play requests if a
+            region is already playing (fixes flashing icons that shouldn't be flashing).
+            When user adds or deleted an annotation, audio playback will be stopped (fixes CSS leftover flashing icons etc).
+        </p>
+    </div>
+    <div class="row">
     <h4 class='md-title'>27/4/2016 &mdash; 0.929</h4>
         <p class="md-body-1">Added details to session display on home page. Improved formatting. Session list moved to a reusable directive used on home page and deleted items.</p>
         <p class="md-body-1">Added deleted items view (accessible from nav bar). Sessions can be deleted which will move them to the deleted items view. Sessions can be restored back to the home page
