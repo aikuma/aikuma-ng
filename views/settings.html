@@ -3,7 +3,7 @@
     
     <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" href="{{seCtrl.dataUri}}">
         <md-icon md-svg-icon="file:file_download"></md-icon>
-        {{"BACKUP_DOWNLOAD" | translate}}
+        {{"BACKUP_DOWN" | translate}}
     </md-button>
     
     <label class="md-button md-raised" for="zip-input">
@@ -27,10 +27,12 @@
         {{"DEBUG_RESETDB" | translate}}
     </label>
 
-    <div layout="row inset">
-        <md-switch aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
-            <md-tooltip><span class="md-body-2" translate>SETHELP_TIMESTRETCH</span></md-tooltip>
+    <div layout="row inset" layout-wrap>
+        <md-switch flex="25" aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
+        </md-switch>
+        <md-switch flex="25" aria-label="Enable debug mode" ng-model="seCtrl.debugMode" ng-change="seCtrl.saveDebug()">
+            <span class="md-body-2" translate>DEBUG_SWITCH</span>
         </md-switch>
     </div>
 

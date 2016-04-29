@@ -183,5 +183,6 @@
   "TRASH_CLEANCONF2": "This cannot be undone!",
   "TRASH_CLEANYES": "Delete all items now",
   "TRASH_EXPLAIN": "These deleted items will be removed when space is low. You may restore any items by pressing",
-  "TRASH_NONE": "No deleted items"
+  "TRASH_NONE": "No deleted items",
+  "DEBUG_SWITCH": "Enable debug mode"
 }

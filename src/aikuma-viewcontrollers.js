@@ -55,6 +55,7 @@
             vm.debug = function() { return config.debug; };
             vm.preferences = userObj.data.preferences;
             vm.timeStretching = config.timeStretch;
+            vm.debugMode = config.debug;
 
             dataService.getJsonBackup().then(function(db) {
                 vm.db = db;
@@ -74,6 +75,10 @@
             
             vm.saveSetting = function() {
                 userObj.save();
+            };
+            
+            vm.saveDebug = function() {
+                config.debug = vm.debugMode;
             };
 
             $scope.$watch('zipFile', function (file) {

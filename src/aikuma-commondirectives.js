@@ -255,8 +255,12 @@
                     vm.currentUserName = function() { return ''; };
                 }
             });
-            
-            
+
+            vm.goHome = function() {
+                $location.path('/');
+            };
+
+
             vm.logout = function() {
                 loginService.logout();
                 $location.path('/');
