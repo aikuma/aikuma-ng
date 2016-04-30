@@ -421,37 +421,50 @@
             // Utility stuff
             //
             vm.setupKeys = function() {
-                keyService.regKey(vm.playKeyCode, 'keydown', function () {
+                keyService.regKey(vm.playKeyCode, 'keydown', function (ev) {
+                    ev.preventDefault();
                     vm.playKeyDown(true);
                 });
-                keyService.regKey(vm.playKeyCode, 'keyup', function () {
+                keyService.regKey(vm.playKeyCode, 'keyup', function (ev) {
+                    ev.preventDefault();
                     vm.playKeyUp(true);
                 });
-                keyService.regKey(vm.ffKeyCode, 'keydown', function () {
-                    vm.ffKeyDown(true);
+                keyService.regKey(vm.ffKeyCode, 'keydown', function (ev) {
+                    if (ev.shiftKey) {
+                        ev.preventDefault();
+                        vm.ffKeyDown(true);
+                    }
                 });
-                keyService.regKey(vm.ffKeyCode, 'keyup', function () {
+                keyService.regKey(vm.ffKeyCode, 'keyup', function (ev) {
+                    ev.preventDefault();
                     vm.ffKeyUp(true);
                 });
-                keyService.regKey(vm.rwKeyCode, 'keydown', function () {
-                    vm.rwKey(true);
+                keyService.regKey(vm.rwKeyCode, 'keydown', function (ev) {
+                    if (ev.shiftKey) {
+                        ev.preventDefault();
+                        vm.rwKey(true);
+                    }
                 });
-                keyService.regKey(vm.escKeyCode, 'keydown', function () {
+                keyService.regKey(vm.escKeyCode, 'keydown', function (ev) {
+                    ev.preventDefault();
                     vm.escKey(true);
                 });
-                keyService.regKey(vm.prevAnnoCode, 'keydown', function () {
+                keyService.regKey(vm.prevAnnoCode, 'keydown', function (ev) {
+                    ev.preventDefault();
                     vm.switchAnnoKey(true); // search in reverse
                 });
-                keyService.regKey(vm.nextAnnoCode, 'keydown', function () {
+                keyService.regKey(vm.nextAnnoCode, 'keydown', function (ev) {
+                    ev.preventDefault();
                     vm.switchAnnoKey(false); // search forwards
                 });
-                keyService.regKey(vm.switchTrackCode, 'keydown', function () {
+                keyService.regKey(vm.switchTrackCode, 'keydown', function (ev) {
+                    ev.preventDefault();
                     vm.switchTrackKey(true);
                 });
-                keyService.regKey(vm.voiceCode, 'keydown', function () {
+                keyService.regKey(vm.voiceCode, 'keydown', function (ev) {
+                    ev.preventDefault();
                     vm.voiceInputKey(true);
                 });
-                
             };
             vm.selectTrack = function(track) {
                 if (vm.r.tk !== track) {

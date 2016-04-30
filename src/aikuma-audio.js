@@ -464,28 +464,34 @@
             $scope.$apply(restoreState);
             // fancy new key handling service bound to <BODY> element, now we can handle left-right modifier keys
             keyService.regKey(ctrlKeyCode,'keydown', function(ev) {
-                    if (ev.location === 1 && !vm.isPlaying) {
-                        leftKeyDown(true);}
-                    if (ev.location === 2 && !vm.isRecording) {rightKeyDown(true);}
+                ev.preventDefault();
+                if (ev.location === 1 && !vm.isPlaying) {
+                    leftKeyDown(true);}
+                if (ev.location === 2 && !vm.isRecording) {rightKeyDown(true);}
             });
             keyService.regKey(ctrlKeyCode,'keyup', function(ev) {
-                    if (ev.location === 1) {
-                        leftKeyUp(true);
-                    }
-                    if (ev.location === 2) {
-                        rightKeyUp(true);
-                    }
+                ev.preventDefault();
+                if (ev.location === 1) {
+                    leftKeyUp(true);
+                }
+                if (ev.location === 2) {
+                    rightKeyUp(true);
+                }
             });
-            keyService.regKey(ffKeyCode,'keydown',  function() {
+            keyService.regKey(ffKeyCode,'keydown',  function(ev) {
+                ev.preventDefault();
                 if (!vm.ffKeyDown) {ffKeyDown(true);}
             });
-            keyService.regKey(ffKeyCode,'keyup',    function() {
+            keyService.regKey(ffKeyCode,'keyup',    function(ev) {
+                ev.preventDefault();
                 ffKeyUp(true);
             });
-            keyService.regKey(rwKeyCode,'keydown',  function() {
+            keyService.regKey(rwKeyCode,'keydown',  function(ev) {
+                ev.preventDefault();
                 rwKey(true);
             });
-            keyService.regKey(escKeyCode,'keydown', function() {
+            keyService.regKey(escKeyCode,'keydown', function(ev) {
+                ev.preventDefault();
                 escKey(true);
             });
         });

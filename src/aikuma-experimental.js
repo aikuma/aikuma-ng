@@ -93,24 +93,25 @@
             if (!annotations || !annotations.length) {return [null, null, null];}
             var summarytext = [];
             summarytext[0] = null;
-            if (index > 0) {
-                summarytext[0] = '';
-                if (index > 1) {
-                    summarytext[0] = '...';
-                }
-                summarytext[0] = annotations[index-1] + ', ';
-            }
-            summarytext[1] = annotations[index]+', ';
-            summarytext[2] = null;
-            if (index < (annotations.length -1)) {
-                summarytext[2] = '';
-                annotations.slice(index+1).forEach(function (anno){
-                    summarytext[2] += anno + ', ';
-                });
-                summarytext[2] = summarytext[2].replace(/,\s*$/, "");
+            if (index === 0) {
+                summarytext[0] = annotations[index];
+                summarytext[1] = annotations[index+1];
+                summarytext[2] = annotations[index+2];
+                vm.sline = 0;
+            } else if (index == (annotations.length-1)) {
+                summarytext[0] = annotations[index-2];
+                summarytext[1] = annotations[index-1];
+                summarytext[2] = annotations[index];
+                vm.sline = 2;
+            } else {
+                summarytext[0] = annotations[index - 1];
+                summarytext[1] = annotations[index];
+                summarytext[2] = annotations[index + 1];
+                vm.sline = 1;
             }
             return summarytext;
         }
+        
 
         vm.addAnno = function (ev, track = null) {
             if (vm.playingSec) {vm.stopPlayingSecondary();}
@@ -147,14 +148,15 @@
                     promises.push(promise);
                 });
                 $q.all(promises).then(function(res) {
-                    var promise = dataService.getAnnotationObjList(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID);
+                    $location.path('/session/'+$scope.sessionObj.data._ID+'/annotate/' + res[0][0]);
+/*                    var promise = dataService.getAnnotationObjList(loginService.getLoggedinUserId(), $scope.sessionObj.data._ID);
                     promise.then(function(res){
                         // rebuild the track list
                         $scope.annoObjList = res;
                         vm.trackList = [];
                         vm.tracks = {};
                         makeTracks();
-                    });
+                    });*/
                 });
 
             }, function() {
@@ -245,6 +247,7 @@
                 ++vm.playindex;
                 if (vm.playindex === vm.playregions.length) {
                     vm.stopPlayingSecondary();
+                    vm.playindex = 0;
                 } else {
                     vm.playregions[vm.playindex].play();
                 }
@@ -257,6 +260,7 @@
                     ++vm.playindex;
                     if (vm.playindex === vm.playregions.length) {
                         vm.stopPlayingSecondary();
+                        vm.playindex = 0;
                     } else {
                         updateAnnoSummary(track, vm.playindex);
                         vm.playregions[vm.playindex].play();

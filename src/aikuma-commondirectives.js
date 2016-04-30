@@ -81,7 +81,9 @@
                 restrict: 'A',
                 link: function(scope, element, attr){
                     element.bind('keydown', function(event) {
-                        if (!event.repeat) {keyService.handleKey(event);} // ignore repeated keys
+                        if (!event.repeat) {
+                            keyService.handleKey(event);
+                        } // ignore repeated keys
                     });
                     element.bind('keyup', function(event) {
                         keyService.handleKey(event);
@@ -120,19 +122,6 @@
                 templateUrl: "views/templates/person-selector-template.html",
                 controller: personSelectorController,
                 controllerAs: 'psCtrl'
-            };
-        })
-        .directive("ngAnnotations", function() {
-            return {
-                restrict: "E",
-                scope: {
-                    annotationList: '=',
-                    langIdNameMap: '=',
-                    sessionId: '@'
-                },
-                templateUrl: "views/templates/annotations-template.html",
-                controller: annotationsController,
-                controllerAs: 'annoCtrl'
             };
         })
         .directive('fileModel', [
@@ -861,181 +850,7 @@
         };
     }
     newPersonDialogController.$inject = ['$scope', '$mdDialog', 'mode', 'name', 'sessionObj', 'userObj', 'imageId'];
-
-    var annotationsController = function ($location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService) {
-        var vm = this;
-        vm.annotations = $scope.annotationList.map(function(annoData) {
-            if(!annoData.source.langIds[0].langStr)
-                annoData.source.langIds[0].langStr = $scope.langIdNameMap[ annoData.source.langIds[0].langISO ];
-            return {
-                id: annoData._ID,
-                type: angular.uppercase(annoData.type),
-                langISO: annoData.source.langIds[0].langISO,
-                langStr: annoData.source.langIds[0].langStr
-            };
-        });
-
-        vm.addAnno = function (ev) {
-            $mdDialog.show({
-                controller: newAnnotationController,
-                controllerAs: 'dCtrl',
-                templateUrl: 'views/templates/dialog-newAnnotation.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: true,
-                locals: {thisScope: $scope}
-            }).then(function(annotations){
-                var promises = [];
-                annotations.forEach(function(anno) {
-                    var annotationData = {
-                        names: [],  // need UI
-                        type: angular.lowercase(anno.type),
-                        creatorId: loginService.getLoggedinUserId(),
-                        source: {
-                            created: Date.now(),
-                            langIds: [{
-                                langISO: anno.langISO,
-                                langStr: anno.langStr
-                            }]
-                        },
-                        segment: {}
-                    };
-
-                    var promise = dataService.setSecondary(loginService.getLoggedinUserId(), $scope.sessionId, annotationData);
-                    promises.push(promise);
-                    $scope.annotationList.push(annotationData);
-                });
-
-                $q.all(promises).then(function(res) {
-                    annotations.forEach(function(anno, index) {
-                        anno.id = res[index][0];
-                        vm.annotations.push(anno);
-                    });
-                });
-
-            }, function() {
-                console.log('cancelled');
-            });
-        };
-
-        vm.deleteAnno = function(annoIdx,ev) {
-            $translate(["ANNO_DELCONF1", "ANNO_DELCONF2", "ANNO_DELNO", "ANNO_DELYES"]).then(function (translations) {
-                var confirm = $mdDialog.confirm()
-                    .title(translations.ANNO_DELCONF1)
-                    .textContent(translations.ANNO_DELCONF2)
-                    .targetEvent(ev)
-                    .ok(translations.ANNO_DELYES)
-                    .cancel(translations.ANNO_DELNO);
-                $mdDialog.show(confirm).then(function () {
-                    dataService.removeData('secondary', vm.annotations[annoIdx].id).then(function() {
-                        vm.annotations.splice(annoIdx, 1);
-                        $scope.annotationList.splice(annoIdx, 1);
-                    });
-
-                }, function () {
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .parent(angular.element( document.querySelector( '#annotationList' ) ))
-                            .hideDelay(2000)
-                            .position("top right")
-                            .textContent('Cluck cluck cluck!')
-                    );
-                });
-            });
-        };
-        vm.editAnno = function(annoIdx) {
-            $location.path('/session/'+$scope.sessionId+'/annotate/' + vm.annotations[annoIdx].id);
-        };
-
-    };
-    annotationsController.$inject = ['$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast', '$q', 'loginService', 'dataService'];
-
-    var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
-        var vm = this;
-        vm.types = ['ANNO_ANNO','ANNO_TRANS','ANNO_COMM','ANNO_OTH'];
-        vm.choices = [{type:'ANNO_ANNO'}];
-        vm.hide = function() {
-            $mdDialog.hide();
-        };
-        vm.cancel = function() {
-            $mdDialog.cancel();
-        };
-        vm.answer = function(answer) {
-            $mdDialog.hide(answer);
-        };
-        // list of `language` value/display objects
-        vm.languages = loadAllx();
-
-        vm.querySearch   = querySearch;
-        vm.selectedItemChange = selectedItemChange;
-        vm.invalid = true;
-        vm.addNewChoice = function() {
-            vm.choices.push({});
-        };
-        vm.removeChoice = function(idx) {
-            vm.choices.splice(idx);
-        };
-        vm.makeAnno = function() {
-            var annos = [];
-            vm.choices.forEach(function(choice){
-                if (choice.searchText) {
-                    if (!choice.type) {choice.type='Unknown';}
-                    annos.push({
-                        langStr: choice.searchText,
-                        langISO: choice.ISO,
-                        type: choice.type
-                    });
-                }
-            });
-            $mdDialog.hide(annos);
-        };
-        vm.newLanguage = function(language) {
-        };
-
-        vm.isDisabled = function(item) {
-            return vm.options[item].disabled;
-        };
-
-        vm.lastFilled = function() {
-            var lastitem = _.last(vm.choices);
-            if (lastitem.searchText && lastitem.type) {
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        function querySearch (query) {
-            return query ? vm.languages.filter( createFilterFor(query) ) : vm.languages;
-        }
-        function selectedItemChange(item,idx) {
-            if (item.id) {vm.choices[idx].ISO = item.id;}
-        }
-
-        function loadAllx() {
-            var languages=[];
-            aikumaService.languages.forEach( function(s) {
-                languages.push({
-                    value: s.Ref_Name.toLowerCase(),
-                    display: s.Ref_Name,
-                    id: s.Id
-                });
-            });
-            return languages;
-        }
-
-        /**
-         * Create filter function for a query string
-         */
-        function createFilterFor(query) {
-            var lowercaseQuery = angular.lowercase(query);
-            return function filterFn(language) {
-                return (language.value.indexOf(lowercaseQuery) === 0);
-            };
-        }
-    };
-    newAnnotationController.$inject = ['$mdDialog', '$timeout', '$q', '$log', 'aikumaService'];
-
+    
     // image-id variable is passed in: it can be empty, if directive returns successfully a new or different image id will be set
     var webcamController = function ($scope, $mdDialog, loginService, fileService, $timeout, $q, $log, aikumaService) {
         var vm = this;

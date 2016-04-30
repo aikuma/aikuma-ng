@@ -152,22 +152,15 @@ vm.r.regionMarked: {{annoC.r.regionMarked}}
         <div ng-repeat="r in annoC.getRegions() track by $index"
              ng-class="($index === annoC.cursor[annoC.r.tk]) ? 'transcript-highlight' : 'transcript-normal'"
              ng-click="annoC.selectRegion($index)"
-             class="noclicky" ng-init="r = $index" layout="row"
+             class="noclicky" ng-init="r = $index"
              ng-if="annoC.canExport()">
 
-            <div flex layout="column">
-                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id" style="margin-left:5px;height:22px;">
+                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"
+                     style="margin-left:5px;" layout="row">
                     <span flex ng-class="($index === annoC.selAnno[annoC.r.tk]) ? 'md-body-2' : 'md-body-1'" >
                         {{annoC.padOut(anno.text[r])}}</span>
+                    <span class="md-caption" style="color:#aaa;padding-top:3px;margin-left:5px;" translate>{{anno.type}}</span>
                 </div>
-
-            </div>
-
-            <div ng-if="annoC.tracks[annoC.r.tk].annos.length > 1" layout="column" layout-align="end end">
-                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"  style="margin-right:5px;height:22px;">
-                    <span flex class="md-caption" style="color:#aaa" translate>{{anno.type}}</span>
-                </div>
-            </div>
         </div>
 
         <span ng-if="!annoC.canExport()" class="md-body-2 transcript-normal"><i translate>NO_DISPLAY</i></span>

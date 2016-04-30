@@ -302,26 +302,45 @@ md-card.noclicky:focus {
     border: 2px solid #d0d0d0;
     border-radius: 15px;
     margin-bottom: 20px;
+    padding-left: 10px;
 }
 .trackboxactive {
     border: 2px solid #4fc3f7;
     border-radius: 15px;
     margin-bottom: 20px;
+    padding-left: 10px;
 }
 
-.summarytext {
+.sxtextline {
     font-style: italic;
     font-size: 14px;
     font-weight: 400;
     letter-spacing: 0.010em;
-    color: grey
+    color: grey;
 }
 
-.summarytextactive {
+.stextline {
+    font-style: italic;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.010em;
+    color: grey;
+    text-overflow: ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+    width:90%;
+    position:absolute;
+}
+.stextlineactive {
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.010em;
-    color: #4fc3f7
+    color: #4fc3f7;
+    text-overflow: ellipsis;
+    overflow:hidden;
+    width:90%;
+    position:relative;
+    margin-left:5px;
 }
 
 .highlight {

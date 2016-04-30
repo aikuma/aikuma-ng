@@ -23,7 +23,7 @@
             ser.handleKey = function(ev) {
                 subscribers.forEach(function(sub){
                     if (ev.type === sub.keypresstype && ev.keyCode === sub.keypress) {
-                        ev.preventDefault();
+                        //ev.preventDefault();
                         sub.callback(ev);
                     }
                 });
