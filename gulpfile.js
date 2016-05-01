@@ -35,6 +35,12 @@ gulp.task('wavesurfer', function () {
         .pipe(gulp.dest('./build'));
 });
 
+gulp.task('buildtest', ['wavesurfer'], function(done) {
+    return gulp.src('./src/karma.conf.js', {cwd: './'})
+        .pipe(wiredep({ignorePath: '../'}))
+        .pipe(gulp.dest('./'));
+})
+
 gulp.task('build', ['wavesurfer'], function () {
     // inject all of the js dependencies into the html
     var sources = gulp.src(['./extdata/*.js', './src/**/*.js', './src/**/*.css'], {read: false, cwd: './'});

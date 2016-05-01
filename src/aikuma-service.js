@@ -33,7 +33,7 @@
             };
             return ser;
         }])
-        .factory('aikumaService', ['$rootScope', '$window', function ($rootScope, $window) {
+        .factory('aikumaService', ['$rootScope', '$window', '$translate', function ($rootScope, $window, $translate) {
             var ser = {};
             ser.languages = [];
             
@@ -46,8 +46,14 @@
                         
                         ser.langOverrides = [];
                         ser.langValueSet = new Set(_.pluck(ser.languages, 'Ref_Name').map(s => s.toLocaleLowerCase()));
+                        
                         for (var langId in aikumaLangData.localizedLanguages) {
-                            for (var langStr of aikumaLangData.localizedLanguages[langId]) {
+                            var langPrefList = Object.keys(aikumaLangData.localizedLanguages[langId]);
+                            var curLangPref = $translate.use();
+                            if(langPrefList.indexOf(curLangPref) === -1)
+                                continue;
+                            
+                            for (var langStr of aikumaLangData.localizedLanguages[langId][curLangPref]) {
                                 var langVal = langStr.toLocaleLowerCase();
                                 if(!ser.langValueSet.has(langVal)) {
                                     ser.langOverrides.push({

@@ -5,19 +5,17 @@
     'use strict';
     angular
         .module('aikuma-viewcontrollers', [])
-
-        .controller('homeController', ['config', '$timeout', '$scope', '$location', '$translate', '$mdDialog', 'dataService', 'fileService', 'loginService', '$route', 'aikumaDialog', function(config, $timeout, $scope, $location, $translate, $mdDialog, dataService, fileService, loginService, $route, aikumaDialog) {
+        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', 'aikumaDialog', function($scope, $location, dataService, loginService, aikumaDialog) {
             var vm = this;
+            
             vm.speedDial = false;
             vm.numberOfSessions = 0; // binding from session list directive
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
-                        $scope.userObj = userObj;
-                        vm.currentUser = userObj.data;
                         vm.currentUserName = function() { return userObj.data.names[0]; };
-                        return dataService.getSessionObjList(vm.currentUser._ID);
+                        $scope.userObj = userObj;
                     });
                 } else {
                     vm.currentUserName = function() { return 'Unknown user'; };
@@ -50,7 +48,7 @@
 
         }])
 
-        .controller('settingsController', ['userObj', 'config', '$timeout', '$scope', '$location', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$route', '$q', function(userObj, config, $timeout, $scope, $location, dataService, fileService, loginService, aikumaDialog, $route, $q) {
+        .controller('settingsController', ['userObj', 'config', '$scope', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$q', function(userObj, config, $scope, dataService, fileService, loginService, aikumaDialog, $q) {
             var vm = this;
             vm.debug = function() { return config.debug; };
             vm.preferences = userObj.data.preferences;
