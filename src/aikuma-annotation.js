@@ -42,7 +42,7 @@
             vm.prevAnnoCode = 38;  // up arrow
             vm.nextAnnoCode = 40;  // down arrow
             vm.voiceCode = 220;     // backslash key
-            vm.skipTimeValue = 3;  // amount of time to skip backwards for rewind
+            vm.skipTimeValue = 2;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;
             vm.ffPlaybackRate = 2.5; // playback speed in FF mode
             // used for guarding against multiple key presses
@@ -79,26 +79,33 @@
             vm.playKeyDown = function(nokey) {
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
                 vm.playKeyDownStat = true;
+                if (config.debug) {console.log('play key down');}
                 // if we have been making a region (we can assume this is repeat press) then re-play
                 if (vm.r.regionMarked) {
+                    if (config.debug) {console.log('regionMarked, playback begins at playIn');}
                     vm.isPlaying = true;
                     annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                     annoServ.wavesurfer.play(annoServ.playIn);
                 } else {
+                    if (config.debug) {console.log('!regionMarked');}
                     // if we are within a region then we need to play this region
                     if (vm.cursor[vm.r.tk] > -1) {
+                        if (config.debug) {console.log('In an existing region, so play it');}
                         annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                         vm.playAudio();
                     } else {
+                        if (config.debug) {console.log('In virgin space');}
                         // otherwise we're playing in 'virgin' space
                         vm.isPlaying = true;
                         var thisTime = annoServ.wavesurfer.getCurrentTime();
                         thisTime = Math.round(thisTime*1000)/1000;
                         if (thisTime >= annoServ.playIn) {
+                            if (config.debug) {console.log('> playIn, set regionMarked');}
                             annoServ.makeNewRegion(thisTime);
                             vm.r.regionMarked = true;
                             vm.cursor[vm.r.tk] = annoServ.regionList.length - 1;
                         }
+                        if (config.debug) {console.log('begin playback');}
                         annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                         annoServ.wavesurfer.play();
                         vm.restoreFocus();
@@ -111,6 +118,7 @@
                 vm.playKeyDownStat = false;
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
                 if (vm.isPlaying) {
+                    if (config.debug) {console.log('playkey up, was playing, pause, set isPlaying false');}
                     vm.isPlaying = false;
                     annoServ.wavesurfer.pause();
                 }
@@ -119,22 +127,30 @@
             vm.ffKeyDown = function(nokey) {
                 if (vm.playKeyDownStat) {return;}  // Block multiple keys
                 vm.ffKeyDownStat = true;
+                if (config.debug) {console.log('ffkey down');}
                 if (vm.r.regionMarked) {
+                    if (config.debug) {console.log('regionMarked, so delete last region');}
                     annoServ.deleteLastRegion();
                     vm.cursor[vm.r.tk] = -1;
                 }
                 if (vm.cursor[vm.r.tk] > -1)  {
+                    if (config.debug) {console.log('ffkey: in a region');}
                     if (vm.cursor[vm.r.tk] === (annoServ.regionList.length -1)) {
+                        if (config.debug) {console.log('is last region, so go to virgin space, seek to playIn');}
                         vm.cursor[vm.r.tk] = -1;
                         annoServ.seekToTime(annoServ.playIn);
                     } else {
+                        if (config.debug) {console.log('not last region so seeking to next region');}
                         // seek to next region, curRegion will auto update
                         annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk] +1 ].start);
                     }
                 } else {
+                    if (config.debug) {console.log('ffkey: in virgin space');}
                     if (annoServ.wavesurfer.getCurrentTime() === 0 && annoServ.regionList.length > 0) {
+                        if (config.debug) {console.log('at 0 and have region so go to first region');}
                         annoServ.seekToTime(annoServ.regionList[0].start);
                     } else {
+                        if (config.debug) {console.log('not 0 so fastforward play');}
                         annoServ.wavesurfer.setPlaybackRate(vm.ffPlaybackRate);
                         annoServ.wavesurfer.play();
                     }
@@ -145,14 +161,18 @@
             vm.ffKeyUp = function(nokey) {
                 vm.ffKeyDownStat = false;
                 if (vm.playKeyDownStat) {return;}  // Block multiple keys
+                if (config.debug) {console.log('ffkey up');}
                 if (annoServ.wavesurfer.isPlaying()) {
+                    if (config.debug) {console.log('ffkey: was playing so pause');}
                     annoServ.wavesurfer.pause();
                     vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
                 }
             };
 
             vm.rwKey = function(nokey) {
+                if (config.debug) {console.log('rwkey down');}
                 if (vm.r.regionMarked) {
+                    if (config.debug) {console.log('region marked so deleteLastRegion()');}
                     annoServ.deleteLastRegion();
                     vm.cursor[vm.r.tk] = -1;
                 }
@@ -160,18 +180,24 @@
                 thisTime = Math.round(thisTime*1000)/1000;
                 // We are in a region so navigate between regions
                 if (vm.cursor[vm.r.tk] > -1) {
+                    if (config.debug) {console.log('rwkey: in a region');}
                     // if we are part way through a region, just go back to the start
                     if (thisTime > annoServ.regionList[vm.cursor[vm.r.tk]].start) {
+                        if (config.debug) {console.log('rwkey: part way through region so rewind to start of region');}
                         annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
                         vm.restoreFocus();
                     } else {
+                        if (config.debug) {console.log('rwkey: at start of region');}
                         if (vm.cursor[vm.r.tk] === 0) {
+                            if (config.debug) {console.log('rwkey: in first region');}
                             if (thisTime > 0) { // we want to rewind past 0 but the first region doesn't start at 0
+                                if (config.debug) {console.log('rwkey: but not at 0 so skip back');}
                                 vm.cursor[vm.r.tk] = -1;
                                 annoServ.seekToTime(Math.max(0, (thisTime - vm.skipTimeValue)));
                                 return;
                             } else {
                                 // if we are at the start, do nothing
+                                if (config.debug) {console.log('rwkey: at 0 so doing nothing!');}
                                 return;
                             }
                         }
@@ -179,16 +205,24 @@
                         vm.restoreFocus();
                     }
                 } else {
-                    // In this case, we are in unmarked territory so check to see if we end up seeking into a region
-                    if (thisTime === 0) {return;}
+                    if (config.debug) {console.log('rwkey: not in a region');}
+                    if (thisTime === 0) {
+                        if (config.debug) {console.log('rwkey: at 0 so doing nothing!');}
+                        return;
+                    }
                     var wantSeek = Math.max(0, (thisTime - vm.skipTimeValue));
-                    var seekRegion = _.findLastIndex(annoServ.regionList, function(reg){
-                        return (wantSeek <= reg.end);
-                    });
-                    if (seekRegion > -1) { // if so, seek to the start of that
-                        annoServ.seekToTime(annoServ.regionList[seekRegion].start);
+                    var seekRegion = _.last(annoServ.regionList).end > wantSeek;
+                    if (seekRegion) {
+                        if ((thisTime - _.last(annoServ.regionList).end) > 0.5) {
+                            if (config.debug) {console.log('rwkey: current pos is further than 0.5s, just seek to playIn');}
+                            annoServ.seekToTime(annoServ.playIn);
+                        } else {
+                            if (config.debug) {console.log('rwkey: current pos is close to end, seek to start of last region');}
+                            annoServ.seekToTime(_.last(annoServ.regionList).start);
+                        }
                         vm.restoreFocus();
                     } else {
+                        if (config.debug) {console.log('rwkey: rw seek request is not in region, seek to time');}
                         annoServ.seekToTime(wantSeek); // otherwise just skip back as planned
                     }
                 }

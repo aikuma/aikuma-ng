@@ -63,6 +63,7 @@
                     // So what we do is hook into seek, immediately trigger play(), set this variable and on the very first
                     // audioprocess callback, get the valid time, pause wavesurfer and turn the flag off
                     if (asx.seeked) {
+                        if (config.debug){console.log('audio process event: seeked so pausing');}
                         asx.seeked = false;
                         asx.wavesurfer.pause();
                         //asx.reg.curRegion = asx.getRegionFromTime();
@@ -95,9 +96,13 @@
                     }
                 });
                 asx.wavesurfer.on('seek', function () {
+                    if (config.debug){console.log('seek event: set seeked, begin play');}
                     asx.seeked = true;
                     asx.wavesurfer.play();
-                    if (asx.r.regionMarked) {asx.deleteLastRegion();}
+                    if (asx.r.regionMarked) {
+                        if (config.debug){console.log('seek event: regionMarked so deleteLastRegion()');}
+                        asx.deleteLastRegion();
+                    }
                 });
                 asx.wavesurfer.on('play', function () {
                     if (asx.timestretchEnabled && asx.endTime) {
@@ -106,8 +111,9 @@
                 });
                 var intervalUpdateTime = function() {
                     if (asx.wavesurfer.getCurrentTime() >= asx.endTime) {
-                        console.log('interval pause');
+                        if (config.debug){console.log('intervalUpdateTime: getCurrentTime() >= asx.endTime so pause');}
                         asx.wavesurfer.pause();
+                        asx.endTime = false; // we must set this so interval is not triggered for regular playback
                     }
                 };
                 
@@ -357,12 +363,15 @@
 
             // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
             asx.deleteLastRegion = function() {
+                if (config.debug) {console.log('deleteLastRegion()');}
                 var reg = asx.regionList.pop();
                 reg.remove();
                 asx.r.regionMarked = false;
                 if (asx.regionList.length) {
+                    if (config.debug) {console.log('still have regions, set playin to last region end:' + (_.last(asx.regionList).end + 0.001));}
                     asx.playIn = _.last(asx.regionList).end + 0.001;
                 } else {
+                    if (config.debug) {console.log('no regions playIn set to 0');}
                     asx.playIn = 0;
                 }
                 // push to real data

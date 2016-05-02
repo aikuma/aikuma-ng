@@ -26,16 +26,22 @@
         vm.trackList = [];
         vm.tracks = {};
         function makeTracks() {
+            var countTypes = {rsp: 0, tran: 0};
+            
             $scope.secondaryList.forEach( function(secondary) {
                 if ('segMsec' in secondary.segment) {
                     var segid = secondary.segment.sourceSegId;
                     var track = {};
                     if (secondary.type === 'respeak') {
+                        ++countTypes.rsp;
+                        track.cnt = countTypes.rsp;
                         track.type = 'RESPEAKING';
                         track.action = 'USE_RSPK';
-                        track.play = 'PLAY_RSPK'
+                        track.play = 'PLAY_RSPK';
                         track.icon = 'mdi:repeat';
                     } else if (secondary.type === 'translate') {
+                        ++countTypes.tran;
+                        track.cnt = countTypes.tran;
                         track.type = 'ANNO_TRANS';
                         track.action = 'USE_TRANS';
                         track.play = 'PLAY_TRANS';

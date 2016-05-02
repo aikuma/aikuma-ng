@@ -19,7 +19,7 @@
     <div flex ng-repeat="tk in alCtrl.trackList" layout="row" ng-class="alCtrl.pcss[tk] ? 'trackboxactive' : 'trackboxinactive'">
         <div flex="10" layout="column" layout-align="center center">
             <span ng-class="{'animated flash infinite': alCtrl.pcssthis[tk]}"><md-icon md-svg-icon="{{alCtrl.tracks[tk].icon}}"></md-icon>
-                <span class="md-body-2" style="text-transform: uppercase" translate>{{alCtrl.tracks[tk].type}}</span>
+                <span class="md-body-2" style="text-transform: uppercase" translate>{{alCtrl.tracks[tk].type}}</span><span class="md-body-2">&nbsp;{{alCtrl.tracks[tk].cnt}}</span>
             </span>
             <md-button ng-disabled="(alCtrl.playingSec && !alCtrl.pcss[tk]) || !alCtrl.trackNumSegs(tk)" class="md-raised" ng-click="alCtrl.playSecondary(tk)" >
                 <md-icon ng-if="!alCtrl.pcss[tk]" md-svg-icon="av:play_arrow" style="width:40px;height:40px"></md-icon>
