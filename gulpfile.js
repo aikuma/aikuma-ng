@@ -43,7 +43,7 @@ gulp.task('buildtest', ['wavesurfer'], function(done) {
 
 gulp.task('build', ['wavesurfer'], function () {
     // inject all of the js dependencies into the html
-    var sources = gulp.src(['./extdata/*.js', './src/**/*.js', './src/**/*.css'], {read: false, cwd: './'});
+    var sources = gulp.src(['./extdata/*.js', '!./src/**/*.conf.js', './src/**/*.js', './src/**/*.css'], {read: false, cwd: './'});
     return gulp.src('./src/window.html', {cwd: './'})
         .pipe(inject(sources, {relative: false, addRootSlash: false}))
         .pipe(wiredep({ignorePath: '../'}))
