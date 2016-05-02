@@ -2,6 +2,12 @@
 
 <md-content class="md-padding" style="padding-bottom:30px">
     <div class="row">
+        <h4 class='md-title'>2/5/2016 &mdash; 0.934</h4>
+        <p class="md-body-1">Fixed bug introduced in 0.933 (oops) stopping seek if there are no regions.</p>
+        <p class="md-body-1">A short play-mark action is now assumed to be in error and the region is deleted. Usually the user has forgotten to hold Ctrl.</p>
+        <p class="md-body-1">Note: Enabling preserve-pitch makes the waveform display completely inaccurate. We're working on it but it's not clear why this happens.</p>
+    </div>
+    <div class="row">
         <h4 class='md-title'>2/5/2016 &mdash; 0.933</h4>
         <p class="md-body-1">Fixed a serious bug that would stop playback prematurely when playing a region. Altered rewind key behavior,
             will seek to end of last region and then the start of the last region.</p>

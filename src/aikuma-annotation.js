@@ -82,10 +82,11 @@
                 if (config.debug) {console.log('play key down');}
                 // if we have been making a region (we can assume this is repeat press) then re-play
                 if (vm.r.regionMarked) {
-                    if (config.debug) {console.log('regionMarked, playback begins at playIn');}
+                    if (config.debug) {console.log('regionMarked, playback begins at region start again');}
                     vm.isPlaying = true;
+                    var startpos = _.last(annoServ.regionList).start;
                     annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
-                    annoServ.wavesurfer.play(annoServ.playIn);
+                    annoServ.wavesurfer.play(startpos);
                 } else {
                     if (config.debug) {console.log('!regionMarked');}
                     // if we are within a region then we need to play this region
@@ -118,11 +119,21 @@
                 vm.playKeyDownStat = false;
                 if (vm.ffKeyDownStat) {return;}  // Block multiple keys
                 if (vm.isPlaying) {
-                    if (config.debug) {console.log('playkey up, was playing, pause, set isPlaying false');}
+                    if (config.debug) {
+                        console.log('playkey up, was playing, pause, set isPlaying false');
+                    }
                     vm.isPlaying = false;
                     annoServ.wavesurfer.pause();
+                    if (vm.r.regionMarked) {
+                        var lr = _.last(annoServ.regionList);
+                        if ((lr.end - lr.start) < 0.5) {
+                            annoServ.seekToTime(lr.start);
+                            annoServ.deleteLastRegion();
+                            vm.cursor[vm.r.tk] = -1;
+                        }
+                    }
                 }
-            };
+             };
 
             vm.ffKeyDown = function(nokey) {
                 if (vm.playKeyDownStat) {return;}  // Block multiple keys
@@ -211,19 +222,27 @@
                         return;
                     }
                     var wantSeek = Math.max(0, (thisTime - vm.skipTimeValue));
-                    var seekRegion = _.last(annoServ.regionList).end > wantSeek;
-                    if (seekRegion) {
-                        if ((thisTime - _.last(annoServ.regionList).end) > 0.5) {
-                            if (config.debug) {console.log('rwkey: current pos is further than 0.5s, just seek to playIn');}
-                            annoServ.seekToTime(annoServ.playIn);
-                        } else {
-                            if (config.debug) {console.log('rwkey: current pos is close to end, seek to start of last region');}
-                            annoServ.seekToTime(_.last(annoServ.regionList).start);
-                        }
-                        vm.restoreFocus();
+                    if (wantSeek === 0) {
+                        if (config.debug) {console.log('rwkey: seeking to start');}
+                        annoServ.seekToTime(0);
                     } else {
-                        if (config.debug) {console.log('rwkey: rw seek request is not in region, seek to time');}
-                        annoServ.seekToTime(wantSeek); // otherwise just skip back as planned
+                        var seekRegion = false;
+                        if (annoServ.regionList.length) {
+                            seekRegion = _.last(annoServ.regionList).end > wantSeek;
+                        }
+                        if (seekRegion) {
+                            if ((thisTime - _.last(annoServ.regionList).end) > 0.5) {
+                                if (config.debug) {console.log('rwkey: current pos is further than 0.5s, just seek to playIn');}
+                                annoServ.seekToTime(annoServ.playIn);
+                            } else {
+                                if (config.debug) {console.log('rwkey: current pos is close to end, seek to start of last region');}
+                                annoServ.seekToTime(_.last(annoServ.regionList).start);
+                            }
+                            vm.restoreFocus();
+                        } else {
+                            if (config.debug) {console.log('rwkey: rw seek request is not in region, seek to time');}
+                            annoServ.seekToTime(wantSeek); // otherwise just skip back as planned
+                        }
                     }
                 }
                 if (nokey) {$scope.$apply();}
@@ -403,6 +422,10 @@
             };
             // Handle clicks on transcript line
             vm.selectRegion = function(region) {
+                if (vm.r.regionMarked) {
+                    if (config.debug) {console.log('click on transcript line: region marked so deleteLastRegion()');}
+                    annoServ.deleteLastRegion();
+                }
                 vm.cursor[vm.r.tk] = region;
                 vm.playAudio();
                 vm.restoreFocus();
@@ -470,8 +493,10 @@
                     }
                 });
                 keyService.regKey(vm.ffKeyCode, 'keyup', function (ev) {
-                    ev.preventDefault();
-                    vm.ffKeyUp(true);
+                    if (ev.shiftKey) {
+                        ev.preventDefault();
+                        vm.ffKeyUp(true);
+                    }
                 });
                 keyService.regKey(vm.rwKeyCode, 'keydown', function (ev) {
                     if (ev.shiftKey) {
@@ -585,6 +610,7 @@
             vm.getRegions = function() {
                 return new Array(annoServ.regionList.length);
             };
+            
             //
             vm.padOut = function(annotext) {
               if (annotext === null || annotext === '') {
@@ -633,6 +659,7 @@
             };
             // on navigating away, clean up the key events, wavesurfer instances
             $scope.$on('$destroy', function() {
+                keyService.clearAll();
                 annoServ.destroyAll();
                 annotateAudioContext.close();
             });
@@ -640,6 +667,9 @@
             // debug stuff
             vm.getplayin = function() {
                 return annoServ.playIn;
+            };
+            vm.getRegions = function() {
+                return annoServ.regionList.length;
             };
 
         };

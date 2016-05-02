@@ -20,7 +20,7 @@
             asx.startHue = 120;
             asx.stepHue = 60;
             asx.userMediaElement = false;
-            asx.mediaElementResolution = 50; // ms value for manual interval check
+            asx.mediaElementResolution = 25; // ms value for manual interval check
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
             asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
@@ -54,7 +54,7 @@
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,
                     waveColor: '#555',
-                    progressColor: '#999',
+                    progressColor: '#999'
                 });
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
@@ -68,14 +68,19 @@
                         asx.wavesurfer.pause();
                         //asx.reg.curRegion = asx.getRegionFromTime();
                         asx.cursor[asx.r.tk] = asx.getRegionFromTime();
-                    }
-                    if (asx.r.regionMarked) {
+                    } else if (asx.r.regionMarked) {
                         var currentPos = Math.round(asx.wavesurfer.getCurrentTime()*1000)/1000;
                         // update this wavesurfer region on the fly and...
                         _.last(asx.regionList).update({end: currentPos});
                         // update the backend region on the fly
                         _.last(asx.sessionObj.data.segments[asx.r.tk])[1] = Math.floor(currentPos*1000);
                     }
+                });
+                asx.wavesurfer.on('error', function(err) {
+                    console.log('ws error: '+err);
+                });
+                asx.wavesurfer.on('finish', function() {
+                    var currentTime = asx.wavesurfer.getCurrentTime();
                 });
                 asx.wavesurfer.on('ready', function () {
                     // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
@@ -88,8 +93,10 @@
                     callback();
                 });
                 asx.wavesurfer.on('pause', function () {
-                    $interval.cancel(asx.intervalPromise);
-                    console.log('firepause');
+                    if (asx.intervalPromise) {
+                        $interval.cancel(asx.intervalPromise);
+                        asx.endTime = false;
+                    }
                     if (asx.regionPlayback) {
                         asx.regionPlayback = false;
                         asx.seekToTime(asx.regionList[asx.cursor[asx.r.tk]].start);
@@ -97,6 +104,10 @@
                 });
                 asx.wavesurfer.on('seek', function () {
                     if (config.debug){console.log('seek event: set seeked, begin play');}
+                    if (asx.intervalPromise) {
+                        $interval.cancel(asx.intervalPromise);
+                        asx.endTime = false;
+                    }
                     asx.seeked = true;
                     asx.wavesurfer.play();
                     if (asx.r.regionMarked) {
@@ -106,14 +117,20 @@
                 });
                 asx.wavesurfer.on('play', function () {
                     if (asx.timestretchEnabled && asx.endTime) {
-                        asx.intervalPromise = $interval(intervalUpdateTime, asx.mediaElementResolution);
+                        if (config.debug){console.log('starting interval');}
+                        if (!asx.intervalPromise || asx.intervalPromise.$$state.status !== 1) {
+                            asx.intervalPromise = $interval(intervalUpdateTime, asx.mediaElementResolution);
+                        }
                     }
                 });
                 var intervalUpdateTime = function() {
-                    if (asx.wavesurfer.getCurrentTime() >= asx.endTime) {
+                    var currentTime = asx.wavesurfer.getCurrentTime();
+                    if (currentTime >= asx.endTime) {
+                        $interval.cancel(asx.intervalPromise);
                         if (config.debug){console.log('intervalUpdateTime: getCurrentTime() >= asx.endTime so pause');}
                         asx.wavesurfer.pause();
                         asx.endTime = false; // we must set this so interval is not triggered for regular playback
+
                     }
                 };
                 
@@ -387,7 +404,7 @@
             };
             
             asx.destroyAll = function() {
-                keyService.clearAll();
+                if (asx.intervalPromise) {$interval.cancel(asx.intervalPromise);}
                 asx.timeline.destroy();
                 asx.wavesurfer.destroy();
             };
@@ -493,6 +510,7 @@
             //
             asx.seekToTime = function(time) {
                 asx.r.regionMarked = false;
+                asx.regionPlayback = false;
                 var length = asx.wavesurfer.getDuration();
                 var floatpos = time / length;
                 asx.wavesurfer.seekTo(floatpos);

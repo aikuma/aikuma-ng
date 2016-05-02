@@ -83,7 +83,7 @@
                     element.bind('keydown', function(event) {
                         if (!event.repeat) {
                             keyService.handleKey(event);
-                        } // ignore repeated keys
+                        }
                     });
                     element.bind('keyup', function(event) {
                         keyService.handleKey(event);

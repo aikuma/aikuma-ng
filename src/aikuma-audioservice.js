@@ -56,9 +56,9 @@
                     audioElement.onended = null;
                     callback();
                 };
-                audioElement.play();
                 audioElement.currentTime = start/1000;
                 audioElement.playbackRate = playbackrate;
+                audioElement.play();
             };
             
             service.resampleAudioBuffer = function (audiocontext,audioBuffer,targetSampleRate,oncomplete) {
