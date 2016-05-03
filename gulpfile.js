@@ -36,7 +36,7 @@ gulp.task('wavesurfer', function () {
 });
 
 gulp.task('buildtest', ['wavesurfer'], function(done) {
-    return gulp.src('./src/karma.conf.js', {cwd: './'})
+    return gulp.src('./test/karma.conf.js', {cwd: './'})
         .pipe(wiredep({ignorePath: '../'}))
         .pipe(gulp.dest('./'));
 })
