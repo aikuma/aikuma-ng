@@ -30,8 +30,10 @@
                 vm.playRate = 100;
             }
             // region status flags
-            vm.r = annoServ.r;
+            vm.r = annoServ.r;              // By binding an object we share data between the service and this controller
             vm.cursor = annoServ.cursor;
+            vm.isPlaying = false;           // flag is used for hold-play
+            vm.r.regionMarked = false;      // flag indicates if a region is being marked - e.g. play-mark mode
             vm.playCSS = {};
             // keyboard related constants
             vm.playKeyCode = 17;   // control key (16 is shift)
@@ -48,8 +50,8 @@
             // used for guarding against multiple key presses
             vm.playKeyDownStat = false;
             vm.ffKeyDownStat = false;
-            vm.isPlaying = false;
-            vm.selAnno = {};
+
+            vm.selAnno = {};        // currently selected annotation, keyed by the track id
             vm.debug = function() { return config.debug; };
 
             // More view model settings
@@ -92,7 +94,7 @@
                     // if we are within a region then we need to play this region
                     if (vm.cursor[vm.r.tk] > -1) {
                         if (config.debug) {console.log('In an existing region, so play it');}
-                        annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
+
                         vm.playAudio();
                     } else {
                         if (config.debug) {console.log('In virgin space');}
@@ -432,7 +434,13 @@
             };
 
             vm.playAudio = function() {
-                if (vm.playingSecondary) {return;} // don't let them play again if we already are... it gets difficult then
+                if (vm.activePlayback && vm.activePlayback !== 'src') {
+                    if (!vm.activePlayback.ended) {
+                        vm.activePlayback.pause();
+                        vm.activePlayback = false;
+                    }
+                }
+                annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                 var timerval = 0;
                 var selAnno = vm.selAnno[vm.r.tk];
                 var region =  vm.cursor[vm.r.tk];
@@ -445,7 +453,7 @@
                     return;
                 }
                 if (vm.tracks[vm.r.tk].annos[selAnno].cfg.playSrc) {
-                    vm.playingSecondary = true;
+                    vm.activePlayback = 'src';              // if the flag is 'src' then wavesurfer is playing
                     annoServ.wavesurfer.setPlaybackRate(
                         vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSrc ? (vm.playRate/100) : 1
                     );
@@ -454,7 +462,7 @@
                 }
                 // Are we going to play secondary audio? Check after the source has finished
                 $timeout(function () {
-                    if (thisTrack.annos[selAnno].cfg.playSec && thisTrack.hasAudio && (region < thisTrack.segMsec.length)) {
+                    if (thisTrack.annos[selAnno].cfg.playSec && thisTrack.hasAudio && (region < thisTrack.segMsec.length) && !annoServ.wavesurfer.isPlaying()) {
                         // Go and play secondary audio
                         var seglist = thisTrack.segMsec;
                         var fileh = $scope.userObj.getFileUrl(thisTrack.audioFile);
@@ -462,15 +470,23 @@
                         vm.playCSS[vm.r.tk] = true;
                         $scope.$apply();
                         var secPlayRate = vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSec ? (vm.playRate / 100) : 1;
-                        audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
+/*                        audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
                             console.log('finished');
-                            vm.playingSecondary = false;
+                            vm.activePlayback = false;
                             vm.playCSS[playtrack] = false;
                             $scope.$apply();
-                        }, secPlayRate);
+                        }, secPlayRate);*/
+                        // This new playback sets vm.activePlayback to the audio element so we can pause it if we need to
+                        var startPos = seglist[region][0];
+                        var endPos = seglist[region][1];
+                        vm.activePlayback = audioService.playFile(fileh, startPos, function() {
+                            vm.activePlayback = false;
+                            vm.playCSS[playtrack] = false;
+                            $scope.$apply();
+                        }, endPos, secPlayRate);
                     }  else {
-                        // optherwise say we're done
-                        vm.playingSecondary = false;
+                        // otherwise we're done so enable playback key again
+                        vm.activePlayback = false;
                     }
                 }, timerval * 1000);
             };

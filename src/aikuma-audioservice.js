@@ -8,6 +8,7 @@
         .factory('audioService', ['config', 'fileService', function (config, fileService) {
             var service = {};
 
+            // deprecate both this mez function and the mediaelement playbackFile in favour of service.playFile
             service.playbackLocalFile = function(audioContext, fsUri, start, end, callback, playrate = 1) {
                 service.playMediaElementFile(fsUri, start, end, callback, playrate);
 /*                if (playrate !== 1) {
@@ -59,6 +60,37 @@
                 audioElement.currentTime = start/1000;
                 audioElement.playbackRate = playbackrate;
                 audioElement.play();
+                return audioElement;
+            };
+            
+            // New play file , uses MediaElement, returns the audio element in case the caller wishes the pause it manually
+            service.playFile = function(fsUri, startpos = 0, callback = null, endpos = null, playbackrate = 1) {
+                var audioElement = new Audio(fsUri);
+                var thisTime;
+                if (endpos && callback) {
+                    audioElement.ontimeupdate = function() {
+                        thisTime = audioElement.currentTime;
+                        if (thisTime >= (endpos/1000)) {
+                            audioElement.pause();
+                            audioElement.ontimeupdate = null;
+                            audioElement.onended = null;
+                            callback();
+                        }
+                    };
+                }
+                if (callback) {
+                    audioElement.onended = function() {
+                        audioElement.ontimeupdate = null;
+                        audioElement.onended = null;
+                        callback();
+                    };
+                }
+                if (startpos) {
+                    audioElement.currentTime = startpos/1000;
+                }
+                audioElement.playbackRate = playbackrate;
+                audioElement.play();
+                return audioElement;
             };
             
             service.resampleAudioBuffer = function (audiocontext,audioBuffer,targetSampleRate,oncomplete) {

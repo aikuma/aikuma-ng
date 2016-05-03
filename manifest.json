@@ -2,7 +2,7 @@
     "name": "Aikuma NG",
     "short_name": "Aikuma NG",
     "description": "Aikuma-NG is an easy-to-use offline app to annotate/transcribe speech",
-    "version": "0.934",
+    "version": "0.935",
     "manifest_version": 2,
     "app": {
     "background": {
