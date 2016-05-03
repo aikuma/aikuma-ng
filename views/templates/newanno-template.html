@@ -10,7 +10,7 @@
                     <md-icon class="imgsvgicon" md-svg-icon="action:zoom_in"></md-icon>
                 </md-button>
                 </div>
-                <md-slider min="{{annoC.zoomMin}}" max="{{annoC.zoomMax}}" ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical></md-slider>
+                <md-slider min="{{annoC.getMinZoom()}}" max="{{annoC.getMaxZoom()}}" ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical></md-slider>
                 <div><md-button class="md-icon-button" aria-label="Zoom Out" ng-click="annoC.zoomOut()">
                     <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
                 </md-button></div>

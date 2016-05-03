@@ -21,6 +21,7 @@
             asx.stepHue = 60;
             asx.userMediaElement = false;
             asx.mediaElementResolution = 25; // ms value for manual interval check
+            asx.zoomMax = 200;               // maximum zoom in in pixels per second
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
             asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
@@ -83,12 +84,21 @@
                     var currentTime = asx.wavesurfer.getCurrentTime();
                 });
                 asx.wavesurfer.on('ready', function () {
+                    // set the minimum zoom level based on the duration and current screen width
+                    asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration();
+                    asx.currentZoom = 100;
                     // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
                     var wavesurferelement = document.getElementById('annotatePlayback');
                     wavesurferelement.addEventListener('onresize', _.debounce(function () {
                             asx.miniMap.render();
                             asx.miniMap.progress(asx.miniMap.wavesurfer.backend.getPlayedPercents());
-                        }, 25)
+                            asx.wavesurfer.drawer.containerWidth = asx.wavesurfer.drawer.container.clientWidth;
+                            asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration(); // set the minimum zoom level based on the duration and current screen width
+                            if (asx.currentZoom < asx.zoomMin) {
+                                asx.currentZoom = asx.zoomMin;
+                            }
+                            asx.wavesurfer.zoom(asx.currentZoom);
+                        }, 10)
                     );
                     callback();
                 });
@@ -133,13 +143,32 @@
 
                     }
                 };
-                
+
                 aikumaService.getLanguages(function (languages) {
                     languages = _.object(languages.map(function(obj) { return [obj.Id, obj.Ref_Name]; }));
                     asx.buildTracks(languages);
                 });
             };
 
+            asx.zoomOut = function() {
+                asx.currentZoom = asx.currentZoom - 5;
+                if (asx.currentZoom < asx.zoomMin) {
+                    asx.currentZoom = asx.zoomMin;
+                }
+                asx.wavesurfer.zoom(asx.currentZoom);
+            };
+            asx.zoomIn = function() {
+                asx.currentZoom = asx.currentZoom + 5;
+                if (asx.currentZoom > asx.zoomMax) {
+                    asx.currentZoom = asx.zoomMax;
+                }
+                asx.wavesurfer.zoom(asx.currentZoom);
+            };
+            asx.changeZoom = function(val) {
+                   asx.currentZoom = val;
+                asx.wavesurfer.zoom(val);
+            };
+            
             asx.buildTracks = function(languages) {
                 var trackidx = 0;
                 asx.tracks = {};
