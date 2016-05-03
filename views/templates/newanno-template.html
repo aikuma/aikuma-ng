@@ -1,7 +1,22 @@
 <div layout="row" flex ng-cloak>
     <section layout="column" resizable class="md-padding" r-directions="['right']" r-flex="false" style="width:60%">
-        <div id="annotate-timeline" style="height:20px" layout-fill></div>
-        <div id="annotatePlayback"></div>
+        <div layout="row">
+            <div flex layout="column" >
+                <div id="annotate-timeline" style="height:20px" layout-fill></div>
+                <div id="annotatePlayback"></div>
+            </div>
+            <div layout="column" layout-align="space-between center">
+                <div><md-button class="md-icon-button" aria-label="Zoom In" ng-click="annoC.zoomIn()">
+                    <md-icon class="imgsvgicon" md-svg-icon="action:zoom_in"></md-icon>
+                </md-button>
+                </div>
+                <md-slider min="{{annoC.zoomMin}}" max="{{annoC.zoomMax}}" ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical></md-slider>
+                <div><md-button class="md-icon-button" aria-label="Zoom Out" ng-click="annoC.zoomOut()">
+                    <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
+                </md-button></div>
+            </div>
+        </div>
+
 
         <div layout="row" layout-align="start center">
             <md-button class="md-icon-button" aria-label="Annotation Help" ng-click="annoC.help($event)">

@@ -323,6 +323,7 @@
             // callback registers hotkeys and switches to the selected annotation
             annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, $scope.secondaryList, $scope.userObj, function() {
                 vm.setupKeys();
+                vm.zoomMin = annoServ.wavesurfer.drawer.container.clientWidth / annoServ.wavesurfer.getDuration(); // set the minimum zoom level based on the duration and current screen width
                 vm.tracks = annoServ.tracks;                // array of objects per respeak/translate
                 vm.tracks.audio = annoServ.tracks.audio;
                 vm.tracks.list = annoServ.tracks.list;
@@ -679,7 +680,48 @@
                 annoServ.destroyAll();
                 annotateAudioContext.close();
             });
+
+            vm.zoomMin = 25;
+            vm.zoomMax = 150;
+            vm.currentZoom = 75;
+
+            vm.zoomOut = function() {
+                vm.currentZoom = vm.currentZoom - 5;
+                if (vm.currentZoom < vm.zoomMin) {
+                    vm.currentZoom = vm.zoomMin;
+                }
+                annoServ.wavesurfer.zoom(vm.currentZoom);
+            };
+            vm.zoomIn = function() {
+                vm.currentZoom = vm.currentZoom + 5;
+                if (vm.currentZoom > vm.zoomMax) {
+                    vm.currentZoom = vm.zoomMax;
+                }
+                annoServ.wavesurfer.zoom(vm.currentZoom);
+            };
+            vm.changeZoom = function() {
+                annoServ.wavesurfer.zoom(vm.currentZoom);
+            };
+
+            var erd = new elementResizeDetectorMaker();
+            var myEl = angular.element( document.querySelector( '#annotatePlayback' ) );
+            erd.listenTo(myEl, function(element) {
+                annoServ.wavesurfer.drawer.containerWidth = annoServ.wavesurfer.drawer.container.clientWidth;
+                vm.zoomMin = annoServ.wavesurfer.drawer.container.clientWidth / annoServ.wavesurfer.getDuration(); // set the minimum zoom level based on the duration and current screen width
+                if (vm.currentZoom < vm.zoomMin) {
+                    vm.currentZoom = vm.zoomMin;
+                }
+                //annoServ.wavesurfer.drawBuffer();
+                annoServ.wavesurfer.zoom(vm.currentZoom);
+            });
             
+            $scope.$on("angular-resizable.resizing", function (event, args) {
+                //wavesurfer.drawer.containerWidth = wavesurfer.drawer.container.clientWidth;
+                //wavesurfer.drawBuffer();
+                console.log(annoServ.wavesurfer.drawer.container.clientWidth);
+            });
+                
+
             // debug stuff
             vm.getplayin = function() {
                 return annoServ.playIn;
@@ -687,6 +729,8 @@
             vm.getRegions = function() {
                 return annoServ.regionList.length;
             };
+
+
 
         };
     ngAnnoController.$inject = ['config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
