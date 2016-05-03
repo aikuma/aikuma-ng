@@ -6,17 +6,19 @@
                 <div id="annotatePlayback"></div>
             </div>
             <div layout="column" layout-align="space-between center">
-                <div><md-button class="md-icon-button" aria-label="Zoom In" ng-click="annoC.zoomIn()">
-                    <md-icon class="imgsvgicon" md-svg-icon="action:zoom_in"></md-icon>
-                </md-button>
+                <div>
+                    <md-button class="md-icon-button" aria-label="Zoom In" ng-click="annoC.zoomIn()">
+                        <md-icon class="imgsvgicon" md-svg-icon="action:zoom_in"></md-icon>
+                    </md-button>
                 </div>
-                <md-slider min="{{annoC.getMinZoom()}}" max="{{annoC.getMaxZoom()}}" ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical></md-slider>
-                <div><md-button class="md-icon-button" aria-label="Zoom Out" ng-click="annoC.zoomOut()">
-                    <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
-                </md-button></div>
+                <md-slider aria-label="zoom level" min="{{annoC.getMinZoom()}}" max="{{annoC.getMaxZoom()}}" ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical></md-slider>
+                <div>
+                    <md-button class="md-icon-button" aria-label="Zoom Out" ng-click="annoC.zoomOut()">
+                        <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
+                    </md-button>
+                </div>
             </div>
         </div>
-
 
         <div layout="row" layout-align="start center">
             <md-button class="md-icon-button" aria-label="Annotation Help" ng-click="annoC.help($event)">
@@ -134,6 +136,7 @@ asx.playIn: {{annoC.getplayin()}}
 vm.r.regionMarked: {{annoC.r.regionMarked}}
 asx.regionList: {{annoC.getRegions()}}
 vm.playingSecondary: {{annoC.playingSecondary}}
+annoC.canExport(): {{annoC.canExport()}}
             </pre>
         </span>
 
@@ -166,18 +169,16 @@ vm.playingSecondary: {{annoC.playingSecondary}}
             </div>
         </md-subheader>
 
-        <div ng-repeat="r in annoC.getRegions() track by $index"
-             ng-class="($index === annoC.cursor[annoC.r.tk]) ? 'transcript-highlight' : 'transcript-normal'"
-             ng-click="annoC.selectRegion($index)"
-             class="noclicky" ng-init="r = $index"
-             ng-if="annoC.canExport()">
+        <!--ng-if="annoC.canExport()" ng-init="r = $index"-->
 
-                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"
-                     style="margin-left:5px;" layout="row">
-                    <span flex ng-class="($index === annoC.selAnno[annoC.r.tk]) ? 'md-body-2' : 'md-body-1'" >
-                        {{annoC.padOut(anno.text[r])}}</span>
-                    <span class="md-caption" style="color:#aaa;padding-top:3px;margin-left:5px;" translate>{{anno.type}}</span>
-                </div>
+        <div ng-if="annoC.canExport()" ng-repeat="r in annoC.getRegionList()" ng-class="($index === annoC.cursor[annoC.r.tk]) ? 'transcript-highlight' : 'transcript-normal'"
+             ng-click="annoC.selectRegion($index)" class="noclicky" ng-init="p = $index">
+            <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"
+                 style="margin-left:5px;" layout="row">
+                <span flex ng-class="($index === annoC.selAnno[annoC.r.tk]) ? 'md-body-2' : 'md-body-1'">
+                    {{annoC.padOut(anno.text[p])}}</span>
+                <span class="md-caption" style="color:#aaa;padding-top:3px;margin-left:5px;" translate>{{anno.type}}</span>
+            </div>
         </div>
 
         <span ng-if="!annoC.canExport()" class="md-body-2 transcript-normal"><i translate>NO_DISPLAY</i></span>

@@ -623,9 +623,8 @@
                 if (vm.cursor[vm.r.tk] > (thisT.segMsec.length - 1)) {return false;}
                 return true;
             };
-            // used for simple loop in trnscript
-            vm.getRegions = function() {
-                return new Array(annoServ.regionList.length);
+            vm.getRegionList = function() {
+                return annoServ.regionList;
             };
             
             //
@@ -698,13 +697,6 @@
             vm.getMaxZoom = function() {
                 return annoServ.zoomMax;
             };
-            
-            $scope.$on("angular-resizable.resizing", function (event, args) {
-                //wavesurfer.drawer.containerWidth = wavesurfer.drawer.container.clientWidth;
-                //wavesurfer.drawBuffer();
-                console.log(annoServ.wavesurfer.drawer.container.clientWidth);
-            });
-                
 
             // debug stuff
             vm.getplayin = function() {

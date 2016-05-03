@@ -88,18 +88,18 @@
                     asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration();
                     asx.currentZoom = 100;
                     // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
-                    var wavesurferelement = document.getElementById('annotatePlayback');
-                    wavesurferelement.addEventListener('onresize', _.debounce(function () {
-                            asx.miniMap.render();
-                            asx.miniMap.progress(asx.miniMap.wavesurfer.backend.getPlayedPercents());
-                            asx.wavesurfer.drawer.containerWidth = asx.wavesurfer.drawer.container.clientWidth;
-                            asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration(); // set the minimum zoom level based on the duration and current screen width
-                            if (asx.currentZoom < asx.zoomMin) {
-                                asx.currentZoom = asx.zoomMin;
-                            }
-                            asx.wavesurfer.zoom(asx.currentZoom);
-                        }, 10)
-                    );
+                    asx.wavesurferElement = document.getElementById('annotatePlayback');
+                    asx.resizeEvent = function() {
+                        asx.miniMap.render();
+                        asx.miniMap.progress(asx.miniMap.wavesurfer.backend.getPlayedPercents());
+                        asx.wavesurfer.drawer.containerWidth = asx.wavesurfer.drawer.container.clientWidth;
+                        asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration(); // set the minimum zoom level based on the duration and current screen width
+                        if (asx.currentZoom < asx.zoomMin) {
+                            asx.currentZoom = asx.zoomMin;
+                        }
+                        asx.wavesurfer.zoom(asx.currentZoom);
+                    };
+                    asx.wavesurferElement.addEventListener('onresize', asx.resizeEvent);
                     callback();
                 });
                 asx.wavesurfer.on('pause', function () {
@@ -435,6 +435,7 @@
             asx.destroyAll = function() {
                 if (asx.intervalPromise) {$interval.cancel(asx.intervalPromise);}
                 asx.timeline.destroy();
+                asx.wavesurferElement.removeEventListener('onresize', asx.resizeEvent);
                 asx.wavesurfer.destroy();
             };
 
