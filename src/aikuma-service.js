@@ -228,17 +228,17 @@
                     });
                     vtt.push('\n');
                 });
-                var blob = new Blob(vtt, {type: "text/plain;charset=utf-8"});
+                var blobzor = new Blob(vtt, {type: "text/plain;charset=utf-8"});
                 // if this is running as Chrome Packaged App then let's use the file API
                 if (window.chrome && chrome.app && chrome.app.runtime) {
-                    chromeAppSave('annotation.' + fileExt, blob, function() {
+                    chromeAppSave('annotation.' + fileExt, blobzor, function() {
                         console.log('saved');
                     });
                 } else {
                     var a = document.createElement("a");
                     document.body.appendChild(a);
                     a.style = "display: none";
-                    var url = window.URL.createObjectURL(blob);
+                    var url = window.URL.createObjectURL(blobzor);
                     a.href = url;
                     a.download = 'annotation.' + fileExt;
                     a.click();
@@ -247,14 +247,21 @@
                 }
             };
 
+            function errorHandler(e) {
+                console.error(e);
+            }
+
             function chromeAppSave(filename, blobby, callback) {
                 var config = {type: 'saveFile', suggestedName: filename};
                 chrome.fileSystem.chooseEntry(config, function(writableEntry) {
+                    if (!writableEntry) {return;}
                     writableEntry.createWriter(function (writer) {
                         writer.onerror = errorHandler;
-                        writer.onwriteend = callback;
-                        writer.truncate(blobby.size);
-                        writer.seek(0);
+                        writer.onwriteend = function(e) {
+                            e.currentTarget.truncate(e.currentTarget.position);
+                            callback();
+                        };
+                        console.log('b',blobby);
                         writer.write(blobby, {type: 'text/plain'});
                     });
                 });
@@ -279,9 +286,7 @@
                 n = n + '';
                 return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
             }
-            function errorHandler(e) {
-                console.error(e);
-            }
+
 
             ser.onLine = $window.navigator.onLine;
             ser.isOnline = function() {

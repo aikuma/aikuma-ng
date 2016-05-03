@@ -132,7 +132,6 @@
             }).then(function(annotations){
                 var promises = [];
                 var segObj = {annotations: []};
-                console.log('t',track);
                 if (track) {
                     segObj.sourceSegId = track;
                 }
