@@ -771,10 +771,10 @@
                         if(userData.files) {
                             for(var fileId in userData.files) {
                                 var fileData = userData.files[fileId];
-                                var key = fileData.url.match(/[^/]+\/[^/]+\..+$/i)[0];
-                                if(fileIdMap[key]) {
+                                var key = fileData.url.match(/[^/]+\/[^/]+\..+$/i);
+                                if(key && fileIdMap[key[0]]) {
                                     //console.log(fileData.url, ';', key, '; ', fileIdMap[key]);
-                                    fileData.url = fileIdMap[key];
+                                    fileData.url = fileIdMap[key[0]];
                                 }
                             }
                         }
