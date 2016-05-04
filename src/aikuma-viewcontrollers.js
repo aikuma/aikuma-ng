@@ -84,7 +84,7 @@
                     fileService.clear().then(function() {
                         return dataService.clear();
                     }).then(function() {
-                        fileService.importBackupFile(file);  
+                        return fileService.importBackupFile(file);  
                     }).then(function(){
                         aikumaDialog.toast('All backup-data are loaded');
                     }).catch(function(err) {

@@ -771,10 +771,10 @@
                         if(userData.files) {
                             for(var fileId in userData.files) {
                                 var fileData = userData.files[fileId];
-                                var key = fileData.url.match(/[^/]+\/[^/]+\..+$/i);
-                                if(key && fileIdMap[key[0]]) {
+                                var key = fileData.url.match(/[^/]+\/[^/]+$/i)[0];
+                                if(key && fileIdMap[key]) {
                                     //console.log(fileData.url, ';', key, '; ', fileIdMap[key]);
-                                    fileData.url = fileIdMap[key[0]];
+                                    fileData.url = fileIdMap[key];
                                 }
                             }
                         }
@@ -1023,10 +1023,15 @@
 
                 if(!file.name) {
                     file.name = aikumaUtils.createRandomAlphabets(20);
-                    if(file.type === 'audio/wav') {
-                        file.name += '.wav';
-                    } else if(file.type.indexOf('image') === 0) {
-                        file.name += zip.getExtension(file.type);
+                }
+                var extMatcher = /(?:\.([^.]+))?$/,
+                    ext = extMatcher.exec(file.name)[1];
+                if(!ext) {
+                    ext = zip.getExtension(file.type);
+                    if((file.type.indexOf('audio') === 0 || file.type.indexOf('image') === 0) && ext) {
+                        file.name += ext;
+                    } else {
+                        fileDefer.reject(file.name + ' type(' + file.type + ') is not supported');
                     }
                 }
                 
@@ -1190,8 +1195,9 @@
                         return;
 
                     //var promises = [];
-                    var userFileList = [];
-                    var fileIdMap = {};
+                    var userFileList = [],
+                        fileIdMap = {},
+                        jsonDb = null, userFileTypes = {};
                     // Preprocessing
                     backupFile.root.children.forEach(function(childEntry) {
                         if(childEntry.directory) {
@@ -1201,22 +1207,20 @@
 
                     function importFile(userIndex, fileIndex) {
                         if(!userFileList[userIndex]) {     //Import JSON db after copy finishes
-                            var dbFileEntry = backupFile.root.getChildByName('db.json');
-                            dbFileEntry.getText(function(jsonDbStr) {
-                                //console.log(txt);
-                                var jsonDb = JSON.parse(jsonDbStr);
-                                importDefer.resolve(dataService.importJsonDb(jsonDb, fileIdMap));
-                            });
+                            importDefer.resolve(dataService.importJsonDb(jsonDb, fileIdMap));
                         } else {    // copy all users' files
                             var fileEntry = userFileList[userIndex][1][fileIndex];
                             if(!fileEntry) {
                                 importFile(userIndex + 1, 0);
                             } else if(!fileEntry.directory) {
-                                fileEntry.getBlob(zip.getMimeType(fileEntry.name), function(blob) {
+                                var mimeType = userFileTypes[fileEntry.name] || zip.getMimeType(fileEntry.name);
+                                fileEntry.getBlob(mimeType, function(blob) {
                                     //promises.push(service.createFile(userFileList[userIndex][0], blob));
                                     service.createFile(userFileList[userIndex][0], blob, true).then(function(url) {
                                         fileIdMap[userFileList[userIndex][0] + '/' + fileEntry.name] = url;
                                         importFile(userIndex, fileIndex + 1);
+                                    }).catch(function(err){
+                                        importDefer.reject(err);
                                     });
                                     //importFile(userIndex, fileIndex + 1);
                                 });
@@ -1224,7 +1228,28 @@
                         }
                     }
                     
-                    importFile(0, 0);
+                    var dbFileEntry = backupFile.root.getChildByName('db.json');
+                    if(dbFileEntry) {
+                        dbFileEntry.getText(function(jsonDbStr) {
+                            //console.log(txt);
+                            jsonDb = JSON.parse(jsonDbStr);
+                            if(jsonDb) {
+                                // Creation of fileId - fileType in DB
+                                for(var userData of jsonDb[USER_TYPE]) {
+                                    for(var fileId in userData.files) {
+                                        var fileRecord = userData.files[fileId];
+                                        userFileTypes[fileRecord.url.split('/').pop()] = fileRecord.type;
+                                    }
+                                }
+                                
+                                importFile(0, 0);   
+                            } else {
+                                importDefer.reject('db.json file is corrupted');
+                            }
+                        });
+                    } else {
+                        importDefer.reject('db.json file does not exist');
+                    }
                     
                 }, null, onerror);
 
