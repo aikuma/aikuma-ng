@@ -3,6 +3,14 @@
  */
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
+@media screen and (min-width: 1280px) {
+    .backframe {
+        padding: 20px;
+        background-image: url('../img/background.jpg');
+        background-repeat: repeat-y
+    }
+}
+
 body {
     font-family: 'Roboto', 'Noto Sans TC', "Microsoft Yahei", sans-serif;
     font-size: 20px;
