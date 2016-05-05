@@ -1,10 +1,6 @@
-<div layout="row" flex ng-cloak>
-    <section layout="column" resizable class="md-padding" r-directions="['right']" r-flex="false" style="width:60%">
+<div flex layout="row" ng-cloak>
+    <div layout="column" resizable r-directions="['right']" r-flex="false" style="width:60%">
         <div layout="row">
-            <div flex layout="column" >
-                <div id="annotate-timeline" style="height:20px" layout-fill></div>
-                <div id="annotatePlayback"></div>
-            </div>
             <div layout="column" layout-align="space-between center">
                 <div>
                     <md-button class="md-icon-button" aria-label="Zoom In" ng-click="annoC.zoomIn()">
@@ -17,6 +13,10 @@
                         <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
                     </md-button>
                 </div>
+            </div>
+            <div flex layout="column" >
+                <div id="annotate-timeline" style="height:20px" layout-fill></div>
+                <div id="annotatePlayback"></div>
             </div>
         </div>
 
@@ -39,7 +39,7 @@
             </md-slider>
         </div>
 
-        <div flex ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer">
+        <div ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer" style="padding-left:12px;">
             <div flex ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
                 <div ng-repeat="anno in annoC.tracks[track].annos track by anno.id" layout="row" layout-align="start center">
                     <md-menu>
@@ -106,7 +106,6 @@
                             <md-tooltip class="md-body-2"><span translate>TRACK_SELECT</span></md-tooltip>
                             <md-icon md-menu-origin style="width:40px;height:40px;"
                                      ng-style="annoC.tracks[track].color" md-svg-icon="{{annoC.tracks[track].icon}}"></md-icon>
-
                         </md-button>
                         <md-menu-content width="3" ng-init="aIdx = $index">
                             <md-menu-item ng-if="strack !== track" ng-repeat="strack in annoC.tracks.list">
@@ -139,50 +138,48 @@ vm.playingSecondary: {{annoC.playingSecondary}}
 annoC.canExport(): {{annoC.canExport()}}
             </pre>
         </span>
-
-    </section>
-    <md-content flex layout="column" class="md-whiteframe-3dp md-padding" style="width:40%;overflow-y: scroll">
-        <md-subheader style="height:80px;">
-             <div layout="row" layout-align="space-between start">
-                <md-button aria-label="{{annoC.tracks[annoC.r.tk].type | translate}}">
-                    <md-icon class="imgsvgicon" ng-style="annoC.tracks[annoC.r.tk].color" style="width:40px;height:40px;" md-svg-icon="{{annoC.tracks[annoC.r.tk].icon}}"></md-icon>
-                    <span translate>{{annoC.tracks[annoC.r.tk].type}}</span>
+    </div>
+    <div layout="column" style="width:40%;overflow-y: scroll; padding-left:12px;">
+        <div style="height:50px;" layout="row" layout-align="space-between center" >
+            <md-button aria-label="{{annoC.tracks[annoC.r.tk].type | translate}}">
+                <md-icon class="imgsvgicon" ng-style="annoC.tracks[annoC.r.tk].color" style="width:40px;height:40px;" md-svg-icon="{{annoC.tracks[annoC.r.tk].icon}}"></md-icon>
+                <span translate>{{annoC.tracks[annoC.r.tk].type}}</span>
+            </md-button>
+             <md-menu>
+                <md-button md-menu-origin ng-disabled="!annoC.canExport()" ng-click="annoC.openMenu($mdOpenMenu, $event)">
+                    <md-icon md-svg-icon="file:file_download"></md-icon>
+                    <span translate>EXPORT_SAVE</span>
                 </md-button>
-                 <md-menu>
-                    <md-button md-menu-origin ng-disabled="!annoC.canExport()" ng-click="annoC.openMenu($mdOpenMenu, $event)">
-                        <md-icon md-svg-icon="file:file_download"></md-icon>
-                        <span translate>EXPORT_SAVE</span>
-                    </md-button>
-                     <md-menu-content width="3">
-                         <md-menu-item>
-                             <md-button ng-click="annoC.export('srt')">
-                                 <md-icon md-svg-icon="file:file_download"></md-icon>
-                                 <span translate>EXPORT_SRT</span></md-button>
-                         </md-menu-item>
-                         <md-menu-item>
-                             <md-button ng-click="annoC.export('webvtt')">
-                                 <md-icon md-svg-icon="file:file_download"></md-icon>
-                                 <span translate>EXPORT_VTT</span></md-button>
-                         </md-menu-item>
-                     </md-menu-content>
-                 </md-menu>
-            </div>
-        </md-subheader>
+                 <md-menu-content width="3">
+                     <md-menu-item>
+                         <md-button ng-click="annoC.export('srt')">
+                             <md-icon md-svg-icon="file:file_download"></md-icon>
+                             <span translate>EXPORT_SRT</span></md-button>
+                     </md-menu-item>
+                     <md-menu-item>
+                         <md-button ng-click="annoC.export('webvtt')">
+                             <md-icon md-svg-icon="file:file_download"></md-icon>
+                             <span translate>EXPORT_VTT</span></md-button>
+                     </md-menu-item>
+                 </md-menu-content>
+             </md-menu>
+        </div>
 
         <!--ng-if="annoC.canExport()" ng-init="r = $index"-->
 
-        <div ng-if="annoC.canExport()" ng-repeat="r in annoC.getRegionList()" ng-class="($index === annoC.cursor[annoC.r.tk]) ? 'transcript-highlight' : 'transcript-normal'"
-             ng-click="annoC.selectRegion($index)" class="noclicky" ng-init="p = $index">
-            <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"
-                 style="margin-left:5px;" layout="row">
-                <span flex ng-class="($index === annoC.selAnno[annoC.r.tk]) ? 'md-body-2' : 'md-body-1'">
-                    {{annoC.padOut(anno.text[p])}}</span>
-                <span class="md-caption" style="color:#aaa;padding-top:3px;margin-left:5px;" translate>{{anno.type}}</span>
+        <div flex layout="column">
+            <div ng-if="annoC.canExport()" ng-repeat="r in annoC.getRegionList()" ng-class="($index === annoC.cursor[annoC.r.tk]) ? 'transcript-highlight' : 'transcript-normal'"
+                 ng-click="annoC.selectRegion($index)" class="noclicky" ng-init="p = $index">
+                <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"
+                     style="margin-left:5px;" layout="row">
+                    <span flex ng-class="($index === annoC.selAnno[annoC.r.tk]) ? 'md-body-2' : 'md-body-1'">
+                        {{annoC.padOut(anno.text[p])}}</span>
+                    <span class="md-caption" style="color:#aaa;padding-top:3px;margin-left:5px;" translate>{{anno.type}}</span>
+                </div>
             </div>
-        </div>
 
-        <span ng-if="!annoC.canExport()" class="md-body-2 transcript-normal"><i translate>NO_DISPLAY</i></span>
-    </md-content>
+            <span ng-if="!annoC.canExport()" class="md-body-2 transcript-normal"><i translate>NO_DISPLAY</i></span>
+        </div>
+    </div>
 
 </div>
-

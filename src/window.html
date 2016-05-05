@@ -1,32 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="aikuma" ng-strict-di>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- build:css css/combined.css -->
-    <!-- bower:css -->
-    <!-- endbower -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- endbuild -->
-    <!-- build:js scripts/combined.js -->
-    <!-- bower:js -->
-    <!-- endbower -->
-    <!-- inject:js -->
-    <!-- endinject -->
-    <!-- endbuild -->
-    <title>Annoweb</title>
-</head>
-<body layout="row" key-focus>
-<ng-navbar layout="row"></ng-navbar>
-<div flex layout="column" >
-    <md-content flex class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
-        <md-whiteframe flex class="md-whiteframe-3dp" layout layout-align="center center">
-            <md-content flex>
-                <div ng-view></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- build:css css/combined.css -->
+        <!-- bower:css -->
+        <!-- endbower -->
+        <!-- inject:css -->
+        <!-- endinject -->
+        <!-- endbuild -->
+        <!-- build:js scripts/combined.js -->
+        <!-- bower:js -->
+        <!-- endbower -->
+        <!-- inject:js -->
+        <!-- endinject -->
+        <!-- endbuild -->
+        <title>Annoweb</title>
+    </head>
+    <body layout="row" key-focus>
+        <ng-navbar layout="row"></ng-navbar>
+        <md-content flex layout="column" class="md-padding" style="background-image: url('img/background.jpg');background-repeat: repeat-y">
+            <md-content flex layout="column" class="md-whiteframe-3dp">
+                <div ng-view flex layout="column"></div>
             </md-content>
-        </md-whiteframe>
-    </md-content>
-</div>
-</body>
+        </md-content>
+    </body>
 </html>

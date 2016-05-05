@@ -1,6 +1,6 @@
 <ng-topbar ng-if="!nCtrl.externalRecord" activity="{{'ACTIVITY_RECORD' | translate}}"></ng-topbar>
 <ng-topbar ng-if="nCtrl.externalRecord" activity="{{'ACTIVITY_IMPORT' | translate}}"></ng-topbar>
 
-<md-content class="md-padding" md-scroll-y style="padding-bottom:30px">
+<md-content flex class="md-padding" md-scroll-y style="padding-bottom:30px">
     <ng-record user-obj="nCtrl.userObj"></ng-record>
 </md-content>

@@ -1,5 +1,5 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
-<md-content class="md-padding" id="popupContainer" style="padding-bottom:30px">
+<md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
     
     <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" href="{{seCtrl.dataUri}}">
         <md-icon md-svg-icon="file:file_download"></md-icon>
@@ -27,7 +27,7 @@
         {{"DEBUG_RESETDB" | translate}}
     </label>
 
-    <div layout="row inset" layout-wrap>
+    <div flex layout="row inset" layout-wrap>
         <md-switch flex="25" aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
         </md-switch>

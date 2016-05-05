@@ -1,32 +1,30 @@
-<md-toolbar style="height:64px;min-height:64px;max-height:64px">
-    <div class="md-toolbar-tools" layout="row" layout-align="start center" style="position:absolute">
-        <md-button class="md-icon-button" ng-click="tbCtrl.openMenu()" ng-if="tbCtrl.showMenuButton()" aria-label="Toggle Menu">
-            <md-icon md-svg-icon="nav:menu"></md-icon>
-        </md-button>
-        <span ng-if="!session && !activity" class="md-headline" translate>HOME</span>
-        <span ng-if="session || activity" class="md-headline"><A HREF="#/"><span translate>HOME</span>&nbsp;&gt;&nbsp</A></span>
-        <span ng-if="session && !sessionId" class="md-headline">{{session}}</span>
-        <span ng-if="session && sessionId" class="md-headline"><A HREF="#/session/{{sessionId}}">{{session}}</A>&nbsp;&gt;&nbsp</span>
-        <span ng-if="activity" class="md-headline" translate>{{activity}}</span>
+    <md-toolbar flex style="height:64px;min-height:64px;max-height:64px;">
+        <div class="md-toolbar-tools" layout="row" layout-align="start center" style="position:absolute">
+            <md-button class="md-icon-button" ng-click="tbCtrl.openMenu()" ng-if="tbCtrl.showMenuButton()" aria-label="Toggle Menu">
+                <md-icon md-svg-icon="nav:menu"></md-icon>
+            </md-button>
+            <span ng-if="!session && !activity" class="md-headline" translate>HOME</span>
+            <span ng-if="session || activity" class="md-headline"><A HREF="#/"><span translate>HOME</span>&nbsp;&gt;&nbsp</A></span>
+            <span ng-if="session && !sessionId" class="md-headline">{{session}}</span>
+            <span ng-if="session && sessionId" class="md-headline"><A HREF="#/session/{{sessionId}}">{{session}}</A>&nbsp;&gt;&nbsp</span>
+            <span ng-if="activity" class="md-headline" translate>{{activity}}</span>
 
-            <md-fab-speed-dial md-direction="down" md-open="tbCtrl.open" class="md-scale toolbar-speeddial"
-                               ng-mouseenter="tbCtrl.open=true" ng-mouseleave="tbCtrl.open=false">
-                <md-fab-trigger>
-                    <md-icon class="md-toolbar-avatar" md-svg-icon="action:language"></md-icon>
-                </md-fab-trigger>
-                <md-fab-actions>
-                    <md-button ng-repeat="lang in tbCtrl.languages" aria-label="{{lang.name | translate}}" class="md-fab md-raised md-mini" ng-click="tbCtrl.changeLang(lang.code)">
-                        <span class="md-title" style="font-size:{{lang.toolfontsize}}px;font-weight: 700;">{{lang.toolshort}}</span>
-                    </md-button>
-                 </md-fab-actions>
-            </md-fab-speed-dial>
+                <md-fab-speed-dial md-direction="down" md-open="tbCtrl.open" class="md-scale toolbar-speeddial"
+                                   ng-mouseenter="tbCtrl.open=true" ng-mouseleave="tbCtrl.open=false">
+                    <md-fab-trigger>
+                        <md-icon class="md-toolbar-avatar" md-svg-icon="action:language"></md-icon>
+                    </md-fab-trigger>
+                    <md-fab-actions>
+                        <md-button ng-repeat="lang in tbCtrl.languages" aria-label="{{lang.name | translate}}" class="md-fab md-raised md-mini" ng-click="tbCtrl.changeLang(lang.code)">
+                            <span class="md-title" style="font-size:{{lang.toolfontsize}}px;font-weight: 700;">{{lang.toolshort}}</span>
+                        </md-button>
+                     </md-fab-actions>
+                </md-fab-speed-dial>
 
-        <md-button md-no-ink md-no-focus-style aria-label="open profile" class="toolbar-profile" ng-click="tbCtrl.openProfile()">
-            <md-tooltip class="md-body-1" md-direction="left"><span translate>PROFILE_OPEN</span></md-tooltip>
-            <md-icon ng-if="tbCtrl.getLoginStatus()" class="md-toolbar-avatar" md-svg-icon="social:person" ></md-icon>
-        </md-button>
+            <md-button md-no-ink md-no-focus-style aria-label="open profile" class="toolbar-profile" ng-click="tbCtrl.openProfile()">
+                <md-tooltip class="md-body-1" md-direction="left"><span translate>PROFILE_OPEN</span></md-tooltip>
+                <md-icon ng-if="tbCtrl.getLoginStatus()" class="md-toolbar-avatar" md-svg-icon="social:person" ></md-icon>
+            </md-button>
 
-    </div>
-</md-toolbar>
-
-
+        </div>
+    </md-toolbar>

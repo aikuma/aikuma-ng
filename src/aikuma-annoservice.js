@@ -39,8 +39,6 @@
                     normalize: true,
                     hideScrollbar: false,
                     scrollParent: true,
-                    //progressColor: '#797',
-                    //waveColor: '#457'
                     progressColor: '#33627c',
                     waveColor: '#4FC3F7'
                 });
@@ -51,25 +49,27 @@
                     wavesurfer: asx.wavesurfer,
                     container: "#annotate-timeline"
                 });
-                /* Minimap plugin */
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,
                     waveColor: '#555',
                     progressColor: '#999'
                 });
+
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
                     // so simple, but this solution was a long time coming
                     // When the user seeks in wavesurfer, you only get a float, and getRegionFromTime() is wrong
                     // So what we do is hook into seek, immediately trigger play(), set this variable and on the very first
                     // audioprocess callback, get the valid time, pause wavesurfer and turn the flag off
-                    if (asx.seeked) {
-                        if (config.debug){console.log('audio process event: seeked so pausing');}
-                        asx.seeked = false;
-                        asx.wavesurfer.pause();
-                        //asx.reg.curRegion = asx.getRegionFromTime();
-                        asx.cursor[asx.r.tk] = asx.getRegionFromTime();
-                    } else if (asx.r.regionMarked) {
+/*                    if (asx.seeked) {
+                     if (config.debug) {
+                     console.log('audio process event: seeked so pausing');
+                     }
+                     asx.seeked = false;
+                     asx.wavesurfer.pause();
+                     asx.cursor[asx.r.tk] = asx.getRegionFromTime();
+                     }*/
+                    if (asx.r.regionMarked) {
                         var currentPos = Math.round(asx.wavesurfer.getCurrentTime()*1000)/1000;
                         // update this wavesurfer region on the fly and...
                         _.last(asx.regionList).update({end: currentPos});
@@ -81,12 +81,12 @@
                     console.log('ws error: '+err);
                 });
                 asx.wavesurfer.on('finish', function() {
-                    var currentTime = asx.wavesurfer.getCurrentTime();
+                    //var currentTime = asx.wavesurfer.getCurrentTime();
                 });
                 asx.wavesurfer.on('ready', function () {
                     // set the minimum zoom level based on the duration and current screen width
                     asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration();
-                    asx.currentZoom = 100;
+                    asx.currentZoom = 85;
                     // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
                     asx.wavesurferElement = document.getElementById('annotatePlayback');
                     asx.resizeEvent = function() {
@@ -100,6 +100,11 @@
                         asx.wavesurfer.zoom(asx.currentZoom);
                     };
                     asx.wavesurferElement.addEventListener('onresize', asx.resizeEvent);
+                    // it seems longer recordings will cause the minimap to appear blank, so let's render it when the digest is complete
+                    $timeout(function() {
+                        asx.miniMap.render();
+                        asx.miniMap.progress(asx.miniMap.wavesurfer.backend.getPlayedPercents());
+                    }, 0);
                     callback();
                 });
                 asx.wavesurfer.on('pause', function () {
@@ -112,14 +117,16 @@
                         asx.seekToTime(asx.regionList[asx.cursor[asx.r.tk]].start);
                     }
                 });
-                asx.wavesurfer.on('seek', function () {
-                    if (config.debug){console.log('seek event: set seeked, begin play');}
+                asx.wavesurfer.on('seek', function (st) {
+                    //if (config.debug){console.log('seek event: set seeked, begin play');}
                     if (asx.intervalPromise) {
                         $interval.cancel(asx.intervalPromise);
                         asx.endTime = false;
                     }
-                    asx.seeked = true;
-                    asx.wavesurfer.play();
+
+
+                    //asx.seeked = true;
+                    //asx.wavesurfer.play();
                     if (asx.r.regionMarked) {
                         if (config.debug){console.log('seek event: regionMarked so deleteLastRegion()');}
                         asx.deleteLastRegion();
@@ -532,6 +539,13 @@
                 var aid = asx.tracks[asx.r.tk].annos[annoIdx].id;
                 var thisanno = asx.annoObjList.filter(function(ao) {return ao.data._ID === aid;});
                 thisanno[0].save();
+                asx.sessionObj.save();
+            };
+
+            asx.saveAll = function() {
+                asx.annoObjList.forEach(function(annoObj){
+                    annoObj.save();
+                });
                 asx.sessionObj.save();
             };
             

@@ -338,6 +338,15 @@
                 } else {
                     vm.cursor[vm.r.tk] = -1;
                 }
+                // update UI on seeks (otherwise we'd have to pass the scope to the annotation service)
+                annoServ.wavesurfer.on('seek', function() {
+                    var newRegion = annoServ.getRegionFromTime();
+                    if (vm.cursor[vm.r.tk] !== newRegion) {
+                        vm.cursor[vm.r.tk] = newRegion;
+                        $scope.$apply();
+                    }
+                });
+
                  $scope.$apply();
             });
 
@@ -675,6 +684,7 @@
             };
             // on navigating away, clean up the key events, wavesurfer instances
             $scope.$on('$destroy', function() {
+                annoServ.saveAll();
                 keyService.clearAll();
                 annoServ.destroyAll();
                 annotateAudioContext.close();
