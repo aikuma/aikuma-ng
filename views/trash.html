@@ -3,7 +3,7 @@
 <md-content flex class="md-padding" id="deletedItems" md-scroll-y style="padding-bottom:30px">
     <div ng-if="tCtrl.numberOfSessions"><span class="md-title" translate>TRASH_EXPLAIN</span> <md-icon class="md-secondary" md-svg-icon="mdi:backup-restore"></md-icon></div>
     <div ng-if="!tCtrl.numberOfSessions"><span class="md-title" translate>TRASH_NONE</span></div>
-    <ng-session-list user-obj="userObj" deleted="true" number-of-sessions="tCtrl.numberOfSessions"></ng-session-list>
+    <ng-session-list user-obj="userObj" deleted="true" number-of-sessions="tCtrl.numberOfSessions" loaded="tCtrl.loaded"></ng-session-list>
     <md-button ng-if="tCtrl.numberOfSessions" class="md-raised md-warn" ng-click="tCtrl.clearTrash($event)">
         <md-icon class="md-secondary" md-svg-icon="action:delete"  aria-label="Delete all items"></md-icon>
         <span translate>TRASH_CLEAN</span>

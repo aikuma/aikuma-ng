@@ -1,9 +1,10 @@
-<md-sidenav flex class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('(min-width: 1024px)')">
+<div layout="row">
+<md-sidenav flex class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('(min-width: 1024px)')" style="overflow:hidden">
     <header class="nav-header">
         <div layout="column" layout-align="center center" ng-click="navCtrl.goHome()">
-            <img class="animated rollIn" flex width="200" height="200" src="img/worldvoices.svg"/>
+            <img class="rollInLogo" width="200" height="200" src="img/worldvoices.svg" id="aikumaLogo"/>
             <md-tooltip class="md-subhead" md-direction="top"><span translate>ABOUT_AIKUMA</span>-<i>NG</i></md-tooltip>
-            <span flex class="md-body-2 inset animated slideInLeft" style="color:black"><span translate>NAV_LOGAS</span> <i>{{navCtrl.currentUserName()}}</i></span>
+            <div flex class="md-body-2 inset animated slideInLeft" style="color:black"><span translate>NAV_LOGAS</span> <i>{{navCtrl.currentUserName()}}</i></div>
         </div>
     </header>
     <md-button ng-if="!navCtrl.getLoginStatus()" class="fullwidth" ng-click="navCtrl.login()">
@@ -14,7 +15,8 @@
         <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
         <span flex translate>NAV_LOGOUT</span>
     </md-button>
-    <label ng-disabled="!navCtrl.getLoginStatus()" ng-repeat="item in navCtrl.menu" class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
+    <label  ng-repeat="item in navCtrl.menu" ng-disabled="!navCtrl.getLoginStatus()"
+           class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
         <md-tooltip ng-if="item.tooltip" class="md-body-2" md-direction="right"><span translate>{{item.tooltip}}</span></md-tooltip>
         <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
         <span flex translate>{{item.title}}</span>
@@ -30,3 +32,4 @@
     </div>
     <input id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >
 </md-sidenav>
+</div>

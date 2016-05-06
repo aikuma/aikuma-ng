@@ -1,4 +1,4 @@
-<div flex layout="column">
+<div flex layout="column" id="toastContainer">
     <div id="respeak-timeline" style="height:20px" layout-fill></div>
     <div id="respeakPlayback"></div>
 </div>
@@ -13,7 +13,6 @@
 </div>
 
 <div layout="row">
-
     <div layout="column" flex="50">
         <div ng-if="type === 'translate'">
         <ng-language-selector  lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;height:22px"></ng-language-selector>
@@ -37,7 +36,7 @@
     </div>
     
     <div flex="50" id="respeakRecord" class="respeakwavesurfer" ng-class="rCtrl.recordClass" style="position:relative">
-        <span class="centertextbox md-headline">{{rCtrl.helpText | translate}}</span>
+<!--        <span class="centertextbox md-headline">{{rCtrl.helpText | translate}}</span>-->
     </div>
 
 </div>

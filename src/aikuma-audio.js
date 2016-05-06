@@ -329,7 +329,7 @@
     //
     // RESPEAK2 DIRECTIVE
     //
-    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $mdDialog, $translate) {
+    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $mdDialog, $translate, $mdToast) {
         var vm = this;
         vm.playBoxesEnabled = false;    //playSegment will not work
         var recorder;           // recorder.js
@@ -830,10 +830,29 @@
         //
         // Simple cycle through help text strings. This needs to be updated to be based on handles in the localisation files.
         function updateHelpText() {
-            if (vm.helpIdx == (textStrings.length-1)) {return;}
+            if (($translate.use() !== 'en') || vm.helpIdx == (textStrings.length-1)) {return;} // skip this if not in English
+            console.log($translate.use());
             ++vm.helpIdx;
             vm.helpText = textStrings[vm.helpIdx];
+            showActionToast(vm.helpText);
         }
+        function showActionToast(text_id) {
+            $translate(text_id).then(function(tran) {
+                var toast = $mdToast.simple()
+                    .textContent(tran)
+                    .action('X')
+                    .parent(angular.element(document.querySelector('#toastContainer')))
+                    .highlightAction(false)
+                    .position('top left');
+                $mdToast.show(toast).then(function(response) {
+                    if ( response === 'ok' ) {
+                        vm.helpIdx = textStrings.length-1;
+                    }
+                });
+            });
+
+        };
+
         // Called from several places as a means to pause the microphone and disable record controls
         // and update UI elements to show that the user cannot record at this point.
         function disableRecording() {
@@ -1020,6 +1039,6 @@
                 recorder.clear();
         });
     };
-    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$mdDialog', '$translate'];
+    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$mdDialog', '$translate', '$mdToast'];
 
 })();

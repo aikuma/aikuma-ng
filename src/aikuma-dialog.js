@@ -20,12 +20,12 @@
                         .ok('Yeah OK')
                 );
             };
-            factory.toast = function(toasttext, delay=2000) {
+            factory.toast = function(toasttext, delay=2000, position='top left') {
                 $mdToast.show(
                     $mdToast.simple()
                         .parent($document[0].querySelector('#popupContainer'))
                         .hideDelay(delay)
-                        .position("top left")
+                        .position(position)
                         .textContent(toasttext)
                 );
             };

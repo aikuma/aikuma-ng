@@ -15,6 +15,33 @@
 
 }
 
+@keyframes rollInLogo {
+    from {
+        opacity: 0;
+        transform: translateX(-100%) rotateZ(-120deg);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.rollInLogo {
+    animation: rollInLogo 1.25s;
+}
+
+.rollLogo {
+    animation: rollLogo 0.5s;
+}
+@keyframes rollLogo {
+    from {
+        transform: none;
+    }
+    to {
+        transform: rotate3D(1,-1,0,360deg);
+    }
+}
+
 md-list-item.ng-enter {
     transition: 0.3s;
     opacity: 0;
@@ -27,8 +54,9 @@ md-list-item.ng-enter-active {
     opacity: 1;
 }
 
-div.olacrepeater.ng-enter img {
-    animation: rollIn 1s;
+
+label.ng-enter {
+    animation: zoomInUp 0.3s;
 }
 
 .paddedview {

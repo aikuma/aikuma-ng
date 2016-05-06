@@ -1,6 +1,6 @@
 <span ng-if="slCtrl.sessionList.length === 0 && !slCtrl.deleted" class="md-title inset">{{"HOME_NOSESSION" | translate }}</span>
 
-<md-list ng-if="slCtrl.sessionList.length > 0">
+<md-list>
     <md-list-item class="md-3-line" ng-repeat="session in slCtrl.sessionList" ng-click="!slCtrl.deleted && slCtrl.goStatus($index)">
         <div ng-if="slCtrl.currentUser.files[session.data.imageIds[0]].url"
              ng-style="{ 'background-image': 'url(' + slCtrl.currentUser.files[session.data.imageIds[0]].url +')' }"

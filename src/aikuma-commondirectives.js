@@ -9,6 +9,7 @@
             return {
                 restrict: "E",
                 templateUrl: "views/templates/navbar-template.html",
+                replace: true,
                 controller: navController,
                 controllerAs: 'navCtrl'
             };
@@ -153,7 +154,8 @@
                 scope: {
                     userObj: '=',
                     deleted: '=',
-                    numberOfSessions: '='
+                    numberOfSessions: '=',
+                    loaded: '='
                 },
                 templateUrl: "views/templates/sessionList-template.html",
                 controller: sessionListController,
@@ -165,6 +167,7 @@
             var vm = this;
             vm.currentUser = $scope.userObj.data;
             vm.deleted = $scope.deleted;
+            $scope.loaded = false;
             $scope.$watch('numberOfSessions', function() {
                 updateSessionList();
             });
@@ -172,6 +175,7 @@
                 dataService.getSessionObjList($scope.userObj.data._ID, vm.deleted).then(function(sessionList) {
                     vm.sessionList = sessionList;
                     $scope.numberOfSessions = sessionList.length;
+                    $scope.loaded = true;
                 });
             }
             vm.restoreSession = function(sessionIndex) {
@@ -221,13 +225,17 @@
         };
         topbarController.$inject = ['$scope', '$translate', '$mdMedia', '$mdSidenav', 'config', 'loginService', 'aikumaDialog'];
 
-        var navController = function (config, $scope, $translate, $location, loginService, dataService, fileService, aikumaDialog, aikumaService) {
+        var navController = function ($timeout, config, $rootScope, $scope, $translate, $location, loginService, dataService, fileService, aikumaDialog, aikumaService, $animate) {
             var vm = this;
             vm.languages = config.languages;
             
             vm.getLoginStatus = loginService.getLoginStatus;
             vm.versionString = config.appVersion;
             $scope.onlineStatus = aikumaService;
+            vm.logoElement = angular.element( document.querySelector( '#aikumaLogo' ) );
+            $timeout(function(){
+                $animate.removeClass(vm.logoElement, 'rollInLogo');
+            },1500);
 
             $scope.$watch('onlineStatus.isOnline()', function(online) {
                 vm.onlineStatus = online;
@@ -243,6 +251,12 @@
                     vm.LOGINAS = '';
                     vm.currentUserName = function() { return ''; };
                 }
+            });
+
+            $rootScope.$on("$locationChangeStart", function() {
+                $animate.addClass(vm.logoElement, 'rollLogo').then(function() {
+                    $animate.removeClass(vm.logoElement, 'rollLogo');
+                });
             });
 
             vm.goHome = function() {
@@ -348,7 +362,7 @@
             });
 
         };
-    navController.$inject = ['config', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog', 'aikumaService'];
+    navController.$inject = ['$timeout', 'config', '$rootScope', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog', 'aikumaService', '$animate'];
 
     var tagSelectorController = function ($scope, loginService, dataService) {
         var vm = this;
