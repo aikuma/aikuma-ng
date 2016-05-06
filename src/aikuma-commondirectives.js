@@ -536,7 +536,7 @@
         var vm = this;
         vm.wsPlayback = Object.create(WaveSurfer);
         $scope.wavesurfer = vm.wsPlayback;
-
+        vm.loading = true;
         var wsdefaults = {
             container: "#sessionPlayer",
             renderer: "MultiCanvas",
@@ -544,27 +544,37 @@
             hideScrollbar: false,
             scrollParent: true
         };
-
         vm.options = angular.extend(wsdefaults, $attrs);
         vm.wsPlayback.init(vm.options);
-        /* Minimap plugin */
+/*
+        /!* Minimap plugin *!/
         vm.wsPlayback.initMinimap({
             height: 30,
             waveColor: '#555',
             progressColor: '#999',
             cursorColor: '#999'
         });
-        /* Initialize the time line */
-        vm.timeline = Object.create(vm.wsPlayback.Timeline);
-        vm.timeline.init({
-            wavesurfer: vm.wsPlayback,
-            normalize: false,
-            container: "#session-timeline"
-        });
+*/
 
+        $scope.$watch('source', function(url) {
+            if(url) {
+                vm.wsPlayback.load(url);
+            }
+        });
 
         vm.wsPlayback.on('play', function () {
             vm.isplaying = true;
+        });
+        vm.wsPlayback.on('ready', function () {
+            vm.loading = false;
+            /* Initialize the time line */
+            vm.timeline = Object.create(vm.wsPlayback.Timeline);
+            vm.timeline.init({
+                wavesurfer: vm.wsPlayback,
+                normalize: false,
+                container: "#session-timeline"
+            });
+            $scope.$apply();
         });
 
         vm.wsPlayback.on('pause', function () {
@@ -574,7 +584,10 @@
                     vm.isplaying = false;
             }
         });
-
+        vm.wsPlayback.on('loading', function(progress) {
+           vm.wavesurferProgress = progress;
+            $scope.$apply();
+        });
 
         vm.wsPlayback.on('finish', function () {
             vm.isplaying = false;
@@ -586,11 +599,7 @@
             vm.wsPlayback.destroy();
         });
         
-        $scope.$watch('source', function(url) {
-            if(url) {
-                vm.wsPlayback.load(url);
-            }
-        });
+
         
     };
     playerController.$inject = ['$scope', '$attrs'];

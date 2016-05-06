@@ -215,6 +215,10 @@
                 beep.onended = callback;
                 beep.play();
             };
+            var errorbeep = new Audio("media/error.wav");
+            service.errorBeep = function() {
+                errorbeep.play();
+            };
 
             service.initVoiceRecog = function() {
                 service.recognition = new webkitSpeechRecognition();

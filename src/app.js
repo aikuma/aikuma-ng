@@ -4,6 +4,7 @@
         .module('aikuma', [
             'ngRoute',
             'ngMaterial',
+            'ngAnimate',
             'aikuma-dialog',           // dialog and alert service (being deprecated)
             'pascalprecht.translate',  // AKA angular translate
             'aikuma-service',          // Aikuma service (annotations)

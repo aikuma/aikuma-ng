@@ -21,10 +21,10 @@
             asx.stepHue = 60;
             asx.userMediaElement = false;
             asx.mediaElementResolution = 25; // ms value for manual interval check
-            asx.zoomMax = 200;               // maximum zoom in in pixels per second
+            asx.zoomMax = 150;               // maximum zoom in in pixels per second
             
             // pass in the source file audio url for wavesurfer, list of annotation objects, and the session object (with wrappers)
-            asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, callback) {
+            asx.initialize = function(audioSourceUrl, annoObjList, sessionObj, secondaryObjList, userObj, loadProgressCallback, callback) {
                 asx.annoObjList = annoObjList;
                 asx.sessionObj = sessionObj;
                 asx.secondaryObjList = secondaryObjList;
@@ -42,13 +42,6 @@
                     progressColor: '#33627c',
                     waveColor: '#4FC3F7'
                 });
-
-                /* Initialize the time line */
-                asx.timeline = Object.create(asx.wavesurfer.Timeline);
-                asx.timeline.init({
-                    wavesurfer: asx.wavesurfer,
-                    container: "#annotate-timeline"
-                });
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,
                     waveColor: '#555',
@@ -57,18 +50,6 @@
 
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
-                    // so simple, but this solution was a long time coming
-                    // When the user seeks in wavesurfer, you only get a float, and getRegionFromTime() is wrong
-                    // So what we do is hook into seek, immediately trigger play(), set this variable and on the very first
-                    // audioprocess callback, get the valid time, pause wavesurfer and turn the flag off
-/*                    if (asx.seeked) {
-                     if (config.debug) {
-                     console.log('audio process event: seeked so pausing');
-                     }
-                     asx.seeked = false;
-                     asx.wavesurfer.pause();
-                     asx.cursor[asx.r.tk] = asx.getRegionFromTime();
-                     }*/
                     if (asx.r.regionMarked) {
                         var currentPos = Math.round(asx.wavesurfer.getCurrentTime()*1000)/1000;
                         // update this wavesurfer region on the fly and...
@@ -83,13 +64,22 @@
                 asx.wavesurfer.on('finish', function() {
                     //var currentTime = asx.wavesurfer.getCurrentTime();
                 });
+                asx.wavesurfer.on('loading', function(prog) {
+                    loadProgressCallback(prog);
+                });
                 asx.wavesurfer.on('ready', function () {
+                    /* Initialize the time line */
+                    asx.timeline = Object.create(asx.wavesurfer.Timeline);
+                    asx.timeline.init({
+                        wavesurfer: asx.wavesurfer,
+                        container: "#annotateTimeline"
+                    });
                     // set the minimum zoom level based on the duration and current screen width
                     asx.zoomMin = asx.wavesurfer.drawer.container.clientWidth / asx.wavesurfer.getDuration();
-                    asx.currentZoom = 85;
+                    asx.currentZoom = asx.wavesurfer.params.minPxPerSec; // it seems wavesurfer chooses a sensible starting point
                     // this is a hack to resize the minimap when we resize wavesurfer, it depends on any-rezize-event.js
                     asx.wavesurferElement = document.getElementById('annotatePlayback');
-                    asx.resizeEvent = function() {
+                    asx.resizeEvent = _.throttle(function() {
                         asx.miniMap.render();
                         asx.miniMap.progress(asx.miniMap.wavesurfer.backend.getPlayedPercents());
                         asx.wavesurfer.drawer.containerWidth = asx.wavesurfer.drawer.container.clientWidth;
@@ -98,7 +88,7 @@
                             asx.currentZoom = asx.zoomMin;
                         }
                         asx.wavesurfer.zoom(asx.currentZoom);
-                    };
+                    }, 50);
                     asx.wavesurferElement.addEventListener('onresize', asx.resizeEvent);
                     // it seems longer recordings will cause the minimap to appear blank, so let's render it when the digest is complete
                     $timeout(function() {
@@ -123,10 +113,6 @@
                         $interval.cancel(asx.intervalPromise);
                         asx.endTime = false;
                     }
-
-
-                    //asx.seeked = true;
-                    //asx.wavesurfer.play();
                     if (asx.r.regionMarked) {
                         if (config.debug){console.log('seek event: regionMarked so deleteLastRegion()');}
                         asx.deleteLastRegion();

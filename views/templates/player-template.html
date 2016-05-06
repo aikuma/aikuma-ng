@@ -1,5 +1,5 @@
 
-<md-content flex layout="row" id="popupContainer">
+<md-content ng-cloak layout="row" id="popupContainer">
     <md-button class="md-raised" aria-label="Check" ng-click="pCtrl.wsPlayback.playPause()" >
         <div ng-if="!pCtrl.isplaying">
             <md-icon md-svg-icon="av:play_arrow" style="width:40px;height:40px"></md-icon>
@@ -8,9 +8,11 @@
             <md-icon md-svg-icon="av:pause" style="width:40px;height:40px"></md-icon>
         </div>
     </md-button>
-    <div flex layout="column">
+    <div flex layout="column" style="height:148px;">
         <div id="session-timeline" style="height:20px"></div>
-        <div flex id="sessionPlayer" style="height:160px;"></div>
+        <div id="sessionPlayer" style="height:128px;overflow:hidden">
+            <md-progress-linear ng-if="pCtrl.loading" md-mode="determinate" value="{{pCtrl.wavesurferProgress}}" style="margin-top:54px"></md-progress-linear>
+        </div>
     </div>
     <md-tooltip>
         <span translate class="md-body-2">AUDIO_SRC</span>

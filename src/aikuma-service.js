@@ -32,9 +32,17 @@
             };
             return ser;
         }])
-        .factory('aikumaService', ['$rootScope', '$window', '$translate', function ($rootScope, $window, $translate) {
+        .factory('aikumaService', ['$animate', '$rootScope', '$window', '$translate', 'audioService', function ($animate, $rootScope, $window, $translate, audioService) {
             var ser = {};
             ser.languages = [];
+            
+            ser.errorFlash = function(element) {
+                audioService.errorBeep();
+                $animate.addClass(element, 'errorflash').then(function() {
+                    $animate.removeClass(element, 'errorflash');
+                    console.log('removing');
+                });
+            };
             
             function loadLanguages(callback) {
                 Papa.parse("extdata/iso-639-3_20160115.tab", {

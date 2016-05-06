@@ -11,6 +11,51 @@
     }
 }
 
+.viewcontent {
+
+}
+
+md-list-item.ng-enter {
+    transition: 0.3s;
+    opacity: 0;
+}
+md-list-item.ng-enter-stagger {
+    transition-delay: 0.1s;
+}
+md-list-item.ng-enter-active {
+    animation: fadeInRight 0.3s;
+    opacity: 1;
+}
+
+div.olacrepeater.ng-enter img {
+    animation: rollIn 1s;
+}
+
+.paddedview {
+    padding: 0px 10px 10px 10px;
+}
+
+.errorflash {
+    animation: errorshake 0.15s;
+}
+
+@keyframes errorshake {
+    from, to {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    25% {
+        -webkit-transform: translate3d(-5px, 0, 0);
+        transform: translate3d(-5px, 0, 0);
+    }
+
+    75% {
+        -webkit-transform: translate3d(5px, 0, 0);
+        transform: translate3d(5px, 0, 0);
+    }
+}
+
 body {
     font-family: 'Roboto', 'Noto Sans TC', "Microsoft Yahei", sans-serif;
     font-size: 20px;
@@ -252,7 +297,6 @@ md-sidenav {
 
 input.md-input:focus{ border-color: green; }
 
-
 .dividerhackfix:focus {
     background-color: yellow;
 }
@@ -376,7 +420,6 @@ md-card.noclicky:focus {
     width: 36px;
 }
 
-
 kbd {
     background-color:#f7f7f7;
     border:1px solid #ccc;
@@ -427,8 +470,6 @@ kbd.menu kbd {
     font-size: 14px;
     opacity: 0.54;
 }
-
-
 
 .camboxnormal {
     border: 4px solid #d0d0d0;

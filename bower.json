@@ -29,6 +29,7 @@
     "any-resize-event": "^1.0.0",
     "webcamjs": "^1.0.6",
     "angular": "1.5.3",
+    "angular-animate": "1.5.3",
     "angular-material": "master"
   },
   "overrides": {

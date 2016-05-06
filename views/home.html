@@ -1,5 +1,5 @@
 <ng-topbar></ng-topbar>
-<md-content flex class="md-padding" style="padding-bottom:30px">
+<md-content ng-cloak flex id="viewcontent" class="paddedview" style="padding-bottom:30px">
 
     <div ng-if="hCtrl.getLoginStatus()">
         <ng-session-list ng-if="userObj" user-obj="userObj" deleted="false" number-of-sessions="hCtrl.numberOfSessions"></ng-session-list>

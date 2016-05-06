@@ -1,10 +1,10 @@
 <ng-topbar session="{{sCtrl.sessionData.names[0]}}"></ng-topbar>
 
-<md-content flex class="md-padding" style="padding-bottom:30px">
+<md-content flex ng-cloak class="paddedview">
     <div flex layout="column" layout-gt-md="row" layout="space-between">
         <div flex>
             <div layout-gt-md="row" layout="column" flex layout-align="space-between">
-            <div layout="row" layout-align="start center"  layout-wrap>
+            <div layout="row" layout-align="start center" layout-wrap>
                 <span class="md-body-2"><md-datepicker class="md-body-2" ng-model="sCtrl.myDate" md-placeholder="{{'DATE' | translate}}" ng-change="sCtrl.saveDate()" ></md-datepicker></span>
                 <span class="md-body-2" ng-repeat="meta in sCtrl.TopLineMetadata" >
                     <md-icon disabled class="statusicon" md-svg-icon="{{meta.icon}}"></md-icon><span translate>{{meta.text}}</span>
@@ -15,8 +15,10 @@
                 </span>
             </div>
             <div layout="row" layout-align="start start" layout-wrap>
-                    <div ng-repeat="type in sCtrl.olactypes">
-                        <img width="32" height="32" ng-click="sCtrl.clickOlac(type.name)" ng-class="(sCtrl.olac === type.name) ? 'imageunderlined' : 'imagenotunderlined'" ng-src="img/icons/discourse-type-icons/32px/{{sCtrl.olac === type.name ? 'clicked' : 'unclick'}}/{{type.name}}.png" style="margin-top:8px;padding-left:8px;padding-right:8px;"/>
+                    <div class="olacrepeater" ng-repeat="type in sCtrl.olactypes">
+                        <img width="32" height="32" ng-click="sCtrl.clickOlac(type.name)" ng-class="(sCtrl.olac === type.name) ? 'imageunderlined' : 'imagenotunderlined'"
+                             ng-src="img/icons/discourse-type-icons/32px/{{sCtrl.olac === type.name ? 'clicked' : 'unclick'}}/{{type.name}}.png"
+                             style="margin-top:8px;padding-left:8px;padding-right:8px;"/>
                         <md-tooltip md-direction="below">
                             <span translate class="md-body-2">{{type.trans}}</span>
                         </md-tooltip>

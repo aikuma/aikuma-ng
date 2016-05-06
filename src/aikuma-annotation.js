@@ -29,6 +29,7 @@
             } else {
                 vm.playRate = 100;
             }
+            vm.viewElement = angular.element( document.querySelector( '#viewcontent' ) );
             // region status flags
             vm.r = annoServ.r;              // By binding an object we share data between the service and this controller
             vm.cursor = annoServ.cursor;
@@ -138,7 +139,10 @@
              };
 
             vm.ffKeyDown = function(nokey) {
-                if (vm.playKeyDownStat) {return;}  // Block multiple keys
+                if (vm.playKeyDownStat) { // Block multiple keys
+                    aikumaService.errorFlash(vm.viewElement);
+                    return;
+                }
                 vm.ffKeyDownStat = true;
                 if (config.debug) {console.log('ffkey down');}
                 if (vm.r.regionMarked) {
@@ -249,7 +253,6 @@
                 }
                 if (nokey) {$scope.$apply();}
             };
-
             vm.escKey = function(nokey) {
                 if (vm.hasAudio(vm.r.tk)) {
                     $translate('AUDIO_NODEL').then(function (message) {
@@ -260,7 +263,6 @@
                 annoServ.deleteLastRegion();
                 vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
             };
-
             vm.switchAnnoKey = function(reverse) {
                 var spos = vm.getNextAnno(vm.selAnno[vm.r.tk], reverse);
                 if (spos > -1) {
@@ -268,8 +270,6 @@
                     vm.restoreFocus();
                 }
             };
-
-
             // cycle to next track (on tab)
             vm.switchTrackKey = function(nokey) {
                 var numtracks = vm.tracks.list.length;
@@ -286,8 +286,6 @@
                 }
             };
 
-            
-            //
             vm.voiceRecogActive = false;
             vm.voiceInputKey = function(nokey) {
                 if (!vm.onlineStatus) {
@@ -312,17 +310,17 @@
                     audioService.startVoiceRecog(langCode, recogUpdate, recogFinished);
                     if (nokey) {$scope.$apply();}
                 }
-
-            };
-   
-
+            }
             //
             // START UP
             //
             // Set up wavesurfer
             // callback registers hotkeys and switches to the selected annotation
-            annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, $scope.secondaryList, $scope.userObj, function() {
+            vm.wavesurferProgress = 0;
+            vm.loading = true; // for progress indicator
+            annoServ.initialize($scope.audioSourceUrl, $scope.annotationObjList, $scope.sessionObj, $scope.secondaryList, $scope.userObj, loadProgress, function() {
                 vm.currentZoom = annoServ.wavesurfer.minPxPerSec;
+                vm.loading = false;
                 vm.setupKeys();
                 vm.tracks = annoServ.tracks;                // array of objects per respeak/translate
                 vm.tracks.audio = annoServ.tracks.audio;
@@ -346,13 +344,16 @@
                         $scope.$apply();
                     }
                 });
-
                  $scope.$apply();
             });
 
             //
             // FUNCTIONS BOUND TO VIEW MODEL
             //
+            function loadProgress(prog){
+                vm.wavesurferProgress = prog;
+                $scope.$apply();
+            };
 
             vm.selectAnno = function(annoIdx) {
                 if (annoIdx !== vm.selAnno[vm.r.tk]) {

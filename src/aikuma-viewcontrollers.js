@@ -5,12 +5,13 @@
     'use strict';
     angular
         .module('aikuma-viewcontrollers', [])
-        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', 'aikumaDialog', function($scope, $location, dataService, loginService, aikumaDialog) {
+        .controller('homeController', ['$scope', '$location', 'dataService', 'loginService', 'aikumaDialog', '$animate', function($scope, $location, dataService, loginService, aikumaDialog, $animate) {
             var vm = this;
             
             vm.speedDial = false;
             vm.numberOfSessions = 0; // binding from session list directive
             vm.getLoginStatus = loginService.getLoginStatus;    //wrapper function for js primitive data binding
+            vm.viewElement = angular.element( document.querySelector( '#viewcontent' ) );
             $scope.$watch(vm.getLoginStatus, function(isLoggedin) {
                 if(isLoggedin) {
                     dataService.get('user', loginService.getLoggedinUserId()).then(function(userObj) {
@@ -28,6 +29,10 @@
             loginService.loginPreviousUser();
             vm.login = function(userIndex) {
                 loginService.loginUser(vm.userList[userIndex]._ID);
+            };
+
+            vm.flash = function() {
+
             };
             
             vm.createNewUser = function() {

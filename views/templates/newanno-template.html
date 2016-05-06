@@ -1,22 +1,22 @@
 <div flex layout="row" ng-cloak>
-    <div layout="column" resizable r-directions="['right']" r-flex="false" style="width:60%">
-        <div layout="row">
-            <div layout="column" layout-align="space-between center">
-                <div>
-                    <md-button class="md-icon-button" aria-label="Zoom In" ng-click="annoC.zoomIn()">
-                        <md-icon class="imgsvgicon" md-svg-icon="action:zoom_in"></md-icon>
-                    </md-button>
-                </div>
-                <md-slider aria-label="zoom level" min="{{annoC.getMinZoom()}}" max="{{annoC.getMaxZoom()}}" ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical></md-slider>
-                <div>
-                    <md-button class="md-icon-button" aria-label="Zoom Out" ng-click="annoC.zoomOut()">
-                        <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
-                    </md-button>
+    <div layout="column" id="viewcontent" resizable r-directions="['right']" r-flex="false" style="width:60%">
+        <div layout="row" style="padding-left:15px">
+            <div flex layout="column">
+                <div flex id="annotateTimeline" style="height:20px"></div>
+                <div id="annotatePlayback" style="height:180px;overflow:hidden">
+                    <md-progress-linear ng-if="annoC.loading" md-mode="determinate" value="{{annoC.wavesurferProgress}}" style="margin-top:68px;"></md-progress-linear>
                 </div>
             </div>
-            <div flex layout="column" >
-                <div id="annotate-timeline" style="height:20px" layout-fill></div>
-                <div id="annotatePlayback"></div>
+            <div layout="column" layout-align="center space-between" style="width:25px">
+                <md-button class="md-icon-button" aria-label="Zoom In" ng-click="annoC.zoomIn()" style="margin-bottom:-5px">
+                    <md-icon class="imgsvgicon" md-svg-icon="action:zoom_in"></md-icon>
+                </md-button>
+                <md-slider aria-label="zoom level" min="{{annoC.getMinZoom()}}" max="{{annoC.getMaxZoom()}}"
+                           ng-model="annoC.currentZoom" ng-change="annoC.changeZoom()" md-vertical
+                           style="margin-top:-3px;margin-left:0px"></md-slider>
+                <md-button class="md-icon-button" aria-label="Zoom Out" ng-click="annoC.zoomOut()">
+                    <md-icon class="imgsvgicon" md-svg-icon="action:zoom_out"></md-icon>
+                </md-button>
             </div>
         </div>
 
@@ -39,7 +39,7 @@
             </md-slider>
         </div>
 
-        <div ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer" style="padding-left:12px;">
+        <div ng-if="annoC.tracks[track].hasAnno" ng-repeat="track in annoC.tracks.list" layout="row" id="popupContainer" style="margin-left:15px;">
             <div flex ng-class="annoC.r.tk === track ? 'activeannotation' : 'inactiveannotation'" ng-click="annoC.selectTrack(track)">
                 <div ng-repeat="anno in annoC.tracks[track].annos track by anno.id" layout="row" layout-align="start center">
                     <md-menu>
@@ -139,7 +139,7 @@ annoC.canExport(): {{annoC.canExport()}}
             </pre>
         </span>
     </div>
-    <div layout="column" style="width:40%;overflow-y: scroll; padding-left:12px;">
+    <div layout="column" style="width:40%;overflow-y: scroll; padding-left:12px">
         <div style="height:50px;" layout="row" layout-align="space-between center" >
             <md-button aria-label="{{annoC.tracks[annoC.r.tk].type | translate}}">
                 <md-icon class="imgsvgicon" ng-style="annoC.tracks[annoC.r.tk].color" style="width:40px;height:40px;" md-svg-icon="{{annoC.tracks[annoC.r.tk].icon}}"></md-icon>
