@@ -27,7 +27,7 @@
                 }
             };
         })
-        .factory('loginService', ['$translate', 'dataService', function ($translate, dataService) {
+        .factory('loginService', ['$translate', 'config', 'dataService', function ($translate, config, dataService) {
             var loginStatus = false;
             var currentUserData;
             
@@ -61,6 +61,7 @@
                     else
                         localStorage.setItem('userId', currentUserData._ID);
                     
+                    config.debug = currentUserData.preferences.debugMode;
                 });
             };
             
@@ -73,6 +74,7 @@
                     chrome.storage.local.remove('userId');
                 else
                     localStorage.removeItem('userId');
+                config.debug=false;
             };
             
             service.getLoginStatus = function() {

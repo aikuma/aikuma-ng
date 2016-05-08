@@ -31,7 +31,7 @@
         <md-switch flex="25" aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
         </md-switch>
-        <md-switch flex="25" aria-label="Enable debug mode" ng-model="seCtrl.debugMode" ng-change="seCtrl.saveDebug()">
+        <md-switch flex="25" aria-label="Enable debug mode" ng-model="seCtrl.preferences.debugMode" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>DEBUG_SWITCH</span>
         </md-switch>
         <md-switch flex="25" aria-label="Enable peak caching" ng-model="seCtrl.cachePeak" ng-change="seCtrl.saveOption()">

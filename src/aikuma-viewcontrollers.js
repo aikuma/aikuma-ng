@@ -57,8 +57,6 @@
             var vm = this;
             vm.debug = function() { return config.debug; };
             vm.preferences = userObj.data.preferences;
-            vm.timeStretching = config.timeStretch;
-            vm.debugMode = config.debug;
             
             // Temporary feature
             vm.cachePeak = config.cachePeak;
@@ -82,17 +80,10 @@
                         vm.isActive[id] = true;
                 };
             });
-
-            vm.timeStretch = function () {
-                config.timeStretch = vm.timeStretching;
-            };
             
             vm.saveSetting = function() {
+                config.debug = vm.preferences.debugMode;
                 userObj.save();
-            };
-            
-            vm.saveDebug = function() {
-                config.debug = vm.debugMode;
             };
 
             $scope.$watch('zipFile', function (file) {
