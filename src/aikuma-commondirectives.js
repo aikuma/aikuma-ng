@@ -42,6 +42,7 @@
                 restrict: "E",
                 scope: {
                     source: '@',
+                    peaks: '=',
                     wavesurfer: '='
                 },
                 templateUrl: "views/templates/player-template.html",
@@ -558,6 +559,13 @@
             hideScrollbar: false,
             scrollParent: true
         };
+        
+        if($scope.peaks) {
+            wsdefaults.backend = 'MediaElement';
+            wsdefaults.minPxPerSec = $scope.peaks[0];
+            vm.peakList = $scope.peaks[1];
+        }
+
         vm.options = angular.extend(wsdefaults, $attrs);
         vm.wsPlayback.init(vm.options);
 /*
@@ -572,7 +580,7 @@
 
         $scope.$watch('source', function(url) {
             if(url) {
-                vm.wsPlayback.load(url);
+                vm.wsPlayback.load(url, vm.peakList);
             }
         });
 
@@ -612,8 +620,6 @@
         $scope.$on('$destroy', function() {
             vm.wsPlayback.destroy();
         });
-        
-
         
     };
     playerController.$inject = ['$scope', '$attrs'];

@@ -1,7 +1,7 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
 <md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
     
-    <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" href="{{seCtrl.dataUri}}">
+    <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" download="{{seCtrl.backupName}}" href="{{seCtrl.dataUri}}">
         <md-icon md-svg-icon="file:file_download"></md-icon>
         {{"BACKUP_DOWN" | translate}}
     </md-button>
@@ -33,6 +33,9 @@
         </md-switch>
         <md-switch flex="25" aria-label="Enable debug mode" ng-model="seCtrl.debugMode" ng-change="seCtrl.saveDebug()">
             <span class="md-body-2" translate>DEBUG_SWITCH</span>
+        </md-switch>
+        <md-switch flex="25" aria-label="Enable peak caching" ng-model="seCtrl.cachePeak" ng-change="seCtrl.saveOption()">
+            <span class="md-body-2">Enable peak caching</span>
         </md-switch>
     </div>
 

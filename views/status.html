@@ -32,7 +32,7 @@
             </div>
             </div>
 
-            <ng-player flex source="{{sCtrl.audioSourceUrl}}" wave-color="#4FC3F7" progress-color="#33627c" height="120" wavesurfer="sCtrl.wavesurfer"></ng-player>
+            <ng-player source="{{sCtrl.audioSourceUrl}}" peaks="sCtrl.audioSourcePeaks" wave-color="#4FC3F7" progress-color="#33627c" height="120" wavesurfer="sCtrl.wavesurfer"></ng-player>
             <ng-language-selector flex lang-id-name-map="sCtrl.langIdNameMap" lang-id-list="sCtrl.srcLangIds" on-change="sCtrl.saveLangs(langIds)"></ng-language-selector>
             <ng-person-selector flex role="speakerIds" user-obj="sCtrl.userObj" session-obj="sCtrl.sessionObj"></ng-person-selector>
             <ng-tag-selector user-obj="sCtrl.userObj" session-obj="sCtrl.sessionObj"></ng-tag-selector>

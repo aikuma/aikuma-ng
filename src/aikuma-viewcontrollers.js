@@ -59,8 +59,19 @@
             vm.preferences = userObj.data.preferences;
             vm.timeStretching = config.timeStretch;
             vm.debugMode = config.debug;
+            
+            // Temporary feature
+            vm.cachePeak = config.cachePeak;
+            vm.saveOption = function() {
+                config.cachePeak = vm.cachePeak;
+            }
 
             dataService.getJsonBackup().then(function(db) {
+                db['session'].forEach(function(sessionData){
+                    var peakData = sessionData.source.peaks;
+                    if(peakData)
+                        sessionData.source.peaks = peakData[0] + 'px/sec, ' + peakData[1].length + " peaks";
+                });
                 vm.db = db;
                 vm.keys = Object.keys(db);
                 vm.isActive = {};
@@ -113,10 +124,11 @@
                 });
                 
             } else {
-                fileService.getBackupFile('uri').then(function(uri) {
-                    vm.dataUri = uri;
+                fileService.getBackupFile('blob').then(function(blob) {
+                    vm.dataUri = URL.createObjectURL(blob);
+                    vm.backupName = "backup.zip"
                     vm.dataPrepared = true;
-                }); 
+                })
             }
             
             
@@ -399,6 +411,9 @@
 
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
+                if(vm.sessionData.source.peaks) {
+                    vm.audioSourcePeaks = vm.sessionData.source.peaks;
+                }
             } else {
                 aikumaDialog.toast('Aint no audio file for this session!');
             }
@@ -549,6 +564,9 @@
         
             if(vm.sessionData.source && vm.sessionData.source.recordFileId) {
                 vm.audioSourceUrl = vm.userData.files[vm.sessionData.source.recordFileId].url;
+                if(vm.sessionData.source.peaks) {
+                    vm.audioSourcePeaks = vm.sessionData.source.peaks;
+                }
             }
         }])
         .controller('annotateViewController', ['$scope', '$routeParams', 'userObj', 'sessionObj', 'annotationObjList', 'secondaryList', function($scope, $routeParams, userObj, sessionObj, annotationObjList, secondaryList) {

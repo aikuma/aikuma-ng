@@ -25,7 +25,8 @@
                     respeakObj: '=',
                     langIdNameMap: '=',
                     type: '@',
-                    source: '@'
+                    source: '@',
+                    peaks: '='
                 },
                 templateUrl: "views/templates/respeak2-template.html",
                 controller: respeak2DirectiveController,
@@ -47,10 +48,66 @@
         vm.isLoading = function() {
             return vm.loadingStatus;
         };
+
+        // AudioBuffer and Waveform-width
+        var peaks = null;
+        var minPxPerSec = config.cachePeak? 4 : 20;
+        var getPeaks = function (buffer, pxPerSec, width) {
+            pxPerSec = pxPerSec || 1;
+            width = width || Math.round(buffer.duration * pxPerSec * window.devicePixelRatio);
+            
+            var sampleSize = buffer.length / width; 
+            var sampleStep = ~~(sampleSize / 10) || 1; // 10 samples for one peak
+            //var peaks = [];
+            var mergedPeaks = [];
+            
+            for (var ch = 0; ch < buffer.numberOfChannels; ch++) {
+                //peaks[ch] = [];
+                var channelData = buffer.getChannelData(ch);
+                
+                // Extract waveform-peaks
+                for (var i = 0; i < width; i++) {
+                    var start = ~~(i * sampleSize);
+                    var end = ~~(start + sampleSize);
+                    var min = 0;
+                    var max = 0;
+
+                    for (var j = start; j < end; j += sampleStep) {
+                        var value = channelData[j];
+
+                        if (value > max) {
+                            max = value;
+                        }
+
+                        if (value < min) {
+                            min = value;
+                        }
+                    }
+
+                    //peaks[ch][2 * i] = max;
+                    //peaks[ch][2 * i + 1] = min;
+                    
+                    if (ch == 0 || max > mergedPeaks[2 * i]) {
+                        mergedPeaks[2 * i] = max;
+                    }
+
+                    if (ch == 0 || min < mergedPeaks[2 * i + 1]) {
+                        mergedPeaks[2 * i + 1] = min;
+                    }
+                }
+            }
+
+            // max/min within sampleSize across all channels
+            //return peaks;
+            return mergedPeaks;
+        }
+        
         if(vm.externalRecord) {
             vm.wsRecord.init({
                 container: "#respeakRecord",
-                backend: "WebAudio",
+                //backend: "WebAudio",
+                backend: (config.cachePeak? "MediaElement" : "WebAudio"),
+                minPxPerSec: minPxPerSec,
                 renderer: "MultiCanvas",
                 normalize: true,
                 hideScrollbar: false,
@@ -67,9 +124,14 @@
             vm.loadingStatus = true;
             var fileReader = new FileReader();
             fileReader.onload = function() {
+                
                 vm.context.decodeAudioData(this.result, function (buffer) {
-                        vm.loadingStatus = false;
-                        vm.wsRecord.loadBlob(vm.externalRecord);
+                    if(config.cachePeak) {
+                        peaks = getPeaks(buffer, minPxPerSec);
+                    }
+                    vm.loadingStatus = false;
+                    var u = URL.createObjectURL(vm.externalRecord);
+                    vm.wsRecord.load(u, peaks);
                 }).catch( function(err) {
                     vm.loadingStatus = false;
                     $scope.$apply();
@@ -239,9 +301,12 @@
                         recordFileId: fileObjId,
                         created: Date.now(),
                         duration: vm.recordDurMsec,
-                        langIds: vm.selectedLanguages
+                        langIds: vm.selectedLanguages,
                         //langIds: vm.selectedLanguages.map(function(lang) { return lang.id; })
                     };
+                    if(peaks) {
+                        sessionData.source.peaks = [minPxPerSec, peaks];
+                    }
 
                     return dataService.setSession(loginService.getLoggedinUserId(), sessionData);
                 }).then(function(sessionId) {
@@ -437,13 +502,21 @@
         //
         // Set up Wavesurfer
         //
-        var wsPlayback = WaveSurfer.create({
-            backend: vm.timestretchEnabled ? 'MediaElement' : 'WebAudio',
+        var wsOptions = {
+            backend: vm.timestretchEnabled? 'MediaElement' : 'WebAudio',
             container: "#respeakPlayback",
             normalize: true,
             hideScrollbar: false,
             scrollParent: true
-        });
+        };
+        
+        if($scope.peaks) {
+            wsOptions.backend = 'MediaElement';
+            wsOptions.minPxPerSec = $scope.peaks[0];
+            vm.peakList = $scope.peaks[1];
+        }
+        
+        var wsPlayback = WaveSurfer.create(wsOptions);
 
         /* Initialize the time line */
         var timeline = Object.create(wsPlayback.Timeline);
@@ -458,7 +531,7 @@
             progressColor: '#999',
             cursorColor: '#999'
         });
-        wsPlayback.load($scope.source);
+        wsPlayback.load($scope.source, vm.peakList);
         // Register key bindings after wavesurfer is ready to play
         wsPlayback.on('ready', function() {
             $scope.$apply(restoreState);

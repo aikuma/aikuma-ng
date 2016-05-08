@@ -29,6 +29,7 @@
             fileStorageMB: 1000,
             debug: false,
             userMediaElement: false,
+            cachePeak: false,
             languages: [
                 {
                     code:'en',
@@ -305,7 +306,7 @@
             }])
         .config(['$compileProvider', function($compileProvider) {
             $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|filesystem|chrome-extension):/);
-            $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data|filesystem|chrome-extension):/);
+            $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data|blob|filesystem|chrome-extension):/);
         }])
         .config(['$indexedDBProvider', function($indexedDBProvider) {
             $indexedDBProvider
