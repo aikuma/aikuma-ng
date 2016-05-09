@@ -275,7 +275,6 @@
 
         // This might not work right. Errors observed on querying length of unset variables.
         vm.isMetaEmpty = function() {
-            vm.noMeta = {rec: !vm.hasrecdata, langs: vm.selectedLanguages.length == 0, title: !vm.selectedTitle };
             return !vm.hasrecdata || vm.selectedLanguages.length === 0 || !vm.selectedTitle;// vm.selectedTitles.length === 0;
         };
         

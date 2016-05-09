@@ -20,7 +20,7 @@
             'aikuma-dataservice',      // data service dealing with metadata and files
             'ngPrettyJson',            // for debugging
             'ngMessages',              // for validation messages (can we get rid of this?)
-            'smoothScroll'
+            'duScroll'
         ])
         .constant('config', {
             appName: 'AikumaNG',

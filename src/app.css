@@ -11,8 +11,8 @@
     }
 }
 
-.viewcontent {
-
+md-input-container {
+    margin: 0 0 0 0px;
 }
 
 @keyframes rollInLogo {
@@ -322,8 +322,6 @@ md-sidenav {
     overflow-y: scroll;
     height:400px;
 }
-
-input.md-input:focus{ border-color: green; }
 
 .dividerhackfix:focus {
     background-color: yellow;

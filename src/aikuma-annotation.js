@@ -15,7 +15,7 @@
             };
         });
 
-        var ngAnnoController = function (smoothScroll, config, annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
+        var ngAnnoController = function ($document, config, annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
             var vm = this;
             $scope.onlineStatus = aikumaService;
             $scope.$watch('onlineStatus.isOnline()', function(online) {
@@ -154,12 +154,13 @@
                     if (config.debug) {console.log('ffkey: in a region');}
                     if (vm.cursor[vm.r.tk] === (annoServ.regionList.length -1)) {
                         if (config.debug) {console.log('is last region, so go to virgin space, seek to playIn');}
-                        vm.setRegion(-1);
                         annoServ.seekToTime(annoServ.playIn);
+                        vm.setRegion(-1);
                     } else {
                         if (config.debug) {console.log('not last region so seeking to next region');}
                         // seek to next region, curRegion will auto update
                         annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk] +1 ].start);
+                        vm.setRegion();
                     }
                 } else {
                     if (config.debug) {console.log('ffkey: in virgin space');}
@@ -219,6 +220,7 @@
                             }
                         }
                         annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk] - 1].start);
+                        vm.setRegion();
                         vm.restoreFocus();
                     }
                 } else {
@@ -243,6 +245,7 @@
                             } else {
                                 if (config.debug) {console.log('rwkey: current pos is close to end, seek to start of last region');}
                                 annoServ.seekToTime(_.last(annoServ.regionList).start);
+                                vm.cursor[vm.r.tk] = annoServ.regionList.length -1;
                             }
                             vm.restoreFocus();
                         } else {
@@ -699,14 +702,17 @@
                 return annoServ.zoomMax;
             };
 
+            vm.transcriptElement = angular.element(document.getElementById('fux0r'));
             vm.setRegion = function(region) {
                 if (region === undefined) {
                     region = annoServ.getRegionFromTime();
                 }
                 if (region !== vm.cursor[vm.r.tk]) {
                     vm.cursor[vm.r.tk] = region;
-/*                    var transcriptElement = document.getElementById('tran'+region);
-                    smoothScroll(transcriptElement);*/
+                    if (region !== -1) {
+                        var someElement = angular.element(document.getElementById('tran'+region));
+                        vm.transcriptElement.scrollToElement(someElement, 80, 250);
+                    }
                     //$scope.$apply();
                 }
             };
@@ -718,9 +724,17 @@
             vm.getRegions = function() {
                 return annoServ.regionList.length;
             };
+            vm.showCurrentRegion = function() {
+                if (vm.cursor[vm.r.tk] === -1) {return '';}
+                var thisReg = annoServ.regionList[vm.cursor[vm.r.tk]];
+                return 'st: '+thisReg.start+' ed: '+thisReg.end;
+            };
+            vm.showCurrentTime = function() {
+                return annoServ.wavesurfer.getCurrentTime();
+            };
 
 
         };
-    ngAnnoController.$inject = ['smoothScroll', 'config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
+    ngAnnoController.$inject = ['$document', 'config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
 
 })();

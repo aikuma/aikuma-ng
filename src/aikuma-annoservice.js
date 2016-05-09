@@ -51,7 +51,7 @@
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
                     if (asx.r.regionMarked) {
-                        var currentPos = Math.round(asx.wavesurfer.getCurrentTime()*1000)/1000;
+                        var currentPos = roundMS(asx.wavesurfer.getCurrentTime());
                         // update this wavesurfer region on the fly and...
                         _.last(asx.regionList).update({end: currentPos});
                         // update the backend region on the fly
@@ -278,7 +278,7 @@
                 asx.r.regionMarked = false;
                 asx.makeWSRegions3(track);
                 if (asx.regionList.length > 0) {
-                    asx.playIn = _.last(asx.regionList).end + 0.001;
+                    asx.playIn = roundMS(_.last(asx.regionList).end) + 0.001;
                 } else {
                     asx.playIn = 0;
                 }
@@ -295,9 +295,9 @@
             
             asx.getRegionFromTime = function(seektime) {
                 if (seektime === undefined) {seektime = asx.wavesurfer.getCurrentTime();}
-                seektime = Math.round(seektime*1000)/1000;
+                seektime = roundMS(seektime);
                 var fidx = _.findIndex(asx.regionList, function(reg){
-                    return ((seektime >= reg.start) && (seektime < reg.end));
+                    return ((seektime >= reg.start) && (seektime <= reg.end));
                 });
                 return fidx;
             };
@@ -364,8 +364,8 @@
                 };
                 var hue = 90; // region is green for now
                 var reg = asx.wavesurfer.addRegion({
-                    start: starttime,
-                    end: starttime,
+                    start: roundMS(starttime),
+                    end: roundMS(starttime),
                     color: 'hsla('+hue+', 100%, 30%, 0.10)',
                     drag: false,
                     resize: false,
@@ -398,7 +398,7 @@
                         data: {colidx:colidx}
                     }
                 );
-                asx.playIn = _.last(asx.regionList).end + 0.001;
+                asx.playIn = roundMS(_.last(asx.regionList).end) + 0.001;
             };
 
             // delete the last audio, remove the wavesurfer region, seek to playIn, disable recording and make a new Segmap
@@ -409,7 +409,7 @@
                 asx.r.regionMarked = false;
                 if (asx.regionList.length) {
                     if (config.debug) {console.log('still have regions, set playin to last region end:' + (_.last(asx.regionList).end + 0.001));}
-                    asx.playIn = _.last(asx.regionList).end + 0.001;
+                    asx.playIn = roundMS(_.last(asx.regionList).end) + 0.001;
                 } else {
                     if (config.debug) {console.log('no regions playIn set to 0');}
                     asx.playIn = 0;
@@ -537,14 +537,17 @@
             };
             
             //
-            // Wavesurfer nonsense
-            //
+            // Wavesurfer doesn't implement a native seek to time for some reason and I'll be damned if we risk rounding errors by making a progress float only for 
+            // wavesurfer to convert that back to a time!
             asx.seekToTime = function(time) {
                 asx.r.regionMarked = false;
                 asx.regionPlayback = false;
-                var length = asx.wavesurfer.getDuration();
-                var floatpos = time / length;
-                asx.wavesurfer.seekTo(floatpos);
+                asx.wavesurfer.backend.seekTo(roundMS(time));
+                asx.wavesurfer.drawer.progress(asx.wavesurfer.backend.getPlayedPercents());
+                if (!asx.wavesurfer.backend.isPaused()) {
+                    asx.wavesurfer.backend.pause();
+                    asx.wavesurfer.backend.play();
+                }
             };
 
             asx.seekRegion = function(idx) {
@@ -553,6 +556,9 @@
                 }
                 asx.seekToTime(asx.regionList[idx].start);
             };
-           
+
+            function roundMS(time) {
+                return Math.ceil(time * 1000)/1000;
+            }
         }]);
 })();
