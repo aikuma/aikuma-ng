@@ -41,13 +41,13 @@
                     </div>
                     <div flex layout="column" layout-align="start">
                         <span flex></span>
-                        <div ng-if="anno.summary[0]" style="z-index:-1;position:relative;line-height: 20px;"><span ng-if="!(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.playindex == 0)">&nbsp;</span>
+                        <div style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
                             <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 0) ? 'stextlineactive' : 'stextline'">{{anno.summary[0]}}</span>
                         </div>
-                        <div ng-if="anno.summary[1]" style="z-index:-1;position:relative;line-height: 20px;"><span ng-if="!(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 1)">&nbsp;</span>
+                        <div style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
                             <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 1) ? 'stextlineactive' : 'stextline'">{{anno.summary[1]}}</span>
                         </div>
-                        <div ng-if="anno.summary[2]" style="z-index:-1;position:relative;line-height: 20px;"><span ng-if="!(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 2)">&nbsp;</span>
+                        <div style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
                             <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 2) ? 'stextlineactive' : 'stextline'">{{anno.summary[2]}}</span>
                         </div>
                         <div ng-if="!anno.summary[0] && !anno.summary[0] && !anno.summary[0]">

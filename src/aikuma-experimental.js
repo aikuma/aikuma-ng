@@ -94,11 +94,10 @@
                 }
             });
         }
-
+        
         function makeSummary(annotations, index) {
             if (!annotations || !annotations.length) {return [null, null, null];}
-            var summarytext = [];
-            summarytext[0] = null;
+            var summarytext = ['','',''];
             if (index === 0) {
                 summarytext[0] = annotations[index];
                 summarytext[1] = annotations[index+1];
@@ -218,14 +217,23 @@
         vm.pcssthis = {};
         vm.playingSec = false;
         vm.stopPlayingSecondary = function () {
+            if (vm.mediaElement && !vm.mediaElement.paused) {
+                vm.mediaElement.pause();
+            }
             $scope.wavesurfer.unAll();
             $scope.wavesurfer.clearRegions();
             $scope.wavesurfer.stop();
             vm.pcss[vm.playingSec] = false;
             vm.playingSec = false;
+            vm.sline = 0;
         };
+        vm.mediaElement = null; // We will use this if we are setting secondary audio
         vm.playSecondary = function(track) {
-            if (vm.playingSec) {vm.stopPlayingSecondary();}
+            if (vm.playingSec) {
+                vm.stopPlayingSecondary();
+                vm.pcssthis[track] = false;
+                return;
+            }
             vm.playingSec = track;
             var secondary = vm.tracks[track].secondary;
             var ssid = secondary.segment.sourceSegId;
@@ -274,7 +282,7 @@
                     var start = secseg[vm.playindex][0];
                     var end = secseg[vm.playindex][1];
                     vm.pcssthis[track] = true;
-                    audioService.playbackLocalFile(audioContext, fileh, start, end, ascallback);
+                    vm.mediaElement = audioService.playFile(fileh, start, ascallback, end);
                 }
                 $scope.$apply();
             };

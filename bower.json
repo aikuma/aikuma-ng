@@ -30,7 +30,8 @@
     "webcamjs": "^1.0.6",
     "angular": "1.5.3",
     "angular-animate": "1.5.3",
-    "angular-material": "master"
+    "angular-material": "master",
+    "ngSmoothScroll": "^2.0.0"
   },
   "overrides": {
     "wavesurfer.js": {

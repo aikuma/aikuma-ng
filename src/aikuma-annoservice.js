@@ -40,7 +40,8 @@
                     hideScrollbar: false,
                     scrollParent: true,
                     progressColor: '#33627c',
-                    waveColor: '#4FC3F7'
+                    waveColor: '#4FC3F7',
+                    barWidth: 2
                 });
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,
@@ -87,7 +88,8 @@
                         if (asx.currentZoom < asx.zoomMin) {
                             asx.currentZoom = asx.zoomMin;
                         }
-                        asx.wavesurfer.zoom(asx.currentZoom);
+                        asx.wavesurfer.params.minPxPerSec = asx.currentZoom;
+                        asx.wavesurfer.drawBuffer();
                     }, 50);
                     asx.wavesurferElement.addEventListener('onresize', asx.resizeEvent);
                     // it seems longer recordings will cause the minimap to appear blank, so let's render it when the digest is complete

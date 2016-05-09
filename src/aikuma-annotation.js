@@ -15,7 +15,7 @@
             };
         });
 
-        var ngAnnoController = function (config, annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
+        var ngAnnoController = function (smoothScroll, config, annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
             var vm = this;
             $scope.onlineStatus = aikumaService;
             $scope.$watch('onlineStatus.isOnline()', function(online) {
@@ -95,7 +95,6 @@
                     // if we are within a region then we need to play this region
                     if (vm.cursor[vm.r.tk] > -1) {
                         if (config.debug) {console.log('In an existing region, so play it');}
-
                         vm.playAudio();
                     } else {
                         if (config.debug) {console.log('In virgin space');}
@@ -107,7 +106,8 @@
                             if (config.debug) {console.log('> playIn, set regionMarked');}
                             annoServ.makeNewRegion(thisTime);
                             vm.r.regionMarked = true;
-                            vm.cursor[vm.r.tk] = annoServ.regionList.length - 1;
+                            vm.setRegion(annoServ.regionList.length - 1);
+                            $scope.$apply();
                         }
                         if (config.debug) {console.log('begin playback');}
                         annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
@@ -120,7 +120,6 @@
 
             vm.playKeyUp = function(nokey) {
                 vm.playKeyDownStat = false;
-                if (vm.ffKeyDownStat) {return;}  // Block multiple keys
                 if (vm.isPlaying) {
                     if (config.debug) {
                         console.log('playkey up, was playing, pause, set isPlaying false');
@@ -132,7 +131,8 @@
                         if ((lr.end - lr.start) < 0.5) {
                             annoServ.seekToTime(lr.start);
                             annoServ.deleteLastRegion();
-                            vm.cursor[vm.r.tk] = -1;
+                            vm.setRegion(-1);
+                            $scope.$apply();
                         }
                     }
                 }
@@ -148,13 +148,13 @@
                 if (vm.r.regionMarked) {
                     if (config.debug) {console.log('regionMarked, so delete last region');}
                     annoServ.deleteLastRegion();
-                    vm.cursor[vm.r.tk] = -1;
+                    vm.setRegion(-1);
                 }
                 if (vm.cursor[vm.r.tk] > -1)  {
                     if (config.debug) {console.log('ffkey: in a region');}
                     if (vm.cursor[vm.r.tk] === (annoServ.regionList.length -1)) {
                         if (config.debug) {console.log('is last region, so go to virgin space, seek to playIn');}
-                        vm.cursor[vm.r.tk] = -1;
+                        vm.setRegion(-1);
                         annoServ.seekToTime(annoServ.playIn);
                     } else {
                         if (config.debug) {console.log('not last region so seeking to next region');}
@@ -182,7 +182,7 @@
                 if (annoServ.wavesurfer.isPlaying()) {
                     if (config.debug) {console.log('ffkey: was playing so pause');}
                     annoServ.wavesurfer.pause();
-                    vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
+                    vm.setRegion();
                 }
             };
 
@@ -191,7 +191,7 @@
                 if (vm.r.regionMarked) {
                     if (config.debug) {console.log('region marked so deleteLastRegion()');}
                     annoServ.deleteLastRegion();
-                    vm.cursor[vm.r.tk] = -1;
+                    vm.setRegion(-1);
                 }
                 var thisTime = annoServ.wavesurfer.getCurrentTime();
                 thisTime = Math.round(thisTime*1000)/1000;
@@ -209,7 +209,7 @@
                             if (config.debug) {console.log('rwkey: in first region');}
                             if (thisTime > 0) { // we want to rewind past 0 but the first region doesn't start at 0
                                 if (config.debug) {console.log('rwkey: but not at 0 so skip back');}
-                                vm.cursor[vm.r.tk] = -1;
+                                vm.setRegion(-1);
                                 annoServ.seekToTime(Math.max(0, (thisTime - vm.skipTimeValue)));
                                 return;
                             } else {
@@ -261,7 +261,8 @@
                     return;
                 }
                 annoServ.deleteLastRegion();
-                vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
+                vm.setRegion();
+                if (nokey) ($scope.$apply());
             };
             vm.switchAnnoKey = function(reverse) {
                 var spos = vm.getNextAnno(vm.selAnno[vm.r.tk], reverse);
@@ -330,19 +331,15 @@
                 vm.selAnno[vm.r.tk] = _.findIndex(annoServ.tracks[vm.r.tk].annos, function(a) {return a.id === $scope.selectedAnno;});  // index of anno in a track
                 annoServ.switchToTrack(vm.r.tk);
                 if (annoServ.regionList.length) {
-                    vm.cursor[vm.r.tk] = 0;
+                    vm.setRegion(0);
                     annoServ.seekRegion(0);
                     vm.restoreFocus();
                 } else {
-                    vm.cursor[vm.r.tk] = -1;
+                    vm.setRegion(-1);
                 }
                 // update UI on seeks (otherwise we'd have to pass the scope to the annotation service)
                 annoServ.wavesurfer.on('seek', function() {
-                    var newRegion = annoServ.getRegionFromTime();
-                    if (vm.cursor[vm.r.tk] !== newRegion) {
-                        vm.cursor[vm.r.tk] = newRegion;
-                        $scope.$apply();
-                    }
+                    vm.setRegion();
                 });
                  $scope.$apply();
             });
@@ -358,7 +355,6 @@
             vm.selectAnno = function(annoIdx) {
                 if (annoIdx !== vm.selAnno[vm.r.tk]) {
                     vm.selAnno[vm.r.tk] = annoIdx;
-                    //vm.cursor[vm.r.tk] = annoServ.getRegionFromTime();
                 }
             };
             vm.openMenu = function($mdOpenMenu, ev) {
@@ -374,7 +370,7 @@
                     annoServ.markLastRegionComplete();
                     vm.r.regionMarked = false;
                     annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].end + 0.001);
-                    vm.cursor[vm.r.tk] = -1;
+                    vm.setRegion(-1);
                     return;
                 }
                 // If it's not a new region, we have some complex behavior depending on position
@@ -393,10 +389,10 @@
                 if (vm.cursor[vm.r.tk] === (annoServ.regionList.length -1)) {
                     // but in this case there are no more regions so move to new space
                     annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].end + 0.001);
-                    vm.cursor[vm.r.tk] = -1;
+                    vm.setRegion(-1);
                 } else {
                     // just move on
-                    ++vm.cursor[vm.r.tk];
+                    vm.setRegion(vm.cursor[vm.r.tk]+1);
                     annoServ.seekToTime(annoServ.regionList[vm.cursor[vm.r.tk]].start);
                 }
                 // finally, if we advanced but found a different active anno, then switch to that one
@@ -439,7 +435,7 @@
                     if (config.debug) {console.log('click on transcript line: region marked so deleteLastRegion()');}
                     annoServ.deleteLastRegion();
                 }
-                vm.cursor[vm.r.tk] = region;
+                vm.setRegion(region);
                 vm.playAudio();
                 vm.restoreFocus();
             };
@@ -709,6 +705,18 @@
                 return annoServ.zoomMax;
             };
 
+            vm.setRegion = function(region) {
+                if (region === undefined) {
+                    region = annoServ.getRegionFromTime();
+                }
+                if (region !== vm.cursor[vm.r.tk]) {
+                    vm.cursor[vm.r.tk] = region;
+/*                    var transcriptElement = document.getElementById('tran'+region);
+                    smoothScroll(transcriptElement);*/
+                    //$scope.$apply();
+                }
+            };
+
             // debug stuff
             vm.getplayin = function() {
                 return annoServ.playIn;
@@ -718,8 +726,7 @@
             };
 
 
-
         };
-    ngAnnoController.$inject = ['config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
+    ngAnnoController.$inject = ['smoothScroll', 'config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
 
 })();

@@ -405,7 +405,7 @@ md-card.noclicky:focus {
 }
 
 .stextline {
-    font-style: italic;
+/*    font-style: italic;*/
     font-size: 14px;
     font-weight: 400;
     letter-spacing: 0.010em;
@@ -417,6 +417,7 @@ md-card.noclicky:focus {
     position:absolute;
 }
 .stextlineactive {
+    font-style: italic;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.010em;
@@ -424,8 +425,8 @@ md-card.noclicky:focus {
     text-overflow: ellipsis;
     overflow:hidden;
     width:90%;
-    position:relative;
-    margin-left:5px;
+    position:absolute;
+/*    margin-left:5px;*/
 }
 
 .highlight {
