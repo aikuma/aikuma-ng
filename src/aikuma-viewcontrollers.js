@@ -26,7 +26,6 @@
                 }
             });
 
-            loginService.loginPreviousUser();
             vm.login = function(userIndex) {
                 loginService.loginUser(vm.userList[userIndex]._ID);
             };

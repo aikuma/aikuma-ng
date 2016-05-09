@@ -374,6 +374,9 @@
                     dataService.init();
                 }
             });
+            
+            // initialization
+            loginService.loginPreviousUser();
 
 
         }]);
