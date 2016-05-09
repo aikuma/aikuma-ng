@@ -441,11 +441,10 @@
             };
 
             vm.playAudio = function() {
+                // if we are already playing
                 if (vm.activePlayback && vm.activePlayback !== 'src') {
-                    if (!vm.activePlayback.ended) {
-                        vm.activePlayback.pause();
-                        vm.activePlayback = false;
-                    }
+                    audioService.stopPlayingFile();
+                    vm.activePlayback = false;
                 }
                 annoServ.wavesurfer.setPlaybackRate(vm.playRate/100);
                 var timerval = 0;
@@ -476,21 +475,16 @@
                         var playtrack = vm.r.tk; // keep this in case it changes when we try to unset
                         vm.playCSS[vm.r.tk] = true;
                         $scope.$apply();
-                        var secPlayRate = vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSec ? (vm.playRate / 100) : 1;
-/*                        audioService.playbackLocalFile(annotateAudioContext, fileh, seglist[region][0], seglist[region][1], function () {
-                            console.log('finished');
-                            vm.activePlayback = false;
-                            vm.playCSS[playtrack] = false;
-                            $scope.$apply();
-                        }, secPlayRate);*/
+                        //var secPlayRate = vm.tracks[vm.r.tk].annos[selAnno].cfg.timestretchSec ? (vm.playRate / 100) : 1;
                         // This new playback sets vm.activePlayback to the audio element so we can pause it if we need to
                         var startPos = seglist[region][0];
                         var endPos = seglist[region][1];
-                        vm.activePlayback = audioService.playFile(fileh, startPos, function() {
+                        vm.activePlayback = 'sec';
+                        audioService.playFile(annotateAudioContext, fileh, startPos, function() {
                             vm.activePlayback = false;
                             vm.playCSS[playtrack] = false;
                             $scope.$apply();
-                        }, endPos, secPlayRate);
+                        }, endPos);
                     }  else {
                         // otherwise we're done so enable playback key again
                         vm.activePlayback = false;

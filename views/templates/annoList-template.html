@@ -32,9 +32,6 @@
         <div ng-if="alCtrl.tracks[tk].hasAnnos" flex layout="column">
             <md-list style="margin-top:-8px;margin-bottom:-5px;">
                 <md-list-item flex ng-repeat="anno in alCtrl.tracks[tk].annos" ng-click="alCtrl.editAnno(anno.id)" layout="row" style="border-bottom:1px solid #ccc;position:relative;z-index:10">
-<!--                    <md-tooltip md-direction="top" class="md-body-1">
-                        <span translate>ANNO_DO</span>
-                    </md-tooltip>-->
                     <div flex style="max-width:120px;margin-right:10px;" layout="column">
                         <div class="md-body-2" style="text-transform: uppercase;" translate>{{anno.type}}</div>
                         <div class="md-body-1" style="text-overflow:ellipsis;white-space:nowrap;overflow: hidden;">{{anno.lang}}</div>

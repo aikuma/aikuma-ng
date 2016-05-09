@@ -40,8 +40,7 @@
                     hideScrollbar: false,
                     scrollParent: true,
                     progressColor: '#33627c',
-                    waveColor: '#4FC3F7',
-                    barWidth: 2
+                    waveColor: '#4FC3F7'
                 });
                 asx.miniMap = asx.wavesurfer.initMinimap({
                     height: 40,

@@ -5,94 +5,43 @@
     'use strict';
     angular
         .module('aikuma-audioService', [])
-        .factory('audioService', ['config', 'fileService', function (config, fileService) {
+        .factory('audioService', ['$interval', 'config', 'fileService', function ($interval, config, fileService) {
             var service = {};
-
-            // deprecate both this mez function and the mediaelement playbackFile in favour of service.playFile
-            service.playbackLocalFile = function(audioContext, fsUri, start, end, callback, playrate = 1) {
-                service.playMediaElementFile(fsUri, start, end, callback, playrate);
-/*                if (playrate !== 1) {
-                    service.playMediaElementFile(fsUri, start, end, callback, playrate);
-                } else {
-                    fileService.getFile(fsUri).then(function(file) {
-                        service.playbackFile(audioContext, file, start, end, callback);
-                    });                    
-                }*/
-            };
-
-            // play using web audio (this does not fire the callback reliably, so I'm favouring using the mediaelement version
-            service.playbackFile = function(audioContext, file, start, end, callback) {
-                var fileReader = new FileReader();
-                fileReader.onload = function() {
-                    audioContext.decodeAudioData(this.result, function(decodedBuffer) {
-                        var audioSourceNode = audioContext.createBufferSource();
-                        audioSourceNode.buffer = decodedBuffer;
-                        audioSourceNode.connect(audioContext.destination);
-                        audioSourceNode.onended = function() {
-                            callback();
-                        };
-                        audioSourceNode.start(audioContext.currentTime, start/1000, (end-start)/1000);
-                    });
-                };
-                fileReader.readAsArrayBuffer(file);
-            };
-
-            // play using HTML media element (needed for time stretching)
-            service.playMediaElementFile = function(file, start, end = null, callback, playbackrate = 1) {
-                var audioElement = new Audio(file);
-                var thisTime;
-                if (end) {
-                    audioElement.ontimeupdate = function() {
-                        thisTime = audioElement.currentTime;
-                        if (thisTime >= (end/1000)) {
-                            audioElement.pause();
-                            audioElement.ontimeupdate = null;
-                            audioElement.onended = null;
-                            callback();
-                        }
-                    };
-                }
-                audioElement.onended = function() {
-                    audioElement.ontimeupdate = null;
-                    audioElement.onended = null;
-                    callback();
-                };
-                audioElement.currentTime = start/1000;
-                audioElement.playbackRate = playbackrate;
-                audioElement.play();
-                return audioElement;
-            };
             
-            // New play file , uses MediaElement, returns the audio element in case the caller wishes the pause it manually
-            service.playFile = function(fsUri, startpos = 0, callback = null, endpos = null, playbackrate = 1) {
-                var audioElement = new Audio(fsUri);
-                var thisTime;
-                if (endpos && callback) {
-                    audioElement.ontimeupdate = function() {
-                        thisTime = audioElement.currentTime;
-                        if (thisTime >= (endpos/1000)) {
-                            audioElement.pause();
-                            audioElement.ontimeupdate = null;
-                            audioElement.onended = null;
-                            callback();
-                        }
+            // New play file , uses WebAudio, sets a global sourcenode variable in case we wish to call stop
+            service.audioSourceNode = null;
+            service.playFile = function(audioContext, fsUri, startpos = 0, callback = null, endpos = null, delay=0) {
+                fileService.getFile(fsUri).then(function(file) {
+                    var fileReader = new FileReader();
+                    fileReader.onload = function() {
+                        audioContext.decodeAudioData(this.result, function(decodedBuffer) {
+                            var audioSourceNode = audioContext.createBufferSource();
+                            audioSourceNode.buffer = decodedBuffer;
+                            audioSourceNode.connect(audioContext.destination);
+                            if (callback) {
+                                audioSourceNode.onended = function() {
+                                    service.audioSourceNode = null;
+                                    callback();
+                                };
+                            }
+                            if (endpos) {
+                                audioSourceNode.start(delay, startpos/1000, (endpos - startpos ) / 1000);
+                            } else {
+                                audioSourceNode.start(delay, startpos/1000);
+                            }
+                            service.audioSourceNode = audioSourceNode;
+                        });
                     };
-                }
-                if (callback) {
-                    audioElement.onended = function() {
-                        audioElement.ontimeupdate = null;
-                        audioElement.onended = null;
-                        callback();
-                    };
-                }
-                if (startpos) {
-                    audioElement.currentTime = startpos/1000;
-                }
-                audioElement.playbackRate = playbackrate;
-                audioElement.play();
-                return audioElement;
+                    fileReader.readAsArrayBuffer(file);
+                });
             };
-            
+
+            service.stopPlayingFile = function() {
+                if (service.audioSourceNode) {
+                    service.audioSourceNode.stop();
+                }
+            };
+
             service.resampleAudioBuffer = function (audiocontext,audioBuffer,targetSampleRate,oncomplete) {
                 var newBuffer = audiocontext.createBuffer( 1, audioBuffer[0].length, audiocontext.sampleRate );
                 newBuffer.getChannelData(0).set(audioBuffer[0]);

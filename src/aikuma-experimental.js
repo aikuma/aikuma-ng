@@ -217,9 +217,7 @@
         vm.pcssthis = {};
         vm.playingSec = false;
         vm.stopPlayingSecondary = function () {
-            if (vm.mediaElement && !vm.mediaElement.paused) {
-                vm.mediaElement.pause();
-            }
+            audioService.stopPlayingFile();
             $scope.wavesurfer.unAll();
             $scope.wavesurfer.clearRegions();
             $scope.wavesurfer.stop();
@@ -227,7 +225,7 @@
             vm.playingSec = false;
             vm.sline = 0;
         };
-        vm.mediaElement = null; // We will use this if we are setting secondary audio
+
         vm.playSecondary = function(track) {
             if (vm.playingSec) {
                 vm.stopPlayingSecondary();
@@ -256,7 +254,6 @@
             var fileh = $scope.userObj.getFileUrl(secondary.source.recordFileId);
             var ascallback = function() {
                 vm.pcssthis[track] = false;
-                $scope.$apply();
                 ++vm.playindex;
                 if (vm.playindex === vm.playregions.length) {
                     vm.stopPlayingSecondary();
@@ -282,7 +279,7 @@
                     var start = secseg[vm.playindex][0];
                     var end = secseg[vm.playindex][1];
                     vm.pcssthis[track] = true;
-                    vm.mediaElement = audioService.playFile(fileh, start, ascallback, end);
+                    audioService.playFile(audioContext, fileh, start, ascallback, end, 0.5);
                 }
                 $scope.$apply();
             };
