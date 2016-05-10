@@ -1,0 +1,38 @@
+<md-dialog aria-label="Help: Annotate" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{"ACTIVITY_HELP" | translate}}: {{"ACTIVITY_TRANSLATE" | translate}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="helpbox">
+            <h4 class="md-title">Recording a translation with Aikuma-<i>NG</i></h4>
+            <p class="md-body-2">In this view you can perform a step-by-step translation of the recording. This is done by first listening to a part of the source
+                and then recording a translation with a microphone on your computer.</p>
+            <p class="md-body-2">Note: You can also use this view to record something other than a translation such as general commentary.</p>
+            <p class="md-body-2">First press and <i>Hold</i> <kbd>Left Ctrl</kbd> or <md-icon style="width:20px;height:20px" md-svg-icon="hardware:mouse"></md-icon>
+                click and <i>Hold</i> the <md-icon style="width:35px;height:35px" md-svg-icon="av:play_arrow"></md-icon>
+                button to play the source, then press and <i>Hold</i> <kbd>Right Ctrl</kbd> or <md-icon style="width:20px;height:20px" md-svg-icon="hardware:mouse"></md-icon>
+                click and <i>Hold</i> the <md-icon style="width:30px;height:30px" md-svg-icon="av:mic"></md-icon> button to record your translation.</p>
+            <p class="md-body-2">Repeat until you have translated everything you want to. Your work is being saved as you go and you can return later.</p>
+            <p class="md-body-2">When playing, you can press and <i>Hold</i> <kbd>Left Ctrl</kbd> again to rewind and listen again.
+                Press and <i>Hold</i> <kbd>&larr;</kbd> or <kbd>&rarr;</kbd> to skip back and fast forward. You can't use this to listen again.*</p>
+            <p class="md-body-2">Made a mistake? Press <kbd>Esc</kbd> or <md-icon style="width:20px;height:20px" md-svg-icon="hardware:mouse"></md-icon>
+                click <md-icon style="width:30px;height:30px" md-svg-icon="av:replay"></md-icon> to delete the last translation so you can listen again and repeat.
+                To delete the entire translation <md-icon style="width:20px;height:20px" md-svg-icon="hardware:mouse"></md-icon>
+                click the <md-icon md-svg-icon="action:delete" style="width:30px;height:30px"></md-icon> the button.</p>
+            <p class="md-body-2">To finish, enter the translation language in the <md-icon style="width:30px;height:30px" md-svg-icon="action:language"></md-icon> language box and
+            click the <md-icon style="width:35px;height:35px" md-svg-icon="action:done"></md-icon> button to return to the session view.</p>
+            <p class="md-body-1"><i>* You can listen to the whole translation on the session view and you can continue working on the translation later.</i></p>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="hide()" style="margin-right:20px;">
+            {{"BUTTON_OK" | translate}}
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

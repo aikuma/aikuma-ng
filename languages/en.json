@@ -184,5 +184,6 @@
   "TRASH_CLEANYES": "Delete all items now",
   "TRASH_EXPLAIN": "These deleted items will be removed when space is low. You may restore any items by pressing",
   "TRASH_NONE": "No deleted items",
-  "DEBUG_SWITCH": "Enable debug mode"
+  "DEBUG_SWITCH": "Enable debug mode",
+  "ERROR_SHORT": "Source audio too short, press and HOLD play"
 }

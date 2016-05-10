@@ -393,11 +393,12 @@
     //
     // RESPEAK2 DIRECTIVE
     //
-    var respeak2DirectiveController = function ($timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $mdDialog, $translate, $mdToast) {
+    var respeak2DirectiveController = function (aikumaService, aikumaDialog, $timeout, config, $scope, $location, keyService, loginService, audioService, dataService, fileService, $mdDialog, $translate, $mdToast) {
         var vm = this;
+        vm.viewElement = angular.element( document.querySelector( '#viewcontent' ) );
         vm.playBoxesEnabled = false;    //playSegment will not work
         var recorder;           // recorder.js
-        var ctrlKeyCode = 16;   // control key (16 is shift)
+        var ctrlKeyCode = 17;   // control key (16 is shift)
         var ffKeyCode = 39;     // right arrow
         var rwKeyCode = 37;     // left arrow
         var escKeyCode = 27;    // escape
@@ -636,8 +637,11 @@
         // Most of these key handling functions will silently return if the user is holding another key
         // Note the order of setting the keydown status. We allow for people releasing keys before return, but we will not register keys down under simultaneous keypress conditions.
         // left key actions for playback
-        function leftKeyDown(waskey) {
-            if (vm.rightKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
+        function leftKeyDown(waskey) { // Block multiple keys
+            if (vm.rightKeyDown || vm.ffKeyDown) {
+                aikumaService.errorFlash(vm.viewElement);
+                return;
+            }
             vm.leftKeyDown = true;
             disableRecording();
             // We need to be careful about seeking. If we have seeked LEFT of the current region, don't let them play from there
@@ -662,7 +666,6 @@
         }
         function leftKeyUp(waskey) {
             vm.leftKeyDown = false;
-            if (vm.rightKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             wsPlayback.pause();
             vm.isPlaying = false;
             vm.recordDisabled = false;
@@ -683,9 +686,22 @@
             leftKeyUp(false);
         };
         // right key actions for playback
-        function rightKeyDown(waskey) {
-            if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
+        function rightKeyDown(waskey) { // Block multiple keys
+            if (vm.leftKeyDown || vm.ffKeyDown) {
+                aikumaService.errorFlash(vm.viewElement);
+                return;
+            }
             vm.rightKeyDown = true;
+            var lr = _.last(vm.regionList);
+            if ((lr.end - lr.start) < 0.85) {
+                aikumaService.errorFlash(vm.viewElement);
+                $translate('ERROR_SHORT').then(function (message) {
+                    aikumaDialog.toast(message);
+                });
+                if (!vm.undoDisabled){deleteLastRegion();}
+                return;
+            }
+
             if (vm.recordDisabled) {return;}               // do nothing if record is disabled
             if (lastAction === 'play') {
                 vm.playIn = wsPlayback.getCurrentTime();
@@ -699,7 +715,6 @@
         }
         function rightKeyUp(waskey) {
             vm.rightKeyDown = false;
-            if (vm.leftKeyDown || vm.ffKeyDown) {return;}  // Block multiple keys
             vm.isRecording = false;
             // stop recorder.js and save audio buffer (will be appended)
             recorder.stop();
@@ -719,7 +734,10 @@
         // fast forward key triggers playback at ffPlaybackRate times normal speed
         // We can also use this to create different region entry points, e.g. skip content we don't wish to respeak.
         function ffKeyDown(waskey) {
-            if (vm.leftKeyDown || vm.rightKeyDown) {return;}  // Block multiple keys
+            if (vm.leftKeyDown || vm.rightKeyDown) { // Block multiple keys
+                aikumaService.errorFlash(vm.viewElement);
+                return;
+            }
             vm.ffKeyDown = true;
             vm.hasSeeked = true;
             if (lastAction === 'play') {
@@ -734,7 +752,6 @@
         }
         function ffKeyUp(waskey) {
             vm.ffKeyDown = false;
-            if (vm.leftKeyDown || vm.rightKeyDown) {return;}  // Block multiple keys
             wsPlayback.pause();
             wsPlayback.setPlaybackRate(1);
         }
@@ -1098,6 +1115,16 @@
 
         };
 
+        vm.help = function(ev) {
+            switch ($scope.type) {
+                case 'respeak':
+                    aikumaDialog.help(ev, 'respeak');
+                    break;
+                case 'translate':
+                    aikumaDialog.help(ev, 'translate');
+                    break;
+            }
+        };
 
         // on navigating away, clean up the key events, wavesurfer instances and clear recorder data (it has no destroy method)
         $scope.$on('$destroy', function() {
@@ -1105,12 +1132,12 @@
             timeline.destroy();
             wsPlayback.destroy();
             microphone.destroy();
-            wsRecord.destroy();
+            //wsRecord.destroy();
             respeakAudioContext.close();
             if(recorder) 
                 recorder.clear();
         });
     };
-    respeak2DirectiveController.$inject = ['$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$mdDialog', '$translate', '$mdToast'];
+    respeak2DirectiveController.$inject = ['aikumaService', 'aikumaDialog', '$timeout', 'config', '$scope', '$location', 'keyService', 'loginService', 'audioService', 'dataService', 'fileService', '$mdDialog', '$translate', '$mdToast'];
 
 })();

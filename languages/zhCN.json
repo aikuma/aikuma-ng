@@ -184,5 +184,6 @@
   "TRASH_CLEANYES": "现在删除的所有项目",
   "TRASH_EXPLAIN": "当空间不足这些已删除的邮件将被删除。您可以为了恢复按任何项目按",
   "TRASH_NONE": "没有删除的项目",
-  "DEBUG_SWITCH": "启用调试模式"
+  "DEBUG_SWITCH": "启用调试模式",
+  "ERROR_SHORT": "源音频太短，按住播放"
 }

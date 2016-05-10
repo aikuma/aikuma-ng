@@ -15,6 +15,11 @@ md-input-container {
     margin: 0 0 0 0px;
 }
 
+.helpbox {
+    padding-left:15px;
+    padding-right:15px;
+}
+
 @keyframes rollInLogo {
     from {
         opacity: 0;

@@ -2,6 +2,14 @@
 
 <md-content flex class="md-padding" style="padding-bottom:30px">
     <div class="row">
+        <h4 class='md-title'>9/5/2016 &mdash; 0.941</h4>
+        <p class="md-body-1">Audio annotation views: Implemented online help (English) via the <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon> icon. We really must get these translated.</p>
+        <p class="md-body-1">Audio annotation views: Fixed a bug so the user can release a play or record key, even if they have clicked another key. The screen shake error is shown if they have tried to
+        press two control keys.</p>
+        <p class="md-body-1">Audio annotation views: Very short play segments on respeak and translate are treated as errors. If the user attempts to record, the screen shake error is shown and a toast explains
+            that the user must press and HOLD the play key (this is the most common cause of error).</p>
+    </div>
+    <div class="row">
         <h4 class='md-title'>9/5/2016 &mdash; 0.940</h4>
         <p class="md-body-1">Playback of audio can now be stopped on the session view</p>
         <p class="md-body-1">Fixed incorrect playback of secondary audio. Related to MediaElement being essentially broken so we have instead adopted web audio.

@@ -3,7 +3,12 @@
     <div id="respeakPlayback"></div>
 </div>
 <div layout="row" layout-align="start center">
+    <md-button class="md-icon-button" aria-label="Respeaking and Translation Help" ng-click="rCtrl.help($event)">
+        <md-tooltip md-direction="right"><span translate class="md-body-2">ACTIVITY_HELP</span></md-tooltip>
+        <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
+    </md-button>
     <span flex></span>
+
     <md-button ng-if="rCtrl.timestretchEnabled" class="md-icon-button" aria-label="Playback rate">
         <md-tooltip><span translate class="md-body-2">PLAYBACK_RATE</span></md-tooltip>
         <md-icon class="imgsvgicon" md-svg-icon="image:timer"></md-icon>
@@ -12,7 +17,7 @@
     </md-slider>
 </div>
 
-<div layout="row">
+<div layout="row" id="popupContainer">
     <div layout="column" flex="50">
         <div ng-if="type === 'translate'">
         <ng-language-selector  lang-id-name-map="langIdNameMap" lang-id-list="rCtrl.srcLangIds" on-change="rCtrl.saveLangs(langIds)" flex style="margin-left:8px;height:22px"></ng-language-selector>
