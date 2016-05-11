@@ -1,0 +1,17 @@
+<ng-topbar activity="{{'NAV_EXTENSIONS' | translate}}"></ng-topbar>
+<md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
+    
+    <md-button ng-disabled="!exCtrl.dataPrepared" class="md-raised" ng-click="exCtrl.export()" download="{{exCtrl.backupName}}" href="{{exCtrl.dataUri}}">
+        <md-icon md-svg-icon="file:file_download"></md-icon>
+<!--        {{"BACKUP_DOWN" | translate}}-->
+        <span translate>BACKUP_DOWN</span>
+    </md-button>
+    
+    <label class="md-button md-raised" for="zip-input">
+        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+<!--        {{"BACKUP_UP" | translate}}-->
+        <span translate>BACKUP_UP</span>
+    </label>
+    <input id="zip-input" type="file" file-model="zipFile" style="display:none;">
+    
+</md-content>

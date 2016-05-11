@@ -1,17 +1,6 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
 <md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
-    
-    <md-button ng-disabled="!seCtrl.dataPrepared" class="md-raised" ng-click="seCtrl.export()" download="{{seCtrl.backupName}}" href="{{seCtrl.dataUri}}">
-        <md-icon md-svg-icon="file:file_download"></md-icon>
-        {{"BACKUP_DOWN" | translate}}
-    </md-button>
-    
-    <label class="md-button md-raised" for="zip-input">
-        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-        {{"BACKUP_UP" | translate}}
-    </label>
-    <input id="zip-input" type="file" file-model="zipFile" style="display:none;">
-    
+
     <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.loadMockData()">
         <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
         {{"DEBUG_MOCK" | translate}}

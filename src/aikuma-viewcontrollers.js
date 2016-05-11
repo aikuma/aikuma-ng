@@ -84,43 +84,6 @@
                 config.debug = vm.preferences.debugMode;
                 userObj.save();
             };
-
-            $scope.$watch('zipFile', function (file) {
-                if(file) {
-                    fileService.clear().then(function() {
-                        return dataService.clear();
-                    }).then(function() {
-                        return fileService.importBackupFile(file);  
-                    }).then(function(){
-                        aikumaDialog.toast('All backup-data are loaded');
-                    }).catch(function(err) {
-                        aikumaDialog.toast('Backup-data loading failed: ' + err);
-                    });
-                }
-            });
-            
-              
-            if(window.chrome && chrome.fileSystem) {
-                fileService.getBackupFile('blob').then(function(blob) {   
-                    vm.export = function() {
-                        chrome.fileSystem.chooseFile({type: 'saveFile', suggestedName: 'Backup.zip'}, function(fileEntry) {
-                            fileService.writeFileToEntry(fileEntry, blob).then(function(){
-                                aikumaDialog.toast('Backup.zip is exported');
-                            });
-                        });
-                    };
-                    vm.dataUri = 'views/settings.html'; // dummy Uri
-                    vm.dataPrepared = true;
-                });
-                
-            } else {
-                fileService.getBackupFile('blob').then(function(blob) {
-                    vm.dataUri = URL.createObjectURL(blob);
-                    vm.backupName = "backup.zip"
-                    vm.dataPrepared = true;
-                })
-            }
-            
             
             vm.wipeData = function() {
                 fileService.clear().then(function() {
@@ -297,7 +260,46 @@
 
             };
         }])
-
+        .controller('extensionsController', ['$scope', 'dataService', 'fileService', 'aikumaDialog', function($scope, dataService, fileService, aikumaDialog){
+            var vm = this;
+            
+            $scope.$watch('zipFile', function (file) {
+                if(file) {
+                    fileService.clear().then(function() {
+                        return dataService.clear();
+                    }).then(function() {
+                        return fileService.importBackupFile(file);  
+                    }).then(function(){
+                        aikumaDialog.toast('All backup-data are loaded');
+                    }).catch(function(err) {
+                        aikumaDialog.toast('Backup-data loading failed: ' + err);
+                    });
+                }
+            });
+            
+              
+            if(window.chrome && chrome.fileSystem) {
+                fileService.getBackupFile('blob').then(function(blob) {   
+                    vm.export = function() {
+                        chrome.fileSystem.chooseFile({type: 'saveFile', suggestedName: 'Backup.zip'}, function(fileEntry) {
+                            fileService.writeFileToEntry(fileEntry, blob).then(function(){
+                                aikumaDialog.toast('Backup.zip is exported');
+                            });
+                        });
+                    };
+                    vm.dataUri = 'views/settings.html'; // dummy Uri
+                    vm.dataPrepared = true;
+                });
+                
+            } else {
+                fileService.getBackupFile('blob').then(function(blob) {
+                    vm.dataUri = URL.createObjectURL(blob);
+                    vm.backupName = "backup.zip"
+                    vm.dataPrepared = true;
+                })
+            }
+            
+        }])
         .controller('newSessionController', ['$location', 'loginService', 'userObj', 'fileService', function($location, loginService, userObj, fileService) {
             // For now, new.html is just a container of ngRecord directive
             var vm = this;

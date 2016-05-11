@@ -185,5 +185,6 @@
   "TRASH_EXPLAIN": "當空間不足這些已刪除的郵件將被刪除。您可以為了恢復按任何項目按",
   "TRASH_NONE": "沒有刪除的項目",
   "DEBUG_SWITCH": "啟用調試模式",
-  "ERROR_SHORT": "源音頻太短，按住播放"
+  "ERROR_SHORT": "源音頻太短，按住播放",
+  "NAV_EXTENSIONS": "Extensions"
 }

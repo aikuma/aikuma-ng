@@ -15,7 +15,7 @@
         <md-icon class="inset" md-svg-icon="social:person_outline"></md-icon>
         <span flex translate>NAV_LOGOUT</span>
     </md-button>
-    <label  ng-repeat="item in navCtrl.menu" ng-disabled="!navCtrl.getLoginStatus()"
+    <label  ng-repeat="item in navCtrl.menu" ng-disabled="(item.state === 'home' || item.state === 'extensions')? false : !navCtrl.getLoginStatus()"
            class="md-button fullwidth" for="{{item.state==='import'? 'file-input':''}}" ng-click="navCtrl.changeState(item.state)">
         <md-tooltip ng-if="item.tooltip" class="md-body-2" md-direction="right"><span translate>{{item.tooltip}}</span></md-tooltip>
         <md-icon class="inset {{item.class}}" md-svg-icon="{{item.icon}}"></md-icon>
@@ -30,6 +30,6 @@
         </md-button>
 
     </div>
-    <input id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >
+    <input ng-disabled="!navCtrl.getLoginStatus()" id="file-input" type="file" file-model="file" accept="audio/*" style="display:none;" >
 </md-sidenav>
 </div>

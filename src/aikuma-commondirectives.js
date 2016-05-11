@@ -325,11 +325,18 @@
                     title: 'NAV_BUGREP',
                     icon: 'action:bug_report',
                     state: 'reportbug',
+                },
+                {
+                    class : '',
+                    title: 'NAV_EXTENSIONS',
+                    icon: 'action:extension',
+                    state: 'extensions'
                 }
             ];
             
             vm.changeState = function(statename) {
-                if(statename !== 'import') {
+                if(statename === 'extensions' || statename === 'home' || 
+                   (loginService.getLoginStatus() && statename !== 'import')) {
                     $location.path('/'+statename);
                 }
             };

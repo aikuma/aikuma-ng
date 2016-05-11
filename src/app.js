@@ -301,6 +301,10 @@
                             }]
                         }
                     })
+                    .when('/extensions', {
+                        templateUrl: 'views/extensions.html',
+                        controller: 'extensionsController as exCtrl'
+                    })
                     .otherwise({
                         redirectTo: '/'
                     });
