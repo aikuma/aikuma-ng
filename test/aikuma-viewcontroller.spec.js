@@ -93,19 +93,6 @@ describe('aikuma-viewcontrollers', function(){
             expect(controller.debugMode).toBeFalsy();
         })
         
-        it('internal function test', function() {
-            controller.timeStretching = true;
-            controller.timeStretch();
-            expect(config.timeStretch).toBeTruthy();
-            
-            controller.saveSetting();
-            expect(userObj.save).toHaveBeenCalledTimes(1);
-            
-            controller.debugMode = true;
-            controller.saveDebug();
-            expect(config.debug).toBeTruthy();
-        })
-        
     });
     
 });

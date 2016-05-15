@@ -20,7 +20,9 @@ module.exports = function(config) {
         'node_modules/angular-mocks/angular-mocks.js',
         'src/**/*.js',
         'views/templates/*.html',
-        'test/**/*spec.js'
+        'test/**/*spec.js',
+        // fixtures
+        //{pattern: 'languages/*.json', watched: true, served: true, included: false}
     ],
 
 
