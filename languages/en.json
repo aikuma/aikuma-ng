@@ -186,5 +186,9 @@
   "TRASH_NONE": "No deleted items",
   "DEBUG_SWITCH": "Enable debug mode",
   "ERROR_SHORT": "Source audio too short, press and HOLD play",
-  "NAV_EXTENSIONS": "Extensions"
+  "NAV_EXTENSIONS": "Extensions",
+  "FILE_DELCONF1": "Are you sure you want to delete this file permanently?",
+  "FILE_DELCONF2": "This operation can lead to an inconsistent state unless relevant db is cleaned.",
+  "FILE_DELNO": "No way!",
+  "FILE_DELYES": "Delete file"
 }

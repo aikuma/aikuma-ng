@@ -172,8 +172,8 @@
   "SETTINGS_TIMESTRETCH": "재생음 높이 유지하기",
   "SETHELP_TIMESTRETCH": "재생음 높이 유지하면서 재생속도 늦추기, 오디오 재생화면은 영역을 벗어날 수 있습니다.",
   "PLAY_SRCSTRETCH": "재생속도 늦추기",
-  "SESSION_DELCONF1": "Are you sure you want to delete this session?",
-  "SESSION_DELCONF2": "The session be moved to deleted items.",
+  "SESSION_DELCONF1": "정말 이 세션을 삭제하길 원하시나요?",
+  "SESSION_DELCONF2": "해당 세션은 휴지통으로 이동됩니다.",
   "SESSION_DELNO": "안됩니다",
   "SESSION_DELYES": "세션 삭제하기",
   "NAV_TRASH": "휴지통",
@@ -186,5 +186,9 @@
   "TRASH_NONE": "비어있음",
   "DEBUG_SWITCH": "디버그 모드 활성화",
   "ERROR_SHORT": "원녹음 오디오가 너무 짧습니다. 플레이 버튼을 길게 눌러주세요",
-  "NAV_EXTENSIONS": "확장기능"
+  "NAV_EXTENSIONS": "확장기능",
+  "FILE_DELCONF1": "정말 이 파일을 완전히 삭제하길 원하시나요?",
+  "FILE_DELCONF2": "관련 DB가 지워지지 않은 파일만의 삭제는 앱의 불완전한 작동을 일으킬 수 있습니다.",
+  "FILE_DELNO": "안됩니다",
+  "FILE_DELYES": "파일 삭제하기"
 }

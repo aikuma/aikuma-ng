@@ -52,7 +52,7 @@
 
         }])
 
-        .controller('settingsController', ['userObj', 'config', '$scope', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$q', function(userObj, config, $scope, dataService, fileService, loginService, aikumaDialog, $q) {
+        .controller('settingsController', ['userObj', 'config', '$scope', 'dataService', 'fileService', 'loginService', 'aikumaDialog', '$q', '$translate', '$mdDialog', function(userObj, config, $scope, dataService, fileService, loginService, aikumaDialog, $q, $translate, $mdDialog) {
             var vm = this;
             vm.debug = function() { return config.debug; };
             vm.preferences = userObj.data.preferences;
@@ -63,6 +63,45 @@
                 config.cachePeak = vm.cachePeak;
             }
 
+            vm.userId = loginService.getLoggedinUserId();
+            fileService.getFiles(vm.userId).then(function(fileList) {
+                vm.fileList = fileList;
+            })
+            
+            // If it's not an chrome-app, a hyperlink to file-URL will replace this function
+            vm.downloadFile = function(file) {
+                if(window.chrome && chrome.fileSystem) {
+                    chrome.fileSystem.chooseFile({type: 'saveFile', suggestedName: file.name}, function(fileEntry) {
+                        file.file(function(blob) {
+                            fileService.writeFileToEntry(fileEntry, blob).then(function(){
+                                console.log('success');
+                            });  
+                        }, function(err) {
+                            console.error(err);
+                        });
+                        
+                    });
+                }
+            };
+            vm.deleteFile = function(ev, fileIndex) {
+                $translate(["FILE_DELCONF1", "FILE_DELCONF2", "FILE_DELNO", "FILE_DELYES"]).then(function (translations) {
+                    var confirm = $mdDialog.confirm()
+                        .title(translations.FILE_DELCONF1)
+                        .textContent(translations.FILE_DELCONF2)
+                        .targetEvent(ev)
+                        .ok(translations.FILE_DELYES)
+                        .cancel(translations.FILE_DELNO);
+                    $mdDialog.show(confirm).then(function () {
+                        vm.fileList[fileIndex].remove(function() {
+                            vm.fileList.splice(fileIndex, 1);
+                            console.log("deleted");
+                        }, function(err) {
+                            console.error(err);
+                        });
+                    });
+                });
+            };
+            
             dataService.getJsonBackup().then(function(db) {
                 db['session'].forEach(function(sessionData){
                     var peakData = sessionData.source.peaks;
@@ -609,6 +648,17 @@
                     });
                     $q.all(promiseArray).then(function(){
                         vm.numberOfSessions = 0; // this will trigger a scope watch in the session list directive
+                    }).catch(function(err) {
+                        console.error(err);
+                        vm.numberOfSessions = -1; // to trigger the update of session list directive 
+                        
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .parent(angular.element( document.querySelector('#popupContainer')))
+                                .hideDelay(1500)
+                                .position('bottom left')
+                                .textContent(err)
+                        );
                     });
                 });
             }

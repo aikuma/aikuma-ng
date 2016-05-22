@@ -931,6 +931,37 @@
 
                 return fileDefer.promise;
             };
+            
+            service.getFiles = function(userId) {
+                var filesDefer = $q.defer();
+                var fileObjList = [];
+                
+                rootFs.promise.then(function(fs) {
+                    fs.root.getDirectory(userId, {created: false}, function(dirEntry) {
+                        var dirReader = dirEntry.createReader();
+                        
+                        var readDirectory = function() {
+                            dirReader.readEntries(function(entries) {
+                                if(!entries.length) {
+                                    filesDefer.resolve(fileObjList);
+                                } else {
+                                    Array.prototype.push.apply(fileObjList, entries);
+                                    readDirectory();
+                                }
+                            }, function(err) {
+                                filesDefer.reject(err);
+                            })
+                        };
+                        
+                        readDirectory();
+                        
+                    }, function(err) {
+                        filesDefer.reject(err);
+                    })
+                })
+                
+                return filesDefer.promise;
+            };
 
             service.createFolder = function(userId) {
                 var folderDefer = $q.defer();

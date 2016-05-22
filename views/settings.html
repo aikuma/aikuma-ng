@@ -29,6 +29,22 @@
     </div>
 
     <div>
+        
+    <h4 class='md-title'>Filesystem(/{{seCtrl.userId}} )</h4>
+    <ul ng-if="seCtrl.debug()" >
+        <li ng-repeat="f in seCtrl.fileList">
+            <a ng-click="seCtrl.downloadFile(f)" href="{{f.toURL()}}"> {{f.name}} </a>
+         
+            <md-button class="md-icon-button" ng-click="seCtrl.deleteFile($event, $index)" aria-label="Delete file">
+                <md-icon md-svg-icon="action:delete"></md-icon>
+                <md-tooltip md-direction="left">
+                    <span translate class="md-body-1">FILE_DELYES</span>
+                </md-tooltip>
+            </md-button>
+        </li>
+    </ul>
+        
+    <h4 class='md-title'>DB</h4>
     <ul ng-if="seCtrl.debug()" >
         <li ng-repeat="type in seCtrl.keys">
             <span> {{type}} </span>
