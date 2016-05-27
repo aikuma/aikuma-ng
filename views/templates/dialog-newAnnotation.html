@@ -1,4 +1,4 @@
-<md-dialog>
+<md-dialog style="max-width:500px;max-height:400px;min-width:500px;">
     <form>
         <md-toolbar>
             <div class="md-toolbar-tools">
@@ -9,39 +9,42 @@
                 </md-button>
             </div>
         </md-toolbar>
-        <md-content style="max-width:500px;max-height:400px;min-width:500px;min-height:150px;" class="md-padding">
-            <div layout="row" ng-repeat="choice in dCtrl.choices" layout-align="start start">
-                <md-autocomplete flex
-                                 md-input-name="choice.languageField"
-                                 md-selected-item="choice.selectedItem"
-                                 md-search-text="choice.searchText"
-                                 md-selected-item-change="dCtrl.selectedItemChange(item,$index)"
-                                 md-items="item in dCtrl.querySearch(choice.searchText)"
-                                 md-item-text="item.display"
-                                 md-floating-label="{{'LANGUAGE' | translate}}"
-                                 md-delay="200"
-                                 md-min-length="2"
-                                  class="md-subhead">
-                    <md-item-template>
-                        <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
-                    </md-item-template>
-                </md-autocomplete>
+        <md-dialog-content>
+            <div flex class="md-dialog-content" layout="column" style="padding:8px 5px 25px 5px;" layout-align="start start">
+                <div layout-fill layout="row" ng-repeat="choice in dCtrl.choices" layout-align="start start">
+                    <md-autocomplete flex
+                                     md-input-name="choice.languageField"
+                                     md-selected-item="choice.selectedItem"
+                                     md-search-text="choice.searchText"
+                                     md-selected-item-change="dCtrl.selectedItemChange(item,$index)"
+                                     md-items="item in dCtrl.querySearch(choice.searchText)"
+                                     md-item-text="item.display"
+                                     md-floating-label="{{'LANGUAGE' | translate}}"
+                                     md-delay="200"
+                                     md-min-length="2"
+                                     class="md-subhead">
+                        <md-item-template>
+                            <span md-highlight-text="choice.searchText" md-highlight-flags="^i">{{item.display}} ({{item.id}})</span>
+                        </md-item-template>
+                    </md-autocomplete>
 
-                <md-input-container md-no-float>
-                    <md-select required ng-model="choice.type">
-                        <md-option ng-repeat="type in dCtrl.types" value="{{type}}">
-                            <span class="md-body-2">{{type | translate}}</span>
-                        </md-option>
-                    </md-select>
-                </md-input-container>
+                    <md-input-container md-no-float>
+                        <md-select required ng-model="choice.type">
+                            <md-option ng-repeat="type in dCtrl.types" value="{{type}}">
+                                <span class="md-body-2">{{type | translate}}</span>
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+
+
             </div>
-
-            <md-button ng-disabled="!dCtrl.lastFilled()" ng-click="dCtrl.addNewChoice()" >
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-disabled="!dCtrl.lastFilled()" ng-click="dCtrl.addNewChoice()" style="margin-left:0px;" >
                 <md-icon class="accent" md-svg-icon="content:add_circle_outline"></md-icon> <span class="md-body-2">{{"ANNO_ADD" | translate}}</span>
             </md-button>
-
-        </md-content>
-        <md-dialog-actions layout="row">
+            <span flex></span>
             <md-button ng-click="dCtrl.makeAnno()" ng-disabled="!dCtrl.choices[0].searchText || !dCtrl.choices[0].type">{{"BUTTON_CONFIRM" | translate}}</md-button>
             <md-button ng-click="dCtrl.cancel()" style="margin-right:20px;" > {{"BUTTON_CANCEL" | translate}}</md-button>
         </md-dialog-actions>

@@ -61,12 +61,12 @@
             vm.cachePeak = config.cachePeak;
             vm.saveOption = function() {
                 config.cachePeak = vm.cachePeak;
-            }
+            };
 
             vm.userId = loginService.getLoggedinUserId();
             fileService.getFiles(vm.userId).then(function(fileList) {
                 vm.fileList = fileList;
-            })
+            });
             
             // If it's not an chrome-app, a hyperlink to file-URL will replace this function
             vm.downloadFile = function(file) {
@@ -333,7 +333,7 @@
             } else {
                 fileService.getBackupFile('blob').then(function(blob) {
                     vm.dataUri = URL.createObjectURL(blob);
-                    vm.backupName = "backup.zip"
+                    vm.backupName = "backup.zip";
                     vm.dataPrepared = true;
                 })
             }

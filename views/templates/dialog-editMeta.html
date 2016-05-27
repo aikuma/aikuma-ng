@@ -1,4 +1,4 @@
-<md-dialog  style="max-width:800px;max-height:810px;min-width:700px;min-height:200px;">
+<md-dialog  style="max-width:800px;max-height:810px;min-width:700px;">
     <form>
         <md-toolbar>
             <div class="md-toolbar-tools">
@@ -9,17 +9,19 @@
                 </md-button>
             </div>
         </md-toolbar>
-        <md-content>
-               <md-input-container ng-if="mdyCtrl.metaD.name=='META_CUSTOM'" class="md-block" flex-gt-sm>
-                <label class="md-subhead">{{"META_NAME" | translate}}</label>
-                <input class="md-body-2" ng-model="mdyCtrl.customName"/>
-            </md-input-container>
-            <md-input-container class="md-block">
-                <label ng-if="mdyCtrl.metaD.name=='META_CUSTOM'" class="md-subhead">{{"METADATA" | translate}}</label>
-                <label ng-if="mdyCtrl.metaD.name!='META_CUSTOM'" class="md-subhead">{{mdyCtrl.metaD.name | translate}}</label>
-                <textarea ng-model="mdyCtrl.metaText" md-maxlength="150" rows="5" md-select-on-focus class="md-body-2"></textarea>
-            </md-input-container>
-        </md-content>
+        <md-dialog-content>
+            <div class="md-dialog-content" layout="column" style="padding:8px 5px 25px 5px;">
+                <md-input-container ng-if="mdyCtrl.metaD.name=='META_CUSTOM'"  class="md-dialog-content">
+                    <label class="md-subhead">{{"META_NAME" | translate}}</label>
+                    <input class="md-body-2" ng-model="mdyCtrl.customName"/>
+                </md-input-container>
+                <md-input-container>
+                    <label ng-if="mdyCtrl.metaD.name=='META_CUSTOM'" class="md-subhead">{{"METADATA" | translate}}</label>
+                    <label ng-if="mdyCtrl.metaD.name!='META_CUSTOM'" class="md-subhead">{{mdyCtrl.metaD.name | translate}}</label>
+                    <textarea ng-model="mdyCtrl.metaText" md-maxlength="150" rows="5" md-select-on-focus class="md-body-2"></textarea>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
         <md-dialog-actions layout="row">
             <md-button ng-click="mdyCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>
             <md-button ng-click="mdyCtrl.delete()">{{"DELETE" | translate}}</md-button>

@@ -1,33 +1,34 @@
-<md-dialog  style="max-width:800px;max-height:810px;min-width:700px;min-height:200px;">
+<md-dialog  style="max-width:800px;max-height:810px;min-width:700px;">
     <form>
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>{{"META_ADD" | translate}}</h2>
+            <h2 translate>META_ADD</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="mdxCtrl.close()">
                 <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
             </md-button>
         </div>
     </md-toolbar>
-    <md-content>
-        <md-input-container class="md-block">
-            <label class="md-subhead">{{"META_TYPE" | translate}}</label>
-            <md-select ng-model="mdxCtrl.metaD">
-                 <md-option ng-repeat="meta in mdxCtrl.defaultMeta" ng-value="meta">
-                     <!--<md-icon md-svg-icon="{{meta.icon}}" aria-label="{{meta.name | translate}}"></md-icon>-->
-                    <span class="md-body-2">{{meta.name | translate}}</span>
-                </md-option>
-            </md-select>
-        </md-input-container>
-        <md-input-container ng-if="mdxCtrl.metaD.name=='META_CUSTOM'" class="md-block" flex-gt-sm>
-            <label class="md-subhead">{{"META_NAME" | translate}}</label>
-                <input class="md-body-2" ng-model="mdxCtrl.customName"/>
-        </md-input-container>
-        <md-input-container class="md-block">
-            <label class="md-subhead">{{"METADATA" | translate}}</label>
-            <textarea ng-model="mdxCtrl.metaText" md-maxlength="150" rows="5" md-select-on-focus class="md-body-2"></textarea>
-        </md-input-container>
-    </md-content>
+    <md-dialog-content>
+        <div class="md-dialog-content" layout="column" style="padding:8px 5px 25px 5px;">
+            <md-input-container>
+                <label class="md-subhead" translate>META_TYPE</label>
+                <md-select ng-model="mdxCtrl.metaD">
+                     <md-option ng-repeat="meta in mdxCtrl.defaultMeta" ng-value="meta">
+                        <span class="md-body-2" translate>{{meta.name}}</span>
+                    </md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container ng-show="mdxCtrl.metaD.name=='META_CUSTOM'">
+                <label class="md-subhead" translate>META_NAME</label>
+                <input class="md-body-2" ng-model="mdxCtrl.customName">
+            </md-input-container>
+            <md-input-container>
+                <label class="md-subhead" translate>METADATA</label>
+                <textarea ng-model="mdxCtrl.metaText" md-maxlength="150" rows="5" md-select-on-focus class="md-body-2"></textarea>
+            </md-input-container>
+        </div>
+    </md-dialog-content>
     <md-dialog-actions layout="row">
         <md-button ng-disabled="!mdxCtrl.metaText || (mdxCtrl.metaD.name == 'META_CUSTOM' && !mdxCtrl.customName)" ng-click="mdxCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>
         <md-button ng-click="mdxCtrl.close()" style="margin-right:20px;">{{"BUTTON_CANCEL" | translate}}</md-button>

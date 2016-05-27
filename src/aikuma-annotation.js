@@ -314,7 +314,7 @@
                     audioService.startVoiceRecog(langCode, recogUpdate, recogFinished);
                     if (nokey) {$scope.$apply();}
                 }
-            }
+            };
             //
             // START UP
             //
@@ -353,8 +353,7 @@
             function loadProgress(prog){
                 vm.wavesurferProgress = prog;
                 $scope.$apply();
-            };
-
+            }
             vm.selectAnno = function(annoIdx) {
                 if (annoIdx !== vm.selAnno[vm.r.tk]) {
                     vm.selAnno[vm.r.tk] = annoIdx;

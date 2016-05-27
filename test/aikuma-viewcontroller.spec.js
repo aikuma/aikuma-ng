@@ -72,7 +72,7 @@ describe('aikuma-viewcontrollers', function(){
             config = {
                 debugMode: false,
                 timeStretch: false
-            }
+            };
             userObj = { 
                 save: jasmine.createSpy('save'),
                 data:{
@@ -85,7 +85,7 @@ describe('aikuma-viewcontrollers', function(){
                 config: config
             
             });
-        })
+        });
         
         it('initialization test', function() {
             expect(controller.preferences).toEqual({});

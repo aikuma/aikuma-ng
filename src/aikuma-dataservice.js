@@ -408,7 +408,7 @@
                         } else if(data.segment && data.segment.sourceSegId) {
                             return store2.eachBy('user_session_idx', {beginKey: [data.userId, data.sessionId], endKey: [data.userId, data.sessionId]});       
                         }
-                        return;
+                        
                     }).then(function(secList) {
                         if(secList) {
                             if(type === SESSION_TYPE) { // Collect fileIds of all secondaries
@@ -428,14 +428,14 @@
                                 }    
                             }
                         }
-                        return;
+                        
                     }).then(function(sessionData){  // Delete session's segment if there is no secondary using it
                         if(sessionData && sessionData.type && sessionData.type === SESSION_TYPE) {
                             delete sessionData.segments[data.segment.sourceSegId];
                             delete cachedWrappers[SESSION_TYPE + data.sessionId];
                             return store1.upsert(sessionData);
                         }
-                        return;
+                        
                     }).then(function(){ // Collect fileIds to delete
                         if((data.imageIds && data.imageIds.length > 0) || (data.source && data.source.recordFileId)) {
                             if(data.imageIds)
@@ -445,7 +445,7 @@
                             
                             return store0.find(data.userId);
                         }
-                        return;
+                        
                     }).then(function(userData){
                         if(userData) {
                             for(var i in fileIds) {
@@ -459,7 +459,7 @@
                             delete cachedWrappers[USER_TYPE + data.userId];
                             return store0.upsert(userData);
                         }
-                        return;
+                        
                     }).then(function(){
                         removeDefer.resolve(fileUrls);
                     }).catch(function(err){
@@ -958,7 +958,7 @@
                     }, function(err) {
                         filesDefer.reject(err);
                     })
-                })
+                });
                 
                 return filesDefer.promise;
             };
@@ -1117,12 +1117,12 @@
                         delete userObj.data.files[fileId];
                         return userObj.save();
                     }
-                    return;
+                    
                 }).then(function(){
                     if(tempUrl) {
                         return service.deleteFile(tempUrl);
                     }
-                    return;
+                    
                 }).then(function(){
                     fileDefer.resolve('deleted');
                 }).catch(function(err){

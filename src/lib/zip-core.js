@@ -875,7 +875,7 @@
 	};
     
     function getWorker(workerType) {
-        var zipString = '(' + zipWorker.toString() + ')(this);'
+        var zipString = '(' + zipWorker.toString() + ')(this);';
         switch(workerType) {
             case 'deflate.js':
                 zipString += ('(' + deflator.toString() + ')(this);');

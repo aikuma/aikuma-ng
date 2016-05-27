@@ -100,7 +100,7 @@
             // max/min within sampleSize across all channels
             //return peaks;
             return mergedPeaks;
-        }
+        };
         
         if(vm.externalRecord) {
             vm.wsRecord.init({
@@ -940,8 +940,7 @@
                 });
             });
 
-        };
-
+        }
         // Called from several places as a means to pause the microphone and disable record controls
         // and update UI elements to show that the user cannot record at this point.
         function disableRecording() {

@@ -12,7 +12,8 @@
 }
 
 md-input-container {
-    margin: 0 0 0 0px;
+    margin-top: 11px;
+    margin-bottom: 4px;
 }
 
 .helpbox {

@@ -39,7 +39,7 @@ gulp.task('buildtest', ['wavesurfer'], function(done) {
     return gulp.src('./test/karma.conf.js', {cwd: './'})
         .pipe(wiredep({ignorePath: '../'}))
         .pipe(gulp.dest('./'));
-})
+});
 
 gulp.task('build', ['wavesurfer'], function () {
     // inject all of the js dependencies into the html

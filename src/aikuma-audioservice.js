@@ -82,7 +82,7 @@
                 var view = new DataView(buffer);
                 floatTo16BitPCM(view, 0, samples);
                 return new Int16Array(buffer);
-            } 
+            }; 
 
             function floatTo16BitPCM(output, offset, input) {
                 for (var i = 0; i < input.length; i++, offset += 2) {
