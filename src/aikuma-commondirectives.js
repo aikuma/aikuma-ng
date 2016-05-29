@@ -230,6 +230,7 @@
             var vm = this;
             vm.languages = config.languages;
             
+            vm.debug = function() { return config.debug; };
             vm.getLoginStatus = loginService.getLoginStatus;
             vm.versionString = config.appVersion;
             $scope.onlineStatus = aikumaService;
@@ -323,7 +324,7 @@
                 {
                     class : '',
                     title: 'NAV_BUGREP',
-                    icon: 'action:bug_report',
+                    icon: 'action:report_problem',
                     state: 'reportbug',
                 },
                 {
@@ -331,6 +332,12 @@
                     title: 'NAV_EXTENSIONS',
                     icon: 'action:extension',
                     state: 'extensions'
+                },
+                {
+                    class : '',
+                    title: 'NAV_DEBUG',
+                    icon: 'action:bug_report',
+                    state: 'debug'
                 }
             ];
             

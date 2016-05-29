@@ -305,6 +305,10 @@
                         templateUrl: 'views/extensions.html',
                         controller: 'extensionsController as exCtrl'
                     })
+                    .when('/debug', {
+                        templateUrl: 'views/debug.html',
+                        controller: 'debugController as deCtrl'
+                    })
                     .otherwise({
                         redirectTo: '/'
                     });

@@ -190,5 +190,6 @@
   "FILE_DELCONF1": "Are you sure you want to delete this file permanently?",
   "FILE_DELCONF2": "This operation can lead to an inconsistent state if relevant db is not cleaned.",
   "FILE_DELNO": "No way!",
-  "FILE_DELYES": "Delete file"
+  "FILE_DELYES": "Delete file",
+  "NAV_DEBUG": "Debug"
 }

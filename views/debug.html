@@ -1,0 +1,49 @@
+<ng-topbar activity="{{'NAV_DEBUG' | translate}}"></ng-topbar>
+<md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
+    
+    <label class="md-button md-raised" ng-click="deCtrl.loadMockData()">
+        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
+        {{"DEBUG_MOCK" | translate}}
+    </label>
+
+    <label class="md-button md-raised" ng-click="deCtrl.wipeData()">
+        <md-icon md-svg-icon="action:delete"></md-icon>
+        {{"DEBUG_WIPE" | translate}}
+    </label>
+    
+    <label class="md-button md-raised" ng-click="deCtrl.resetDb()">
+        <md-icon md-svg-icon="action:delete"></md-icon>
+        {{"DEBUG_RESETDB" | translate}}
+    </label>
+    
+    
+    <div>
+    <h4 class='md-title'>Filesystem(/{{deCtrl.userId}} )</h4>
+    <ul>
+        <li ng-repeat="f in deCtrl.fileList">
+            <a ng-click="deCtrl.downloadFile(f)" href="{{f.toURL()}}"> {{f.name}} </a>
+         
+            <md-button class="md-icon-button" ng-click="deCtrl.deleteFile($event, $index)" aria-label="Delete file">
+                <md-icon md-svg-icon="action:delete"></md-icon>
+                <md-tooltip md-direction="left">
+                    <span translate class="md-body-1">FILE_DELYES</span>
+                </md-tooltip>
+            </md-button>
+        </li>
+    </ul>
+        
+    <h4 class='md-title'>DB</h4>
+    <ul>
+        <li ng-repeat="type in deCtrl.keys">
+            <span> {{type}} </span>
+            <ul>
+                <li ng-repeat="data in deCtrl.db[type]" ng-click="deCtrl.showElem(data._ID)">
+                    <span>{{data.names}} ( {{data._ID}} : {{data.type}} ) </span>
+                    <pre ng-show="deCtrl.isActive[data._ID]"> {{data | json: 2}} </pre>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </div>
+    
+</md-content>

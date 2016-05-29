@@ -1,21 +1,6 @@
 <ng-topbar activity="{{'NAV_SETTINGS' | translate}}"></ng-topbar>
 <md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
 
-    <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.loadMockData()">
-        <md-icon md-svg-icon="content:add_circle_outline"></md-icon>
-        {{"DEBUG_MOCK" | translate}}
-    </label>
-
-    <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.wipeData()">
-        <md-icon md-svg-icon="action:delete"></md-icon>
-        {{"DEBUG_WIPE" | translate}}
-    </label>
-    
-    <label ng-if="seCtrl.debug()" class="md-button md-raised" ng-click="seCtrl.resetDb()">
-        <md-icon md-svg-icon="action:delete"></md-icon>
-        {{"DEBUG_RESETDB" | translate}}
-    </label>
-
     <div flex layout="row inset" layout-wrap>
         <md-switch flex="25" aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
@@ -27,34 +12,5 @@
             <span class="md-body-2">Enable peak caching</span>
         </md-switch>
     </div>
-
-    <div>
-        
-    <h4 class='md-title'>Filesystem(/{{seCtrl.userId}} )</h4>
-    <ul ng-if="seCtrl.debug()" >
-        <li ng-repeat="f in seCtrl.fileList">
-            <a ng-click="seCtrl.downloadFile(f)" href="{{f.toURL()}}"> {{f.name}} </a>
-         
-            <md-button class="md-icon-button" ng-click="seCtrl.deleteFile($event, $index)" aria-label="Delete file">
-                <md-icon md-svg-icon="action:delete"></md-icon>
-                <md-tooltip md-direction="left">
-                    <span translate class="md-body-1">FILE_DELYES</span>
-                </md-tooltip>
-            </md-button>
-        </li>
-    </ul>
-        
-    <h4 class='md-title'>DB</h4>
-    <ul ng-if="seCtrl.debug()" >
-        <li ng-repeat="type in seCtrl.keys">
-            <span> {{type}} </span>
-            <ul>
-                <li ng-repeat="data in seCtrl.db[type]" ng-click="seCtrl.showElem(data._ID)">
-                    <span>{{data.names}} ( {{data._ID}} : {{data.type}} ) </span>
-                    <pre ng-show="seCtrl.isActive[data._ID]"> {{data | json: 2}} </pre>
-                </li>
-            </ul>
-        </li>
-    </ul>
-    </div>
+    
 </md-content>
