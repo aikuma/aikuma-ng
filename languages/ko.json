@@ -191,5 +191,8 @@
   "FILE_DELCONF2": "관련 DB가 지워지지 않은 파일만의 삭제는 앱의 불완전한 작동을 일으킬 수 있습니다.",
   "FILE_DELNO": "안됩니다",
   "FILE_DELYES": "파일 삭제하기",
-  "NAV_DEBUG": "디버그"
+  "NAV_DEBUG": "디버그",
+  "HELP_TAGS": "Tag selector help",
+  "HELP_LANGS": "Language selector help",
+  "HELP_SPKS": "Speaker selector help"
 }
