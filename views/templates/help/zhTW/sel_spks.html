@@ -1,0 +1,27 @@
+<md-dialog aria-label="Help: Annotate" ng-cloak style="max-width:800px">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-icon class="dialogmenuicon" md-svg-icon="mdi:account-multiple"></md-icon>
+            <h2 translate>HELP_SPKS</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+        <div class="md-dialog-content">
+            <p class="md-body-2">The speaker selector lets you specify one or more people in the source recording. To add, start typing the speaker's name and select the speaker you want from the autocomplete box and they will appear in the language selector.</p>
+            <p class="md-body-2">If you haven't added the speaker before then type their name and hit return. A pop-up dialog will allow you to enter more information, including uploading a photo or taking a picture from your webcam.</p>
+            <p class="md-body-2">Note: You can edit existing speaker names and photos by clicking on them after they have been added.</p>
+            <p class="md-body-2">If you want to remove a speaker, just click the <md-icon style="width:20px;height:20px" md-svg-icon="nav:close"></md-icon> of the speaker you wish to remove.</p>
+        </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="hide()" style="margin-right:20px;">
+            {{"BUTTON_OK" | translate}}
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

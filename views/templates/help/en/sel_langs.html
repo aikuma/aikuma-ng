@@ -1,0 +1,26 @@
+<md-dialog aria-label="Help: Annotate" ng-cloak style="max-width:800px">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-icon class="dialogmenuicon" md-svg-icon="action:language"></md-icon>
+            <h2 translate>HELP_LANGS</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+        <div class="md-dialog-content">
+            <p class="md-body-2">The language selector lets you specify one or more languages in the source recording. To add, start typing the language name and select the language you want from the autocomplete box and a language 'chip' will appear in the language selector.</p>
+            <p class="md-body-2">If your language isn't yet in ISO 639-3 (you don't see anything when you type the name) then just hit return and it will be added manually.</p>
+            <p class="md-body-2">If you want to remove a language, just click the <md-icon style="width:20px;height:20px" md-svg-icon="nav:close"></md-icon> of the language chip you wish to remove.</p>
+        </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="hide()" style="margin-right:20px;">
+            {{"BUTTON_OK" | translate}}
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

@@ -28,4 +28,10 @@
             <span class="md-body-2">{{$chip.langStr}}</span><span ng-if="$chip.langISO!=''" class="md-body-2"> ({{$chip.langISO}})</span>
         </md-chip-template>
     </md-chips>
+    <md-button class="md-icon-button" aria-label="Use translation" ng-click="lsCtrl.help($event)">
+        <md-tooltip>
+            <span translate class="md-body-2">HELP_LANGS</span>
+        </md-tooltip>
+        <md-icon class="imgsvgicon" md-svg-icon="action:help"></md-icon>
+    </md-button>
 </div>

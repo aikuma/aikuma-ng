@@ -11,6 +11,12 @@
     }
 }
 
+.dialogmenuicon {
+    width:30px;
+    height:30px;
+    margin-right:10px
+}
+
 md-input-container {
     margin-top: 11px;
     margin-bottom: 4px;

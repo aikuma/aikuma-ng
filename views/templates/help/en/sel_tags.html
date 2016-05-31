@@ -1,0 +1,26 @@
+<md-dialog aria-label="Help: Annotate" ng-cloak style="max-width:800px">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-icon class="dialogmenuicon" md-svg-icon="mdi:tag"></md-icon>
+            <h2 translate>HELP_TAGS</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-icon="nav:close" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+        <div class="md-dialog-content">
+            <p class="md-body-2">The tags selector lets you specify any number of tags for this session. Tags are labels which can mean anything you want,
+                some examples are; approved, complete, quality_low, quality_high, video and so on.</p>
+            <p class="md-body-2">If you want to remove a tag, just click the <md-icon style="width:20px;height:20px" md-svg-icon="nav:close"></md-icon> of the tag chip you wish to remove.</p>
+        </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="hide()" style="margin-right:20px;">
+            {{"BUTTON_OK" | translate}}
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

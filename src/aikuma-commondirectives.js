@@ -379,7 +379,7 @@
         };
     navController.$inject = ['$timeout', 'config', '$rootScope', '$scope', '$translate', '$location', 'loginService', 'dataService', 'fileService', 'aikumaDialog', 'aikumaService', '$animate'];
 
-    var tagSelectorController = function ($scope, loginService, dataService) {
+    var tagSelectorController = function ($scope, aikumaDialog) {
         var vm = this;
         
         // load all user data from the service and create an array of contacts needed
@@ -443,9 +443,13 @@
             });
             return tags;
         }
+        
+        vm.help = function(ev) {
+            aikumaDialog.help(ev, 'sel_tags');
+        };
 
     };
-    tagSelectorController.$inject = ['$scope', 'loginService', 'dataService'];
+    tagSelectorController.$inject = ['$scope', 'aikumaDialog'];
 
     var metadataController = function ($scope, loginService, dataService, $mdDialog) {
         var vm = this;
@@ -638,7 +642,7 @@
     };
     playerController.$inject = ['$scope', '$attrs'];
 
-    var langSelectController = function (aikumaService, $scope) {
+    var langSelectController = function (aikumaService, $scope, aikumaDialog) {
         var vm = this;
         // list of `language` value/display objects
         vm.languages = loadAllx();
@@ -714,12 +718,17 @@
                 return (language.value.indexOf(lowercaseQuery) === 0 || language.id.indexOf(lowercaseQuery) === 0);
             };
         }
+
+        vm.help = function(ev) {
+            aikumaDialog.help(ev, 'sel_langs');
+        };
+
     };
-    langSelectController.$inject = ['aikumaService', '$scope'];
+    langSelectController.$inject = ['aikumaService', '$scope', 'aikumaDialog'];
 
 
 
-    var personSelectorController = function ($sce, $scope, dataService, $mdDialog) {
+    var personSelectorController = function ($sce, $scope, dataService, $mdDialog, aikumaDialog) {
         var vm = this;
         // load all user data from the service and create an array of contacts needed for md-contact-chips
         vm.userObj = $scope.userObj;
@@ -866,9 +875,12 @@
             vm.sessionObj.data.roles[$scope.role] = idList;
             vm.sessionObj.save();
         }
-    };
-    personSelectorController.$inject = ['$sce', '$scope', 'dataService', '$mdDialog'];
 
+        vm.help = function(ev) {
+            aikumaDialog.help(ev, 'sel_spks');
+        };
+    };
+    personSelectorController.$inject = ['$sce', '$scope', 'dataService', '$mdDialog', 'aikumaDialog'];
 
     function newPersonDialogController($scope, $mdDialog, mode, name, sessionObj, userObj, imageId) {
         $scope.mode = mode; // 'edit' or 'new'

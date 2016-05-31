@@ -191,7 +191,6 @@
                         }
                     }
                 };
-
             };
 
             service.startVoiceRecog = function(langCode, callbackUpdate, callbackFinished) {

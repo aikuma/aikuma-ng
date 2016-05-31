@@ -191,5 +191,8 @@
   "FILE_DELCONF2": "This operation can lead to an inconsistent state unless relevant db is cleaned.",
   "FILE_DELNO": "No way!",
   "FILE_DELYES": "Delete file",
-  "NAV_DEBUG": "Debug"
+  "NAV_DEBUG": "Debug",
+  "HELP_TAGS": "Tag selector help",
+  "HELP_LANGS": "Language selector help",
+  "HELP_SPKS": "Speaker selector help"
 }
