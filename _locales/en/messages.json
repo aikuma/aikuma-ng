@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "Aikuma NG",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "appDesc": {
+    "message": "Aikuma-NG is an easy-to-use offline app to annotate/transcribe speech",
+    "description": "The description of the application, displayed in the web store."
+  },
+  "shortAppDesc": {
+    "message": "Aikuma NG",
+    "description": "Short title of the application."
+  }
+}

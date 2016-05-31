@@ -1,4 +1,4 @@
-Aikuma-NG is an easy-to-use offline application for anyone interested in producing annotated and organised records of language. You may import recordings or make new recordings directly, and optionally record speech-based annotations to assist in the production of written annotations (transcriptions). Aikuma-NG also provides the ability to organise sessions with user-configurable details (metadata) such as images, people (speakers etc) and so on.
+Aikuma-NG is an easy-to-use offline application for anyone interested in annotating, translating and organising spoken language. The app imports recording files or records audio directly. You may also record speech-based annotations to assist in producing transcriptions. Aikuma-NG also provides the ability to organise sessions with user-configurable details (metadata) such as images, people (speakers etc) and so on.
 
 Our goal is to create a tool which is useful for communities with lesser resourced (endangered) languages. Aikuma is intended to be an easy-to-use alternative to complex software. A typical use case may include producing captioned video recordings for language maintenance, teaching and revitalization.
 
@@ -8,40 +8,19 @@ Aikuma-NG beta allows the user to do the following:
 2. Produce 'respeaking' and 'translation' audio annotations to assist the production of written transcriptions.
 3. Record details (or metadata) for a given 'session', such as participants, genres of speech and any number of user definable fields, uploading of images and so on.
 4. Create any number of written annotations for the given source recording and perform these annotations listening to source and optional audio annotations.
-5. Export the annotations to SRT or WebVTT file formats suitable for uploading to YouTube etc.
+5. Export the annotations to SRT or WebVTT file formats suitable for uploading to YouTube and other sites.
 
-Further features: Audio files may be played back slower with no reduction in pitch (time stretching). If the user has an online connection they may be dictate annotations using speech-to-text. Back up and restore of all data.
+Aikuma-NG has online help, look for the question mark icons.
 
-The annotation (transcription) UI offers the ability to either create an annotation from scratch, using a simple control-key to play, cursor keys to navigate audio and marked regions, control scheme. Alternatively Aikuma-NG can adopt audio annotations recorded in the app, assisting with producing written transcripts based on audio respeaking/translation recordings.
-
-Users may ignore audio annotations and the session metadata features if all they wish to accomplish is produce captions for audio previously extracted from video.
-
-Controls and instructions
-
-Respeaking/translation view: Left shift to play, right-shift to record. Press left-shift again to replay from previous point. Escape deletes the last recorded region. You can return to the respeaking/translation views to continue working UNLESS you have imported these in the annotation view.
-
-Annotation view: There are two basic modes, annotating as you go, or working within regions. The instructions below may seem complicated but are actually quite intuitive. You may prefer to experiment; the main keys are CTRL to play, cursor keys to navigate, return key, escape (undo). A fuller explanation as follows:
-
-Mode 1: Annotating when there is no region, or annotate-as-you-go such as annotating from scratch. You can use the cursor keys or click on the waveform to quickly navigate back and forth. Press and hold CTRL to play. You will see a green region being marked, you can lift off and type an annotation, hit return to save it and continue directly by holding control again. You can also use right cursor to skip. You may also use the back cursor to go back to previous regions, in which case keys behave like mode 2.
-
-Mode 2: If the cursor is within an existing span of annotations, you only need to tap CTRL to play the current region. Note that the speaker icon allows you to change playback preferences, such as playing the source, spoken annotation, or both.
-
-If you have recorded a respeaking/translation, you will see these on the session view. Click on the add annotation icon here and the audio will be available while annotating. Alternative you can adopt and split from audio annotations from within the annotation UI.
-
-If there is more than one annotation in a track, enable/disable buttons appear for each annotation. This allows selection of which annotations to export via the save captions feature, and also alters the behavior when you press return after typing or speaking an annotation. For example, disable all but one annotation and hitting return will advance directly to the next region.
-
-Aikuma-NG is offered localized into English, Chinese (simplified and traditional) and Korean. Additional contributions of localization are most welcome! The language of the app may be switched instantly by the top right drop-down menu.
+Aikuma-NG is offered localized into English, Chinese (simplified and traditional) and Korean. Some help texts have yet to be translated. Please select your language via the icon on the top right of the app.
 
 The Aikuma Project
 
-Aikuma-NG is the product of the Aikuma Project, an international effort to develop scalable methods to document and revitalize the thousands of small languages still spoken in the world today, for which
-we have adopted the term treasure languages.This software is the evolution of Aikuma, an Android mobile-phone app described in detail at www.aikuma.org. The name Aikuma means "meeting place" in Usarufa,
+Aikuma-NG is the product of the Aikuma Project, an international effort to develop scalable methods to document and revitalize the thousands of small languages still spoken in the world today.
+This software is the evolution of Aikuma, an Android mobile-phone app described at www.aikuma.org. The name Aikuma means "meeting place" in Usarufa,
 the language where the mobile app Aikuma was first used. Usarufa is spoken in the Eastern Highlands Province of Papua New Guinea.
 
-The NG-suffix can be taken to mean Next Generation or Angular, the web framework used by this software.
-
-We welcome feedback via the aikuma-dev mailing list or our issue tracker. Developers are invited to contribute via our GitHub project.
-https://groups.google.com/forum/#!aboutgroup/aikuma-dev
+We welcome feedback via the GitHub issue tracker.
 https://github.com/aikuma/aikuma-ng
 
-Aikuma-NG development team: Mat Bettinson, Sang Yeop Lee, Steven Bird.
+Aikuma-NG development team: Mat Bettinson (風茂修), Sang Yeop Lee, Steven Bird.

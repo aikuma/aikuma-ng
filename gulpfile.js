@@ -73,6 +73,8 @@ gulp.task('copyfiles', ['cleandist'], function () {
         .pipe(gulp.dest('dist'));
     gulp.src('./languages/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
+    gulp.src('./_locales/**/*', {base: './'})
+        .pipe(gulp.dest('dist'));
     gulp.src('./icons/**/*', {base: './'})
         .pipe(gulp.dest('dist'));
     gulp.src(['background.js', 'manifest.json'])
@@ -88,7 +90,7 @@ gulp.task('deploy', ['copyfiles', 'cleandist'], function () {
             compilation_level: 'SIMPLE_OPTIMIZATIONS',
             language_in: 'ECMASCRIPT6',
             language_out: 'ECMASCRIPT5',
-            js_output_file: 'scripts/combined.js',
+            js_output_file: 'scripts/combined.js'
             })))
         .pipe(gulpif('*.css', cleanCSS({debug: true})))
         .pipe(debug({title: 'x:'}))
