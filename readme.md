@@ -39,6 +39,10 @@ automatically saved so that users may continue working on a long source recordin
 
 Note: Screen shots are need of updating!
 
+### Installing ###
+
+Install the app in a few seconds via the [Chrome Web Store](https://chrome.google.com/webstore/detail/aikuma-ng/mkcflkabncgflgkbagmafecnligbfkfg).
+
 ### The Aikuma Project ###
 
 Aikuma-*NG* is part of the [Aikuma project](http://www.aikuma.org), an international research and development effort
