@@ -1,11 +1,11 @@
 {
   "appName": {
-    "message": "Aikuma NG"
+    "message": "아이쿠마-NG"
   },
   "appDesc": {
-    "message": "Aikuma-NG is an easy-to-use offline app to annotate/transcribe speech"
+    "message": "아이쿠마-NG는 음성녹음을 글로 기록하거나 주석을 달때 사용하기 쉬운 오프라인 애플리케이션입니다."
   },
   "shortAppDesc": {
-    "message": "Aikuma NG"
+    "message": "아이쿠마-NG"
   }
 }

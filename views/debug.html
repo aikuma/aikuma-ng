@@ -23,12 +23,14 @@
         <li ng-repeat="f in deCtrl.fileList">
             <a ng-click="deCtrl.downloadFile(f)" href="{{f.toURL()}}"> {{f.name}} </a>
          
+<!--
             <md-button class="md-icon-button" ng-click="deCtrl.deleteFile($event, $index)" aria-label="Delete file">
                 <md-icon md-svg-icon="action:delete"></md-icon>
                 <md-tooltip md-direction="left">
                     <span translate class="md-body-1">FILE_DELYES</span>
                 </md-tooltip>
             </md-button>
+-->
         </li>
     </ul>
         
