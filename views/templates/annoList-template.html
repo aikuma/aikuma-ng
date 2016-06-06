@@ -34,22 +34,24 @@
                 <md-list-item flex ng-repeat="anno in alCtrl.tracks[tk].annos" ng-click="alCtrl.editAnno(anno.id)" layout="row" style="border-bottom:1px solid #ccc;position:relative;z-index:10">
                     <div flex style="max-width:120px;margin-right:10px;" layout="column">
                         <div class="md-body-2" style="text-transform: uppercase;" translate>{{anno.type}}</div>
-                        <div class="md-body-1" style="text-overflow:ellipsis;white-space:nowrap;overflow: hidden;">{{anno.lang}}</div>
+                        <!--<div class="md-body-1" style="text-overflow:ellipsis;white-space:nowrap;overflow: hidden;">{{anno.lang}}</div>-->
+                        <div class="md-body-1" style="">{{anno.lang}}</div>
                     </div>
-                    <div flex layout="column" layout-align="start">
-                        <span flex></span>
-                        <div style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
-                            <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 0) ? 'stextlineactive' : 'stextline'">{{anno.summary[0]}}</span>
-                        </div>
-                        <div style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
-                            <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 1) ? 'stextlineactive' : 'stextline'">{{anno.summary[1]}}</span>
-                        </div>
-                        <div style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
-                            <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 2) ? 'stextlineactive' : 'stextline'">{{anno.summary[2]}}</span>
-                        </div>
-                        <div ng-if="!anno.summary[0] && !anno.summary[0] && !anno.summary[0]">
+                    <div flex layout="column" layout-align="center">
+                        <!--<span flex></span>-->
+                        <div ng-if="!anno.summary[0] && !anno.summary[1] && !anno.summary[2]">
                             <span class="sxtextline" translate>NONE</span>
                         </div>
+                        <div ng-if="anno.summary[0]" style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
+                            <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 0) ? 'stextlineactive' : 'stextline'">{{anno.summary[0]}}</span>
+                        </div>
+                        <div ng-if="anno.summary[1]" style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
+                            <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 1) ? 'stextlineactive' : 'stextline'">{{anno.summary[1]}}</span>
+                        </div>
+                        <div ng-if="anno.summary[2]" style="z-index:-1;position:relative;line-height: 20px;">&nbsp;
+                            <span ng-class="(alCtrl.playingSec && alCtrl.pcss[tk] && alCtrl.sline == 2) ? 'stextlineactive' : 'stextline'">{{anno.summary[2]}}</span>
+                        </div>
+
                     </div>
                     <md-icon style="width:30px;!important" class="md-secondary md-warn" md-svg-icon="nav:close" ng-click="alCtrl.deleteAnno($event, tk, $index)" aria-label="Delete annotation">
                         <md-tooltip md-direction="left">

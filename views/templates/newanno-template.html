@@ -3,7 +3,7 @@
         <div layout="row" style="padding-left:15px">
             <div flex layout="column">
                 <div flex id="annotateTimeline" style="height:20px"></div>
-                <div id="annotatePlayback" style="height:180px;overflow:hidden">
+                <div id="annotatePlayback" style="height:168px;overflow:hidden">
                     <md-progress-linear ng-if="annoC.loading" md-mode="determinate" value="{{annoC.wavesurferProgress}}" style="margin-top:68px;"></md-progress-linear>
                 </div>
             </div>
@@ -169,8 +169,7 @@ annoC.canExport(): {{annoC.canExport()}}
 
         <div flex layout="column" >
             <div ng-if="annoC.canExport()" ng-repeat="r in annoC.getRegionList()" ng-class="($index === annoC.cursor[annoC.r.tk]) ? 'transcript-highlight' : 'transcript-normal'"
-                 ng-click="annoC.selectRegion($index)" class="noclicky" ng-init="p = $index" smooth-scroll
-                 scroll-if="{{ $index == annoC.cursor[annoC.r.tk] }}">
+                 ng-click="annoC.selectRegion($index)" class="noclicky" ng-init="p = $index" >
                 <div flex ng-if="anno.cfg.enabled" ng-repeat="anno in annoC.tracks[annoC.r.tk].annos track by anno.id"
                      style="margin-left:5px;" layout="row"
                      id="{{'tran'+p}}"

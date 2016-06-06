@@ -710,7 +710,11 @@
                     vm.cursor[vm.r.tk] = region;
                     if (region !== -1) {
                         var someElement = angular.element(document.getElementById('tran'+region));
-                        vm.transcriptElement.scrollToElement(someElement, 80, 250);
+                        // it might be of length 0
+                        // Uncaught TypeError: Cannot read property 'getBoundingClientRect' of undefined
+                        if (someElement.length) {
+                            vm.transcriptElement.scrollToElement(someElement, 80, 250);
+                        }
                     }
                     //$scope.$apply();
                 }

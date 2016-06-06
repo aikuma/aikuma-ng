@@ -40,14 +40,9 @@
                     hideScrollbar: false,
                     scrollParent: true,
                     progressColor: '#33627c',
-                    waveColor: '#4FC3F7'
+                    waveColor: '#4FC3F7',
+                    height: 128
                 });
-                asx.miniMap = asx.wavesurfer.initMinimap({
-                    height: 40,
-                    waveColor: '#555',
-                    progressColor: '#999'
-                });
-
                 asx.wavesurfer.load(audioSourceUrl);
                 asx.wavesurfer.on('audioprocess', function () {
                     if (asx.r.regionMarked) {
@@ -68,6 +63,12 @@
                     loadProgressCallback(prog);
                 });
                 asx.wavesurfer.on('ready', function () {
+                    /* Initialize the minimap */
+                    asx.miniMap = asx.wavesurfer.initMinimap({
+                        height: 40,
+                        waveColor: '#555',
+                        progressColor: '#999'
+                    });
                     /* Initialize the time line */
                     asx.timeline = Object.create(asx.wavesurfer.Timeline);
                     asx.timeline.init({

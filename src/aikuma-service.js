@@ -255,6 +255,120 @@
                 }
             };
 
+            ser.elan = function() {
+                var xmldef = '<?xml version="1.0" encoding="UTF-8"?>';
+                var doc = document.implementation.createDocument('http://www.w3.org/2001/XMLSchema-instance', 'ANNOTATION_DOCUMENT', null);
+                var elements = doc.getElementsByTagName("ANNOTATION_DOCUMENT");
+                var annodoc = elements[0];
+                // AUTHOR="" DATE="2006-06-13T15:09:43+01:00" FORMAT="2.3" VERSION="2.3"
+                var nd = new Date();
+                var xsdtime = nd.toISOString();
+                var tz = nd.getTimezoneOffset() / 60;
+                if (tz >= 0) {xsdtime += "+";}
+                xsdtime += tz + ":00";
+                annodoc.setAttribute('xsi:noNamespaceSchemaLocation', 'http://www.mpi.nl/tools/elan/EAFv2.3.xsd');
+                annodoc.setAttribute('AUTHOR', '');
+                annodoc.setAttribute('DATE', xsdtime);
+                annodoc.setAttribute('FORMAT', '2.3');
+                annodoc.setAttribute('VERSION', '2.3');
+                var header = doc.createElement('HEADER');
+                header.setAttribute('MEDIA_FILE', '');
+                header.setAttribute('TIME_UNITS', 'milliseconds');
+                var mediadesc = doc.createElement('MEDIA_DESCRIPTOR');
+                mediadesc.setAttribute('MEDIA_URL', '');
+                mediadesc.setAttribute('MIME_TYPE', '');
+                // If operating on extracted audio, we should make a MEDIA_DESCRIPTOR like this
+                // <MEDIA_DESCRIPTOR EXTRACTED_FROM="file:///D:/Data/elan/elan-example1.mpg" MEDIA_URL="file:///D:/Data/elan/elan-example1.wav" MIME_TYPE="audio/x-wav"/>
+                header.appendChild(mediadesc);
+                annodoc.appendChild(header);
+                //
+                // Time slots
+                // <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="0"/>
+                var timeorder = doc.createElement('TIME_ORDER');
+
+                var timeslot = doc.createElement('TIME_SLOT');
+                timeslot.setAttribute('TIME_SLOT_ID', '');
+                timeslot.setAttribute('TIME_VALUE', '');
+
+                timeorder.appendChild(timeslot);
+
+                annodoc.appendChild(timeorder);
+                //
+                // Tiers
+                //
+                var tier = doc.createElement('TIER');
+                //<TIER DEFAULT_LOCALE="en" LINGUISTIC_TYPE_REF="utterance" PARTICIPANT="" TIER_ID="K-Spch">
+                tier.setAttribute('DEFAULT_LOCALE', '');
+                tier.setAttribute('LINGUISTIC_TYPE_REF', 'utterance'); // adopt this for simple annotations
+                tier.setAttribute('PARTICIPANT', '');
+                tier.setAttribute('TIER_ID', '');
+
+                //<ANNOTATION>
+                //<ALIGNABLE_ANNOTATION ANNOTATION_ID="a8" TIME_SLOT_REF1="ts4" TIME_SLOT_REF2="ts23">
+                //    <ANNOTATION_VALUE>so you go out of the Institute to the Saint Anna Straat.</ANNOTATION_VALUE>
+                //</ALIGNABLE_ANNOTATION>
+                //</ANNOTATION>
+
+                var annotation = doc.createElement('ANNOTATION');
+                var annoalign = tier.appendChild(annotation);
+                annoalign.setAttribute('ANNOTATION_ID', '');
+                annoalign.setAttribute('TIME_SLOT_REF1', '');
+                annoalign.setAttribute('TIME_SLOT_REF2', '');
+
+                var annoval = doc.createElement('ANNOTATION_VALUE');
+                annoval.value = '';
+                var foo = annoalign.appendChild(annoval);
+
+                annodoc.appendChild(tier);
+
+                //
+                // LINGUISTIC_TYPE
+                //
+                // <LINGUISTIC_TYPE GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="utterance" TIME_ALIGNABLE="true"/>
+                var lingtype = doc.createElement('LINGUISTIC_TYPE');
+                lingtype.setAttribute('GRAPHIC_REFERENCES', 'false');
+                lingtype.setAttribute('LINGUISTIC_TYPE_ID', 'utterance');
+                lingtype.setAttribute('TIME_ALIGNABLE', 'true');
+
+                annodoc.appendChild(lingtype);
+                //
+                // LOCALE
+                //
+                // <LOCALE COUNTRY_CODE="US" LANGUAGE_CODE="en"/>
+                var locale = doc.createElement('LOCALE');
+                locale.setAttribute('COUNTRY_CODE', 'US');
+                locale.setAttribute('LANGUAGE_CODE', 'en');
+
+                annodoc.appendChild(locale);
+                //
+                // CONSTRAINT & CONTROLLED VOCABULARY  not implemented
+                //
+
+
+                //doc.appendChild(annodoc);
+
+                var serializer = new XMLSerializer();
+                var xmlString = xmldef + serializer.serializeToString(doc);
+                xmlString = xmlString.split('>').join('>\n');
+
+                var blobzor = new Blob([xmlString], {type: "text/xml;charset=utf-8"});
+                // if this is running as Chrome Packaged App then let's use the file API
+                if (window.chrome && chrome.app && chrome.app.runtime) {
+                    chromeAppSave('annotation.xml', blobzor, function () {
+                        console.log('saved');
+                    });
+                } else {
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    var url = window.URL.createObjectURL(blobzor);
+                    a.href = url;
+                    a.download = 'annotation.xml';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            };
+
             function errorHandler(e) {
                 console.error(e);
             }
