@@ -194,5 +194,7 @@
   "NAV_DEBUG": "디버그",
   "HELP_TAGS": "태그선택 도움말",
   "HELP_LANGS": "언어선택 도움말",
-  "HELP_SPKS": "화자선택 도움말"
+  "HELP_SPKS": "화자선택 도움말",
+  "EXPORT_ELAN": "Export to ELAN",
+  "SHARE_NONE": "Cannot share this session!"
 }

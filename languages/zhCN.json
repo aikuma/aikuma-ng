@@ -194,5 +194,7 @@
   "NAV_DEBUG": "调试",
   "HELP_TAGS": "标签选择器的帮助",
   "HELP_LANGS": "语言选择器的帮助",
-  "HELP_SPKS": "说话者选择器的帮助"
+  "HELP_SPKS": "说话者选择器的帮助",
+  "EXPORT_ELAN": "导出到ELAN",
+  "SHARE_NONE": "无法分享这届！"
 }
