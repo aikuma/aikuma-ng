@@ -32,7 +32,8 @@
             };
             return ser;
         }])
-        .factory('aikumaService', ['$animate', '$rootScope', '$window', '$translate', 'audioService', function ($animate, $rootScope, $window, $translate, audioService) {
+        .factory('aikumaService', ['$animate', '$rootScope', '$window', '$translate', 'audioService', 'fileService',
+                                    function ($animate, $rootScope, $window, $translate, audioService, fileService) {
             var ser = {};
             ser.languages = [];
             
@@ -255,120 +256,6 @@
                 }
             };
 
-            ser.elan = function() {
-                var xmldef = '<?xml version="1.0" encoding="UTF-8"?>';
-                var doc = document.implementation.createDocument('http://www.w3.org/2001/XMLSchema-instance', 'ANNOTATION_DOCUMENT', null);
-                var elements = doc.getElementsByTagName("ANNOTATION_DOCUMENT");
-                var annodoc = elements[0];
-                // AUTHOR="" DATE="2006-06-13T15:09:43+01:00" FORMAT="2.3" VERSION="2.3"
-                var nd = new Date();
-                var xsdtime = nd.toISOString();
-                var tz = nd.getTimezoneOffset() / 60;
-                if (tz >= 0) {xsdtime += "+";}
-                xsdtime += tz + ":00";
-                annodoc.setAttribute('xsi:noNamespaceSchemaLocation', 'http://www.mpi.nl/tools/elan/EAFv2.3.xsd');
-                annodoc.setAttribute('AUTHOR', '');
-                annodoc.setAttribute('DATE', xsdtime);
-                annodoc.setAttribute('FORMAT', '2.3');
-                annodoc.setAttribute('VERSION', '2.3');
-                var header = doc.createElement('HEADER');
-                header.setAttribute('MEDIA_FILE', '');
-                header.setAttribute('TIME_UNITS', 'milliseconds');
-                var mediadesc = doc.createElement('MEDIA_DESCRIPTOR');
-                mediadesc.setAttribute('MEDIA_URL', '');
-                mediadesc.setAttribute('MIME_TYPE', '');
-                // If operating on extracted audio, we should make a MEDIA_DESCRIPTOR like this
-                // <MEDIA_DESCRIPTOR EXTRACTED_FROM="file:///D:/Data/elan/elan-example1.mpg" MEDIA_URL="file:///D:/Data/elan/elan-example1.wav" MIME_TYPE="audio/x-wav"/>
-                header.appendChild(mediadesc);
-                annodoc.appendChild(header);
-                //
-                // Time slots
-                // <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="0"/>
-                var timeorder = doc.createElement('TIME_ORDER');
-
-                var timeslot = doc.createElement('TIME_SLOT');
-                timeslot.setAttribute('TIME_SLOT_ID', '');
-                timeslot.setAttribute('TIME_VALUE', '');
-
-                timeorder.appendChild(timeslot);
-
-                annodoc.appendChild(timeorder);
-                //
-                // Tiers
-                //
-                var tier = doc.createElement('TIER');
-                //<TIER DEFAULT_LOCALE="en" LINGUISTIC_TYPE_REF="utterance" PARTICIPANT="" TIER_ID="K-Spch">
-                tier.setAttribute('DEFAULT_LOCALE', '');
-                tier.setAttribute('LINGUISTIC_TYPE_REF', 'utterance'); // adopt this for simple annotations
-                tier.setAttribute('PARTICIPANT', '');
-                tier.setAttribute('TIER_ID', '');
-
-                //<ANNOTATION>
-                //<ALIGNABLE_ANNOTATION ANNOTATION_ID="a8" TIME_SLOT_REF1="ts4" TIME_SLOT_REF2="ts23">
-                //    <ANNOTATION_VALUE>so you go out of the Institute to the Saint Anna Straat.</ANNOTATION_VALUE>
-                //</ALIGNABLE_ANNOTATION>
-                //</ANNOTATION>
-
-                var annotation = doc.createElement('ANNOTATION');
-                var annoalign = tier.appendChild(annotation);
-                annoalign.setAttribute('ANNOTATION_ID', '');
-                annoalign.setAttribute('TIME_SLOT_REF1', '');
-                annoalign.setAttribute('TIME_SLOT_REF2', '');
-
-                var annoval = doc.createElement('ANNOTATION_VALUE');
-                annoval.value = '';
-                var foo = annoalign.appendChild(annoval);
-
-                annodoc.appendChild(tier);
-
-                //
-                // LINGUISTIC_TYPE
-                //
-                // <LINGUISTIC_TYPE GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="utterance" TIME_ALIGNABLE="true"/>
-                var lingtype = doc.createElement('LINGUISTIC_TYPE');
-                lingtype.setAttribute('GRAPHIC_REFERENCES', 'false');
-                lingtype.setAttribute('LINGUISTIC_TYPE_ID', 'utterance');
-                lingtype.setAttribute('TIME_ALIGNABLE', 'true');
-
-                annodoc.appendChild(lingtype);
-                //
-                // LOCALE
-                //
-                // <LOCALE COUNTRY_CODE="US" LANGUAGE_CODE="en"/>
-                var locale = doc.createElement('LOCALE');
-                locale.setAttribute('COUNTRY_CODE', 'US');
-                locale.setAttribute('LANGUAGE_CODE', 'en');
-
-                annodoc.appendChild(locale);
-                //
-                // CONSTRAINT & CONTROLLED VOCABULARY  not implemented
-                //
-
-
-                //doc.appendChild(annodoc);
-
-                var serializer = new XMLSerializer();
-                var xmlString = xmldef + serializer.serializeToString(doc);
-                xmlString = xmlString.split('>').join('>\n');
-
-                var blobzor = new Blob([xmlString], {type: "text/xml;charset=utf-8"});
-                // if this is running as Chrome Packaged App then let's use the file API
-                if (window.chrome && chrome.app && chrome.app.runtime) {
-                    chromeAppSave('annotation.xml', blobzor, function () {
-                        console.log('saved');
-                    });
-                } else {
-                    var a = document.createElement("a");
-                    document.body.appendChild(a);
-                    a.style = "display: none";
-                    var url = window.URL.createObjectURL(blobzor);
-                    a.href = url;
-                    a.download = 'annotation.xml';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                }
-            };
-
             function errorHandler(e) {
                 console.error(e);
             }
@@ -409,6 +296,76 @@
                 return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
             }
 
+            function createShiftArr (step) {
+                var space = '';
+                if (isNaN(parseInt(step))) // argument is string
+                    space = step;
+                else // argument is integer
+                    for (var i = 0; i < step; i++)
+                        space += ' ';
+
+                var shift = ['\n']; // array of shifts
+
+                for (var ix = 0; ix < 100; ix++)
+                    shift.push(shift[ix] + space);
+
+                return shift;
+            }
+
+            ser.prettify = function(xml, indent) {
+                if (isFinite(indent)) {
+                    if (indent !== 0)
+                        indent = indent || 2;
+                } else if (!angular.isString(indent))
+                    indent = 2;
+
+                var arr = xml.replace(/>\s*</gm, '><')
+                    .replace(/</g, '~::~<')
+                    .replace(/\s*xmlns([=:])/g, '~::~xmlns$1')
+                    .split('~::~');
+
+                var len = arr.length,
+                    inComment = false,
+                    depth = 0,
+                    string = '',
+                    shift = createShiftArr(indent);
+
+                for (var i = 0; i < len; i++) {
+                    // start comment or <![CDATA[...]]> or <!DOCTYPE //
+                    if (arr[i].indexOf('<!') !== -1) {
+                        string += shift[depth] + arr[i];
+                        inComment = true;
+
+                        // end comment or <![CDATA[...]]> //
+                        if (arr[i].indexOf('-->') !== -1 || arr[i].indexOf(']>') !== -1 ||
+                            arr[i].indexOf('!DOCTYPE') !== -1) {
+                            inComment = false;
+                        }
+                    } else if (arr[i].indexOf('-->') !== -1 || arr[i].indexOf(']>') !== -1) { // end comment  or <![CDATA[...]]> //
+                        string += arr[i];
+                        inComment = false;
+                    } else if (/^<\w/.test(arr[i - 1]) && /^<\/\w/.test(arr[i]) && // <elm></elm> //
+                        /^<[\w:\-\.,]+/.exec(arr[i - 1]) == /^<\/[\w:\-\.,]+/.exec(arr[i])[0].replace('/', '')) { // fixme WTF?
+                        string += arr[i];
+                        if (!inComment) depth--;
+                    } else if (arr[i].search(/<\w/) !== -1 && arr[i].indexOf('</') === -1 && arr[i].indexOf('/>') === -1) // <elm> //
+                        string += !inComment ? (shift[depth++] + arr[i]) : arr[i];
+                    else if (arr[i].search(/<\w/) !== -1 && arr[i].indexOf('</') !== -1) // <elm>...</elm> //
+                        string += !inComment ? shift[depth] + arr[i] : arr[i];
+                    else if (arr[i].search(/<\//) > -1) // </elm> //
+                        string += !inComment ? shift[--depth] + arr[i] : arr[i];
+                    else if (arr[i].indexOf('/>') !== -1) // <elm/> //
+                        string += !inComment ? shift[depth] + arr[i] : arr[i];
+                    else if (arr[i].indexOf('<?') !== -1) // <? xml ... ?> //
+                        string += shift[depth] + arr[i];
+                    else if (arr[i].indexOf('xmlns:') !== -1 || arr[i].indexOf('xmlns=') !== -1) // xmlns //
+                        string += shift[depth] + arr[i];
+                    else
+                        string += arr[i];
+                }
+                return string.trim();
+            };
+
 
             ser.onLine = $window.navigator.onLine;
             ser.isOnline = function() {
@@ -423,6 +380,255 @@
                 $rootScope.$digest();
             }, true);
 
+            ser.writeElanXML = function(sourceFileBlob, sourceFileType, plainFileName, userData, sessionData, annotationObjList) {
+                //
+                // These functions create timeslot ids, tier ids and annotation ids
+                //
+                var tsidx = 0;
+                var timeSlots = {};
+                function getTimeslot(time) {
+                    tsidx++;
+                    timeSlots['ts'+tsidx] = time;
+                    return 'ts'+tsidx;
+                }
+                var tierIds = [];
+                function getTierId(instr) {
+                    var tid = 1;
+                    while (tierIds.indexOf(instr+tid) !== -1) {
+                        ++tid;
+                    }
+                    tierIds.push(instr+tid);
+                    return instr+tid;
+                }
+                var annoIds = [];
+                function getAnnoId(instr) {
+                    var tid = 1;
+                    while (annoIds.indexOf(instr+tid) !== -1) {
+                        ++tid;
+                    }
+                    annoIds.push(instr+tid);
+                    return instr+tid;
+                }
+                //
+                // Build an array of tiers which we will use in the XML writing phase
+                //
+                var tiers = [];
+                // loop through each segID
+                _.each(sessionData.segments, function(segdata, segment) {
+                    // get the annotations for this segID
+                    var thisAnnos = _.filter(annotationObjList, function(anno){
+                        return anno.data.segment.sourceSegId === segment;
+                    });
+                    // if we have annotations, start making tiers
+                    var segHandles = [];
+                    var parTier = '';
+                    if (thisAnnos.length > 0 && thisAnnos[0].data.segment.annotations.length) {
+                        segdata.forEach(function(seg){
+                            var ts1 = getTimeslot(seg[0]);
+                            var ts2 = getTimeslot(seg[1]);
+                            segHandles.push([ts1,ts2]);
+                        });
+                        var annodata = [];
+                        thisAnnos[0].data.segment.annotations.forEach(function(anno){
+                            annodata.push({
+                                txt: anno,
+                                id: getAnnoId('a')
+                            });
+                        });
+                        var tiername = thisAnnos[0].data.type.replace('anno_','');
+                        parTier = getTierId(tiername);
+                        var tier = {
+                            id: parTier,
+                            type: 'parent',
+                            annos: annodata,
+                            seg: segHandles // segdata
+                        };
+                        tiers.push(tier);
+                    }
+                    if (thisAnnos.length > 1) {
+                        for (var i = 1; i < thisAnnos.length; i++) {
+
+                            var sannodata = [];
+                            thisAnnos[i].data.segment.annotations.forEach(function(anno, idx){
+                                sannodata.push({
+                                    txt: anno,
+                                    id: getAnnoId('a'),
+                                    ref: annodata[idx].id // this gets the id from the parent
+                                });
+                            });
+                            var stier = {
+                                id: getTierId(thisAnnos[i].data.type),
+                                type: 'ref',
+                                ref: parTier,
+                                annos: sannodata,
+                                seg: segHandles
+                            };
+                            tiers.push(stier);
+                        }
+                    }
+                });
+                //
+                // Create the XML
+                //
+                var xmldef = '<?xml version="1.0" encoding="UTF-8"?>';
+                var doc = document.implementation.createDocument('', 'ANNOTATION_DOCUMENT', null);
+                doc.documentElement.setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:noNamespaceSchemaLocation', 'http://www.mpi.nl/tools/elan/EAFv2.3.xsd');
+                var elements = doc.getElementsByTagName("ANNOTATION_DOCUMENT");
+                var annodoc = elements[0];
+                // AUTHOR="" DATE="2006-06-13T15:09:43+01:00" FORMAT="2.3" VERSION="2.3"
+                var nd = new Date();
+                var xsdtime = nd.toISOString();
+                var tz = nd.getTimezoneOffset() / 60;
+                if (tz >= 0) {xsdtime += "+";}
+                xsdtime += tz + ":00";
+                annodoc.setAttribute('AUTHOR', userData.names[0]);          // First name of the user
+                annodoc.setAttribute('DATE', xsdtime);                      // Constructed time, still incorrect
+                annodoc.setAttribute('FORMAT', '2.3');
+                annodoc.setAttribute('VERSION', '2.3');
+                var header = doc.createElement('HEADER');
+                header.setAttribute('MEDIA_FILE', '');           // We get this from the filename Aikuma decides
+                header.setAttribute('TIME_UNITS', 'milliseconds');
+                var mediadesc = doc.createElement('MEDIA_DESCRIPTOR');
+                mediadesc.setAttribute('MEDIA_URL', 'file://'+plainFileName);
+                mediadesc.setAttribute('MIME_TYPE', sourceFileType);
+                // If operating on extracted audio, we should make a MEDIA_DESCRIPTOR like this
+                // <MEDIA_DESCRIPTOR EXTRACTED_FROM="file:///D:/Data/elan/elan-example1.mpg" MEDIA_URL="file:///D:/Data/elan/elan-example1.wav" MIME_TYPE="audio/x-wav"/>
+                header.appendChild(mediadesc);
+                annodoc.appendChild(header);
+                //
+                // Time slots --- <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="0"/>
+                //
+                var timeorder = doc.createElement('TIME_ORDER');
+                _.each(timeSlots, function(time, id) {
+                    var timeslot = doc.createElement('TIME_SLOT');
+                    timeslot.setAttribute('TIME_SLOT_ID', id);
+                    timeslot.setAttribute('TIME_VALUE', time);
+                    timeorder.appendChild(timeslot);
+                });
+                annodoc.appendChild(timeorder);
+                //
+                // Tiers
+                //
+                tiers.forEach(function(tierx) {
+                    var tier = doc.createElement('TIER');
+                    tier.setAttribute('DEFAULT_LOCALE', 'en');
+                    if (tierx.type === 'parent') {
+                        tier.setAttribute('LINGUISTIC_TYPE_REF', 'utterance');
+                    } else if (tierx.type === 'ref') {
+                        tier.setAttribute('LINGUISTIC_TYPE_REF', 'secondary');
+                        tier.setAttribute('PARENT_REF', tierx.ref);
+                    }
+                    tier.setAttribute('PARTICIPANT', '');
+                    tier.setAttribute('TIER_ID', tierx.id);
+                    // If this is a parent tier then the annotation is time alignable
+                    if (tierx.type === 'parent') {
+                        tierx.annos.forEach(function(anno, idx) {
+                            var annotation = doc.createElement('ANNOTATION');
+                            var annoalign = doc.createElement('ALIGNABLE_ANNOTATION');
+                            annoalign.setAttribute('ANNOTATION_ID', anno.id);
+                            annoalign.setAttribute('TIME_SLOT_REF1', tierx.seg[idx][0]);
+                            annoalign.setAttribute('TIME_SLOT_REF2', tierx.seg[idx][1]);
+                            var annovalue = doc.createElement('ANNOTATION_VALUE');
+                            var aval = doc.createTextNode(anno.txt);
+                            annovalue.appendChild(aval);
+                            annoalign.appendChild(annovalue);
+                            annotation.appendChild(annoalign);
+                            tier.appendChild(annotation);
+                        });
+                    } else if (tierx.type === 'ref') { // if it's not then it's a reference annotation
+                        tierx.annos.forEach(function(anno, idx) {
+                            var annotation = doc.createElement('ANNOTATION');
+                            var annoaref = doc.createElement('REF_ANNOTATION');
+                            annoaref.setAttribute('ANNOTATION_ID', anno.id);
+                            annoaref.setAttribute('ANNOTATION_REF', anno.ref);
+                            var annovalue = doc.createElement('ANNOTATION_VALUE');
+                            var aval = doc.createTextNode(anno.txt);
+                            annovalue.appendChild(aval);
+                            annoaref.appendChild(annovalue);
+                            annotation.appendChild(annoaref);
+                            tier.appendChild(annotation);
+                        });
+                    }
+                    annodoc.appendChild(tier);
+                });
+                //
+                // LINGUISTIC_TYPE -- We just make two, one which is an utterance and the other which is a symbolic association for translations and whatnot
+                //
+                var lingtype = doc.createElement('LINGUISTIC_TYPE');
+                lingtype.setAttribute('GRAPHIC_REFERENCES', 'false');
+                lingtype.setAttribute('LINGUISTIC_TYPE_ID', 'utterance');
+                lingtype.setAttribute('TIME_ALIGNABLE', 'true');
+                annodoc.appendChild(lingtype);
+                lingtype = doc.createElement('LINGUISTIC_TYPE');
+                lingtype.setAttribute('CONSTRAINTS', 'Symbolic_Association');
+                lingtype.setAttribute('GRAPHIC_REFERENCES', 'false');
+                lingtype.setAttribute('LINGUISTIC_TYPE_ID', 'secondary'); // Do we really need to say what it is for this?
+                lingtype.setAttribute('TIME_ALIGNABLE', 'false');
+                annodoc.appendChild(lingtype);
+                // <CONSTRAINT DESCRIPTION="1-1 association with a parent annotation" STEREOTYPE="Symbolic_Association"/>
+                var constraint = doc.createElement('CONSTAINT');
+                constraint.setAttribute('DESCRIPTION', '1-1 association with a parent annotation');
+                constraint.setAttribute('STEREOTYPE', 'Symbolic_Association');
+                annodoc.appendChild(constraint);
+                //
+                // LOCALE --- apparently this is for setting IMEs for the tiers, so it might be a good idea to have major languages like cmn
+                //
+                var locale = doc.createElement('LOCALE');
+                locale.setAttribute('COUNTRY_CODE', 'US');
+                locale.setAttribute('LANGUAGE_CODE', 'en');
+                annodoc.appendChild(locale);
+                // CONSTRAINT & CONTROLLED VOCABULARY  not implemented
+
+                //
+                // Get XML string, run it through the prettifier and create a blob out of it
+                //
+                var serializer = new XMLSerializer();
+                var xmlString = xmldef + serializer.serializeToString(doc);
+                xmlString = ser.prettify(xmlString,2);
+                zip.workerScriptsPath = "src/lib/";
+                zip.createWriter(new zip.BlobWriter("application/zip"), function(writer) {
+                    // use a TextReader to read the String to add
+                    writer.add(plainFileName+'.eaf', new zip.TextReader(xmlString), function() {
+                        // onsuccess callback, write the audio source file out
+                        //writer.add(plainFileName, new zip.Data64URIReader(sourcedatauri), function() {
+                        writer.add(plainFileName, new zip.BlobReader(sourceFileBlob), function() {
+                            // onsuccess callback, close the zip and do the usual trick to download a blob
+                            writer.close(function (blob) {
+                                // blob contains the zip file as a Blob object
+                                if (window.chrome && chrome.app && chrome.app.runtime) {
+                                    chromeAppSave('ElanExport.zip', blob, function() {
+                                        console.log('saved');
+                                    });
+                                } else {
+                                    var a = document.createElement("a");
+                                    document.body.appendChild(a);
+                                    a.style = "display: none";
+                                    var url = window.URL.createObjectURL(blob);
+                                    a.href = url;
+                                    a.download = 'ElanExport.zip';
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                }
+                            });
+                        });
+                    }, function(currentIndex, totalIndex) {
+                        //console.log(currentIndex, totalIndex);
+                    });
+                }, function(error) {
+                    console.log('zip error',error);
+                });
+            };
+            //
+            // Uber ELAN export... exports source file and ELAN file in a zip.
+            //
+            ser.exportElan = function(userData, sessionData, annotationObjList, sourceFile) {
+                 // now do stuff
+                var plainFileName = sourceFile.split('/').pop();
+                // read the file first because we need the MIME type
+                fileService.getFile(sourceFile).then(function(file) {
+                    ser.writeElanXML(file, file.type, plainFileName, userData, sessionData, annotationObjList, sourceFile);
+                });
+            };
 
             return ser;
         }]);

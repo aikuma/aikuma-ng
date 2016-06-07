@@ -618,6 +618,22 @@
                 $scope.audioSourceUrl = $scope.userData.files[$scope.sessionData.source.recordFileId].url;
             }
         }])
+        .controller('shareController', ['$scope', '$routeParams', 'userObj', 'sessionObj', 'annotationObjList', 'secondaryList', 'aikumaService',
+                                        function($scope, $routeParams, userObj, sessionObj, annotationObjList, secondaryList, aikumaService) {
+            $scope.userObj = userObj;
+            $scope.sessionObj = sessionObj;
+            $scope.userData = userObj.data;
+            $scope.sessionData = sessionObj.data;
+            $scope.annotationObjList = annotationObjList;
+            $scope.secondaryList = secondaryList;
+            $scope.audioSourceUrl = $scope.userData.files[$scope.sessionData.source.recordFileId].url;
+            $scope.canShare = function() {
+                return true;
+            };
+            $scope.exportElan = function() {
+                aikumaService.exportElan($scope.userData, $scope.sessionData, $scope.annotationObjList, $scope.audioSourceUrl);
+            };
+        }])
         .controller('trashController', ['$scope', 'userObj', '$mdDialog', '$translate', '$mdToast', 'dataService', 'fileService', '$q', function($scope, userObj, $mdDialog, $translate, $mdToast, dataService, fileService, $q) {
             $scope.userObj = userObj;
             var vm = this;

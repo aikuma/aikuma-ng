@@ -1,0 +1,13 @@
+<ng-topbar session="{{sessionData.names[0]}}" session-id="{{sessionData._ID}}" activity="NAV_SHARE"></ng-topbar>
+
+<md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
+    <div ng-if="canShare()">
+        <md-button class="md-raised" ng-click="exportElan()">
+            <md-icon md-svg-icon="content:save"></md-icon>
+            <span translate>EXPORT_ELAN</span>
+        </md-button>
+    </div>
+    <div ng-if="!canShare()">
+        <span class="md-body-2" translate>SHARE_NONE</span>
+    </div>
+</md-content>

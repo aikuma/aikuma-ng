@@ -279,6 +279,35 @@
                             }]
                         }
                     })
+                    .when('/session/:sessionId/share', {
+                        templateUrl: 'views/share.html',
+                        controller: 'shareController as shCtrl',
+                        authorize: true,
+                        resolve: {
+                            userObj: ['loginService', 'dataService', function(loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                if(userId) {
+                                    return dataService.get('user', userId);
+                                }
+                            }],
+                            sessionObj: ['$route', 'dataService', function($route, dataService) {
+                                var sessionId = $route.current.params.sessionId;
+                                return dataService.get('session', sessionId);
+                            }],
+                            annotationObjList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                return dataService.getAnnotationObjList(userId, sessionId);
+                            }],
+                            secondaryList: ['$route', 'loginService', 'dataService', function($route, loginService, dataService) {
+                                var userId = loginService.getLoggedinUserId();
+                                var sessionId = $route.current.params.sessionId;
+                                if(userId) {
+                                    return dataService.getSecondaryList(userId, sessionId);
+                                }
+                            }]
+                        }
+                    })
                     .when('/changes', {
                         templateUrl: 'views/changes.html',
                     })

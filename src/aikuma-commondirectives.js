@@ -292,22 +292,23 @@
                 },
                 {
                     class : '',
+                    title: 'NAV_SHARE',
+                    icon: 'social:share',
+                    state: 'share',
+                    tooltip: 'NOT_IMPLEMENTED',
+                    session: true
+                },
+                {
+                    class : '',
                     title: 'NAV_RECORD',
                     icon: 'av:mic',
                     state: 'new'
                 },
                 {
                     class : '',
-                    title: 'NAV_SHARE',
-                    icon: 'social:share',
-                    state: 'share',
-                    tooltip: 'NOT_IMPLEMENTED'
-                },
-                {
-                    class : '',
                     title: 'NAV_TRASH',
                     icon: 'action:delete',
-                    state: 'trash',
+                    state: 'trash'
                 },
                 {
                     class : '',
@@ -325,7 +326,7 @@
                     class : '',
                     title: 'NAV_BUGREP',
                     icon: 'action:report_problem',
-                    state: 'reportbug',
+                    state: 'reportbug'
                 },
                 {
                     class : '',
@@ -341,10 +342,27 @@
                 }
             ];
             
-            vm.changeState = function(statename) {
+            vm.isDisabled = function(item) {
+                if (!vm.getLoginStatus() && item.state !== 'extensions') {
+                    return true;
+                } else {
+                    return (('session' in item) && (item.session !== vm.isSession));
+                }
+       /*         ng-disabled="(item.state === 'home' || item.state === 'extensions')? false : !navCtrl.getLoginStatus()"*/
+
+
+            };
+
+            
+            vm.changeState = function(menuitem) {
+                var statename = menuitem.state;
                 if(statename === 'extensions' || statename === 'home' || 
                    (loginService.getLoginStatus() && statename !== 'import')) {
-                    $location.path('/'+statename);
+                    if (('session' in menuitem) && (menuitem.session === vm.isSession)) {
+                        $location.path('/session/'+vm.sessionId+'/'+statename);
+                    } else {
+                        $location.path('/'+statename);
+                    }
                 }
             };
 
@@ -361,8 +379,12 @@
                         aikumaDialog.toast(tstring.DEBUG_OFF);
                     }
                 });
-                
             };
+
+            $rootScope.$on('$routeChangeSuccess', function(ev, newPath) {
+                vm.isSession = ('sessionId' in newPath.params);
+                if (vm.isSession) {vm.sessionId = newPath.params.sessionId;}
+            });
             
             // When 'Open File' is pressed
             $scope.$watch('file', function (file) {

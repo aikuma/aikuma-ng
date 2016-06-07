@@ -194,5 +194,7 @@
   "NAV_DEBUG": "Debug",
   "HELP_TAGS": "Tag selector help",
   "HELP_LANGS": "Language selector help",
-  "HELP_SPKS": "Speaker selector help"
+  "HELP_SPKS": "Speaker selector help",
+  "EXPORT_ELAN": "Export to ELAN",
+  "SHARE_NONE": "Cannot share this session!"
 }
