@@ -9,6 +9,7 @@ Aikuma-NG beta allows the user to do the following:
 3. Record details (or metadata) for a given 'session', such as participants, genres of speech and any number of user definable fields, uploading of images and so on.
 4. Create any number of written annotations for the given source recording and perform these annotations listening to source and optional audio annotations.
 5. Export the annotations to SRT or WebVTT file formats suitable for uploading to YouTube and other sites.
+6. Export entire sessions to Elan (zip file with source recording and Elan multi-tier EAF file).
 
 Aikuma-NG has online help, look for the question mark icons.
 
