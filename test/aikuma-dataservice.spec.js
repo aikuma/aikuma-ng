@@ -98,7 +98,7 @@ describe('aikuma-viewcontrollers', function(){
         });
         
         it('setSecondary(userId, sessionId, data): creates a new secondary(annotation/translation) under userId and sessionId', function(done){
-            // 5 essential fields for sessionData
+            // 5 essential fields for secondaryData
             var mockSecondaryData = {
                 names: ['Respeak 1'],
                 type: 'respeak',
@@ -134,6 +134,97 @@ describe('aikuma-viewcontrollers', function(){
                     expect(mockSecondaryData).toEqual(secondaryObj.data);
                     done();
                 })
+            });
+            
+        });
+        
+        it('create and retrieve metadata of annotations', function(done) {
+            var mockAnnoData = {
+                names: ['Annotation 1'],
+                type: 'anno_anno',
+                source: {
+                    // This is an ID of source file in userData.files
+                    recordFileId: '2',
+                    created: 1459400284491,
+                    duration: 2218,
+                    langIds: [
+                        {
+                            langStr: 'English', langISO: 'eng'
+                        }
+                    ],
+                    sampleRate: 48000,
+                    sampleLength: 106496
+                },
+                creatorId: userId,
+                segment: {
+                    // This is an ID of source segment in sessionData.segments
+                    sourceSegId: '1',
+                    annotations: [],
+                    metadata: []
+                }
+            };
+            var person1 = {
+                names: ['person1'],
+                email: 'asdf@asdf.com',
+                imageFileId: null
+            };
+            var person2 = {
+                names: ['person2'],
+                email: '',
+                imageFileId: null
+            };
+            var tagExamples = ['good quality', 'poor quality'];
+            var personExamples = [person1, person2];
+            var tagIds = [], personIds = [];
+            
+            // Prepare mockdata
+            dataService.setSecondary(userId, sessionId, mockAnnoData).then(function(id){
+                // Save tag and person examples
+                dataService.get('user', userId).then(function(userObj) {
+                    tagExamples.forEach(function(tag) {
+                        var tagId = userObj.addUserTag(tag);
+                        tagIds.push(tagId);
+                    })
+                    personExamples.forEach(function(person) {
+                        var personId = userObj.addUserPerson(person);
+                        personIds.push(personId);
+                    })
+                    userObj.save();
+                    
+                    
+                    //---------- Description of Annotation metadata handling------------
+                    return dataService.getAnnotationObjList(userId, sessionId); 
+                }).then(function(annoObjList) {
+                    // Check if correct annotation is saved
+                    expect(annoObjList.length).toBe(1);
+                    expect(annoObjList[0].data).toEqual(mockAnnoData);
+                    
+                    // Annotation and Metadata handling
+                    var annoObj = annoObjList[0];
+                    annoObj.data.segment.annotations = ['anno1', 'anno2'];
+                    annoObj.data.segment.metadata = []
+                    
+                    // tag, person ID is saved in segment.metadata
+                    for(var i = 0; i < 2; i++) {
+                        annoObj.data.segment.metadata.push({
+                            tags: [tagIds[i]],
+                            people: [personIds[i]]
+                        })
+                    }
+                    
+                    annoObj.save();
+                    
+                    // Check if metadata is saved
+                    // annoObj.getMetadataAt(index) will return a metadata whose ID is translated to real tag and person object
+                    for(var i = 0; i < 2; i++) {
+                        expect(annoObj.getMetadataAt(i)).toEqual({
+                            tags: [tagExamples[i]],
+                            people: [personExamples[i]]
+                        });
+                    }
+                    
+                    done(); 
+                });
             });
             
         });

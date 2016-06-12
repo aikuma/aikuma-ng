@@ -161,7 +161,8 @@
                 },
                 segment: {
                     sourceSegId: true,
-                    segArray: true
+                    annotations: false,
+                    metadata: false
                 },
                 file: {
                     _ID: true,
@@ -256,13 +257,19 @@
                         this.data[metaKey][id] = metaObj;
                     }; 
                 },
-                getMetaWithId: function(metaKey, prop) {
+                getMetaWithId: function(metaKey, prop, postproc) {
                     return function(id) {
-                        if(this.data[metaKey]) {
-                            if(prop && this.data[metaKey][id])
-                                return this.data[metaKey][id][prop];
-                            else
-                                return this.data[metaKey][id];
+                        var metaKeys = metaKey.split('.');
+                        var meta = this.data;
+                        for(var i = 0; i < metaKeys.length; i++) {
+                            if(!meta[metaKeys[i]])
+                                break;
+                            meta = meta[metaKeys[i]];
+                        }
+                        
+                        if(meta) {
+                            var val = prop? meta[id][prop] : meta[id];
+                            return postproc(val);
                         } else {
                             return undefined;
                         }
@@ -573,12 +580,35 @@
             service.getAnnotationObjList = function(userId, sessionId) {
                 cleanCache('anno_');
                 
-                return service.getSecondaryList(userId, sessionId).then(function(secList) {
+                var tagCache, peopleCache;
+                var translateMetaId = function(meta) {
+                    var translatedMeta = {
+                        tags: [],
+                        people: []
+                    };
+                    
+                    meta.tags.forEach(function(tagId) {
+                        translatedMeta.tags.push(tagCache[tagId]);
+                    })
+                    meta.people.forEach(function(personId) {
+                        translatedMeta.people.push(peopleCache[personId]);
+                    })
+                    
+                    return translatedMeta;
+                }
+                
+                return service.get(USER_TYPE, userId).then(function(userObj) {
+                    tagCache = userObj.data.tags;
+                    peopleCache = userObj.data.people;
+                    return service.getSecondaryList(userId, sessionId);
+                }).then(function(secList) {
                     return secList.filter(function(secData){
                         return secData.type.indexOf('anno_') === 0;
                     }).map(function(secData) { 
                         var wrapper = {data: secData};
                         wrapper.save = dataMethods.save(SECONDARY_TYPE).bind(wrapper);
+                        wrapper.getMetadataAt = dataMethods.getMetaWithId('segment.metadata', null, translateMetaId).bind(wrapper);
+                        
                         return wrapper;
                     });
                 });
