@@ -15,7 +15,7 @@
             };
         });
 
-        var ngAnnoController = function ($document, config, annoServ, $scope, keyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
+        var ngAnnoController = function ($document, config, annoServ, $scope, newKeyService, aikumaService, $timeout, $mdDialog, aikumaDialog, $translate, audioService) {
             var vm = this;
             $scope.onlineStatus = aikumaService;
             $scope.$watch('onlineStatus.isOnline()', function(online) {
@@ -36,15 +36,6 @@
             vm.isPlaying = false;           // flag is used for hold-play
             vm.r.regionMarked = false;      // flag indicates if a region is being marked - e.g. play-mark mode
             vm.playCSS = {};
-            // keyboard related constants
-            vm.playKeyCode = 17;   // control key (16 is shift)
-            vm.ffKeyCode = 39;     // right arrow
-            vm.rwKeyCode = 37;     // left arrow
-            vm.escKeyCode = 27;    // escape
-            vm.switchTrackCode = 9; // tab
-            vm.prevAnnoCode = 38;  // up arrow
-            vm.nextAnnoCode = 40;  // down arrow
-            vm.voiceCode = 220;     // backslash key
             vm.skipTimeValue = 2;  // amount of time to skip backwards for rewind
             vm.oneMillisecond = 0.001;
             vm.ffPlaybackRate = 2.5; // playback speed in FF mode
@@ -497,50 +488,34 @@
             // Utility stuff
             //
             vm.setupKeys = function() {
-                keyService.regKey(vm.playKeyCode, 'keydown', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('anno_play', 'keydown', $scope.userObj, function (ev) {
                     vm.playKeyDown(true);
                 });
-                keyService.regKey(vm.playKeyCode, 'keyup', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('anno_play', 'keyup', $scope.userObj, function (ev) {
                     vm.playKeyUp(true);
                 });
-                keyService.regKey(vm.ffKeyCode, 'keydown', function (ev) {
-                    if (ev.shiftKey) {
-                        ev.preventDefault();
-                        vm.ffKeyDown(true);
-                    }
+                newKeyService.regKey('anno_ff', 'keydown', $scope.userObj, function (ev) {
+                    vm.ffKeyDown(true);
                 });
-                keyService.regKey(vm.ffKeyCode, 'keyup', function (ev) {
-                    if (ev.shiftKey) {
-                        ev.preventDefault();
-                        vm.ffKeyUp(true);
-                    }
+                newKeyService.regKey('anno_ff', 'keyup', $scope.userObj, function (ev) {
+                    vm.ffKeyUp(true);
                 });
-                keyService.regKey(vm.rwKeyCode, 'keydown', function (ev) {
-                    if (ev.shiftKey) {
-                        ev.preventDefault();
-                        vm.rwKey(true);
-                    }
+                newKeyService.regKey('anno_rw', 'keydown', $scope.userObj, function (ev) {
+                    vm.rwKey(true);
                 });
-                keyService.regKey(vm.escKeyCode, 'keydown', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('esc', 'keydown', $scope.userObj, function (ev) {
                     vm.escKey(true);
                 });
-                keyService.regKey(vm.prevAnnoCode, 'keydown', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('anno_prev', 'keydown', $scope.userObj, function (ev) {
                     vm.switchAnnoKey(true); // search in reverse
                 });
-                keyService.regKey(vm.nextAnnoCode, 'keydown', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('anno_next', 'keydown', $scope.userObj, function (ev) {
                     vm.switchAnnoKey(false); // search forwards
                 });
-                keyService.regKey(vm.switchTrackCode, 'keydown', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('anno_tab', 'keydown', $scope.userObj, function (ev) {
                     vm.switchTrackKey(true);
                 });
-                keyService.regKey(vm.voiceCode, 'keydown', function (ev) {
-                    ev.preventDefault();
+                newKeyService.regKey('anno_voice', 'keydown', $scope.userObj, function (ev) {
                     vm.voiceInputKey(true);
                 });
             };
@@ -678,7 +653,7 @@
             // on navigating away, clean up the key events, wavesurfer instances
             $scope.$on('$destroy', function() {
                 annoServ.saveAll();
-                keyService.clearAll();
+                newKeyService.clearAll();
                 annoServ.destroyAll();
                 annotateAudioContext.close();
             });
@@ -738,6 +713,6 @@
 
 
         };
-    ngAnnoController.$inject = ['$document', 'config', 'annoServ', '$scope', 'keyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
+    ngAnnoController.$inject = ['$document', 'config', 'annoServ', '$scope', 'newKeyService', 'aikumaService', '$timeout', '$mdDialog', 'aikumaDialog', '$translate', 'audioService'];
 
 })();

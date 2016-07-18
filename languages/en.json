@@ -163,7 +163,7 @@
   "AUDIO_NODEL": "Can't delete region with respeaking/translation, split to new track if you want to do this",
   "AUDIO_IMPERR": "Audio import error!",
   "OHNO": "Bugger!",
-  "AUDIO_NOEXIST": "Source only",
+  "AUDIO_NOEXIST": "Source",
   "AUDIO_SRC": "Audio source",
   "BUGREP_ITRACK": "issue tracker",
   "HOME_NOUSEREQ": "To begin, please register",
@@ -196,5 +196,7 @@
   "HELP_LANGS": "Language selector help",
   "HELP_SPKS": "Speaker selector help",
   "EXPORT_ELAN": "Export to ELAN",
-  "SHARE_NONE": "Cannot share this session!"
+  "SHARE_NONE": "Cannot share this session!",
+  "SETTINGS_KEYS": "Key settings",
+  "SETTINGS_KEYRESET": "Reset keys to default"
 }

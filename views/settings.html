@@ -2,15 +2,29 @@
 <md-content flex class="md-padding" id="popupContainer" style="padding-bottom:30px">
 
     <div flex layout="row inset" layout-wrap>
-        <md-switch flex="25" aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
+        <md-switch aria-label="Enable source playback timestretching" ng-model="seCtrl.preferences.timeStretchSrc" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>SETTINGS_TIMESTRETCH</span>
         </md-switch>
-        <md-switch flex="25" aria-label="Enable debug mode" ng-model="seCtrl.preferences.debugMode" ng-change="seCtrl.saveSetting()">
+        <md-switch aria-label="Enable debug mode" ng-model="seCtrl.preferences.debugMode" ng-change="seCtrl.saveSetting()">
             <span class="md-body-2" translate>DEBUG_SWITCH</span>
         </md-switch>
-        <md-switch flex="25" aria-label="Enable peak caching" ng-model="seCtrl.cachePeak" ng-change="seCtrl.saveOption()">
+        <md-switch aria-label="Enable peak caching" ng-model="seCtrl.cachePeak" ng-change="seCtrl.saveOption()">
             <span class="md-body-2">Enable peak caching</span>
         </md-switch>
     </div>
-    
+
+    <p class="md-title inset" translate>SETTINGS_KEYS</p>
+    <div flex layout="row inset" layout-wrap>
+        <div ng-repeat="key in seCtrl.getKeys()">
+            <md-input-container>
+                <label class="md-body-1">{{seCtrl.getKeyDesc(key)}}</label>
+                <input class="md-body-2" ng-model="seCtrl.textDesc[key]" ng-keydown="seCtrl.keypress(key, $event)">
+            </md-input-container>
+        </div>
+    </div>
+    <md-button class="md-raised" ng-click="seCtrl.resetKeys()">
+        <md-icon md-svg-icon="mdi:refresh"></md-icon>
+        <span translate>SETTINGS_KEYRESET</span>
+    </md-button>
+
 </md-content>

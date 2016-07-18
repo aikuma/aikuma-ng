@@ -1,4 +1,4 @@
-<span ng-if="slCtrl.sessionList.length === 0 && !slCtrl.deleted" class="md-title inset">{{"HOME_NOSESSION" | translate }}</span>
+<div ng-if="slCtrl.sessionList.length === 0 && !slCtrl.deleted" class="md-title inset" style="margin-top:20px;">{{"HOME_NOSESSION" | translate }}</div>
 
 <md-list>
     <md-list-item class="md-3-line" ng-repeat="session in slCtrl.sessionList" ng-click="!slCtrl.deleted && slCtrl.goStatus($index)">

@@ -4,7 +4,7 @@
     "description": "__MSG_appDesc__",
     "short_name": "__MSG_appName__",
     "default_locale": "en",
-    "version": "0.943",
+    "version": "0.945",
     "manifest_version": 2,
     "app": {
     "background": {

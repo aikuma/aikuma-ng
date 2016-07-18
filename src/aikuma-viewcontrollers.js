@@ -52,20 +52,59 @@
 
         }])
 
-        .controller('settingsController', ['userObj', 'config', function(userObj, config) {
+        .controller('settingsController', ['newKeyService', '$scope', 'userObj', 'config', function(newKeyService, $scope, userObj, config) {
             var vm = this;
             vm.preferences = userObj.data.preferences;
-            
+
             // Temporary feature
             vm.cachePeak = config.cachePeak;
             vm.saveOption = function() {
                 config.cachePeak = vm.cachePeak;
+            };
+
+            vm.getKeys = function() {
+                return Object.keys(config.defaultKeys);
+            };
+
+            vm.keypress = function(key, ev) {
+                vm.preferences.keyPrefs[key].code = ev.code;
+                vm.preferences.keyPrefs[key].shiftKey = ev.shiftKey;
+                vm.preferences.keyPrefs[key].ctrlKey = ev.ctrlKey;
+                vm.preferences.keyPrefs[key].altKey = ev.altKey;
+                vm.textDesc[key] = newKeyService.getKeyText(vm.preferences.keyPrefs[key]);
+                ev.preventDefault();
+                userObj.save();
+            };
+
+            // All configurable keys are in config.keys but not all keys will be in the user object
+            vm.textDesc = {};
+
+            var newKeys = {};
+            for (let key of Object.keys(config.defaultKeys)) {
+                newKeys[key] = newKeyService.getUserKeyObj(key, userObj);
+                vm.textDesc[key] = newKeyService.getKeyText(newKeys[key]);
+            }
+            vm.preferences.keyPrefs = newKeys;
+            
+            vm.getKeyDesc = function(key) {
+                return config.defaultKeys[key].desc;
+            };
+
+            vm.resetKeys = function() {
+                var newKeys = {};
+                for (let key of Object.keys(config.defaultKeys)) {
+                    newKeys[key] = newKeyService.getDefaultKeyObj(key);
+                    vm.textDesc[key] = newKeyService.getKeyText(newKeys[key]);
+                }
+                vm.preferences.keyPrefs = newKeys;
+                userObj.save();
             };
             
             vm.saveSetting = function() {
                 config.debug = vm.preferences.debugMode;
                 userObj.save();
             };
+
         }])
         .controller('debugController', ['dataService', 'fileService', 'loginService', 'aikumaDialog', '$q', '$translate', '$mdDialog', function(dataService, fileService, loginService, aikumaDialog, $q, $translate, $mdDialog) {
             var vm = this;

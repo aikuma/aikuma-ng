@@ -24,7 +24,7 @@
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.943',
+            appVersion: '0.945',
             dataVersion: 1,
             sampleRate: 16000,
             fileStorageMB: 1000,
@@ -55,7 +55,49 @@
                     toolfontsize: '16',
                     toolshort: '한글',
                     name: 'KOREAN'
-                }]
+                }],
+            defaultKeys: {
+                'anno_play': {
+                    code: 'ControlLeft',
+                    desc: 'Annotation play/mark',
+                    mods: [false, true, false]
+                },
+                'anno_ff': {
+                    code: 'ArrowRight',
+                    desc: 'Annotation fast forward',
+                    mods: [true, false, false]
+                },
+                'anno_rw': {
+                    code: 'ArrowLeft',
+                    desc: 'Annotation rewind',
+                    mods: [true, false, false]
+                },
+                'esc': {
+                    code: 'Escape',
+                    desc: 'Escape / undo',
+                    mods: [false, false, false]
+                },
+                'anno_tab': {
+                    code: 'Tab',
+                    desc: 'Annotation switch track',
+                    mods: [false, false, false]
+                }, 
+                'anno_prev': {
+                    code: 'ArrowUp',
+                    desc: 'Annotation previous annotation',
+                    mods: [false, false, false]
+                },
+                'anno_next': {
+                    code: 'ArrowDown',
+                    desc: 'Annotation next annotation',
+                    mods: [false, false, false]
+                },
+                'anno_voice': {
+                    code: 'Slash',
+                    desc: 'Annotation activate voice recognition',
+                    mods: [false, false, false]
+                }
+            }
         })
         .config(['$translateProvider', function ($translateProvider) {
             // add translation table

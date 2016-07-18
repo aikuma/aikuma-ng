@@ -5,12 +5,14 @@
     'use strict';
     angular
         .module('aikuma-service', [])
-        .factory('keyService', [function () {
+        .factory('keyService', [function() {
             var ser = {};
             var subscribers = [];
+            
             ser.regKey= function(keypress, keypresstype, callback) {
                 subscribers.push({'keypress':keypress, 'keypresstype':keypresstype, 'callback': callback});
             };
+
             ser.clearKey = function(keypress, keypresstype) {
                 var max = subscribers ? subscribers.length : 0;
                 for (var i = 0; i < max; i += 1) {
@@ -30,6 +32,90 @@
             ser.clearAll = function() {
                 subscribers = [];
             };
+
+            return ser;
+        }])
+        // Improved key service based on objects that also specify qualifiers
+        // Also allows for user preference overrides. Keys now specified based on function, defaults are in app.js
+        // This should replace keyService but until all activities do, the keyFocus directive will call both services.
+        .factory('newKeyService', ['config', function (config) {
+            var ser = {};
+            var subscribers = [];
+
+            ser.getKeyText = function(keyObj) {
+                var tt = keyObj.code;
+                if (keyObj.code.indexOf('Shift') === -1 && keyObj.shiftKey) {
+                    tt += ' + Shift';
+                }
+                if (keyObj.code.indexOf('Control') === -1 && keyObj.ctrlKey) {
+                    tt += ' + Control';
+                }
+                if (keyObj.code.indexOf('Alt') === -1 && keyObj.altKey) {
+                    tt += ' + Alt';
+                }
+                tt = tt.replace('Key','');
+                return tt;
+            };
+
+
+            ser.regKey= function(keyEventName, keypresstype, userObj, callback) {
+                var userKey = ser.getUserKeyObj(keyEventName, userObj);
+
+                console.log('ruk',userKey);
+                subscribers.push({'keypress':userKey, 'keypresstype':keypresstype, 'callback': callback});
+            };
+
+            ser.clearKey = function(keypress, keypresstype) {
+                var max = subscribers ? subscribers.length : 0;
+                for (var i = 0; i < max; i += 1) {
+                    if (subscribers[i].keypress === keypress && subscribers[i].keypresstype === keypresstype) {
+                        subscribers.splice(i, 1);
+                        break;
+                    }
+                }
+            };
+            ser.handleKey = function(ev) {
+                subscribers.forEach(function(sub){
+                    if (ev.type === sub.keypresstype && ev.code === sub.keypress.code) {
+                        if (ev.type === 'keyup') {
+                            sub.callback(ev);
+                            ev.preventDefault();
+                        } else if (ev.shiftKey === sub.keypress.shiftKey && ev.ctrlKey === sub.keypress.ctrlKey && ev.altKey === sub.keypress.altKey) {
+                            if (!ev.repeat) {sub.callback(ev);}
+                            ev.preventDefault();
+                        }
+                    }
+
+
+                });
+            };
+            ser.clearAll = function() {
+                subscribers = [];
+            };
+
+            ser.fixKeyObj = function(keyObj) {
+                if (!keyObj.hasOwnProperty('shiftKey')) {keyObj.shiftKey = false;}
+                if (!keyObj.hasOwnProperty('ctrlKey')) {keyObj.ctrlKey = false;}
+                if (!keyObj.hasOwnProperty('altKey')) {keyObj.altKey = false;}
+                return keyObj;
+            };
+
+            ser.getUserKeyObj = function(keyName, userObj) {
+                if (userObj.data.preferences.hasOwnProperty('keyPrefs') && userObj.data.preferences.keyPrefs.hasOwnProperty(keyName)) {
+                    return ser.fixKeyObj(userObj.data.preferences.keyPrefs[keyName]);
+                }
+                return ser.getDefaultKeyObj(keyName);
+            };
+            
+            ser.getDefaultKeyObj = function(keyName){
+                return {
+                    code: config.defaultKeys[keyName].code,
+                    shiftKey: config.defaultKeys[keyName].mods[0],
+                    ctrlKey: config.defaultKeys[keyName].mods[1],
+                    altKey: config.defaultKeys[keyName].mods[2]
+                };
+            };
+
             return ser;
         }])
         .factory('aikumaService', ['$animate', '$rootScope', '$window', '$translate', 'audioService', 'fileService',

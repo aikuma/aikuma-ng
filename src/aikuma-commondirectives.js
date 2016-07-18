@@ -78,7 +78,7 @@
         })
         // This is bound to the <body> element to pass key events to the keyService. Intended for low-level handling so
         // we can detect keys held-down (which angular hotkeys doesn't do) and left/right shift/ctrl which no key library does!
-        .directive('keyFocus', ['keyService', function(keyService){
+        .directive('keyFocus', ['keyService', 'newKeyService', function(keyService, newKeyService){
             return {
                 restrict: 'A',
                 link: function(scope, element, attr){
@@ -86,9 +86,11 @@
                         if (!event.repeat) {
                             keyService.handleKey(event);
                         }
+                        newKeyService.handleKey(event);
                     });
                     element.bind('keyup', function(event) {
                         keyService.handleKey(event);
+                        newKeyService.handleKey(event);
                     });
                 }
             };
@@ -295,7 +297,6 @@
                     title: 'NAV_SHARE',
                     icon: 'social:share',
                     state: 'share',
-                    tooltip: 'NOT_IMPLEMENTED',
                     session: true
                 },
                 {
