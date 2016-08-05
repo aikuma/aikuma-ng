@@ -705,7 +705,11 @@
             vm.showCurrentRegion = function() {
                 if (vm.cursor[vm.r.tk] === -1) {return '';}
                 var thisReg = annoServ.regionList[vm.cursor[vm.r.tk]];
-                return 'st: '+thisReg.start+' ed: '+thisReg.end;
+                if (thisReg) {
+                    return 'st: '+thisReg.start+' ed: '+thisReg.end;
+                } else {
+                    return '';
+                }
             };
             vm.showCurrentTime = function() {
                 return annoServ.wavesurfer.getCurrentTime();

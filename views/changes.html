@@ -2,11 +2,17 @@
 
 <md-content flex class="md-padding" style="padding-bottom:30px">
     <div class="row">
+        <h4 class='md-title'>18/7/2016 &mdash; 0.947</h4>
+        <p class="md-body-1">Fixed critical regression that bombed out creating new annotations on a brand new session. Fixed debug mode console error on annotation UI. Fixed caption file save bug that caused high CPU and kept the file locked.
+        </p>
+    </div>
+    <div class="row">
         <h4 class='md-title'>18/7/2016 &mdash; 0.946</h4>
         <p class="md-body-1">Deleting all annotations from a 'track' will properly remove the track from the session view if it isn't
             associated with the segmentation from an audio file, e.g. respeaking or translation.</p>
         <p class="md-body-1">Adding multiple annotations at the same time of the source (not a respeaking or translation track), Aikuma-NG would create multiple 'tracks', e.g. each would
             have it's own segmentation. This was a a critical error and lead to very confusion behavior. They are now properly placed in the same track.</p>
+    </div>
     <div class="row">
         <h4 class='md-title'>18/7/2016 &mdash; 0.945</h4>
         <p class="md-body-1">Added key configuration to the settings tab. Only the annotation UI uses these keys at the moment. This feature was motivated by seemingly ordinary key

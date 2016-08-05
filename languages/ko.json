@@ -196,5 +196,6 @@
   "HELP_LANGS": "언어선택 도움말",
   "HELP_SPKS": "화자선택 도움말",
   "EXPORT_ELAN": "Export to ELAN",
-  "SHARE_NONE": "Cannot share this session!"
+  "SHARE_NONE": "Cannot share this session!",
+  "NEWUSER_NOTE": "Note: Email address never leaves Aikuma-NG, e.g. you will not get spam."
 }

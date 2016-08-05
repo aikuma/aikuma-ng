@@ -27,6 +27,9 @@
                        autocomplete="off"
                        minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" class="md-body-2"/>
             </md-input-container>
+
+            <div class="md-body-2" translate>NEWUSER_NOTE</div>
+
         </md-dialog-content>
         <md-dialog-actions layout="row">
             <md-button ng-disabled="userForm.email.$invalid || pdCtrl.userNames.length == 0" ng-click="pdCtrl.save()">{{"BUTTON_OK" | translate}}</md-button>

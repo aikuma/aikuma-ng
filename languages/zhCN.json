@@ -196,5 +196,6 @@
   "HELP_LANGS": "语言选择器的帮助",
   "HELP_SPKS": "说话者选择器的帮助",
   "EXPORT_ELAN": "导出到ELAN",
-  "SHARE_NONE": "无法分享这届！"
+  "SHARE_NONE": "无法分享这届！",
+  "NEWUSER_NOTE": "注意：电子邮件地址从来没有离开Aikuma-NG。"
 }

@@ -60,8 +60,6 @@
 
             ser.regKey= function(keyEventName, keypresstype, userObj, callback) {
                 var userKey = ser.getUserKeyObj(keyEventName, userObj);
-
-                console.log('ruk',userKey);
                 subscribers.push({'keypress':userKey, 'keypresstype':keypresstype, 'callback': callback});
             };
 
@@ -326,9 +324,7 @@
                 var blobzor = new Blob(vtt, {type: "text/plain;charset=utf-8"});
                 // if this is running as Chrome Packaged App then let's use the file API
                 if (window.chrome && chrome.app && chrome.app.runtime) {
-                    chromeAppSave('annotation.' + fileExt, blobzor, function() {
-                        console.log('saved');
-                    });
+                    chromeAppSave('annotation.' + fileExt, blobzor);
                 } else {
                     var a = document.createElement("a");
                     document.body.appendChild(a);
@@ -346,17 +342,15 @@
                 console.error(e);
             }
 
-            function chromeAppSave(filename, blobby, callback) {
+            function chromeAppSave(filename, blobby) {
                 var config = {type: 'saveFile', suggestedName: filename};
                 chrome.fileSystem.chooseEntry(config, function(writableEntry) {
                     if (!writableEntry) {return;}
                     writableEntry.createWriter(function (writer) {
                         writer.onerror = errorHandler;
                         writer.onwriteend = function(e) {
-                            e.currentTarget.truncate(e.currentTarget.position);
-                            callback();
+                            console.log('write complete');
                         };
-                        console.log('b',blobby);
                         writer.write(blobby, {type: 'text/plain'});
                     });
                 });

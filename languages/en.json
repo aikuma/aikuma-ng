@@ -198,5 +198,6 @@
   "EXPORT_ELAN": "Export to ELAN",
   "SHARE_NONE": "Cannot share this session!",
   "SETTINGS_KEYS": "Key settings",
-  "SETTINGS_KEYRESET": "Reset keys to default"
+  "SETTINGS_KEYRESET": "Reset keys to default",
+  "NEWUSER_NOTE": "Note: Email address never leaves Aikuma-NG, e.g. you will not get spam."
 }

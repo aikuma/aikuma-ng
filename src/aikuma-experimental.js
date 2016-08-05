@@ -119,7 +119,6 @@
         
 
         vm.addAnno = function (ev, track = null) {
-            console.log('t', track);
             if (vm.playingSec) {vm.stopPlayingSecondary();}
             $mdDialog.show({
                 controller: newAnnotationController,
@@ -136,6 +135,9 @@
                     segObj.sourceSegId = track;
                 } else {
                     var newSegId =  $scope.sessionObj.data._ID + aikumaUtils.createRandomNumbers(12);
+                    if (!('segments' in $scope.sessionObj.data)) {
+                        $scope.sessionObj.data.segments = {};
+                    }
                     $scope.sessionObj.data.segments[newSegId] = [];
                     segObj.sourceSegId = newSegId;
                     $scope.sessionObj.save();
@@ -187,7 +189,6 @@
                     var annoid = vm.tracks[track].annos[annoidx].id;
                     fileService.removeData('secondary', annoid).then(function() {
                         vm.tracks[track].annos.splice(annoidx, 1);
-                        console.log('vmt', vm.tracks, vm.trackList);
                         if (vm.tracks[track].annos.length === 0 && vm.tracks[track].type === 'AUDIO_NOEXIST') {
                             delete vm.tracks[track];
                             var tpos = vm.trackList.indexOf(track);

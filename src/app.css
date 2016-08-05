@@ -112,8 +112,8 @@ md-autocomplete input {
     letter-spacing: 0.010em;
 }
 
-a {
-    color: grey;
+md-input-container .md-errors-spacer {
+    min-height: 0px;
 }
 
 #annowebframe {

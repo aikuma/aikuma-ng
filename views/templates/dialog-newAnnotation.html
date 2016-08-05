@@ -29,7 +29,7 @@
                     </md-autocomplete>
 
                     <md-input-container md-no-float>
-                        <md-select required ng-model="choice.type">
+                        <md-select required ng-model="choice.type" aria-label="Annotation type">
                             <md-option ng-repeat="type in dCtrl.types" value="{{type}}">
                                 <span class="md-body-2">{{type | translate}}</span>
                             </md-option>
