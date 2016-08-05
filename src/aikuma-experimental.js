@@ -21,7 +21,7 @@
             };
         });
 
-    var annoListController = function ($timeout, audioService, $location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService, fileService) {
+    var annoListController = function ($timeout, audioService, $location, $scope, $translate, aikumaService, $mdDialog, $mdToast, $q, loginService, dataService, fileService, aikumaUtils) {
         var vm = this;
         vm.trackList = [];
         vm.tracks = {};
@@ -119,6 +119,7 @@
         
 
         vm.addAnno = function (ev, track = null) {
+            console.log('t', track);
             if (vm.playingSec) {vm.stopPlayingSecondary();}
             $mdDialog.show({
                 controller: newAnnotationController,
@@ -133,6 +134,11 @@
                 var segObj = {annotations: []};
                 if (track) {
                     segObj.sourceSegId = track;
+                } else {
+                    var newSegId =  $scope.sessionObj.data._ID + aikumaUtils.createRandomNumbers(12);
+                    $scope.sessionObj.data.segments[newSegId] = [];
+                    segObj.sourceSegId = newSegId;
+                    $scope.sessionObj.save();
                 }
                 annotations.forEach(function(anno) {
                     var annotationData = {
@@ -181,6 +187,12 @@
                     var annoid = vm.tracks[track].annos[annoidx].id;
                     fileService.removeData('secondary', annoid).then(function() {
                         vm.tracks[track].annos.splice(annoidx, 1);
+                        console.log('vmt', vm.tracks, vm.trackList);
+                        if (vm.tracks[track].annos.length === 0 && vm.tracks[track].type === 'AUDIO_NOEXIST') {
+                            delete vm.tracks[track];
+                            var tpos = vm.trackList.indexOf(track);
+                            vm.trackList.splice(tpos, 1);
+                        }
                     });
                 }, function () {
                     // removed comedy toast
@@ -297,7 +309,7 @@
         makeTracks();
 
     };
-    annoListController.$inject = ['$timeout', 'audioService', '$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast', '$q', 'loginService', 'dataService', 'fileService'];
+    annoListController.$inject = ['$timeout', 'audioService', '$location', '$scope', '$translate', 'aikumaService', '$mdDialog', '$mdToast', '$q', 'loginService', 'dataService', 'fileService', 'aikumaUtils'];
 
     var newAnnotationController = function ($mdDialog, $timeout, $q, $log, aikumaService) {
         var vm = this;

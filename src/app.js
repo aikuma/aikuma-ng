@@ -24,7 +24,7 @@
         ])
         .constant('config', {
             appName: 'AikumaNG',
-            appVersion: '0.945',
+            appVersion: '0.946',
             dataVersion: 1,
             sampleRate: 16000,
             fileStorageMB: 1000,
